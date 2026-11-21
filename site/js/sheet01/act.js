@@ -56,6 +56,8 @@ export function initAct1(engine) {
   const frame = L01.querySelector('.frame');
 
   const phone = new PhoneScene(canvas);
+  phone.setTheme(document.documentElement.dataset.theme === 'dark');
+  engine.on('theme', (v) => { phone.setTheme(v === 'dark'); phone.render(true); });
   // the concept product on the phone's screen: one of the made-up phones, the next one after every loop of the page
   const tag = finalRead.querySelector('.read__tag');
   function applyProduct(p) {

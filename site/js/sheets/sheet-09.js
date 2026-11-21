@@ -83,14 +83,21 @@ export function init(engine) {
     const m = measure();
     for (const [k, v] of Object.entries(m)) { const td = table.querySelector(`tr[data-k="${k}"] td`); if (td && td.textContent !== v) td.textContent = v; }
   };
-  let measured = false;
+  let measured = false, axeQueued = false, lastMove = performance.now();
+  addEventListener('scroll', () => { lastMove = performance.now(); }, { passive: true });
+  // the axe run blocks the main thread for a moment: only start it once the reader has stopped on this sheet
+  const whenStill = (fn) => {
+    const check = () => (performance.now() - lastMove > 900 ? (window.requestIdleCallback || setTimeout)(fn) : setTimeout(check, 300));
+    check();
+  };
   const measureOnce = () => {
     if (measured) return; measured = true;
     fill();
-    runAxe().then((r) => {
+    if (axeQueued) return; axeQueued = true;
+    whenStill(() => runAxe().then((r) => {
       const td = table.querySelector('tr[data-k="a11y"] td');
       if (td) td.textContent = r ? (r.violations.length === 0 ? 'No issues · WCAG 2.1 AA rules' : `${r.violations.length} issue${r.violations.length > 1 ? 's' : ''} · WCAG 2.1 AA rules`) : 'could not run';
-    });
+    }));
   };
 
   // where the previous sheet lands in the drawing set
@@ -120,7 +127,7 @@ export function init(engine) {
       sheet.style.clipPath = grow > 0 ? `inset(${r.y * (1 - grow)}px ${(W - r.x - r.w) * (1 - grow)}px ${(H - r.y - r.h) * (1 - grow)}px ${r.x * (1 - grow)}px)` : 'inset(50%)';
     } else sheet.style.clipPath = 'none';
     // ---- reading moments ----
-    if (p >= 0.9) measureOnce();
+    if (p >= 1.2) measureOnce();
     const specOn = p >= 1 && p < 2.6;
     readSpec.classList.toggle('is-on', specOn); table.classList.toggle('is-on', specOn);
     if (specOn) fill();

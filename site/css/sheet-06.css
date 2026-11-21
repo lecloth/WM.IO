@@ -121,3 +121,5 @@
   #sheet-06.is-static .s6__detail { grid-column: 1; grid-row: 3; aspect-ratio: 340 / 480; }
   #sheet-06.is-static .s6-read .read__title { font-size: 2.2rem; }
 }
+/* lead: the entry doors are not part of the finished (reduced motion) sheet */
+#sheet-06.is-static .s6__door { display: none; }

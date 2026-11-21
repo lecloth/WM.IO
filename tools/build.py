@@ -11,4 +11,8 @@ html = re.sub(r"<!-- @part ([\w-]+) -->\n?", part, tpl)
 css = sorted((ROOT / "site" / "css").glob("sheet-*.css"))
 html = html.replace("<!-- @styles -->\n", "".join(f'  <link rel="stylesheet" href="css/{p.name}">\n' for p in css))
 (ROOT / "site" / "index.html").write_text(html, encoding="utf-8")
+import subprocess, shutil
+dist = ROOT / "site" / "dist"
+if dist.exists(): shutil.rmtree(dist)
+subprocess.run(["node", str(ROOT / "tools" / "bundle.mjs")], check=True)
 print("built site/index.html,", len(html), "bytes,", len(css), "sheet stylesheets")

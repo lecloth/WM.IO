@@ -75,7 +75,7 @@ precision highp float;
 varying vec2 vUv;
 uniform sampler2D tScene; uniform sampler2D tOver; uniform sampler2D tColor;
 uniform vec2 uRes; uniform vec2 uCenter; uniform float uDev; uniform float uHover; uniform float uDpr;
-uniform float uMinor; uniform float uMajor;
+uniform float uMinor; uniform float uMajor; uniform float uDark;
 const vec3 PRUS = vec3(0.090, 0.247, 0.451);
 const vec3 TIDE = vec3(0.047, 0.157, 0.310);
 const vec3 WHITE = vec3(0.925, 0.945, 0.965);
@@ -105,7 +105,8 @@ void main(){
   vec3 bg = mix(PRUS, WHITE, gl1 * 0.06 + gl2 * 0.10);
   bg = mix(bg, TIDE, tide * 0.6);
   float L = dot(bw, vec3(0.2126, 0.7152, 0.0722));
-  vec3 cy = mix(PRUS, WHITE, clamp(0.08 + (1.0 - L) * 1.06, 0.0, 1.0));
+  float ink = mix(1.0 - L, L, uDark);
+  vec3 cy = mix(PRUS, WHITE, clamp(0.08 + ink * 1.06, 0.0, 1.0));
   vec3 dev = mix(bg, cy, bwA);
   vec3 rgb = mix(bwP, dev, m);
   float a = mix(bwA, 1.0, m);
@@ -143,7 +144,7 @@ export class PhoneScene {
       vertexShader: POST_VS, fragmentShader: POST_FS, depthTest: false, depthWrite: false, transparent: false,
       uniforms: { tScene: { value: this.rtScene.texture }, tOver: { value: this.overTex }, tColor: { value: this.rtColor.texture },
         uRes: { value: new THREE.Vector2() }, uCenter: { value: new THREE.Vector2() }, uDev: { value: 0 }, uHover: { value: 0 },
-        uDpr: { value: this.dpr }, uMinor: { value: 20 }, uMajor: { value: 100 } },
+        uDpr: { value: this.dpr }, uMinor: { value: 20 }, uMajor: { value: 100 }, uDark: { value: 0 } },
     });
     const tri = new THREE.BufferGeometry();
     tri.setAttribute('position', new THREE.Float32BufferAttribute([-1, -1, 0, 3, -1, 0, -1, 3, 0], 3));
@@ -208,7 +209,7 @@ export class PhoneScene {
     // 01 GLASS — the cover glass
     const glass = L('Glass', 'What the hand meets first', 7.1);
     this.part(glass, slab(74, 154, 0.8, 11), this.matte(0xFFFFFF, { transparent: true, opacity: 0.035, depthWrite: false }));
-    const pill = this.part(glass, slab(26, 7.5, 0.9, 3.75), this.matte(0x0A0A0A)); pill.position.set(0, 66, 0.05);
+    const cam = this.part(glass, slab(3.8, 3.8, 0.9, 1.9), this.matte(0x0A0A0A)); cam.position.set(0, 69, 0.05);   // round camera, as in the outline
     this.layers.reverse(); // front to back: Glass, Interface, Flow, Logic, Data, Lock
     this.layers.forEach((g, i) => { g.userData.index = i; g.position.z = g.userData.z; });
   }
@@ -221,6 +222,20 @@ export class PhoneScene {
   }
 
   /** hover: redraw the screen with or without the product's own accent colour */
+  /** light / dark print: swap the lightness of every matte part and the colour of every hairline */
+  setTheme(dark) {
+    this.dark = !!dark;
+    this.scene.traverse((o) => {
+      const m = o.material;
+      if (!m || !m.isMeshStandardMaterial) return;
+      if (!m.userData.base) m.userData.base = m.color.clone();
+      if (dark) { const hsl = {}; m.userData.base.getHSL(hsl); m.color.setHSL(hsl.h, hsl.s, 1 - hsl.l); } else m.color.copy(m.userData.base);
+    });
+    this.lineMats.forEach((lm) => { if (!lm.userData.base) lm.userData.base = lm.color.clone(); lm.color.set(dark ? 0xF2F0EB : lm.userData.base); });
+    this.post.uniforms.uDark.value = dark ? 1 : 0;
+    this.dirty = true;
+  }
+
   setScreen({ accent }) {
     this.accent = !!accent;
     this.product.draw(this.screenCanvas, { accent: this.accent });
@@ -286,14 +301,14 @@ export class PhoneScene {
     // the sheet's drawing frame (same place as the DOM frame), so the developed blueprint keeps its border
     if (s.frame && s.develop > 0) {
       const [fx, fy, fw, fh] = s.frame, z = parseFloat(getComputedStyle(document.documentElement).fontSize) * (this.W < 1024 ? 1 : 1.25);
-      c.strokeStyle = '#121212'; c.lineWidth = 1; c.globalAlpha = 0.85; c.strokeRect(fx + 0.5, fy + 0.5, fw - 1, fh - 1);
+      c.strokeStyle = this.dark ? '#F2F0EB' : '#121212'; c.lineWidth = 1; c.globalAlpha = 0.85; c.strokeRect(fx + 0.5, fy + 0.5, fw - 1, fh - 1);
       c.globalAlpha = 0.35; c.strokeRect(fx + z + 0.5, fy + z + 0.5, fw - 2 * z - 1, fh - 2 * z - 1); c.globalAlpha = 1;
     }
     if (s.labels <= 0) return;
     const mono = getComputedStyle(document.documentElement).getPropertyValue('--f-mono') || 'monospace';
     const small = this.W < 700;
     const fs = small ? 11 : 12.5;
-    c.strokeStyle = '#121212'; c.fillStyle = '#121212'; c.lineWidth = 1;
+    const INK = this.dark ? '#F2F0EB' : '#121212'; c.strokeStyle = INK; c.fillStyle = INK; c.lineWidth = 1;
     // ---- labels: anchor on each layer's top-right corner, text in a column to the right ----
     const anchors = this.layers.map((g) => ({ g, p: this.project(g, PHONE.w / 2 - 6, PHONE.h / 2 - 6, 0.5) }));
     const colX = small ? this.W * 0.7 : Math.max(...anchors.map((a) => a.p[0])) + (small ? 18 : 56);

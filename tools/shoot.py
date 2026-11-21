@@ -25,6 +25,7 @@ async def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--prefix", default="s")
     ap.add_argument("--reduced", action="store_true")
+    ap.add_argument("--dark", action="store_true")
     ap.add_argument("--return", dest="ret", action="store_true")
     ap.add_argument("--skip-at", type=int, default=0)
     ap.add_argument("--mobile", action="store_true")
@@ -40,6 +41,8 @@ async def main():
         if a.reduced:
             kw["reduced_motion"] = "reduce"
         ctx = await b.new_context(device_scale_factor=1, **kw)
+        if a.dark:
+            await ctx.add_init_script("try{localStorage.setItem('wm:theme','dark')}catch(e){}")
         page = await ctx.new_page()
         logs = []
         page.on("console", lambda m: m.type in ("error", "warning") and logs.append(f"{m.type}: {m.text}"[:240]))

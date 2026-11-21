@@ -12,6 +12,7 @@
   --paper: #F2F0EB;
   --ink-rgb: 18, 18, 18;
   --paper-rgb: 242, 240, 235;
+  --diff: #F2F0EB;            /* difference-blend layers: always light, so they invert in both themes */
   --ink: #121212;
   --graphite: #6B6A66;          /* 4.8:1 on paper (WCAG AA) */
   --board: #0E0E0E;
@@ -136,7 +137,7 @@ html[data-phase="loading"] body, html[data-phase="line"] body, html[data-phase="
 .todo__name { color: var(--graphite); margin-top: 1rem; }
 
 /* ---------- timeline strip ---------- */
-.strip { position: fixed; left: 0; right: 0; top: 0; height: var(--strip-h); z-index: 45; color: var(--paper); mix-blend-mode: difference; --load: 0; }
+.strip { position: fixed; left: 0; right: 0; top: 0; height: var(--strip-h); z-index: 45; color: var(--diff); mix-blend-mode: difference; --load: 0; }
 .strip__base { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: currentColor; transform: scaleX(var(--load)); transform-origin: 0 50%; }
 .strip__list { display: grid; grid-template-columns: repeat(10, 1fr); height: 100%; }
 .strip__seg { position: relative; }
@@ -161,10 +162,10 @@ html[data-phase="loading"] body, html[data-phase="line"] body, html[data-phase="
 
 /* ---------- curtain + singularity ---------- */
 .curtain { position: fixed; inset: 0; z-index: 50; pointer-events: none; mix-blend-mode: difference; }
-.curtain__panel { position: absolute; left: 0; right: 0; height: 50%; background: var(--paper); will-change: transform; }
+.curtain__panel { position: absolute; left: 0; right: 0; height: 50%; background: var(--diff); will-change: transform; }
 .curtain__panel--top { top: 0; }
 .curtain__panel--bottom { bottom: 0; }
-.curtain__edge { position: absolute; left: 0; right: 0; height: 1px; background: var(--paper); opacity: 0; }
+.curtain__edge { position: absolute; left: 0; right: 0; height: 1px; background: var(--diff); opacity: 0; }
 .curtain__panel--top .curtain__edge { top: 100%; }
 .curtain__panel--bottom .curtain__edge { bottom: 100%; }
 .sing { position: absolute; left: 0; right: 0; top: 50%; height: 0; }
@@ -184,7 +185,7 @@ html[data-phase="loading"] .titleblock, html[data-phase="line"] .titleblock { op
 .hold__line .w { opacity: 0; transform: translateY(105%); }
 
 /* ---------- CAD crosshair cursor ---------- */
-.xhair { position: fixed; inset: 0; z-index: 60; pointer-events: none; mix-blend-mode: difference; color: var(--paper); opacity: 0; transition: opacity .3s; }
+.xhair { position: fixed; inset: 0; z-index: 60; pointer-events: none; mix-blend-mode: difference; color: var(--diff); opacity: 0; transition: opacity .3s; }
 .xhair.is-on { opacity: 1; }
 .xhair__h, .xhair__v { position: absolute; background: currentColor; opacity: .55; }
 .xhair__h { left: 0; right: 0; top: 0; height: 1px; transform: translateY(var(--y, -10px)); }
@@ -364,3 +365,32 @@ html.is-shut .board__grid { opacity: 0; }
 
 /* any sheet's black moment can hide the paper title block (set html.is-black-moment) */
 html.is-black-moment .titleblock { visibility: hidden; }
+/* nothing may widen the page sideways (phones would zoom out) */
+html, body { overflow-x: clip; }
+.chapter.is-static .chapter__stage { overflow-x: clip; }
+
+/* =====================================================================================
+   DARK VERSION: the same drawing set printed on black film. Tokens swap; plates (baked ink) invert.
+   ===================================================================================== */
+:root[data-theme="dark"] {
+  --paper: #0E0E0E;
+  --ink: #F2F0EB;
+  --graphite: #8E8D88;           /* 5.9:1 on #0E0E0E (WCAG AA) */
+  --ink-rgb: 242, 240, 235;
+  --paper-rgb: 14, 14, 14;
+  --hair: rgba(242, 240, 235, .8);
+  --grid-minor: rgba(242, 240, 235, .05);
+  --grid-major: rgba(242, 240, 235, .09);
+  color-scheme: dark;
+}
+:root[data-theme="dark"] body { background: var(--paper); }
+:root[data-theme="dark"] .board__grid::after { mix-blend-mode: screen; opacity: .35; filter: invert(1); }
+/* raster plates are ink-on-paper scans: print them as a negative */
+:root[data-theme="dark"] img[src*="media/plates/"], :root[data-theme="dark"] image[href*="media/plates/"] { filter: invert(1); }
+:root[data-theme="dark"] .plate__img { mix-blend-mode: normal; }
+/* the title block's print switch */
+.tb__theme { all: unset; box-sizing: border-box; display: flex; flex-direction: column; gap: .15rem; padding: .4rem .6rem .45rem; border-left: 1px solid rgba(var(--ink-rgb), .3); min-width: 4.5rem; cursor: pointer; }
+.tb__theme .tb__v { text-decoration: underline; text-underline-offset: .2em; text-decoration-thickness: 1px; }
+.tb__theme:hover .tb__v { text-decoration-thickness: 2px; }
+.tb__theme:focus-visible { outline: 2px solid var(--ink); outline-offset: -3px; }
+@media (max-width: 1023px) { .titleblock .tb__theme { display: flex !important; } .titleblock { grid-template-columns: repeat(4, auto); } }

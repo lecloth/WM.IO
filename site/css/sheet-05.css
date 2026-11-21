@@ -1,1 +1,204 @@
-/* sheet 05: Work */
+/* sheet 05: Work. Concept sheets from one set, slid onto the board one by one; the cyanotype-negative entry. */
+
+/* ---------- the stage: see-through while the curtain closes over sheet 04, solid from the moment it shuts ---------- */
+#sheet-05 .s5__stage.is-solid { background: var(--paper); }
+
+/* the board: drafting film with its own still grid */
+#sheet-05 .s5__board {
+  position: absolute; inset: 0; visibility: hidden;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+  background-size: 6.25rem 6.25rem, 6.25rem 6.25rem, 1.25rem 1.25rem, 1.25rem 1.25rem;
+}
+#sheet-05 .s5__board.is-on { visibility: visible; }
+#sheet-05 .s5__board:not(.is-on) .s5-sheet.is-vis, #sheet-05 .s5__board:not(.is-on) .s5-read.is-on { visibility: hidden; }
+/* chrome over the developed negative (like sheet 01's blue sheet) */
+html.s5-blue .strip, html.s5-blue .xhair { mix-blend-mode: normal; color: var(--blueprint-ink); }
+
+/* ---------- the set index (top of the board) ---------- */
+#sheet-05 .s5__index { position: absolute; left: 3.75rem; top: calc(var(--strip-h) + .75rem + var(--zone) + .8rem); display: flex; gap: 1.35rem; color: var(--graphite);
+  font-size: .5625rem; opacity: 0; visibility: hidden; transition: opacity .22s, visibility 0s .22s; }
+#sheet-05 .s5__index.is-on { opacity: 1; visibility: inherit; transition: opacity .22s, visibility 0s; }
+#sheet-05 .s5__index li { position: relative; padding-bottom: .35rem; transition: color .25s var(--ease-out); white-space: nowrap; }
+#sheet-05 .s5__index li::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--ink); transform: scaleX(0); transform-origin: 0 50%; transition: transform .25s var(--ease-out); }
+#sheet-05 .s5__index li.is-on { color: var(--ink); }
+#sheet-05 .s5__index li.is-on::after { transform: scaleX(1); }
+
+/* ---------- a concept sheet ---------- */
+#sheet-05 .s5__set { position: absolute; inset: 0; pointer-events: none; }
+#sheet-05 .s5-sheet { position: absolute; left: 0; top: 0; visibility: hidden; }
+#sheet-05 .s5-sheet.is-vis { visibility: visible; }
+#sheet-05 .s5__set .s5-sheet.is-vis { pointer-events: auto; will-change: transform; }
+#sheet-05 .s5-paper { position: absolute; inset: 0; background: var(--paper); border: 1px solid var(--hair); outline: none;
+  box-shadow: .375rem .375rem 0 -1px var(--paper), .375rem .375rem 0 0 rgba(var(--ink-rgb), .3), .75rem .75rem 0 -1px var(--paper), .75rem .75rem 0 0 rgba(var(--ink-rgb), .16); }
+#sheet-05 .s5-paper::after { content: ""; position: absolute; inset: .5rem; border: 1px solid rgba(var(--ink-rgb), .3); pointer-events: none; }
+#sheet-05 .s5-paper:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+#sheet-05 .s5-paper__fig { position: absolute; left: 1.5rem; top: 1.2rem; color: var(--graphite); font-size: .625rem; white-space: nowrap; }
+
+#sheet-05 .s5-win, #sheet-05 .s5-det { position: absolute; overflow: hidden; background: var(--paper); }
+#sheet-05 .s5-det { border-radius: 50%; }
+#sheet-05 .s5-c { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+#sheet-05 .s5-c--acc { opacity: 0; transition: opacity .2s var(--ease-out); }
+#sheet-05 .is-acc .s5-c--acc { opacity: 1; }
+#sheet-05 .s5-win__blank { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) translate(1rem, -1.6rem); color: var(--graphite); font-size: .625rem; line-height: 1.6; }
+
+/* annotation hairlines (one SVG over the paper) */
+#sheet-05 .s5-anno { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+#sheet-05 .s5-anno path, #sheet-05 .s5-anno circle, #sheet-05 .s5-anno rect { fill: none; stroke: var(--ink); stroke-width: 1px; }
+#sheet-05 .s5-anno .a-ext { stroke: var(--graphite); stroke-width: .75px; }
+#sheet-05 .s5-anno .a-arr { fill: var(--ink); stroke: none; }
+#sheet-05 .s5-anno .a-centre { stroke: var(--graphite); stroke-dasharray: 16 3 2 3; }
+#sheet-05 .s5-anno .a-lead { stroke-width: .9px; }
+#sheet-05 .s5-anno .a-halo { stroke: var(--paper); stroke-width: 2.5px; }
+#sheet-05 .s5-anno .a-bub { fill: var(--paper); }
+#sheet-05 .s5-anno .a-detc { stroke-width: 1.25px; }
+#sheet-05 .s5-anno .a-mark { stroke-width: 1.25px; }
+#sheet-05 .s5-anno .a-hatch { stroke: var(--graphite); stroke-width: .75px; }
+#sheet-05 .s5-anno .a-kpd { fill: var(--ink); stroke: none; }
+#sheet-05 .s5-anno .a-txt { fill: var(--ink); stroke: none; font-family: var(--f-mono); font-size: 10px; letter-spacing: .04em; }
+#sheet-05 .s5-anno .a-txt--b { font-size: 11px; font-weight: 500; }
+#sheet-05 .s5-anno .a-txt--g { fill: var(--graphite); }
+
+#sheet-05 .s5-lab { position: absolute; transform: translateX(-50%); color: var(--ink); font-size: .625rem; white-space: nowrap; }
+#sheet-05 .s5-lab--kp { color: var(--graphite); }
+#sheet-05 .s5-notes { position: absolute; color: var(--graphite); font-size: .625rem; line-height: 1.55; text-transform: none; letter-spacing: .01em; }
+#sheet-05 .s5-notes li { padding-left: 1.1em; text-indent: -1.1em; margin-bottom: .3rem; }
+#sheet-05 .s5-notes b { font-weight: 500; color: var(--ink); text-transform: uppercase; letter-spacing: var(--mono-track); }
+
+/* the sheet's own title block */
+#sheet-05 .s5-tb { position: absolute; right: 1.5rem; bottom: 1.5rem; display: grid; grid-template-columns: repeat(4, 7.1rem); border-left: 1px solid var(--hair); border-top: 1px solid var(--hair); background: var(--paper); font-size: .625rem; }
+#sheet-05 .s5-tb__c { display: flex; flex-direction: column; justify-content: center; gap: .15rem; min-height: 1.85rem; padding: .3rem .55rem .35rem; border-left: 1px solid rgba(var(--ink-rgb), .3); border-bottom: 1px solid rgba(var(--ink-rgb), .3); }
+#sheet-05 .s5-tb__c:nth-child(1), #sheet-05 .s5-tb__c:nth-child(3), #sheet-05 .s5-tb__c:nth-child(7) { border-left: 0; }
+#sheet-05 .s5-tb__c--name, #sheet-05 .s5-tb__c--note, #sheet-05 .s5-tb__c--kind { grid-column: span 2; }
+#sheet-05 .s5-tb__c--kind + .s5-tb__c { border-left: 1px solid rgba(var(--ink-rgb), .3); }
+#sheet-05 .s5-tb__c--sheet { border-left: 1px solid rgba(var(--ink-rgb), .3); }
+#sheet-05 .s5-tb__c:nth-child(n+5) { border-bottom: 0; }
+#sheet-05 .s5-tb__c--note .s5-tb__v { text-transform: none; letter-spacing: .01em; line-height: 1.3; }
+#sheet-05 .s5-tb__k { font-size: .5rem; color: var(--graphite); }
+#sheet-05 .s5-tb__v { color: var(--ink); line-height: 1.25; }
+#sheet-05 .s5-tb__v b { font-weight: 500; }
+#sheet-05 .s5-tb__name { font-family: var(--f-display); font-size: 1.25rem; font-weight: 500; letter-spacing: .01em; text-transform: none; line-height: 1; }
+#sheet-05 .s5-tb__c--sw .s5-tb__v { display: flex; align-items: center; gap: .45rem; }
+#sheet-05 .s5-sw { width: .8rem; height: .8rem; flex: none; border: 1px solid var(--ink); background: repeating-linear-gradient(135deg, var(--graphite) 0 1px, transparent 1px 3px); transition: background-color .2s var(--ease-out); }
+#sheet-05 .s5-sw__on { display: none; }
+#sheet-05 .is-acc .s5-sw { background: var(--acc); }
+#sheet-05 .is-acc .s5-sw__on { display: inline; }
+#sheet-05 .is-acc .s5-sw__off { display: none; }
+
+/* ---------- reading moments: shown or hidden, never moving ---------- */
+#sheet-05 .s5__reads { position: absolute; inset: 0; pointer-events: none; }
+#sheet-05 .s5-read { position: absolute; left: 65.5rem; top: 7.4rem; width: 21.25rem; opacity: 0; visibility: hidden; transition: opacity .22s var(--ease-out), visibility 0s .22s; }
+#sheet-05 .s5-read.is-on { opacity: 1; visibility: inherit; pointer-events: auto; transition: opacity .22s var(--ease-out), visibility 0s; }
+#sheet-05 .s5-read .read__eyebrow { color: var(--graphite); }
+#sheet-05 .s5-read__title { font-size: 3.2rem; color: var(--ink); margin-bottom: 1.2rem; }
+#sheet-05 .s5-read[data-id]:not([data-id="intro"]):not([data-id="yours"]) .s5-read__title { font-size: 2.75rem; letter-spacing: .005em; }
+#sheet-05 .s5-read .read__body { color: var(--ink); }
+#sheet-05 .s5-read__det { margin-top: 1.4rem; color: var(--graphite); }
+#sheet-05 .s5-read__note { margin-top: .4rem; font-size: 1.1875rem; line-height: 1.42; color: var(--ink); }
+#sheet-05 .s5-read .read__tag { color: var(--graphite); }
+#sheet-05 .s5-read__cta { margin-top: 1.75rem; }
+
+/* ---------- entry: the line closes, opens into black, a negative develops, the curtain opens ---------- */
+/* two panels that invert whatever they cover (sheet 04's black turns to its paper negative, readable) */
+#sheet-05 .s5__curtain { position: absolute; inset: 0; z-index: 6; pointer-events: none; display: none; }
+#sheet-05 .s5__curtain.is-on { display: block; }
+#sheet-05 .s5__panel { position: absolute; left: 0; right: 0; height: 50%; will-change: transform;
+  -webkit-backdrop-filter: invert(1) grayscale(1); backdrop-filter: invert(1) grayscale(1); }
+#sheet-05 .s5__panel--t { top: 0; transform: translate3d(0, -100%, 0); }
+#sheet-05 .s5__panel--b { bottom: 0; transform: translate3d(0, 100%, 0); }
+#sheet-05 .s5__panel::after { content: ""; position: absolute; left: 0; right: 0; height: 1px; background: var(--ink); }
+#sheet-05 .s5__panel--t::after { bottom: 0; }
+#sheet-05 .s5__panel--b::after { top: 0; }
+#sheet-05 .s5__panel::before { content: ""; position: absolute; left: 2.5rem; width: 1px; height: .9rem; background: var(--ink); box-shadow: calc(100vw - 5rem) 0 0 var(--ink); }
+#sheet-05 .s5__panel--t::before { bottom: 0; }
+#sheet-05 .s5__panel--b::before { top: 0; }
+@supports not ((backdrop-filter: invert(1)) or (-webkit-backdrop-filter: invert(1))) {
+  #sheet-05 .s5__panel { background: var(--paper); }
+}
+
+/* the black: the line opens into it */
+#sheet-05 .s5__black { position: absolute; inset: 0; z-index: 2; background: var(--ink); transform-origin: 50% 50%; display: none; }
+#sheet-05 .s5__black.is-on { display: block; }
+#sheet-05 .s5__seam { position: absolute; left: 0; right: 0; top: 50%; height: 1px; margin-top: -.5px; z-index: 4; background: var(--blueprint-ink); display: none; }
+#sheet-05 .s5__seam.is-on { display: block; }
+
+/* the negative: the board and sheet 05.1 with the tokens swapped (Prussian ground, blueprint-white lines) */
+#sheet-05 .s5__neg { position: absolute; inset: 0; z-index: 3; display: none;
+  --ink: rgb(var(--ink-rgb)); --paper: rgb(var(--paper-rgb)); --hair: rgba(var(--ink-rgb), .85); --graphite: rgba(var(--ink-rgb), .72);
+  --grid-major: rgba(var(--ink-rgb), .1); --grid-minor: rgba(var(--ink-rgb), .05);
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+  background-size: 6.25rem 6.25rem, 6.25rem 6.25rem, 1.25rem 1.25rem, 1.25rem 1.25rem; }
+#sheet-05 .s5__neg.is-on { display: block; }
+#sheet-05 .s5__neg .s5-sheet { visibility: visible; }
+/* while it develops only the ground and the lines come up; the image and every label fix in at once */
+#sheet-05 .s5__neg :is(.s5-c, .s5-paper__fig, .s5-lab, .s5-notes, .s5-tb, .a-txt, .a-arr, .frame__zones, .s5-win__blank) { opacity: 0; visibility: hidden; transition: opacity .25s var(--ease-out), visibility 0s .25s; }
+#sheet-05 .s5__neg.is-fixed :is(.s5-c, .s5-paper__fig, .s5-lab, .s5-notes, .s5-tb, .a-txt, .a-arr, .frame__zones, .s5-win__blank) { opacity: 1; visibility: inherit; transition: opacity .25s var(--ease-out), visibility 0s; }
+
+/* the curtain's two edges as it opens from the line */
+#sheet-05 .s5__edge { position: absolute; left: 0; right: 0; height: 1px; z-index: 4; background: var(--ink); display: none; }
+#sheet-05 .s5__edge--t { top: var(--edge-a, 50%); }
+#sheet-05 .s5__edge--b { top: var(--edge-b, 50%); margin-top: -1px; }
+#sheet-05 .s5__stage.is-opening .s5__edge { display: block; }
+#sheet-05 .s5__edge::before { content: ""; position: absolute; left: 2.5rem; top: -.45rem; width: 1px; height: .9rem; background: var(--ink); box-shadow: calc(100vw - 5rem) 0 0 var(--ink); }
+
+/* the darkroom label */
+#sheet-05 .s5__dev { position: absolute; z-index: 5; left: 65.5rem; top: calc(50% + 1rem); color: var(--blueprint-ink); visibility: hidden; }
+#sheet-05 .s5__dev.is-on { visibility: visible; }
+#sheet-05 .s5__dev-b, #sheet-05 .s5__dev.is-fixed .s5__dev-a { display: none; }
+#sheet-05 .s5__dev.is-fixed .s5__dev-b { display: inline; }
+
+/* ---------- mobile: the part view at 1:1 on top, the reading moment under it ---------- */
+@media (max-width: 1023px) {
+  #sheet-05 .s5__index { display: none; }
+  #sheet-05 .s5-paper__fig { left: .75rem; top: .6rem; font-size: .5625rem; max-width: calc(100% - 1.5rem); overflow: hidden; text-overflow: ellipsis; }
+  #sheet-05 .s5-paper::after { inset: .3rem; }
+  #sheet-05 .s5-paper { box-shadow: .25rem .25rem 0 -1px var(--paper), .25rem .25rem 0 0 rgba(var(--ink-rgb), .3); }
+  #sheet-05 .s5-tb { left: .75rem; right: .75rem; bottom: .75rem; grid-template-columns: 1.6fr 1fr 1fr; font-size: .5625rem; }
+  #sheet-05 .s5-tb__c { min-height: 1.6rem; padding: .25rem .45rem .3rem; }
+  #sheet-05 .s5-tb__c--note, #sheet-05 .s5-tb__c--kind, #sheet-05 .s5-tb__c--ind, #sheet-05 .s5-tb__c--checked { display: none; }
+  #sheet-05 .s5-tb__c--name { grid-column: span 1; border-left: 0 !important; }
+  #sheet-05 .s5-tb__c--sheet, #sheet-05 .s5-tb__c--scale { border-left: 1px solid rgba(var(--ink-rgb), .3) !important; }
+  #sheet-05 .s5-tb__c--drawn { border-left: 0 !important; }
+  #sheet-05 .s5-tb__c--sw { grid-column: span 2; border-left: 1px solid rgba(var(--ink-rgb), .3) !important; }
+  #sheet-05 .s5-tb__c:nth-child(n+5) { border-bottom: 0; }
+  #sheet-05 .s5-tb__c--name, #sheet-05 .s5-tb__c--sheet, #sheet-05 .s5-tb__c--scale { border-bottom: 1px solid rgba(var(--ink-rgb), .3); }
+  #sheet-05 .s5-tb__name { font-size: 1.05rem; }
+  #sheet-05 .s5-read { left: 1.25rem; right: 1.25rem; width: auto; top: auto; bottom: 4.5rem; }
+  #sheet-05 .s5-read__title { font-size: 2.3rem; margin-bottom: .6rem; }
+  #sheet-05 .s5-read[data-id]:not([data-id="intro"]):not([data-id="yours"]) .s5-read__title { font-size: 2.1rem; }
+  #sheet-05 .s5-read .read__eyebrow { margin-bottom: .5rem; }
+  #sheet-05 .s5-read .read__body { font-size: 1.0625rem; }
+  #sheet-05 .s5-read__det, #sheet-05 .s5-read__note { display: none; }
+  #sheet-05 .s5-read .read__tag { margin-top: .9rem; }
+  #sheet-05 .s5-read__cta { margin-top: 1.1rem; }
+  #sheet-05 .s5-read__cta .btn { width: 100%; }
+  #sheet-05 .s5__dev { left: 1.25rem; top: 72%; }
+  #sheet-05 .s5-dsk { display: none; }
+  #sheet-05 .s5__panel::before, #sheet-05 .s5__edge::before { left: 1rem; box-shadow: calc(100vw - 2rem) 0 0 var(--ink); }
+}
+
+/* ---------- reduced motion: the set as finished sheets, one under the other, each with its text ---------- */
+html[data-motion="reduce"] #sheet-05 :is(.s5__neg, .s5__black, .s5__seam, .s5__edge, .s5__dev, .s5__curtain, .s5__index) { display: none !important; }
+#sheet-05.is-static .s5__board { position: relative; inset: auto; visibility: visible; padding: calc(var(--strip-h) + 3rem) 3.75rem 6rem; }
+#sheet-05.is-static .frame { display: none; }
+#sheet-05.is-static .s5__set { display: none; }
+#sheet-05.is-static .s5__reads { position: relative; inset: auto; pointer-events: auto; margin-bottom: 4rem; }
+#sheet-05.is-static .s5-read { position: relative; left: auto; top: auto; bottom: auto; right: auto; opacity: 1; visibility: visible; }
+#sheet-05.is-static .s5-row { display: grid; grid-template-columns: 59rem 1fr; gap: 3rem; align-items: start; margin-bottom: 5rem; }
+#sheet-05.is-static .s5-row .s5-sheet { position: relative; visibility: visible; }
+#sheet-05.is-static .s5-row .s5-read { width: auto; max-width: 22rem; padding-top: 2rem; }
+@media (max-width: 1023px) {
+  #sheet-05.is-static .s5__board { padding: calc(var(--strip-h) + 2rem) .75rem 5rem; }
+  #sheet-05.is-static .s5-row { grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 3.5rem; }
+  #sheet-05.is-static .s5-row .s5-read { padding: 0 .5rem; max-width: none; }
+  #sheet-05.is-static .s5-read__det, #sheet-05.is-static .s5-read__note { display: block; }
+}

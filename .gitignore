@@ -6,3 +6,4 @@ tools/pylib/
 tools/sources/
 .browser.lock
 tools/.browser.lock
+site/dist/

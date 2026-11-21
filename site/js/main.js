@@ -1,5 +1,6 @@
 import { engine, initScroll } from './engine/core.js';
 import { initCursor } from './engine/cursor.js';
+import { initTheme } from './engine/theme.js';
 import { runOpening } from './opening.js';
 import { initAct1 } from './sheet01/act.js';
 import * as S02 from './sheets/sheet-02.js';
@@ -22,6 +23,7 @@ Promise.all(['420 1em Newsreader', '400 1em Newsreader', '400 1em "DM Mono"', '5
 const { ScrollTrigger } = engine;
 initScroll();
 engine.lockScroll(!engine.reduced);
+initTheme(engine);
 
 // ---------- the sheets ----------
 const act1 = initAct1(engine);

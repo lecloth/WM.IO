@@ -15,6 +15,7 @@
       try { seen = localStorage.getItem('wm:opened') === '1'; } catch (e) {}
       if (/[?&]first\b/.test(location.search)) seen = false;
       d.dataset.motion = rm ? 'reduce' : 'full';
+      try { if (localStorage.getItem('wm:theme') === 'dark') d.dataset.theme = 'dark'; } catch (e) {}
       d.dataset.visit = seen ? 'return' : 'first';
       var tasks = ['css', 'gsap', 'st', 'lenis', 'app', 'fonts', 'load'], done = {};
       window.__wm = {
@@ -40,8 +41,16 @@
     "three": "./vendor/three/three.module.min.js",
     "three/addons/": "./vendor/three/addons/"
   } }</script>
-  <link rel="modulepreload" href="vendor/three/three.module.min.js">
-  <script type="module" src="js/main.js"></script>
+  <script>
+    /* the plain local server can refuse a connection under a burst of requests: retry images, styles and the app */
+    addEventListener('error', function (ev) {
+      var el = ev.target; if (!el || (el.tagName !== 'IMG' && el.tagName !== 'LINK')) return;
+      var n = +(el.dataset.retry || 0); if (n >= 5) return; el.dataset.retry = n + 1;
+      setTimeout(function () { if (el.tagName === 'IMG') { var s = el.getAttribute('src'); el.removeAttribute('src'); el.setAttribute('src', s); }
+        else { var c = el.cloneNode(); el.parentNode.insertBefore(c, el.nextSibling); el.remove(); } }, 150 * (n + 1));
+    }, true);
+  </script>
+  <script type="module" src="dist/main.js" onerror="(function(s){var n=+(s.dataset.r||0);if(n<5){var c=document.createElement('script');c.type='module';c.src='dist/main.js?r='+(n+1);c.dataset.r=n+1;c.onerror=s.onerror;setTimeout(function(){document.head.appendChild(c)},200*(n+1));}})(this)"></script>
 </head>
 <body>
 
@@ -187,6 +196,7 @@
   <div class="tb__cell"><span class="tb__k">Checked</span><span class="tb__v tb__checked">Engineering</span></div>
   <div class="tb__cell"><span class="tb__k">Approved</span><span class="tb__v tb__approved">Strategy</span></div>
   <div class="tb__cell"><span class="tb__k">Rev</span><span class="tb__v">11.26</span></div>
+  <button class="tb__theme" type="button" aria-pressed="false" aria-label="Print the sheets dark"><span class="tb__k">Print</span><span class="tb__v tb__theme-v">Light</span></button>
 </aside>
 
 <!-- THE SINGULARITY / CURTAIN (difference blend: whatever it covers flips black/white) -->

@@ -83,6 +83,32 @@ Serve: `python -m http.server 8108 --bind 127.0.0.1 --directory "C:\wajih-mansou
   - pairing B site-wide, with A, C and `/type.html` removed;
   - checks: freeze at 1440 and 390; reduced motion (the history as one static sheet); fps 57 desktop / 57 mobile, p95 16.8 ms; no errors.
 
+- **Slice 11** (`studio: slice 11 - spec sheet measured live, the loop back to the singularity`, by the lead):
+  - The 09 entry is a scale change: 1:1 → 1:5, the previous sheet shrinks into its slot in the drawing set, then sheet 09's slot opens.
+  - Every number is measured live in the visitor's browser: weight, files, load, LCP, CLS, scroll fps, trackers, cookies, typefaces, plus axe-core WCAG 2.1 AA, loaded on demand.
+  - Colophon, then the line closes back into the point.
+  - 450 ms at the bottom → jump to the top behind the closed curtain, replay of the opening (`replayOpening` in opening.js), `loop:wrap` emitted, strip and title block reset.
+  - Reduced motion: no loop, a "Back to the first sheet" link.
+
+## Decisions I made alone (cont.)
+- **Kit contract fix:** a chapter's `p` is in true viewport heights (0 .. units+1), so each entry is exactly the overlap.
+- **Hairline greys:** written as `rgba(var(--ink-rgb), a)` so a dark version can swap them.
+- **Spec sheet shows no Lighthouse score:** that would be an estimate from a tool the visitor didn't run. Everything shown is measured live instead.
+
+- **Slices 4–10:** done by the builders and committed by the lead (products, principles, disciplines, method, process, studio + contact); the notes are in `tools/notes/`.
+- **Slice 12** (`studio: slice 12 - dark print, bundling, robustness`):
+  - **Theme:** a "Print: Light / Dark" cell in the title block switches the tokens. The choice is stored in `wm:theme`; light is the default.
+  - **Dark details:** difference layers always use `--diff` (#F2F0EB). In dark mode the opening plays as the exact negative of the light one; raster plates invert; the 3D phone swaps lightness and the cyanotype develops from the right tone.
+  - **Bundling:** JS is bundled by esbuild into `site/dist/` (built by `tools/build.py`, git-ignored, regenerated on every build), because the plain http.server refused module requests under bursts.
+  - **Retries:** images, styles and the app script retry on failure.
+  - **Sideways overflow:** guarded with `overflow-x: clip`.
+
+## Decisions I made alone (cont. 2)
+- **HALVANE's hover colour:** brass #B98A3E instead of blued steel, because blue is kept for the cyanotype.
+- **Dark print default:** light is the default, because the designed opening is a black curtain onto paper; the visitor's dark choice is remembered.
+- **Dark opening:** it is the negative of the light one (light curtain), not a re-design.
+- **The axe-core run on sheet 09** waits until the reader has stopped scrolling, because it blocks the main thread for about 0.6 s.
+
 ## Next (slices in order)
 
 4. Concept products: the remaining phones and web apps, names web-checked, each with its hover colour.
@@ -93,8 +119,7 @@ Serve: `python -m http.server 8108 --bind 127.0.0.1 --directory "C:\wajih-mansou
 9. 06 Process: the mechanism and the Break stress test.
 10. 07 Studio + 08 Contact: the bench, the founder card, the live work order and the settings file.
 11. 09 Spec sheet (measured live) + the loop back to the singularity + product rotation.
-12. Dark version (token swap + toggle) and the WCAG AA pass.
-13. Final bug sweep → final commit → report.
+Remaining: 05 Work (builder W, running) → final bug sweep → final commit → report.
 
 ## Parallel build (started after slice 3): who owns what
 Builders follow `tools/AGENT_BRIEF.md`, write `tools/notes/sheet-NN.md`, never commit (the lead commits each slice).
