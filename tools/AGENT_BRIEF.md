@@ -52,7 +52,7 @@ scroll through, and read `site/js/sheet01/*.js` and `site/css/site.css`.
 - **Chapter contract** (`site/js/engine/kit.js`, read its header): your section is
   `<section class="chapter" id="sheet-NN" data-sheet="NN" data-title=".." data-drawn=".." data-checked=".." data-approved=".." style="--units: N">`
   with one `<div class="chapter__stage">` inside. It overlaps the previous sheet by one viewport; `chapter(engine,
-  section, { render(p), layout(), reduced() })` gives you `p` in viewport heights (0..units). **p 0→1 is your incoming
+  section, { render(p), layout(), reduced() })` gives you `p` in true viewport heights of scroll, 0..units+1 (section height is (units+1)·100lvh). **p 0→1 is your incoming
   chapter change**, drawn in place over the previous sheet, which stays pinned underneath (your stage is transparent
   where you want the previous sheet to show; by p = 1 your stage must be opaque). Make `render(p)` a pure function of p
   (scrubbable, freezable). Several sections may share a sheet number (sub-scenes): the strip fills across all of them

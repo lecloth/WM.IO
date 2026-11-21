@@ -144,3 +144,52 @@ export function runOpening(engine, onDone) {
     if (html.dataset.phase === 'ready') dimValue.textContent = fmt(mm);
   });
 }
+
+/**
+ * The loop: the page has closed back into the point (sheet 09). Jump to the top behind the closed curtain and play the
+ * opening again, a little faster: point -> SCALE 1:1 line -> curtain opens onto sheet 00. Emits 'loop:wrap' so the
+ * hero phone can turn into the next concept product.
+ */
+export function replayOpening(engine, onDone) {
+  const { gsap } = engine;
+  const html = document.documentElement;
+  const curtain = document.getElementById('curtain');
+  const q = (s) => curtain.querySelector(s);
+  const panels = [q('.curtain__panel--top'), q('.curtain__panel--bottom')];
+  html.dataset.phase = 'line';
+  engine.lockScroll(true);
+  curtain.style.visibility = 'visible'; curtain.style.transform = '';
+  gsap.set(panels, { clearProps: 'transform' });
+  gsap.set(panels, { yPercent: 0 });
+  gsap.set(gsap.utils.toArray('.curtain__edge'), { opacity: 0 });
+  const point = q('.sing__point'), line = q('.sing__line'), ruler = q('.sing__ruler'), scale = q('.sing__scale');
+  gsap.set(point, { opacity: 1, scale: 1 }); point.style.animation = 'breathe 1.6s ease-in-out infinite alternate';
+  gsap.set(line, { scaleX: 0, opacity: 1, clearProps: 'transform' }); gsap.set(line, { scaleX: 0 });
+  gsap.set([ruler, scale], { opacity: 0 });
+  // behind the closed curtain: back to the top
+  if (engine.lenis) engine.lenis.scrollTo(0, { immediate: true, force: true }); else scrollTo(0, 0);
+  window.scrollTo(0, 0);
+  engine.emit('loop:wrap');
+  engine.ScrollTrigger.refresh();
+  html.classList.remove('is-shut');
+  const tl = gsap.timeline({
+    delay: 0.5,
+    defaults: { ease: 'power3.inOut' },
+    onComplete: () => {
+      html.dataset.phase = 'ready';
+      curtain.style.visibility = 'hidden';
+      engine.lockScroll(false);
+      engine.ScrollTrigger.refresh();
+      onDone?.();
+    },
+  });
+  tl.to(point, { opacity: 0, scale: 0.4, duration: 0.25, ease: 'power2.in', onStart: () => { point.style.animation = 'none'; } }, 0)
+    .to(line, { scaleX: 1, duration: 0.6, ease: 'expo.inOut' }, 0.05)
+    .to(line, { opacity: 0, duration: 0.2, ease: 'none' }, 0.75)
+    .add(() => { html.dataset.phase = 'curtain'; }, 0.68)
+    .set(gsap.utils.toArray('.curtain__edge'), { opacity: 1 }, 0.7)
+    .to(panels[0], { yPercent: -100, duration: 0.9, ease: 'expo.inOut' }, 0.7)
+    .to(panels[1], { yPercent: 100, duration: 0.9, ease: 'expo.inOut' }, 0.7)
+    .set(gsap.utils.toArray('.curtain__edge'), { opacity: 0 }, 1.6);
+  return tl;
+}

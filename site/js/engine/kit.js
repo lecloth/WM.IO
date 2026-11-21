@@ -8,7 +8,8 @@
 // CSS (site.css): .chapter { height: calc((var(--units) + 1) * 100lvh); margin-top: -100lvh; } .chapter__stage { sticky, 100lvh }.
 // The section overlaps the previous sheet by one viewport. During that overlap its stage is held fixed at the top, so
 // the first unit of its scene (p 0 -> 1) is the CHAPTER CHANGE drawn in place over the previous sheet, which stays pinned
-// underneath. By p = 1 the new stage must be opaque. render(p) receives p in viewport heights, 0 .. units.
+// underneath. By p = 1 the new stage must be opaque. render(p) receives p in true viewport heights of scroll:
+// p runs 0 .. units + 1 (the entry is 0 -> 1, the scene itself 1 -> units + 1).
 export const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 export const span = (p, a, b) => clamp((p - a) / (b - a));
 export const lerp = (a, b, t) => a + (b - a) * t;
@@ -32,13 +33,13 @@ export function chapter(engine, section, { render, reduced, layout } = {}) {
     reduced?.();
     layout?.();
     addEventListener('resize', () => layout?.());
-    return { units, progress: () => units() };
+    return { units, progress: () => units() + 1 };
   }
   let P = -1;
   const st = ScrollTrigger.create({
     trigger: section, start: 'top bottom', end: 'bottom bottom', scrub: true,
-    onUpdate: (s) => { const p = s.progress * units(); if (Math.abs(p - P) > 1e-4) { P = p; render?.(p); } },
-    onRefresh: (s) => { layout?.(); P = -1; render?.(s.progress * units()); },
+    onUpdate: (s) => { const p = s.progress * (units() + 1); if (Math.abs(p - P) > 1e-4) { P = p; render?.(p); } },
+    onRefresh: (s) => { layout?.(); P = -1; render?.(s.progress * (units() + 1)); },
   });
   // hold the stage fixed at the top while the section is still sliding in over the previous sheet
   ScrollTrigger.create({

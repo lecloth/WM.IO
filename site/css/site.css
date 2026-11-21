@@ -358,3 +358,4 @@ html:has(.act__stage.is-shut) .board__grid { opacity: 0; }
 .chapter.is-static { height: auto; margin-top: 0; }
 .chapter.is-static .chapter__stage { position: relative; height: auto; min-height: 100vh; min-height: 100lvh; overflow: visible; visibility: visible; }
 .sheet--todo-stage { display: grid; place-items: center; background: var(--paper); border-top: 1px solid rgba(18,18,18,.2); }
+html.is-shut .board__grid { opacity: 0; }

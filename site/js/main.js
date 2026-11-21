@@ -46,6 +46,7 @@ function setTitleBlock(el) {
 let activeSeg = -1;
 function setSeg(i) { if (i === activeSeg) return; activeSeg = i; segs.forEach((s, k) => s.classList.toggle('is-active', k === i)); }
 setTitleBlock(els[0]); setSeg(0);
+engine.on('loop:wrap', () => { setTitleBlock(els[0]); setSeg(0); segs.forEach((s) => s.style.setProperty('--p', 0)); });
 
 const vh = () => innerHeight;
 const absTop = (el) => el.getBoundingClientRect().top + (engine.lenis?.scroll ?? scrollY);

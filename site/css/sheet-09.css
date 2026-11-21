@@ -1,1 +1,41 @@
-/* sheet 09: Spec sheet */
+/* sheet 09: the spec sheet (measured live), the drawing set, the end of the line */
+#sheet-09 .s09 { background: transparent; }
+#sheet-09 .s09__set { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity .2s linear; }
+#sheet-09 .s09__set.is-on { opacity: 1; visibility: inherit; }
+#sheet-09 .s09__scale { position: absolute; left: 12.5%; top: calc(var(--strip-h) + 2.2rem); color: var(--ink); background: var(--paper); padding: .3rem .5rem; }
+#sheet-09 .s09__scale span { display: none; }
+#sheet-09 .s09__scale span.is-on { display: inline; }
+#sheet-09 .s09__grid { position: absolute; left: 12.5%; right: 12.5%; top: calc(var(--strip-h) + 5rem); bottom: 4.5rem; display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(2, 1fr); gap: 1.25rem; list-style: none; }
+#sheet-09 .s09__grid li { position: relative; border: 1px solid var(--ink); background: var(--paper); display: flex; align-items: flex-end; justify-content: space-between; padding: .5rem .6rem; font-family: var(--f-mono); font-size: .625rem; letter-spacing: var(--mono-track); text-transform: uppercase; color: var(--ink); }
+#sheet-09 .s09__grid li::before { content: ""; position: absolute; inset: .4rem; border: 1px solid rgba(18,18,18,.25); pointer-events: none; }
+#sheet-09 .s09__grid li.is-prev { background: transparent; border-color: transparent; }
+#sheet-09 .s09__grid li.is-prev::before { display: none; }
+#sheet-09 .s09__grid li b { font-weight: 500; }
+#sheet-09 .s09__sheet { position: absolute; inset: 0; background: var(--paper); clip-path: inset(50%); }
+#sheet-09 .s09__read { position: absolute; padding: 1.25rem; background: var(--paper); opacity: 0; visibility: hidden; transition: opacity .25s var(--ease-out), visibility 0s .25s; }
+#sheet-09 .s09__read.is-on { opacity: 1; visibility: inherit; transition: opacity .25s var(--ease-out), visibility 0s; }
+#sheet-09 .s09__read--spec { left: 12.5%; top: 18%; width: min(30rem, 31%); }
+#sheet-09 .s09__read--end { left: 12.5%; top: 30%; width: min(34rem, 40%); }
+#sheet-09 .s09__foot { margin-top: 1.5rem; color: var(--graphite); }
+#sheet-09 .s09__again { margin-top: 1.5rem; }
+#sheet-09 .s09__table { position: absolute; left: 47%; top: 15%; width: 44%; table-layout: fixed; border-collapse: collapse; opacity: 0; visibility: hidden; transition: opacity .25s var(--ease-out), visibility 0s .25s; background: var(--paper); }
+#sheet-09 .s09__table.is-on { opacity: 1; visibility: inherit; transition: opacity .25s var(--ease-out), visibility 0s; }
+#sheet-09 .s09__table th, #sheet-09 .s09__table td { text-align: left; vertical-align: top; padding: .42rem .6rem; border-bottom: 1px solid rgba(18,18,18,.28); font-size: 1rem; line-height: 1.35; color: var(--ink); }
+#sheet-09 .s09__table thead th { font-size: .625rem; color: var(--graphite); border-bottom: 1px solid var(--ink); padding-bottom: .4rem; }
+#sheet-09 .s09__table tbody th { font-family: var(--f-body); font-weight: 500; white-space: nowrap; }
+#sheet-09 .s09__table td.mono { font-size: .8125rem; white-space: nowrap; color: var(--ink); }
+#sheet-09 .s09__table td:last-child { color: var(--graphite); font-size: .9375rem; }
+#sheet-09 .s09__table thead th:nth-child(1) { width: 27%; } #sheet-09 .s09__table thead th:nth-child(2) { width: 24%; }
+#sheet-09 .s09__read--spec { top: 15%; }
+#sheet-09.is-static .s09__set { display: none; }
+#sheet-09.is-static .s09__sheet { position: relative; clip-path: none; min-height: 100lvh; padding: calc(var(--strip-h) + 3rem) 0 4rem; }
+#sheet-09.is-static .s09__read, #sheet-09.is-static .s09__table { position: relative; left: auto; top: auto; margin: 0 12.5% 2rem; width: auto; max-width: 46rem; }
+@media (max-width: 1023px) {
+  #sheet-09 .s09__grid { left: 1.25rem; right: 1.25rem; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(5, 1fr); gap: .6rem; top: calc(var(--strip-h) + 4.5rem); }
+  #sheet-09 .s09__scale { left: 1.25rem; }
+  #sheet-09 .s09__read--spec { left: 1.25rem; right: 1.25rem; top: calc(var(--strip-h) + 2rem); width: auto; }
+  #sheet-09 .s09__table { left: 1.25rem; right: 1.25rem; width: auto; top: auto; bottom: 4.5rem; }
+  #sheet-09 .s09__table td:last-child, #sheet-09 .s09__table thead th:last-child { display: none; }
+  #sheet-09 .s09__table th, #sheet-09 .s09__table td { font-size: .9375rem; padding: .4rem .3rem; }
+  #sheet-09 .s09__read--end { left: 1.25rem; right: 1.25rem; width: auto; top: 30%; }
+}
