@@ -192,7 +192,8 @@ html[data-motion="reduce"] #sheet-05 :is(.s5__neg, .s5__black, .s5__seam, .s5__e
 #sheet-05.is-static .frame { display: none; }
 #sheet-05.is-static .s5__set { display: none; }
 #sheet-05.is-static .s5__reads { position: relative; inset: auto; pointer-events: auto; margin-bottom: 4rem; }
-#sheet-05.is-static .s5-read { position: relative; left: auto; top: auto; bottom: auto; right: auto; opacity: 1; visibility: visible; }
+#sheet-05.is-static .s5-read { position: relative; left: auto; top: auto; bottom: auto; right: auto; opacity: 1; visibility: visible !important; }
+#sheet-05.is-static .s5-sheet { visibility: visible !important; }
 #sheet-05.is-static .s5-row { display: grid; grid-template-columns: 59rem 1fr; gap: 3rem; align-items: start; margin-bottom: 5rem; }
 #sheet-05.is-static .s5-row .s5-sheet { position: relative; visibility: visible; }
 #sheet-05.is-static .s5-row .s5-read { width: auto; max-width: 22rem; padding-top: 2rem; }
@@ -200,5 +201,5 @@ html[data-motion="reduce"] #sheet-05 :is(.s5__neg, .s5__black, .s5__seam, .s5__e
   #sheet-05.is-static .s5__board { padding: calc(var(--strip-h) + 2rem) .75rem 5rem; }
   #sheet-05.is-static .s5-row { grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 3.5rem; }
   #sheet-05.is-static .s5-row .s5-read { padding: 0 .5rem; max-width: none; }
-  #sheet-05.is-static .s5-read__det, #sheet-05.is-static .s5-read__note { display: block; }
+  #sheet-05.is-static .s5-read__note { display: block; margin-top: .9rem; }
 }

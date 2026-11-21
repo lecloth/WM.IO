@@ -15,6 +15,7 @@
       try { seen = localStorage.getItem('wm:opened') === '1'; } catch (e) {}
       if (/[?&]first\b/.test(location.search)) seen = false;
       d.dataset.motion = rm ? 'reduce' : 'full';
+      try { if (localStorage.getItem('wm:theme') === 'dark') d.dataset.theme = 'dark'; } catch (e) {}
       d.dataset.visit = seen ? 'return' : 'first';
       var tasks = ['css', 'gsap', 'st', 'lenis', 'app', 'fonts', 'load'], done = {};
       window.__wm = {
@@ -49,8 +50,16 @@
     "three": "./vendor/three/three.module.min.js",
     "three/addons/": "./vendor/three/addons/"
   } }</script>
-  <link rel="modulepreload" href="vendor/three/three.module.min.js">
-  <script type="module" src="js/main.js"></script>
+  <script>
+    /* the plain local server can refuse a connection under a burst of requests: retry images, styles and the app */
+    addEventListener('error', function (ev) {
+      var el = ev.target; if (!el || (el.tagName !== 'IMG' && el.tagName !== 'LINK')) return;
+      var n = +(el.dataset.retry || 0); if (n >= 5) return; el.dataset.retry = n + 1;
+      setTimeout(function () { if (el.tagName === 'IMG') { var s = el.getAttribute('src'); el.removeAttribute('src'); el.setAttribute('src', s); }
+        else { var c = el.cloneNode(); el.parentNode.insertBefore(c, el.nextSibling); el.remove(); } }, 150 * (n + 1));
+    }, true);
+  </script>
+  <script type="module" src="dist/main.js" onerror="(function(s){var n=+(s.dataset.r||0);if(n<5){var c=document.createElement('script');c.type='module';c.src='dist/main.js?r='+(n+1);c.dataset.r=n+1;c.onerror=s.onerror;setTimeout(function(){document.head.appendChild(c)},200*(n+1));}})(this)"></script>
 </head>
 <body>
 
@@ -173,31 +182,731 @@
       </div>
     </section>
 
-    <section id="sheet-02" class="chapter" data-sheet="02" data-title="Principles" data-drawn="Strategy" data-checked="Design" data-approved="Engineering" style="--units: 3">
-      <div class="chapter__stage sheet--todo-stage"><div class="todo"><p class="todo__no display">02</p><p class="todo__name mono">Principles · to be drawn</p></div></div>
+    <section id="sheet-02" class="chapter" data-sheet="02" data-title="Principles" data-drawn="Strategy" data-checked="Design" data-approved="Engineering" style="--units: 8" aria-labelledby="s02-h">
+      <div class="chapter__stage s02">
+        <!-- entry: a sheet of drafting film slides up over the blueprint carrying the first construction lines;
+             then a white backing sheet slides in under it and the film reads as clean paper -->
+        <div class="s02__back" aria-hidden="true"></div>
+        <div class="s02__film">
+          <i class="s02__tape s02__tape--l" aria-hidden="true"></i><i class="s02__tape s02__tape--r" aria-hidden="true"></i>
+          <div class="frame" aria-hidden="true">
+            <div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+            <div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+          </div>
+          <h2 id="s02-h" class="s02__h">Principles</h2>
+          <div class="s02__plates" aria-hidden="true"></div>
+          <svg class="s02__fig" aria-hidden="true"></svg>
+          <i class="s02__scan" aria-hidden="true"><span class="mono">Trace</span></i>
+          <ol class="s02__list">
+            <li class="s02__item" data-k="0">
+              <div class="s02__read">
+                <p class="read__eyebrow mono">Principle 01 of 04</p>
+                <h3 class="s02__title display">Exact.</h3>
+                <p class="s02__line display">Every screen is drawn and measured before a line of code.</p>
+              </div>
+              <p class="s02__cap mono"><span>Fig. 2.1 · Leonardo da Vinci, Codex Madrid I, f. 16r, 1490s</span> A spring drum whose toothed ring turns a cone, evening out a clock spring&rsquo;s pull as it unwinds. His note above it: &ldquo;Ogni arte dimanda il suo strumento&rdquo;, every art demands its instrument.</p>
+            </li>
+            <li class="s02__item" data-k="1">
+              <div class="s02__read">
+                <p class="read__eyebrow mono">Principle 02 of 04</p>
+                <h3 class="s02__title display">Felt.</h3>
+                <p class="s02__line display">People don&rsquo;t read software, they feel it. Every tap is tested by hand.</p>
+              </div>
+              <p class="s02__cap mono"><span>Fig. 2.2 · Leonardo da Vinci, Codex Madrid I, f. 79v, 1490s</span> Lock springs, and a model spring drawn thick at the root and thin at the tip.</p>
+            </li>
+            <li class="s02__item" data-k="2">
+              <div class="s02__read">
+                <p class="read__eyebrow mono">Principle 03 of 04</p>
+                <h3 class="s02__title display">Proven.</h3>
+                <p class="s02__line display">Most of a build is testing. We break it before your customers can.</p>
+              </div>
+              <p class="s02__cap mono"><span>Fig. 2.3 · Leonardo da Vinci, Codex Madrid I, f. 4v, 1490s</span> An instrument for measuring the force of a screw drive: a load on a rope, a threaded rod, and an arm notched for weights.</p>
+            </li>
+            <li class="s02__item" data-k="3">
+              <div class="s02__read">
+                <p class="read__eyebrow mono">Principle 04 of 04</p>
+                <h3 class="s02__title display">Locked.</h3>
+                <p class="s02__line display">Security is drawn on sheet one, not bolted on at the end.</p>
+              </div>
+              <p class="s02__cap mono"><span>Fig. 2.4 · Leonardo da Vinci, Codex Madrid I, f. 50r, 1490s</span> A chest lock drawn part by part. It snaps shut on its own; the key is only needed to open it.</p>
+            </li>
+          </ol>
+          <ol class="s02__index mono" aria-hidden="true">
+            <li>01 Exact</li><li>02 Felt</li><li>03 Proven</li><li>04 Locked</li>
+          </ol>
+        </div>
+      </div>
     </section>
-    <section id="sheet-03" class="chapter" data-sheet="03" data-title="Disciplines" data-drawn="Engineering" data-checked="Security" data-approved="Strategy" style="--units: 3">
-      <div class="chapter__stage sheet--todo-stage"><div class="todo"><p class="todo__no display">03</p><p class="todo__name mono">Disciplines · to be drawn</p></div></div>
+    <!-- SHEET 03: DISCIPLINES (builder D1: websites, apps, platforms, infrastructure; D2's sheet-03b follows) -->
+    <section class="chapter d3 d3--websites" id="sheet-03" data-sheet="03" data-title="Disciplines · Websites" data-drawn="Design" data-checked="Engineering" data-approved="Strategy" data-d3="websites" aria-label="Websites" style="--units: 6">
+      <div class="chapter__stage d3__stage">
+        <div class="d3__sheet">
+          <div class="frame" aria-hidden="true"><div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div><div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div></div>
+          <p class="d3__tab mono" aria-hidden="true"><span>Drawer 03.1</span><span>Websites</span></p>
+          <figure class="d3__plate" style="--ar: 1400 / 1812"><img class="d3__plate-img" src="media/plates/bullock-us38200-sheet.webp" width="1400" height="1812" loading="lazy" decoding="async" alt="Patent drawing, sheet 1 of W. Bullock's US Patent 38,200 (1863): Fig. 1, a perspective view of his printing press, with rolls, cylinders and gears."></figure>
+          <svg class="d3__draw" role="img" aria-label="A website pulled apart into five layers: page, grid, content, shop and booking, hosting."></svg>
+          <div class="d3__span" aria-hidden="true"><svg class="d3__span-svg"></svg><span class="d3__span-a mono">1863</span><span class="d3__span-v mono"></span><span class="d3__span-b mono">Today</span></div>
+          <div class="read d3__read d3__read--plate">
+            <p class="read__eyebrow mono">Fig. 1 · US Patent 38,200 · 1863</p>
+            <h3 class="read__title display">The press that fed itself.</h3>
+            <p class="read__body body">William Bullock&rsquo;s printing press, patented on 14&nbsp;April 1863. Paper ran in from a continuous roll, was cut into sheets and printed on both sides in one pass, with nobody feeding it by hand. It was built for newspapers.</p>
+            <p class="read__note mono">Plate: W. Bullock, US Patent 38,200, sheet 1 · public domain</p>
+          </div>
+          <div class="read d3__read d3__read--line">
+            <p class="read__eyebrow mono">03.1 · Websites</p>
+            <h2 class="read__title display">A front door that never closes.</h2>
+            <p class="read__body body">Company sites and online shops, drawn before they are built: quick on a weak signal, readable by anyone, found by search, and edited by you without calling us.</p>
+            <ul class="d3__offer mono"><li>Company sites</li><li>Online shops</li><li>Booking</li><li>Content you edit</li></ul>
+          </div>
+        </div>
+        <div class="d3__measure" aria-hidden="true"><svg class="d3__measure-svg"></svg><span class="d3__mv d3__mv--w mono"></span><span class="d3__mv d3__mv--h mono"></span><span class="d3__mv d3__mv--name mono">Sheet 03 · Disciplines · Scale 1:1</span></div>
+      </div>
+    </section>
+    <section class="chapter d3 d3--apps" id="sheet-03-apps" data-sheet="03" data-title="Disciplines · Apps" data-drawn="Design" data-checked="Security" data-approved="Engineering" data-d3="apps" aria-label="Apps and phones" style="--units: 5">
+      <div class="chapter__stage d3__stage">
+        <div class="d3__sheet">
+          <div class="frame" aria-hidden="true"><div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div><div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div></div>
+          <p class="d3__tab mono" aria-hidden="true"><span>Drawer 03.2</span><span>Apps and phones</span></p>
+          <svg class="d3__draw" role="img" aria-label="Today's phone in outline, with its screens, offline store and sync drawn in."></svg>
+          <div class="d3__span" aria-hidden="true"><svg class="d3__span-svg"></svg><span class="d3__span-a mono">1877</span><span class="d3__span-v mono"></span><span class="d3__span-b mono">Today</span></div>
+          <div class="read d3__read d3__read--plate">
+            <p class="read__eyebrow mono">Fig. 1 · US Patent 186,787 · 1877</p>
+            <h3 class="read__title display">Drawn on sheet&nbsp;01.</h3>
+            <p class="read__body body">Bell&rsquo;s telephone opened this set. Nine drawings took it from his 1877 box to the phone in your pocket.</p>
+            <a class="d3__ref mono" href="#sheet-01"><span class="d3__bubble" aria-hidden="true"><b>01</b><i>1–9</i></span><span>Back to sheet 01 · The first drawing</span></a>
+          </div>
+          <div class="read d3__read d3__read--line">
+            <p class="read__eyebrow mono">03.2 · Apps and phones</p>
+            <h2 class="read__title display">The whole business in one pocket.</h2>
+            <p class="read__body body">Apps for iOS and Android, drawn screen by screen. They keep working without a signal and stay in step with the systems behind them.</p>
+            <ul class="d3__offer mono"><li>Customer apps</li><li>Staff apps</li><li>Field tools</li><li>Offline first</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="chapter d3 d3--platforms" id="sheet-03-platforms" data-sheet="03" data-title="Disciplines · Platforms" data-drawn="Engineering" data-checked="Security" data-approved="Design" data-d3="platforms" aria-label="Platforms and web apps" style="--units: 6">
+      <div class="chapter__stage d3__stage">
+        <div class="d3__sheet">
+          <div class="frame" aria-hidden="true"><div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div><div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div></div>
+          <p class="d3__tab mono" aria-hidden="true"><span>Drawer 03.3</span><span>Platforms and web apps</span></p>
+          <figure class="d3__plate" style="--ar: 1400 / 2095"><img class="d3__plate-img" src="media/plates/firman-us252576-sheet.webp" width="1400" height="2095" loading="lazy" decoding="async" alt="Patent drawing of L. B. Firman's US Patent 252,576 (1882): Fig. 1, three switchboards wired to the same telephone lines, and an indicator board."></figure>
+          <svg class="d3__draw" role="img" aria-label="A platform diagram: six services wired to one hub inside a closed boundary, with a single locked door."></svg>
+          <div class="d3__span" aria-hidden="true"><svg class="d3__span-svg"></svg><span class="d3__span-a mono">1882</span><span class="d3__span-v mono"></span><span class="d3__span-b mono">Today</span></div>
+          <div class="read d3__read d3__read--plate">
+            <p class="read__eyebrow mono">Fig. 1 · US Patent 252,576 · 1882</p>
+            <h3 class="read__title display">Every line on every board.</h3>
+            <p class="read__body body">Leroy B. Firman&rsquo;s multiple switchboard, patented on 17&nbsp;January 1882. Every subscriber&rsquo;s line ran to every operator&rsquo;s board, so any two lines could be joined from any board, and one exchange could serve a thousand subscribers or more.</p>
+            <p class="read__note mono">Plate: L. B. Firman, US Patent 252,576 · public domain · Fig. 1 is drawn turned on the sheet</p>
+          </div>
+          <div class="read d3__read d3__read--line">
+            <p class="read__eyebrow mono">03.3 · Platforms and web apps</p>
+            <h2 class="read__title display">Everything connected. Nothing exposed.</h2>
+            <p class="read__body body">Portals, dashboards and internal tools that join up the systems you already run. Each person sees exactly what their role allows, and nothing more.</p>
+            <ul class="d3__offer mono"><li>Client portals</li><li>Dashboards</li><li>Internal tools</li><li>Integrations</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="chapter d3 d3--infra" id="sheet-03-infra" data-sheet="03" data-title="Disciplines · Infrastructure" data-drawn="Engineering" data-checked="Security" data-approved="Strategy" data-d3="infra" aria-label="Engineering and infrastructure" style="--units: 6">
+      <div class="chapter__stage d3__stage">
+        <div class="d3__sheet">
+          <div class="frame" aria-hidden="true"><div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div><div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div></div>
+          <p class="d3__tab mono" aria-hidden="true"><span>Drawer 03.4</span><span>Engineering and infrastructure</span></p>
+          <figure class="d3__plate" style="--ar: 1400 / 1732"><img class="d3__plate-img" src="media/plates/edison-us274290-sheet.webp" width="1400" height="1732" loading="lazy" decoding="async" alt="Patent drawing, sheet 1 of T. A. Edison's US Patent 274,290 (1883): four figures of lamps wired between dynamos with a central compensating conductor."></figure>
+          <svg class="d3__draw" role="img" aria-label="An infrastructure diagram with redundant paths: two load balancers, two zones of servers, a primary database, a replica and off-site backups."></svg>
+          <div class="d3__span" aria-hidden="true"><svg class="d3__span-svg"></svg><span class="d3__span-a mono">1883</span><span class="d3__span-v mono"></span><span class="d3__span-b mono">Today</span></div>
+          <div class="read d3__read d3__read--plate">
+            <p class="read__eyebrow mono">Figs. 1–2 · US Patent 274,290 · 1883</p>
+            <h3 class="read__title display">One lamp out, the rest stay lit.</h3>
+            <p class="read__body body">Thomas Edison&rsquo;s system of electrical distribution, patented on 20&nbsp;March 1883. A third, central wire carried the difference between two circuits, so when a lamp was taken out, the others stayed unchanged.</p>
+            <p class="read__note mono">Plate: T. A. Edison, US Patent 274,290, sheet 1 · public domain</p>
+          </div>
+          <div class="read d3__read d3__read--line">
+            <p class="read__eyebrow mono">03.4 · Engineering and infrastructure</p>
+            <h2 class="read__title display">The part nobody sees, built like everyone will.</h2>
+            <p class="read__body body">Servers, databases and the code between them, with a spare path for every part that can fail. Monitored, backed up with restores we actually test, and sized for your busiest day.</p>
+            <ul class="d3__offer mono"><li>Cloud set-up</li><li>APIs</li><li>Databases</li><li>Monitoring</li><li>Backups</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- SHEET 03 · SECURITY: Yale's 1865 plate -> the pin-tumbler cylinder in section -> the key, then a pick that fails -->
+    <section id="s03-security" class="chapter s3b" data-sheet="03" data-title="Disciplines · Security" data-drawn="Security" data-checked="Engineering" data-approved="AI" style="--units: 11">
+      <div class="chapter__stage s3b__stage">
+        <div class="s3b__sheet">
+          <div class="s3b__grid" aria-hidden="true"></div>
+          <div class="frame" aria-hidden="true">
+            <div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+            <div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+          </div>
+          <p class="s3b__edge mono" aria-hidden="true">Sheet 03 · Security</p>
+          <figure class="s3b__plate s3b__plate--yale">
+            <img class="s3b__plate-img" src="media/plates/sec-yale-us48475-sheet.webp" width="1400" height="1936"
+                 alt="Patent drawing for L. Yale Jr.'s lock, US Patent 48,475 (1865): twenty figures of a pin-tumbler cylinder lock, its key and its parts, drawn sideways on the sheet.">
+          </figure>
+          <svg class="s3b__draw" aria-hidden="true"><defs></defs></svg>
+          <p class="s3b__status mono" aria-hidden="true"><span class="s3b__status-k">State</span><span class="s3b__status-v"></span></p>
+          <div class="read s3b__read s3b__read--plate">
+            <p class="read__eyebrow mono">Figs. 4 and 6 · US Patent 48,475 · 1865</p>
+            <h2 class="read__title display">A lock, drawn before it was built.</h2>
+            <p class="read__body body">Linus Yale Jr.&rsquo;s lock patent, granted on 27&nbsp;June 1865. Pins of different lengths must all be lined up by the key before the cylinder can turn. He wrote that the improvements were partly for &ldquo;the security of locks against picking&rdquo;.</p>
+            <p class="read__note mono">Plate: US Patent 48,475, L. Yale Jr. · public domain</p>
+          </div>
+          <div class="read s3b__read s3b__read--line">
+            <p class="read__eyebrow mono">Security</p>
+            <h2 class="read__title display">We pick our own locks first.</h2>
+            <p class="read__body body">The right key lines every pin up at the shear line. A pick should not. Before anything we build goes live, we attack it the way someone else would, and we fix what gives.</p>
+          </div>
+          <div class="read s3b__read s3b__read--offer">
+            <p class="read__eyebrow mono">What we do in security</p>
+            <h2 class="read__title display">Drawn on sheet one, not bolted on at the end.</h2>
+            <ol class="s3b__list">
+              <li><span class="mono">01</span><p><b>Designed in.</b> Who can see what, and what happens if a part fails, decided before the first screen.</p></li>
+              <li><span class="mono">02</span><p><b>Tested like an attacker.</b> We try to break our own builds before anyone else can.</p></li>
+              <li><span class="mono">03</span><p><b>Signed and locked apps.</b> Apps signed, protected, and locked to your company&rsquo;s own devices.</p></li>
+              <li><span class="mono">04</span><p><b>Access control.</b> The right people get in, only as far as they need.</p></li>
+              <li><span class="mono">05</span><p><b>Backups.</b> Kept apart from the live system and restored on purpose, so we know they work.</p></li>
+            </ol>
+          </div>
+        </div>
+      </div>
     </section>
 
+    <!-- SHEET 03 · AI: Babbage's Plan 25 + a Jacquard card -> the engine redrawn -> cards feed it -> a drafted quote, held for a person -->
+    <section id="s03-ai" class="chapter s3b s3b--ai" data-sheet="03" data-title="Disciplines · AI" data-drawn="AI" data-checked="Security" data-approved="Engineering" style="--units: 11.5">
+      <div class="chapter__stage s3b__stage">
+        <div class="s3b__sheet">
+          <div class="s3b__grid" aria-hidden="true"></div>
+          <div class="frame" aria-hidden="true">
+            <div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+            <div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+          </div>
+          <p class="s3b__edge mono" aria-hidden="true">Sheet 03 · AI</p>
+          <figure class="s3b__plate s3b__plate--plan">
+            <img class="s3b__plate-img" src="media/plates/ai-babbage-plan25-1840.webp" width="1750" height="1120"
+                 alt="Charles Babbage's Plan 25 of the Analytical Engine, 6 August 1840: the round mill at the centre ringed by gear columns, the store's columns running off to the right, and readers for operation, variable and number cards.">
+          </figure>
+          <figure class="s3b__plate s3b__plate--card">
+            <img class="s3b__plate-img" src="media/plates/ai-posselt-1888-fig22.webp" width="526" height="2048"
+                 alt="Fig. 22 from E. A. Posselt's 1888 book on the Jacquard machine: a punched card, holes in rows of eight, with lacing holes at each end.">
+          </figure>
+          <svg class="s3b__draw" aria-hidden="true"><defs></defs></svg>
+          <p class="s3b__status mono" aria-hidden="true"><span class="s3b__status-k">Cards in</span><span class="s3b__status-v"></span></p>
+          <div class="read s3b__read s3b__read--plate">
+            <p class="read__eyebrow mono">Plan 25 · 1840 · and a Jacquard card, 1888</p>
+            <h2 class="read__title display">A machine that ran on cards.</h2>
+            <p class="read__body body">Charles Babbage&rsquo;s general plan of his Analytical Engine, dated 6&nbsp;August 1840. It was never finished. Its orders were to come on punched cards, borrowed from the Jacquard loom, which wove patterns into brocade.</p>
+            <p class="read__note mono">Plan 25: C. Babbage, 1840 · public domain · photo ArnoldReinhold, CC BY 4.0<br>Card: E. A. Posselt, The Jacquard Machine, 1888, Fig. 22 · public domain</p>
+          </div>
+          <div class="read s3b__read s3b__read--quote">
+            <p class="read__eyebrow mono">Note G · A. A. L. · 1843</p>
+            <blockquote class="s3b__quote display"><p>&ldquo;It can do whatever we <em>know how to order it</em> to perform.&rdquo;</p></blockquote>
+            <p class="read__body body">Ada Lovelace, on Babbage&rsquo;s engine, in the notes to her 1843 translation of Menabrea&rsquo;s paper on it.</p>
+            <p class="s3b__after display">We still build it that way.</p>
+          </div>
+          <!-- what comes out: a drafted quote for a made-up business, held at a human checkpoint -->
+          <div class="s3b__answer" role="group" aria-label="Concept sheet: an AI agent's drafted quote, waiting for a person to approve it">
+            <div class="ans__bar mono"><span>Agent · Quotes</span><span class="ans__who">Hollin &amp; Pike Joinery</span></div>
+            <div class="ans__ask">
+              <p class="mono ans__k">The customer asked</p>
+              <p class="ans__q">&ldquo;Could you quote 40 oak stools for our caf&eacute;? We open on 14&nbsp;March.&rdquo;</p>
+            </div>
+            <div class="ans__draft">
+              <p class="mono ans__k">Draft quote · Q-0412</p>
+              <table class="ans__table">
+                <tbody>
+                  <tr><th scope="row">Oak stool, 45&nbsp;cm, oiled</th><td class="mono">40 &times; 68.00</td><td class="mono">2,720.00</td></tr>
+                  <tr><th scope="row">Delivery, one trip</th><td class="mono"></td><td class="mono">90.00</td></tr>
+                  <tr class="ans__total"><th scope="row">Total, before tax</th><td class="mono"></td><td class="mono">2,810.00</td></tr>
+                </tbody>
+              </table>
+              <p class="ans__note">Ready 9&nbsp;March, delivered 11&nbsp;March. Oak for 32 is in stock; the rest arrives on 24&nbsp;February.</p>
+              <p class="mono ans__src">From: price list · stock sheet · workshop calendar</p>
+            </div>
+            <div class="ans__check">
+              <p class="mono ans__wait"><i aria-hidden="true"></i><span class="ans__state" aria-live="polite">Waiting for you · nothing is sent until a person approves</span></p>
+              <div class="ans__btns">
+                <button type="button" class="ans__btn ans__btn--ink" data-act="approve">Approve and send</button>
+                <button type="button" class="ans__btn" data-act="edit" aria-pressed="false">Edit draft</button>
+              </div>
+            </div>
+          </div>
+          <div class="read s3b__read s3b__read--answer">
+            <p class="read__eyebrow mono"><span class="s3b__tag">Concept sheet</span> A made-up business, to show the idea</p>
+            <h2 class="read__title display">Machines that do exactly what you need.</h2>
+            <p class="read__body body">An agent reads the request, the price list, the stock and the calendar, and drafts the quote. A person approves it before anything leaves.</p>
+          </div>
+          <div class="read s3b__read s3b__read--offer">
+            <p class="read__eyebrow mono">What we build in AI</p>
+            <h2 class="read__title display">AI on your own data, with people at the checkpoints.</h2>
+            <ol class="s3b__list">
+              <li><span class="mono">01</span><p><b>Agents that do real work.</b> They answer customers, write quotes, book and reconcile, on your own data.</p></li>
+              <li><span class="mono">02</span><p><b>AI inside your product.</b> Search that understands, documents that fill themselves, forecasts.</p></li>
+              <li><span class="mono">03</span><p><b>Private AI.</b> Models on your own servers. The data never leaves.</p></li>
+            </ol>
+          </div>
+          <div class="read s3b__read s3b__read--attack">
+            <p class="read__eyebrow mono">04 · AI security</p>
+            <h2 class="read__title display">We attack your AI before someone else does.</h2>
+            <p class="read__body body">We test it for leaks, manipulation and misuse: whether it can be talked into showing what it should not, or doing what it must not.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- SHEET 03 (continued): consulting, monthly care (builder D1), after D2's security + AI -->
+    <section class="chapter d3 d3--consulting" id="sheet-03-consulting" data-sheet="03" data-title="Disciplines · Consulting" data-drawn="Strategy" data-checked="Engineering" data-approved="Design" data-d3="consulting" aria-label="Consulting" style="--units: 6">
+      <div class="chapter__stage d3__stage">
+        <div class="d3__sheet">
+          <div class="frame" aria-hidden="true"><div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div><div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div></div>
+          <p class="d3__tab mono" aria-hidden="true"><span>Drawer 03.7</span><span>Consulting</span></p>
+          <figure class="d3__plate" style="--ar: 1400 / 1786"><img class="d3__plate-img" src="media/plates/holmes-us275913-sheet.webp" width="1400" height="1786" loading="lazy" decoding="async" alt="Patent drawing, sheet 1 of J. W. Holmes's US Patent 275,913 (1883): the solar theodolite in two elevations, with telescope, latitude arc and levelling base."></figure>
+          <svg class="d3__draw" role="img" aria-label="A survey network: six points of a business measured by triangulation from one baseline, with a north arrow."></svg>
+          <div class="d3__span" aria-hidden="true"><svg class="d3__span-svg"></svg><span class="d3__span-a mono">1883</span><span class="d3__span-v mono"></span><span class="d3__span-b mono">Today</span></div>
+          <div class="read d3__read d3__read--plate">
+            <p class="read__eyebrow mono">Fig. 1 · US Patent 275,913 · 1883</p>
+            <h3 class="read__title display">It found north from the sun.</h3>
+            <p class="read__body body">Joseph W. Holmes&rsquo;s solar theodolite, patented on 17&nbsp;April 1883. A surveyor&rsquo;s theodolite joined to a solar compass: sighted on the sun, it gave true north, the time and the latitude before a single line was laid out.</p>
+            <p class="read__note mono">Plate: J. W. Holmes, US Patent 275,913, sheet 1 · public domain</p>
+          </div>
+          <div class="read d3__read d3__read--line">
+            <p class="read__eyebrow mono">03.7 · Consulting</p>
+            <h2 class="read__title display">We measure before anyone builds.</h2>
+            <p class="read__body body">Before you spend: a survey of what you have, what it costs to run and what to build first. A second opinion on a quote, or a plan any team can build from.</p>
+            <ul class="d3__offer mono"><li>Audits</li><li>Technical plans</li><li>Second opinions</li><li>Build or buy</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="chapter d3 d3--care" id="sheet-03-care" data-sheet="03" data-title="Disciplines · Care" data-drawn="Engineering" data-checked="Security" data-approved="Strategy" data-d3="care" aria-label="Monthly care" style="--units: 5">
+      <div class="chapter__stage d3__stage">
+        <div class="d3__sheet">
+          <div class="frame" aria-hidden="true"><div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div><div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div></div>
+          <p class="d3__tab mono" aria-hidden="true"><span>Drawer 03.8</span><span>Monthly care</span></p>
+          <figure class="d3__revs">
+            <figcaption class="mono"><span>Revisions</span><span class="graphite">Example log · drawn to show the method</span></figcaption>
+            <table class="d3__table mono"><thead><tr><th scope="col">Rev</th><th scope="col">Description</th><th scope="col">Month</th><th scope="col">Checked</th></tr></thead><tbody>
+              <tr><td>A</td><td>Software and security updates applied</td><td>01</td><td>Security</td></tr>
+              <tr><td>B</td><td>Backup restored to a test copy</td><td>01</td><td>Engineering</td></tr>
+              <tr><td>C</td><td>Fix: booking form on small screens</td><td>02</td><td>Design</td></tr>
+              <tr><td>D</td><td>Software and security updates applied</td><td>02</td><td>Security</td></tr>
+              <tr><td>E</td><td>Backup restored to a test copy</td><td>02</td><td>Engineering</td></tr>
+              <tr><td>F</td><td>Speed check after a content change</td><td>03</td><td>Engineering</td></tr>
+            </tbody></table>
+          </figure>
+          <div class="read d3__read d3__read--line">
+            <p class="read__eyebrow mono">03.8 · Monthly care</p>
+            <h2 class="read__title display">We stay after launch.</h2>
+            <p class="read__body body">Updates, fixes and backups, every month. Each change is logged like a revision on a drawing: what was done, when, and who checked it.</p>
+            <ul class="d3__offer mono"><li>Updates</li><li>Fixes</li><li>Backups</li><li>A monthly log</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- SHEET 04 entry: an ink sheet passes across in difference blend (everything it covers flips black/white), and
+         leaves the black Method sheet behind it. Lives outside the section so it can blend with the sheet underneath. -->
+    <div class="s04-under" aria-hidden="true"></div>
+    <div class="s04-pass" aria-hidden="true">
+      <svg class="s04-pass__marks"></svg>
+    </div>
+    <section id="sheet-04" class="chapter" data-sheet="04" data-title="Method" data-drawn="Strategy" data-checked="Engineering" data-approved="Design" style="--units: 8" aria-labelledby="s04-h">
+      <div class="chapter__stage s04">
+        <div class="s04__sheet">
+          <div class="frame" aria-hidden="true">
+            <div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+            <div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+          </div>
+          <h2 id="s04-h" class="s04__h">Method</h2>
+          <svg class="s04__fig" aria-hidden="true"></svg>
+          <ol class="s04__steps">
+            <li class="s04__step" data-step="0">
+              <div class="s04__read">
+                <p class="read__eyebrow mono">Method · Step 01 of 04</p>
+                <h3 class="s04__title display">Problem before pixels.</h3>
+                <p class="read__body body">We write the problem down first: who it hurts, what it costs, and how we will know it is fixed. Screens come after.</p>
+              </div>
+              <p class="s04__cap mono">Fig. 4.1 · The brief first, the screens after</p>
+            </li>
+            <li class="s04__step" data-step="1">
+              <div class="s04__read">
+                <p class="read__eyebrow mono">Method · Step 02 of 04</p>
+                <h3 class="s04__title display">Flow before form.</h3>
+                <p class="read__body body">We map every path through the product, wrong turns included, before anyone picks a colour or a font.</p>
+              </div>
+              <p class="s04__cap mono">Fig. 4.2 · Every path, wrong turns included</p>
+            </li>
+            <li class="s04__step" data-step="2">
+              <div class="s04__read">
+                <p class="read__eyebrow mono">Method · Step 03 of 04</p>
+                <h3 class="s04__title display">Built for autopilot.</h3>
+                <p class="s04__sub display">The tired Tuesday, not the perfect demo.</p>
+                <p class="read__body body">We design for people who are busy, distracted and using one thumb, so the right move is always the easy one.</p>
+              </div>
+              <p class="s04__cap mono">Fig. 4.3 · Reach study, one thumb</p>
+            </li>
+            <li class="s04__step" data-step="3">
+              <div class="s04__read">
+                <p class="read__eyebrow mono">Method · Step 04 of 04</p>
+                <h3 class="s04__title display">Handed over clean.</h3>
+                <p class="s04__sub display">You own the code, the accounts, the keys and the notes.</p>
+                <p class="read__body body">Everything is set up in your name, with notes a new developer can follow without us.</p>
+              </div>
+              <p class="s04__cap mono">Fig. 4.4 · Parts list at handover</p>
+            </li>
+          </ol>
+          <ol class="s04__index mono" aria-hidden="true">
+            <li>01 Problem</li><li>02 Flow</li><li>03 Autopilot</li><li>04 Handover</li>
+          </ol>
+        </div>
+        <i class="s04__edge" aria-hidden="true"></i>
+      </div>
+    </section>
+    <!-- SHEET 05 Work: the concept products as drawing sheets from one set, one per screen.
+         Entry: the line closes (two inverting panels over the black Method sheet), opens into black, and in the black a
+         cyanotype negative of the first concept sheet develops; the curtain opens on the black-and-white sheet.
+         The sheets (screens, dimensions, title blocks) are built by site/js/sheets/sheet-05.js from the products
+         library; the reading text lives here. -->
+    <section id="sheet-05" class="chapter s5" data-sheet="05" data-title="Work" data-drawn="Design" data-checked="AI" data-approved="Engineering" style="--units: 20" aria-labelledby="s5-h">
+      <div class="chapter__stage s5__stage">
+        <div class="s5__board">
+          <div class="frame" aria-hidden="true">
+            <div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+            <div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+          </div>
+          <ol class="s5__index mono" aria-hidden="true"></ol>
+          <div class="s5__set"></div>
 
-    <section id="sheet-04" class="chapter" data-sheet="04" data-title="Method" data-drawn="Strategy" data-checked="Engineering" data-approved="Design" style="--units: 3">
-      <div class="chapter__stage sheet--todo-stage"><div class="todo"><p class="todo__no display">04</p><p class="todo__name mono">Method · to be drawn</p></div></div>
+          <div class="s5__reads">
+            <div class="s5-read" data-id="intro">
+              <p class="read__eyebrow mono">Sheet 05 · Work · Concept sheets</p>
+              <h2 class="s5-read__title display" id="s5-h">Sheets from the set.</h2>
+              <p class="read__body body">Nine products we made up to show the range: phones, web apps and shops, across nine industries. Every screen is drawn at full size or larger, so you can read it.</p>
+              <p class="read__tag mono"><span>Concept sheet</span> Made up to show the range, not a client.</p>
+            </div>
+
+            <div class="s5-read" data-id="halvane">
+              <p class="read__eyebrow mono">Concept sheet 05.1 · Web · Luxury retail</p>
+              <h3 class="s5-read__title display">HALVANE</h3>
+              <p class="read__body body">A watchmaker’s online shop. You configure the watch with its movement pulled apart, so you see what you are paying for.</p>
+              <p class="s5-read__det mono">Detail A · 2:1</p>
+              <p class="s5-read__note">The calibre: gear train, balance and jewels, drawn part by part.</p>
+              <p class="read__tag mono"><span>Concept sheet</span> Made up to show the range, not a client.</p>
+            </div>
+
+            <div class="s5-read" data-id="stringwalk">
+              <p class="read__eyebrow mono">Concept sheet 05.2 · Phone · Energy</p>
+              <h3 class="s5-read__title display">STRINGWALK</h3>
+              <p class="read__body body">A solar-farm field app, light enough to read in full sun. It finds the hot spot, sends the crew and works the cleaning robots around it.</p>
+              <p class="s5-read__det mono">Detail A · 2:1</p>
+              <p class="s5-read__note">Row 9, four modules down 18%: one tap sends the crew.</p>
+              <p class="read__tag mono"><span>Concept sheet</span> Made up to show the range, not a client.</p>
+            </div>
+
+            <div class="s5-read" data-id="wardcast">
+              <p class="read__eyebrow mono">Concept sheet 05.3 · Web · Healthcare</p>
+              <h3 class="s5-read__title display">WARDCAST</h3>
+              <p class="read__body body">A hospital’s bed-flow board. It sees the evening’s shortfall coming in time to act, and suggests a move that waits for the bed manager.</p>
+              <p class="s5-read__det mono">Detail A · 2:1</p>
+              <p class="s5-read__note">The forecast: up to six beds short between 17:15 and 20:15.</p>
+              <p class="read__tag mono"><span>Concept sheet</span> Made up to show the range, not a client.</p>
+            </div>
+
+            <div class="s5-read" data-id="quaycall">
+              <p class="read__eyebrow mono">Concept sheet 05.4 · Phone · Ports and shipping</p>
+              <h3 class="s5-read__title display">QUAYCALL</h3>
+              <p class="read__body body">A container-port operations app: berths, cranes and the yard on one screen. When the wind picks up, the crane queue holds itself.</p>
+              <p class="s5-read__det mono">Detail A · 2:1</p>
+              <p class="s5-read__note">Crane QC05 on wind hold, to be checked again at 06:15.</p>
+              <p class="read__tag mono"><span>Concept sheet</span> Made up to show the range, not a client.</p>
+            </div>
+
+            <div class="s5-read" data-id="quillfield">
+              <p class="read__eyebrow mono">Concept sheet 05.5 · Web · Insurance</p>
+              <h3 class="s5-read__title display">QUILLFIELD</h3>
+              <p class="read__body body">An insurer’s AI claims assistant. It reads the photos, the invoice and the policy, cites every source, and pays nothing on its own.</p>
+              <p class="s5-read__det mono">Detail A · 2:1</p>
+              <p class="s5-read__note">Every line cites its source: the policy section, the invoice line, the photo.</p>
+              <p class="read__tag mono"><span>Concept sheet</span> Made up to show the range, not a client.</p>
+            </div>
+
+            <div class="s5-read" data-id="lofthaul">
+              <p class="read__eyebrow mono">Concept sheet 05.6 · Phone · Logistics</p>
+              <h3 class="s5-read__title display">LOFTHAUL</h3>
+              <p class="read__body body">A drone-delivery dispatcher. Every route, battery and gust over the harbour on one map, and a release queue that waits out the wind.</p>
+              <p class="s5-read__det mono">Detail A · 2:1</p>
+              <p class="s5-read__note">The hub: three drones out, each on its own route.</p>
+              <p class="read__tag mono"><span>Concept sheet</span> Made up to show the range, not a client.</p>
+            </div>
+
+            <div class="s5-read" data-id="fernpay">
+              <p class="read__eyebrow mono">Concept sheet 05.7 · Web · Payments</p>
+              <h3 class="s5-read__title display">FERNPAY</h3>
+              <p class="read__body body">A payments company’s security board for the night shift. A rule change only goes live once a second person approves it.</p>
+              <p class="s5-read__det mono">Detail A · 2:1</p>
+              <p class="s5-read__note">A card-testing burst on one merchant, caught and blocked.</p>
+              <p class="read__tag mono"><span>Concept sheet</span> Made up to show the range, not a client.</p>
+            </div>
+
+            <div class="s5-read" data-id="overwing">
+              <p class="read__eyebrow mono">Concept sheet 05.8 · Phone · Aviation</p>
+              <h3 class="s5-read__title display">OVERWING</h3>
+              <p class="read__body body">A private-jet charter app. The cabin seat map carries each guest’s note, so the crew knows before anyone boards.</p>
+              <p class="s5-read__det mono">Detail A · 2:1</p>
+              <p class="s5-read__note">Seat 2B, Guest 4: still water, no ice.</p>
+              <p class="read__tag mono"><span>Concept sheet</span> Made up to show the range, not a client.</p>
+            </div>
+
+            <div class="s5-read" data-id="nightwell">
+              <p class="read__eyebrow mono">Concept sheet 05.9 · Web · Science</p>
+              <h3 class="s5-read__title display">NIGHTWELL</h3>
+              <p class="read__body body">An observatory’s booking site. A live sky map shows the cloud, the moon and every telescope, and you book an hour of the dark.</p>
+              <p class="s5-read__det mono">Detail A · 2:1</p>
+              <p class="s5-read__note">Telescope T2 tracking Field 18, with tonight’s queue drawn on the sky.</p>
+              <p class="read__tag mono"><span>Concept sheet</span> Made up to show the range, not a client.</p>
+            </div>
+
+            <div class="s5-read s5-read--yours" data-id="yours">
+              <p class="read__eyebrow mono">Sheet 05.10 · Blank</p>
+              <h3 class="s5-read__title display">The next sheet is yours.</h3>
+              <p class="read__body body">Bring us the problem, not the product. We draw it before we build it.</p>
+              <p class="s5-read__cta"><a class="btn btn--ink s5-cta" href="#sheet-08"><span>Start a work order · Sheet 08</span></a></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- entry: the cyanotype negative of sheet 05.1 (a copy of the board with its tokens swapped, filled by JS) -->
+        <div class="s5__neg" aria-hidden="true"></div>
+        <div class="s5__black" aria-hidden="true"></div>
+        <i class="s5__seam" aria-hidden="true"></i>
+        <i class="s5__edge s5__edge--t" aria-hidden="true"></i><i class="s5__edge s5__edge--b" aria-hidden="true"></i>
+        <p class="s5__dev mono" aria-hidden="true"><span class="s5__dev-a">Sheet 05.1 · Negative · Developing</span><span class="s5__dev-b">Sheet 05.1 · Negative · Fixed</span></p>
+        <div class="s5__curtain" aria-hidden="true"><i class="s5__panel s5__panel--t"></i><i class="s5__panel s5__panel--b"></i></div>
+      </div>
     </section>
-    <section id="sheet-05" class="chapter" data-sheet="05" data-title="Work" data-drawn="Design" data-checked="AI" data-approved="Engineering" style="--units: 3">
-      <div class="chapter__stage sheet--todo-stage"><div class="todo"><p class="todo__no display">05</p><p class="todo__name mono">Work · to be drawn</p></div></div>
+    <section id="sheet-06" class="chapter s6" data-sheet="06" data-title="Process" data-drawn="Engineering" data-checked="Security" data-approved="Strategy" style="--units: 17" aria-labelledby="s6-title">
+      <div class="chapter__stage s6__stage">
+        <div class="s6__sheet">
+          <div class="frame" aria-hidden="true">
+            <div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+            <div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+          </div>
+          <p class="s6__fig mono" aria-hidden="true">Fig. 6 · Process train · six parts in one ring</p>
+          <svg class="s6__mech" role="img" aria-label="A machine drawing of six meshed gears in a closed ring, numbered 1 to 6: Diagnose, Draw, Build, Break, Hand over and Care. Care meshes back into Diagnose."></svg>
+          <div class="s6__detail" aria-hidden="true"><svg class="s6__stress"></svg></div>
+
+          <div class="s6__reads">
+            <div class="read s6-read s6-read--intro" data-k="intro">
+              <p class="read__eyebrow mono">Fig. 6 · The process</p>
+              <h2 class="read__title display" id="s6-title">From sheet to screen.</h2>
+              <p class="read__body body">Six stages, meshed like gears in one machine. None turns before the one before it has, and each one hands you something you can hold.</p>
+            </div>
+            <div class="read s6-read" data-k="0">
+              <p class="read__eyebrow mono"><span class="s6-no">1</span>Part 1 of 6 · Diagnose</p>
+              <h3 class="read__title display">The problem, written down.</h3>
+              <p class="read__body body">You get a written problem statement and a plan. We listen, read what you already have and measure the real problem before anything is drawn.</p>
+            </div>
+            <div class="read s6-read" data-k="1">
+              <p class="read__eyebrow mono"><span class="s6-no">2</span>Part 2 of 6 · Draw</p>
+              <h3 class="read__title display">Every screen, measured.</h3>
+              <p class="read__body body">Every screen drawn and measured, then approved by you before a line of code is written.</p>
+            </div>
+            <div class="read s6-read" data-k="2">
+              <p class="read__eyebrow mono"><span class="s6-no">3</span>Part 3 of 6 · Build</p>
+              <h3 class="read__title display">Working, step by step.</h3>
+              <p class="read__body body">Working software on your own accounts, built step by step. You see each step working before the next one starts.</p>
+            </div>
+            <div class="read s6-read" data-k="3">
+              <p class="read__eyebrow mono"><span class="s6-no">4</span>Part 4 of 6 · Break</p>
+              <h3 class="read__title display">We break it first.</h3>
+              <p class="read__body body">We test it the way rushed, tired people use it, and the way an attacker would. What breaks is fixed and tested again until it holds.</p>
+            </div>
+            <div class="read s6-read" data-k="4">
+              <p class="read__eyebrow mono"><span class="s6-no">5</span>Part 5 of 6 · Hand over</p>
+              <h3 class="read__title display">All of it, yours.</h3>
+              <p class="read__body body">Code, accounts, keys and notes, all yours. Nothing is locked to us: another team could pick it up tomorrow.</p>
+            </div>
+            <div class="read s6-read" data-k="5">
+              <p class="read__eyebrow mono"><span class="s6-no">6</span>Part 6 of 6 · Care</p>
+              <h3 class="read__title display">Every month, after launch.</h3>
+              <p class="read__body body">Updates, fixes and backups, every month. And Care meshes back into Diagnose: what we learn turns the next round.</p>
+            </div>
+          </div>
+        </div>
+        <div class="s6__doors" aria-hidden="true"><i class="s6__door s6__door--l"></i><i class="s6__door s6__door--r"></i></div>
+      </div>
     </section>
-    <section id="sheet-06" class="chapter" data-sheet="06" data-title="Process" data-drawn="Engineering" data-checked="Security" data-approved="Strategy" style="--units: 3">
-      <div class="chapter__stage sheet--todo-stage"><div class="todo"><p class="todo__no display">06</p><p class="todo__name mono">Process · to be drawn</p></div></div>
+    <!-- SHEET 07: STUDIO. Entry: sheet 06 folds down to title-block size, panel by panel, and is filed away.
+         Then the bench in plan (five desks; this sheet's own route: drawn, checked, approved), then the founder card. -->
+    <section id="sheet-07" class="chapter s07" data-sheet="07" data-title="Studio" data-drawn="Strategy" data-checked="Design" data-approved="Security" style="--units: 4">
+      <div class="chapter__stage s07__stage">
+        <div class="s07__sheet">
+          <div class="frame" aria-hidden="true">
+            <div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+            <div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+          </div>
+
+          <figure class="s07__fig">
+            <figcaption class="s07__cap mono">Fig. 7 · The bench, in plan · Not to scale</figcaption>
+            <div class="s07__draw">
+              <svg class="s07__plan" viewBox="0 0 640 400" role="img"
+                   aria-label="Plan of the studio bench: five numbered desks, 01 Design, 02 Engineering, 03 Security, 04 AI and 05 Strategy, a plan chest and one door. This sheet is drawn at desk 05, checked at desk 01, approved at desk 03, then filed in the plan chest."></svg>
+              <div class="s07__labels" aria-hidden="true"></div>
+            </div>
+            <p class="s07__legend mono" aria-hidden="true"><span>01 Design</span><span>02 Engineering</span><span>03 Security</span><span>04 AI</span><span>05 Strategy</span><span>D drawn</span><span>C checked</span><span>A approved</span><span>F filed</span></p>
+          </figure>
+
+          <div class="read s07__read s07__read--bench">
+            <p class="read__eyebrow mono">07 · Studio · The bench</p>
+            <h2 class="read__title display">A bench, not a body shop.</h2>
+            <p class="read__body body">Specialists at every desk: design, engineering, security, AI, strategy. Every sheet drawn by one, checked by another.</p>
+            <p class="read__note mono">This sheet · drawn by Strategy · checked by Design · approved by Security</p>
+          </div>
+
+          <div class="read s07__read s07__read--founder">
+            <p class="read__eyebrow mono">07 · Studio · The founder</p>
+            <h2 class="read__title display">One name on the door.</h2>
+            <p class="s07__plate mono"><span>Wajih Mansouri</span><span>Founder</span></p>
+            <p class="read__body body">Tunisian, based in Tunis. Speaks English, French and Tunisian Arabic. Seven years as cabin crew taught him that a process has to hold up when everyone is tired.</p>
+          </div>
+        </div>
+        <svg class="s07__fold" aria-hidden="true"></svg>
+      </div>
     </section>
-    <section id="sheet-07" class="chapter" data-sheet="07" data-title="Studio" data-drawn="Strategy" data-checked="Design" data-approved="Security" style="--units: 3">
-      <div class="chapter__stage sheet--todo-stage"><div class="todo"><p class="todo__no display">07</p><p class="todo__name mono">Studio · to be drawn</p></div></div>
+    <!-- SHEET 08: CONTACT. Entry: the page's title block grows out of its corner into the work order (cells subdividing
+         into the form). The work order's own title block fills in live as the visitor types, all in the browser.
+         Sending hands the work order to the visitor's own email app (mailto:) or WhatsApp (wa.me); nothing is sent
+         from the page. Contact details come from site/js/settings.js. -->
+    <section id="sheet-08" class="chapter s08" data-sheet="08" data-title="Contact" data-drawn="Design" data-checked="Strategy" data-approved="Engineering" style="--units: 2.2">
+      <div class="chapter__stage s08__stage">
+        <svg class="s08__grow" aria-hidden="true"></svg>
+        <div class="s08__sheet">
+          <div class="frame" aria-hidden="true">
+            <div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+            <div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+          </div>
+
+          <div class="s08__wo">
+            <header class="s08__head" data-cell>
+              <p class="s08__eyebrow mono">Work order · Sheet 08 · Contact</p>
+              <h2 class="s08__title display">Bring us the problem.</h2>
+              <p class="s08__lede">Three questions. Your answers become a work order, and it goes out from your own email or WhatsApp.</p>
+            </header>
+
+            <div class="s08__no" data-cell>
+              <p class="s08__kv"><span class="s08__k mono">Work order</span><span class="s08__v mono" data-out="no">WO-····</span></p>
+              <p class="s08__kv"><span class="s08__k mono">Date</span><span class="s08__v mono" data-out="date"></span></p>
+              <p class="s08__kv"><span class="s08__k mono">Drawn by</span><span class="s08__v mono">You</span></p>
+            </div>
+
+            <form class="s08__form" novalidate aria-label="Work order">
+              <div class="s08__field s08__field--way" data-cell>
+                <label class="s08__label" for="s08-way"><span class="s08__n mono">01</span>What&rsquo;s in the way?</label>
+                <p class="s08__hint" id="s08-way-hint">The problem, in your own words. One line is enough.</p>
+                <p class="s08__err" id="s08-way-err" aria-live="polite"></p>
+                <textarea class="s08__input" id="s08-way" name="way" rows="5" maxlength="1500" required aria-required="true" aria-describedby="s08-way-hint s08-way-err" data-lenis-prevent></textarea>
+              </div>
+
+              <div class="s08__field s08__field--have" data-cell>
+                <label class="s08__label" for="s08-have"><span class="s08__n mono">02</span>What do you have today?</label>
+                <p class="s08__hint" id="s08-have-hint">A website, an app, a spreadsheet, or nothing yet. Optional.</p>
+                <textarea class="s08__input" id="s08-have" name="have" rows="3" maxlength="1000" aria-describedby="s08-have-hint" data-lenis-prevent></textarea>
+              </div>
+
+              <div class="s08__field s08__field--reach" data-cell>
+                <label class="s08__label" for="s08-reach"><span class="s08__n mono">03</span>How do we reach you?</label>
+                <p class="s08__hint" id="s08-reach-hint">Email or phone. Optional: we can reply where you send this from.</p>
+                <p class="s08__err" id="s08-reach-err" aria-live="polite"></p>
+                <input class="s08__input" id="s08-reach" name="reach" type="text" maxlength="160" autocomplete="email" autocapitalize="off" spellcheck="false" aria-describedby="s08-reach-hint s08-reach-err">
+              </div>
+            </form>
+
+            <aside class="s08__tb" data-cell aria-label="Work order title block, filled in as you type">
+              <div class="s08__row s08__row--project">
+                <span class="s08__k mono">Project</span>
+                <span class="s08__project display" data-out="project">Waiting for the problem</span>
+              </div>
+              <div class="s08__row s08__row--disc">
+                <span class="s08__k mono">Disciplines it needs</span>
+                <ul class="s08__dl" data-out="disciplines"></ul>
+              </div>
+              <div class="s08__row s08__row--count">
+                <span class="s08__k mono">Sheets</span>
+                <span class="s08__count display" data-out="sheets">00</span>
+                <span class="s08__why mono">Diagnose, one per discipline, hand over</span>
+              </div>
+              <div class="s08__row s08__row--reply">
+                <span class="s08__k mono">Reply by</span>
+                <span class="s08__v mono" data-out="reply">Where you send from</span>
+              </div>
+            </aside>
+
+            <div class="s08__send" data-cell>
+              <p class="s08__k mono" id="s08-send-k">Send to the board</p>
+              <div class="s08__btns" role="group" aria-labelledby="s08-send-k">
+                <a class="btn btn--ink s08__btn" id="s08-mail" href="#"><span>Send by email</span></a>
+                <a class="btn btn--line s08__btn" id="s08-wa" href="#" target="_blank" rel="noopener"><span>Send on WhatsApp</span></a>
+              </div>
+              <p class="s08__note">Opens your own email app or WhatsApp with the work order written out. You press send there; nothing is sent from this page.</p>
+              <p class="s08__status" role="status" aria-live="polite"></p>
+            </div>
+
+            <div class="s08__direct" data-cell>
+              <p class="s08__k mono">Or write to us directly</p>
+              <p class="s08__lines">
+                <a class="s08__link" data-setting="email-link" href="#"><span data-setting="email"></span></a>
+                <a class="s08__link" data-setting="wa-link" href="#" target="_blank" rel="noopener">WhatsApp <span data-setting="whatsapp"></span></a>
+                <span class="s08__place">Studio in <span data-setting="location"></span></span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
-    <section id="sheet-08" class="chapter" data-sheet="08" data-title="Contact" data-drawn="Design" data-checked="Strategy" data-approved="Engineering" style="--units: 3">
-      <div class="chapter__stage sheet--todo-stage"><div class="todo"><p class="todo__no display">08</p><p class="todo__name mono">Contact · to be drawn</p></div></div>
-    </section>
-    <section id="sheet-09" class="chapter" data-sheet="09" data-title="Spec sheet" data-drawn="Engineering" data-checked="AI" data-approved="Security" style="--units: 3">
-      <div class="chapter__stage sheet--todo-stage"><div class="todo"><p class="todo__no display">09</p><p class="todo__name mono">Spec sheet · to be drawn</p></div></div>
+    <section id="sheet-09" class="chapter" data-sheet="09" data-title="Spec sheet" data-drawn="Engineering" data-checked="AI" data-approved="Security" style="--units: 4">
+      <div class="chapter__stage s09">
+        <!-- entry: the scale changes, the whole drawing set comes into view -->
+        <div class="s09__set" aria-hidden="true">
+          <p class="s09__scale mono"><span class="s09__scale-from">Scale 1:1</span><span class="s09__scale-to">Scale 1:5 · the drawing set</span></p>
+          <ol class="s09__grid">
+            <li><b>00</b><span>Opening</span></li><li><b>01</b><span>First drawing</span></li><li><b>02</b><span>Principles</span></li>
+            <li><b>03</b><span>Disciplines</span></li><li><b>04</b><span>Method</span></li><li><b>05</b><span>Work</span></li>
+            <li><b>06</b><span>Process</span></li><li><b>07</b><span>Studio</span></li><li class="is-prev"><b>08</b><span>Contact</span></li>
+            <li class="is-self"><b>09</b><span>Spec sheet</span></li>
+          </ol>
+        </div>
+        <!-- the sheet itself -->
+        <div class="s09__sheet">
+          <div class="frame" aria-hidden="true">
+            <div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+            <div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+          </div>
+          <div class="s09__read s09__read--spec">
+            <p class="read__eyebrow mono">Sheet 09 · Specification</p>
+            <h2 class="read__title display">This site is our first case study.</h2>
+            <p class="read__body body">Every number on this sheet was measured in your browser while you read, not claimed.</p>
+          </div>
+          <table class="s09__table" aria-label="This page, measured in your browser">
+            <thead><tr><th class="mono" scope="col">Item</th><th class="mono" scope="col">Measured</th><th class="mono" scope="col">How</th></tr></thead>
+            <tbody>
+              <tr data-k="weight"><th scope="row">Page weight</th><td class="mono">—</td><td>Every file this page loaded, as your browser reports it.</td></tr>
+              <tr data-k="requests"><th scope="row">Files loaded</th><td class="mono">—</td><td>Requests your browser made for this page.</td></tr>
+              <tr data-k="load"><th scope="row">Load time</th><td class="mono">—</td><td>From your click to the page's load event.</td></tr>
+              <tr data-k="lcp"><th scope="row">Largest paint</th><td class="mono">—</td><td>When the biggest element first appeared on your screen.</td></tr>
+              <tr data-k="cls"><th scope="row">Layout shift</th><td class="mono">—</td><td>How much the page jumped while loading (0 is perfect).</td></tr>
+              <tr data-k="fps"><th scope="row">Frame rate</th><td class="mono">—</td><td>Your screen's frames while you scrolled this page.</td></tr>
+              <tr data-k="third"><th scope="row">Trackers</th><td class="mono">—</td><td>Requests to any address other than this site.</td></tr>
+              <tr data-k="cookies"><th scope="row">Cookies</th><td class="mono">—</td><td>Cookies this page set in your browser.</td></tr>
+              <tr data-k="fonts"><th scope="row">Typefaces</th><td class="mono">—</td><td>Newsreader and DM Mono, both open licence.</td></tr>
+              <tr data-k="a11y"><th scope="row">Accessibility checks</th><td class="mono">—</td><td>Automated checks by axe-core, run on this page just now.</td></tr>
+            </tbody>
+          </table>
+          <div class="s09__read s09__read--end">
+            <p class="read__eyebrow mono">Colophon</p>
+            <p class="read__body body">Drawn and built in Tunis. Plates are public domain; typefaces and libraries are open licence. The line now closes back into the point it came from.</p>
+            <p class="s09__foot mono">© 2026 Wajih Mansouri · Drawn and built in Tunis</p>
+            <a class="btn btn--line s09__again" href="#sheet-00"><span>Back to the first sheet</span></a>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
 </div>
@@ -212,6 +921,7 @@
   <div class="tb__cell"><span class="tb__k">Checked</span><span class="tb__v tb__checked">Engineering</span></div>
   <div class="tb__cell"><span class="tb__k">Approved</span><span class="tb__v tb__approved">Strategy</span></div>
   <div class="tb__cell"><span class="tb__k">Rev</span><span class="tb__v">11.26</span></div>
+  <button class="tb__theme" type="button" aria-pressed="false" aria-label="Print the sheets dark"><span class="tb__k">Print</span><span class="tb__v tb__theme-v">Light</span></button>
 </aside>
 
 <!-- THE SINGULARITY / CURTAIN (difference blend: whatever it covers flips black/white) -->
