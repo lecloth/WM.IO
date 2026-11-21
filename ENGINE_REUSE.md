@@ -19,7 +19,10 @@ cursor, preloader timing). Never any santalarch asset, image, font, video, model
 ## Written new for this site
 
 `site/js/engine/cursor.js` (CAD crosshair), `site/js/opening.js` (singularity → ruler → curtain → hold line), `site/js/main.js`,
+slice 2: `site/js/sheet01/*` (act controller, phone, redraw, LOFTHAUL screen, traced Fig. 1), `tools/fps.py`, `tools/trace_fig1.py`,
 the real-load-progress counter and strip drawing (inline in `site/index.html`), `site/css/site.css`, `site/type.html`, `tools/sheet.py`.
+
+Slice 2 carried nothing new from the santalarch clone.
 
 ## Confirmed absent
 

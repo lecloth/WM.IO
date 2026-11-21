@@ -1,88 +1,153 @@
 # STATE — Wajih Mansouri studio site (local experiment)
 
-Read `STUDIO_BRIEF.md` first. This file holds the decisions, what Wajih picked, what is done and what comes next.
+Read `STUDIO_BRIEF.md` first (Part 2c overrides everything above it). This file holds the decisions, what Wajih
+picked, what is done and what comes next.
 Serve: `python -m http.server 8108 --bind 127.0.0.1 --directory "C:\wajih-mansouri-studio\site"`. Port 8108 only.
 
-## Decisions by Wajih (STUDIO_BRIEF Part 2b, 21 Nov 2026 evening). They override everything above them in the brief.
+## Decisions by Wajih
 
-- **Chalk is out.** No hand-drawn chalk, no line boil, no cartoon-blueprint look. The site is sharp, edgy and precise.
-- **Line language:** CAD precision hairlines plus patent "Fig." plates.
-- **3D look:** matte models with hairline edges.
-- **Old drawings:** early telephone patents (Bell/Edison era) and Da Vinci machine studies.
-- **Q1, what the curtain opens onto → B:** black and white first. Blue arrives once, as a cyanotype, when the hero phone pulls apart; afterwards only for patent-plate moments. Never a blue default background.
-- **Q2, hero phone → made-up products only.** Never any of Wajih's existing builds (no POS, no car rental, nothing he has made), anywhere on the site: hero phone, the website pulled apart, the 03 Work sheets. Ambitious, high-tech, across industries. Invented brand names, each web-searched and dropped if a real company in that industry uses it. Labelled honestly as concept builds.
-- **Q3, opening length → B:** about 2.5 s on a first visit, skippable, near-instant on return.
-- **Assets Wajih supplies: none.** Everything is public domain or open licence (logged in `CREDITS.md`) or built in code.
-- From Part 2: local only, no hosting or deploy for now.
+### Part 2c (21 Nov 2026, night): overrides everything above it
+
+- **A full studio:** websites, apps and phones, platforms and web apps, engineering and infrastructure, cybersecurity, AI, consulting, monthly care. The voice is "we", go big.
+- **No fabricated proof, ever:** no invented clients, testimonials, numbers, certifications (ISO, SOC 2, pen-test certificates), awards, or named or pictured team members. Made-up work is always labelled "Concept sheet".
+- **Cleanliness for readability (hard rule):**
+  - Reading moments are calm: text on clean sheets, generous whitespace, nothing moves under or behind text, and the grid and fibre go still and fade where text sits.
+  - Spectacle happens only between reading moments, inside sticky scenes.
+  - One idea per screen. Body lines at most about 65 characters; body text at least 18 px on desktop.
+  - **Freeze-frame test:** pause on any frame mid-scroll and every piece of text on it must be readable.
+- **Every discipline starts from its ancestor machine:** a public-domain plate redraws itself into what the studio builds today.
+  - Websites ← rotary printing press.
+  - Apps and phones ← Bell-era telephone.
+  - Platforms ← telephone switchboard.
+  - Engineering ← Edison-era electrical distribution.
+  - Cybersecurity ← Yale-era pin-tumbler lock.
+  - AI ← Babbage's Analytical Engine + Jacquard cards.
+  - Consulting ← surveyor's theodolite.
+  - Care has no ancestor.
+  - Verify each plate is public domain and genuine; swap the ancestor if no good plate exists.
+- **AI offer:**
+  - agents with human checkpoints;
+  - AI inside products;
+  - private AI;
+  - AI security ("We attack your AI before someone else does").
+  - Lovelace line (1843, Note G) only after checking the exact wording against a primary source.
+- **Title blocks** show DRAWN / CHECKED / APPROVED by discipline (design, engineering, security, AI, strategy), never a person.
+- **Fourth principle, Locked:** "Security is drawn on sheet one, not bolted on at the end."
+- **Studio:** "A bench, not a body shop." The founder card stays short and never mentions past builds.
+- **Contact:** the work order's title block fills in live as the visitor types, with no outside service.
+- **Two more concept products for 05 Work:** an insurer's AI claims assistant; a payments company's live security command board.
+- **Copy:** the hold line stays "We draw it before we build it." The line under it is "Websites, apps, platforms, security and AI, engineered to the millimetre, tested until nothing breaks, and run long after launch." Wajih keeps "tested until nothing breaks".
+- **Sheets:** 00 Opening · 01 The first drawing · 02 Principles (Exact, Felt, Proven, Locked) · 03 Disciplines · 04 Method · 05 Work · 06 Process (Break includes the lock-pick stress test) · 07 Studio · 08 Contact · 09 Spec sheet.
+
+### Part 2b (still standing where 2c doesn't override)
+
+- **Look:**
+  - Chalk is out; the site is sharp and precise.
+  - Line language: CAD hairlines plus patent "Fig." plates.
+  - 3D: matte with hairline edges.
+- **Colour:** black and white first. Blue arrives once, as a cyanotype, when the hero phone pulls apart; after that only at patent-plate moments.
+- **Showcased work:** made-up products only, never Wajih's existing builds anywhere. Invented names are web-checked.
+- **Opening:** about 2.5 s on a first visit, skippable, near-instant on return.
+- **Assets:** Wajih supplies none.
+- **Font pairing:** A (Archivo + IBM Plex Mono) stays unless he picks B or C on `/type.html`.
 
 ## Hard rules (Part 4), short form
 
-- Build only in `C:\wajih-mansouri-studio`. From the santalarch clone, only my own generic engine code, listed in `ENGINE_REUSE.md`. Never a santalarch asset, image, font, video, model, text, wordmark or scene.
-- No cartoon characters, ever, and no film frames as assets.
-- `CREDITS.md` logs every outside asset. Port 8108 only (never 8000, 8100–8102, 8105–8107).
-- With Wajih: at most 3 questions per batch, each with options and a recommendation; 2–3 visual options side by side; one instruction per message; his to-dos in one block at the bottom.
-- After each step Wajih approves: commit with a message starting `studio:` and update this file.
+- Build only in `C:\wajih-mansouri-studio`. From the santalarch clone, only my own generic engine code (`ENGINE_REUSE.md`). Never a santalarch asset, text or scene.
+- No cartoon characters, ever. `CREDITS.md` logs every outside asset. Port 8108 only.
+- With Wajih:
+  - at most 3 questions a batch, with options and a recommendation;
+  - 2–3 visual options side by side;
+  - one instruction per message;
+  - his to-dos in one block at the bottom.
+- After each approved step: commit with a message starting `studio:` and update this file.
 
 ## Build decisions taken (mine, open to challenge)
 
-- Static site, no build step: HTML + CSS + ES modules, GSAP/ScrollTrigger/Lenis vendored as classic scripts in `site/vendor/` (few files, loads reliably on Python's simple server).
-- 1rem = window width / 90 on desktop (16 px at 1440); width / 24.375 on mobile (16 px at 390).
-- Palette (light): paper #F2F0EB, ink #121212, graphite #6B6A66 (4.8:1 on paper, WCAG AA). Dark (later): board #0E0E0E, ink #F2F0EB, graphite #8C8B86.
-- **The curtain is a difference-blend layer** coloured exactly like the paper, so the closed curtain reads as pure black and anything under it reads inverted. The same layer will be the "line that closes and opens" at chapter changes.
-- **The timeline strip** has the 10 sheet names, is drawn by the real load progress (CSS reads one `--load` variable; tasks counted: stylesheet, gsap, ScrollTrigger, Lenis, app module, fonts, window load). It never runs ahead of the load and takes at least 0.5 s on a first visit. It then fills per sheet as you scroll; click jumps.
-- **Opening timeline (first visit):**
-  - The point breathes while loading.
-  - At 0.05 s the line stretches.
-  - At 0.1 s the 2 mm ruler opens from the centre, numbered in mm outwards (SCALE 1:1).
-  - At 0.68 s the curtain opens vertically (0.9 s, expo in-out).
-  - At 0.8 s the hold-line words rise.
-  - At 1.0 s the centre lines draw.
-  - At 1.45 s the dimension line measures the hold line in real millimetres.
-  - At 1.55 s the rest fades in.
-  - At 1.6 s scroll unlocks.
-  - Measured at 1440×900: about 2.2–2.3 s from navigation to scroll.
-  - Return visit (localStorage `wm:opened`) plays at 3.2×: about 0.8 s.
-  - Any wheel, key, pointer or touch plays it at 12×.
-  - `?first` in the URL forces a first visit.
-- **Reduced motion:** no curtain, no breathing, no smooth scroll; the sheet shows its finished state immediately.
-- **CAD crosshair cursor** (desktop, fine pointer): full-length hairlines, a pick box that grows over links, live X/Y in millimetres.
-- **Title block** (fixed, bottom-right): Project / Sheet NN / 09 / Title / Scale 1:1 / Drawn W.M. / Rev 11.26. It updates as sheets pass.
+- **Delivery:** a static site with no build step: HTML + CSS + ES modules. GSAP, ScrollTrigger and Lenis are vendored as classic scripts; three.js 0.183 is an ES module through an import map. 1rem = width / 90 on desktop and width / 24.375 on mobile.
+- **Palette:**
+  - paper #F2F0EB, ink #121212, graphite #6B6A66 (4.8:1);
+  - cyanotype ground #173F73 with ink #ECF1F6 (about 10:1).
+  - Dark version later: #0E0E0E / #F2F0EB / #8C8B86.
+- **Opening (slice 1):**
+  - The curtain is a difference-blend layer in the paper colour.
+  - The strip is drawn by the real load progress.
+  - First visit about 2.3 s to scroll, return about 0.8 s, skip at 12×.
+- **Board grid:** static. Its slice-1 cursor and scroll drift was removed, so nothing moves under text.
+- **Act 1 (sheets 00 + 01) is one sticky stage, 9.4 viewport heights long.** Everything is a pure function of scroll (`render(p)`), so any frame can be frozen. Timeline in viewport-heights of scroll:
+
+  | Scroll (vh) | What happens |
+  |---|---|
+  | 0–0.9 | The curtain closes over the opening (text it covers inverts, never disappears mid-word) |
+  | 0.86–1.09 | Pure black and the one line; the sheets swap underneath |
+  | 1.05–1.95 | The curtain reopens onto Bell's plate |
+  | 0.95–2.55 | **Reading moment 1**: the plate and its caption; nothing moves |
+  | 2.6 | The plate drops out whole (no half-cut words). Fig. 1 stays, as the real plate pixels plus traced hairlines |
+  | 2.75–3.3 | Fig. 1 travels to the phone's place |
+  | 3.3–4.4 | A sweep turns Bell's ink into hairlines that un-draw while the phone's CAD outline (body, screen, sensor, keys, centre lines) draws on |
+  | 4.35–4.85 | The outline fills into the matte 3D phone (orthographic "drawing" camera, so the outline and the model line up exactly) |
+  | 4.85–6.2 | The phone turns to an axonometric view and pulls apart into Glass, Interface, Flow, Logic, Data, Lock (25 mm gaps) |
+  | 5.25–6.45 | The cyanotype develops: a ragged tide from the phone outwards, paper to Prussian blue, ink to white, the grid included (one shader pass) |
+  | 6.45–7.05 | Labels and leader lines, plus 154.0 / 74.0 mm dimension lines. Label text is either fully on or off, never faded |
+  | 7.1–8.38 | **Reading moment 2**: "The whole business in one pocket." with the Concept sheet tag |
+
+- **Hover:** over the phone's screen in the final state, LOFTHAUL's own colour (signal orange #FF5B1F) appears, rendered in true colour through the cyanotype.
+- **Reduced motion:** act 1 becomes three finished, static sheets one under another: opening, plate, developed exploded phone with its text.
+- **Mobile:** the same story; the phone is smaller and shifted left, the labels sit in a clear column, the reading blocks sit above a one-row title block.
+- **Verified:**
+  - frame rate while scrolling (`tools/fps.py`, headless Chromium, ANGLE D3D11): desktop 1440×900 56–57 fps, p95 16.8 ms; mobile 390×844 56 fps, p95 16.8 ms; about 1–2% of frames over 25 ms;
+  - no console errors.
+- **LOFTHAUL name check:** web-searched 21 Nov 2026 ("Lofthaul" drone delivery); no company or product found.
+- **Regenerating Fig. 1 vectors:**
+  - `tools/sources/` (git-ignored) holds the downloaded PDF and page images; `tools/pylib/` holds PyMuPDF and potracer.
+  - Re-download the PDF from the URL in `CREDITS.md`, extract page 0 to `tools/sources/pdf_p0.png`, crop `(470,555,1690,1150)` to `fig1.png`, then run `python -I tools/trace_fig1.py`.
 
 ## Waiting on Wajih
 
-1. **Font pairing:** A (Archivo + IBM Plex Mono), B (Newsreader + DM Mono) or C (Barlow Semi Condensed + Barlow + B612 Mono), on `/type.html`. Each can be previewed live with `/?type=a|b|c`. The site currently uses A.
-2. **Opening approval:** the opening as built (slice 1).
-3. **Copy approval:** the sheet 00 lede ("Websites, shops and business apps, engineered to the millimetre, tested until nothing breaks, and handed over ready to run.") and the buttons are from the chat's draft pitch, not Wajih's words. "Tested until nothing breaks" may over-claim; to be confirmed or reworded.
-4. **Later question batches** (from Part 1): contact email and WhatsApp; whether every founder-card line is true; whether to show Dubai as a location; portrait or not (photo or line drawing); the "reply within one working day" promise; what he's proudest of, what annoys him in other studios' sites, sites he loves.
+1. Look at sheet 01 and say what feels wrong or right.
+2. Font pairing pick (A / B / C) on `/type.html`. A is in use.
+3. **Later question batches:**
+   - contact email and WhatsApp;
+   - whether Dubai shows as a location;
+   - portrait or not (photo or line drawing);
+   - the "reply within one working day" promise;
+   - what he's proudest of, what annoys him in other studios' sites, sites he loves;
+   - whether the founder card's lines are true.
+
+## Not done yet (known)
+
+- **Product rotation on each loop:** not wired. The page has no loop yet (it arrives with sheet 09) and only one product (LOFTHAUL) is designed. The others come with slice 4.
+- **Sheets 02–09** are placeholders.
 
 ## Done
 
-- **Slice 1** (committed as `studio: slice 1 - opening, timeline, type options`):
-  - Repo set up.
-  - Opening end to end.
-  - Timeline strip with the real load progress and scroll fill.
-  - Board sheet 00 with frame, zones, centre lines, dimension line and title block.
-  - Placeholder sheets 01–09.
-  - CAD cursor.
-  - Reduced motion and mobile layout.
-  - `/type.html` with 3 pairings.
-  - Checked at 1440×900 (first visit, return visit, skip, reduced motion, cursor) and 390×844; no console errors.
+- **Slice 1:** `studio: slice 1 - opening, timeline, type options`. Opening, timeline strip, board, title block, CAD cursor, reduced motion, mobile, `/type.html`.
+- **Slice 2:** `studio: slice 2 - first drawing, full-studio copy`.
+  - Part 2c copy in the strip, title blocks (Drawn/Checked/Approved by discipline), opening line and type page.
+  - The line closing and reopening.
+  - Bell's US 186,787 plate (verified, credited) redrawing into the phone outline.
+  - The matte 3D phone built in code, with explode, labels, dimension lines and the cyanotype.
+  - LOFTHAUL designed as a real dispatcher screen.
+  - Freeze-frame checked at 1440×900 and 390×844, reduced motion, hover, frame rate.
 
 ## Plan: the rest of the site, as slices in order
 
-1. **Opening, timeline strip, type options:** done, awaiting Wajih's picks.
-2. **Made-up products:** invent and web-check the brand names. Design the screens for the 4 phones (drone dispatcher, port operations, solar farm, jet charter) and the 3 websites (observatory booking, watchmaker shop, hospital bed-flow board) in black and white, each with its own hover colour.
-3. **Hero, as 2–3 options side by side:**
-   - a public-domain 1870s telephone patent figure redraws itself into the hero phone's outline;
-   - the phone fills into a matte 3D model with hairline edges (parametric Three.js);
-   - it explodes into Glass, Interface, Flow, Logic, Data, Lock as the cyanotype develops;
-   - the phone rotates to the next product on each loop.
-4. **03 Work, as 2–3 options side by side:** the concept sheets with title blocks, client colour on hover, honest "Concept sheet" labels.
-5. **The thread:** the chapter-change line that closes and opens between sheets with black/white inversion, plus the other drafting-move transitions (tracing paper, dimension lines measuring the next sheet).
-6. **01 Principles and 02 Method** on paper sheets, with Da Vinci machine-study margins (public-domain scans, credited).
-7. **04 Services and 05 Also on the board.**
-8. **06 Process:** the Diagnose → Draw → Build → Break → Hand over → Care mechanism, with the stress test on Break.
-9. **07 Studio:** the founder card, every line confirmed true by Wajih.
-10. **08 Contact:** the work-order form, with Wajih's real contact details.
-11. **09 Spec sheet:** this site's own numbers measured from the local build (page weight, load time, performance and accessibility scores, fonts, trackers). The end line closes back into the point and loops to the singularity.
-12. **Dark version and final passes:** WCAG AA audit in light and dark, reduced motion, mobile, keyboard and screen reader, cross-browser.
+1. **Opening, timeline strip, type options:** done.
+2. **01 The first drawing:** done.
+3. **03 Disciplines, shown as 2–3 options first.**
+   - Source and verify the remaining ancestor plates (printing press, switchboard, Edison distribution, pin-tumbler lock, Analytical Engine + Jacquard cards, theodolite).
+   - Each plate redraws into today's build, one sticky scene each or a shared one.
+   - The lock-pick moment for security.
+   - The punch-card → AI answer moment, with the Lovelace line verified from a primary source.
+4. **The concept products:**
+   - The remaining phones (container port, solar farm, jet charter) and websites (observatory booking, watchmaker shop, hospital bed-flow board), plus the AI claims assistant and the payments security board.
+   - Every name web-checked; each designed for real, in black and white with its own hover colour.
+5. **05 Work:** concept sheets with title blocks, honest "Concept sheet" labels, client colour on hover.
+6. **The thread:** the line closing and opening at every chapter change, sheets passing with black/white inversion, dimension lines measuring the next sheet, tracing-paper slides.
+7. **02 Principles:** Exact, Felt, Proven, Locked on clean sheets, with Da Vinci machine-study margins (public-domain scans, credited).
+8. **04 Method.**
+9. **06 Process:** the Diagnose → Draw → Build → Break → Hand over → Care mechanism; Break as a stress test including the lock pick.
+10. **07 Studio:** the bench, and a short founder card (every line confirmed by Wajih).
+11. **08 Contact:** the live work order (the title block fills in as he types, in the browser, no outside service) with Wajih's real contact details.
+12. **09 Spec sheet:** this site's own measured numbers. The line closes back into the point, the page loops, and the hero phone rotates to the next product on each loop.
+13. **Dark version and final passes:** WCAG AA audit in light and dark, reduced motion, mobile, keyboard and screen reader, cross-browser.

@@ -66,6 +66,9 @@ async def main():
         for y in [int(v) for v in a.ys.split(",") if v.strip()]:
             await page.evaluate(f"(window.__engine?.lenis ? window.__engine.lenis.scrollTo({y},{{immediate:true}}) : 0, window.scrollTo(0,{y}))")
             await page.wait_for_timeout(1200)
+            if a.mouse:
+                mx, my = [float(v) for v in a.mouse.split(",")]
+                await page.mouse.move(mx - 30, my - 30); await page.mouse.move(mx, my, steps=6); await page.wait_for_timeout(300)
             f = out / f"{a.prefix}_y{y:05d}.jpg"
             await page.screenshot(path=str(f), type="jpeg", quality=82)
             files.append(("y", y, "", f.name))

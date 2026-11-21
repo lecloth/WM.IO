@@ -80,7 +80,7 @@ export function runOpening(engine, onDone) {
     removeSkip();
     onDone?.();
   };
-  const finish = () => { unlock(); curtain.style.visibility = 'hidden'; };
+  const finish = () => { unlock(); };
 
   if (engine.reduced) {
     const settle = () => { mm = measureHold(); dimValue.textContent = fmt(mm); };

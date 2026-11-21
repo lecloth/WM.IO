@@ -249,7 +249,86 @@ html[data-motion="reduce"] body { overflow: auto !important; }
   .btn { height: 2.75rem; flex: 1; justify-content: center; padding: 0 .75rem; font-size: .6875rem; white-space: nowrap; }
   .cue { display: none; }
   .titleblock { grid-template-columns: repeat(3, auto); }
-  .titleblock .tb__cell--wide, .titleblock .tb__cell:nth-child(5), .titleblock .tb__cell:nth-child(6) { display: none; }
+  .titleblock .tb__cell--wide, .titleblock .tb__cell:nth-child(n+5) { display: none; }
   .tb__cell { min-width: 0; }
   .todo__no { font-size: 7rem; }
 }
+
+/* =====================================================================================
+   SLICE 2 — act 1: opening + sheet 01 (the first drawing) in one sticky stage
+   ===================================================================================== */
+:root { --prus: #173F73; --blueprint-ink: #ECF1F6; }
+.act { position: relative; height: calc(9.4 * 100vh); height: calc(9.4 * 100lvh); }
+.act__stage { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; }
+.layer { position: absolute; inset: 0; }
+#sheet-01 { visibility: hidden; }
+.sheet--opening .opening__lede .body, .read__body { font-size: 1.125rem; line-height: 1.5; }   /* >= 18px at 1440 */
+.opening__lede { width: 27%; }
+.opening__lede .body { max-width: 26rem; }
+
+/* the plate: Bell's sheet, on a clean backing so the grid never runs through it */
+.plate { position: absolute; left: 12.5%; top: calc(var(--strip-h) + 2.6rem); height: calc(100vh - var(--strip-h) - 5.6rem); height: calc(100lvh - var(--strip-h) - 5.6rem); aspect-ratio: 1600 / 1740; background: var(--paper); box-shadow: 0 0 0 .75rem var(--paper); }
+.plate.is-gone { opacity: 0; transition: opacity .2s linear; }
+.plate { transition: opacity .2s linear; }
+.plate__img { display: block; height: 100%; width: 100%; mix-blend-mode: multiply; user-select: none; }
+.scanline { position: absolute; left: 12.5%; top: calc(var(--strip-h) + 2rem); bottom: 2.4rem; width: 1px; background: var(--ink); opacity: 0; }
+.scanline::after { content: "SCAN"; position: absolute; top: -1.1rem; left: -.9rem; font-family: var(--f-mono); font-size: .5625rem; letter-spacing: var(--mono-track); color: var(--ink); }
+
+/* reading moments: on a clean sheet, shown or hidden, never half-faded under motion */
+.read { position: absolute; left: 62.5%; top: 26%; width: min(30rem, 31%); padding: 1.25rem 1.25rem 1.4rem; background: var(--paper); opacity: 0; visibility: hidden; transition: opacity .25s var(--ease-out), visibility 0s .25s; }
+.read.is-on { opacity: 1; visibility: inherit; transition: opacity .25s var(--ease-out), visibility 0s; }
+.read__eyebrow { color: var(--graphite); margin-bottom: 1rem; }
+.read__title { font-size: 3.25rem; color: var(--ink); margin-bottom: 1.25rem; }
+[data-type="b"] .read__title { font-size: 3.9rem; }
+[data-type="c"] .read__title { font-size: 3.6rem; }
+.read__body { color: var(--ink); max-width: 34rem; }
+.read__note { margin-top: 1.25rem; color: var(--graphite); font-size: .625rem; }
+.read__tag { margin-top: 1.5rem; font-size: .6875rem; line-height: 1.6; }
+.read__tag span { display: inline-block; border: 1px solid currentColor; padding: .1rem .45rem; margin-right: .5rem; }
+
+/* the final reading moment sits on the developed cyanotype */
+.read--final { left: 70%; right: auto; top: 22%; width: min(22rem, 24%); background: transparent; color: var(--blueprint-ink); }
+.read--final .read__title, .read--final .read__body, .read--final .read__eyebrow, .read--final .read__tag { color: var(--blueprint-ink); }
+.read--final .read__title { font-size: 2.75rem; }
+
+/* the redraw (Bell's lines -> today's outline) */
+.redraw { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; visibility: hidden; overflow: visible; }
+.redraw__fig path { fill: none; stroke: var(--ink); stroke-width: var(--sw, 1px); stroke-linejoin: round; }
+.redraw__out path { fill: none; stroke: var(--ink); stroke-width: 1.25px; stroke-linecap: round; }
+.redraw__out path.is-centre { stroke: var(--graphite); stroke-width: 1px; stroke-dasharray: 14 4 2 4; }
+
+/* the phone canvas */
+.phone-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; pointer-events: none; }
+.phone-canvas.is-live { pointer-events: auto; }
+
+/* chrome on the developed blue sheet */
+html.is-blue .strip { mix-blend-mode: normal; color: var(--blueprint-ink); }
+html.is-blue .xhair { mix-blend-mode: normal; color: var(--blueprint-ink); }
+
+/* reduced motion: three finished sheets, one under the other */
+.act.is-static { height: auto; }
+.act.is-static .act__stage { position: relative; height: auto; overflow: visible; display: grid; grid-template-rows: repeat(3, 100vh); grid-template-rows: repeat(3, 100lvh); }
+.act.is-static .layer { position: relative; inset: auto; visibility: visible !important; }
+.act.is-static #sheet-00 { grid-row: 1; grid-column: 1; }
+.act.is-static #sheet-01 { grid-row: 2; grid-column: 1; }
+.act.is-static .redraw, .act.is-static .scanline { display: none; }
+.act.is-static .phone-canvas { position: relative; grid-row: 3; grid-column: 1; height: 100%; opacity: 1; pointer-events: auto; }
+.act.is-static #s01-final { grid-row: 3; grid-column: 1; position: relative; left: auto; right: auto; top: auto; bottom: auto; align-self: start; justify-self: end; margin: 22vh calc(var(--frame) + var(--zone) + 2rem) 0 0; width: min(22rem, 24vw); }
+@media (max-width: 1023px) { .act.is-static #s01-final { align-self: end; justify-self: stretch; width: auto; margin: 0 1.25rem 4.5rem; } }
+
+@media (max-width: 1023px) {
+  .plate { left: 1.25rem; right: 1.25rem; height: auto; width: calc(100% - 2.5rem); top: calc(var(--strip-h) + 2rem); }
+  .scanline { left: 1.25rem; top: calc(var(--strip-h) + 1.5rem); bottom: auto; height: calc((100vw - 2.5rem) * 1.0875 + 1rem); }
+  .read { left: 1.25rem; right: 1.25rem; width: auto; top: auto; bottom: 4.5rem; padding: 1rem 1rem 1.1rem; }
+  .read__title { font-size: 1.9rem; margin-bottom: .75rem; }
+  .read__body, .sheet--opening .opening__lede .body { font-size: 1rem; }
+  .read__eyebrow { margin-bottom: .5rem; }
+  .read__note { margin-top: .75rem; }
+  .read--final { left: 1.25rem; right: 1.25rem; top: auto; bottom: 4.5rem; width: auto; }
+  .read--final .read__title { font-size: 1.75rem; }
+  .read--final .read__body { display: none; }
+  .opening__lede { width: auto; }
+}
+
+/* while the curtain is shut, the board's grid goes too: black, and the one line */
+html:has(.act__stage.is-shut) .board__grid { opacity: 0; }

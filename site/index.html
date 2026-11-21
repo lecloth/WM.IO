@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Wajih Mansouri — software studio, Tunis</title>
-  <meta name="description" content="Websites, online shops and business apps, drawn before they are built.">
+  <title>Wajih Mansouri — studio, Tunis</title>
+  <meta name="description" content="Websites, apps, platforms, security and AI, drawn before they are built.">
   <script>
     /* Runs before first paint: type pairing preview (?type=a|b|c), reduced motion, return visit,
        and the real load-progress counter that the timeline strip draws itself with. */
@@ -36,6 +36,11 @@
   <script defer src="vendor/gsap.min.js" onload="__wm.done('gsap')"></script>
   <script defer src="vendor/ScrollTrigger.min.js" onload="__wm.done('st')"></script>
   <script defer src="vendor/lenis.min.js" onload="__wm.done('lenis')"></script>
+  <script type="importmap">{ "imports": {
+    "three": "./vendor/three/three.module.min.js",
+    "three/addons/": "./vendor/three/addons/"
+  } }</script>
+  <link rel="modulepreload" href="vendor/three/three.module.min.js">
   <script type="module" src="js/main.js"></script>
 </head>
 <body>
@@ -45,11 +50,11 @@
   <div class="strip__base" aria-hidden="true"></div>
   <ol class="strip__list">
     <li class="strip__seg" style="--i:0"><a href="#sheet-00"><span class="strip__no">00</span><span class="strip__name">Opening</span></a><i class="strip__fill"></i></li>
-    <li class="strip__seg" style="--i:1"><a href="#sheet-01"><span class="strip__no">01</span><span class="strip__name">Principles</span></a><i class="strip__fill"></i></li>
-    <li class="strip__seg" style="--i:2"><a href="#sheet-02"><span class="strip__no">02</span><span class="strip__name">Method</span></a><i class="strip__fill"></i></li>
-    <li class="strip__seg" style="--i:3"><a href="#sheet-03"><span class="strip__no">03</span><span class="strip__name">Work</span></a><i class="strip__fill"></i></li>
-    <li class="strip__seg" style="--i:4"><a href="#sheet-04"><span class="strip__no">04</span><span class="strip__name">Services</span></a><i class="strip__fill"></i></li>
-    <li class="strip__seg" style="--i:5"><a href="#sheet-05"><span class="strip__no">05</span><span class="strip__name">Also</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:1"><a href="#sheet-01"><span class="strip__no">01</span><span class="strip__name">First drawing</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:2"><a href="#sheet-02"><span class="strip__no">02</span><span class="strip__name">Principles</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:3"><a href="#sheet-03"><span class="strip__no">03</span><span class="strip__name">Disciplines</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:4"><a href="#sheet-04"><span class="strip__no">04</span><span class="strip__name">Method</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:5"><a href="#sheet-05"><span class="strip__no">05</span><span class="strip__name">Work</span></a><i class="strip__fill"></i></li>
     <li class="strip__seg" style="--i:6"><a href="#sheet-06"><span class="strip__no">06</span><span class="strip__name">Process</span></a><i class="strip__fill"></i></li>
     <li class="strip__seg" style="--i:7"><a href="#sheet-07"><span class="strip__no">07</span><span class="strip__name">Studio</span></a><i class="strip__fill"></i></li>
     <li class="strip__seg" style="--i:8"><a href="#sheet-08"><span class="strip__no">08</span><span class="strip__name">Contact</span></a><i class="strip__fill"></i></li>
@@ -80,49 +85,80 @@
   <div class="board__grid" aria-hidden="true"></div>
 
   <main id="sheets">
-    <!-- SHEET 00: OPENING -->
-    <section id="sheet-00" class="sheet sheet--opening" data-sheet="00" data-title="Opening">
-      <div class="frame" aria-hidden="true">
-        <div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
-        <div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
-      </div>
-      <div class="centre-lines" aria-hidden="true"><i class="centre-lines__h"></i><i class="centre-lines__v"></i></div>
+    <!-- ACT 1: sheet 00 (opening) and sheet 01 (the first drawing) share one sticky stage -->
+    <section id="act-1" class="act">
+      <div class="act__stage">
+        <!-- SHEET 00: OPENING -->
+        <div id="sheet-00" class="layer sheet--opening" data-sheet="00" data-title="Opening" data-drawn="Design" data-checked="Engineering" data-approved="Strategy">
+          <div class="frame" aria-hidden="true">
+            <div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+            <div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+          </div>
+          <div class="centre-lines" aria-hidden="true"><i class="centre-lines__h"></i><i class="centre-lines__v"></i></div>
 
-      <p class="opening__id mono reveal-late">Wajih Mansouri<br><span class="graphite">Software studio · Tunis</span></p>
-      <p class="opening__fig mono reveal-late" aria-hidden="true">Fig. 00</p>
+          <p class="opening__id mono reveal-late">Wajih Mansouri<br><span class="graphite">Studio · Tunis</span></p>
+          <p class="opening__fig mono reveal-late" aria-hidden="true">Fig. 00</p>
 
-      <div class="hold">
-        <div class="dim dim--hold reveal-late" aria-hidden="true">
-          <svg class="dim__svg" preserveAspectRatio="none"><line class="dim__ext dim__ext--a"/><line class="dim__ext dim__ext--b"/><line class="dim__line"/><path class="dim__arrow dim__arrow--a"/><path class="dim__arrow dim__arrow--b"/></svg>
-          <span class="dim__value mono">— mm</span>
+          <div class="hold">
+            <div class="dim dim--hold reveal-late" aria-hidden="true">
+              <svg class="dim__svg" preserveAspectRatio="none"><line class="dim__ext dim__ext--a"/><line class="dim__ext dim__ext--b"/><line class="dim__line"/><path class="dim__arrow dim__arrow--a"/><path class="dim__arrow dim__arrow--b"/></svg>
+              <span class="dim__value mono">— mm</span>
+            </div>
+            <h1 class="hold__line display">
+              <span class="hold__row"><span class="w">We</span> <span class="w">draw</span> <span class="w">it</span></span>
+              <span class="hold__row"><span class="w">before</span> <span class="w">we</span> <span class="w">build</span> <span class="w">it.</span></span>
+            </h1>
+          </div>
+
+          <div class="opening__lede reveal-late">
+            <p class="body">Websites, apps, platforms, security and AI, engineered to the millimetre, tested until nothing breaks, and run long after launch.</p>
+            <div class="opening__actions">
+              <a class="btn btn--ink" href="#sheet-08"><span>Start a project</span></a>
+              <a class="btn btn--line" href="#sheet-03"><span>See the sheets</span></a>
+            </div>
+          </div>
+
+          <p class="cue mono reveal-late" aria-hidden="true"><i class="cue__rule"></i><span>Scroll to assemble</span></p>
         </div>
-        <h1 class="hold__line display">
-          <span class="hold__row"><span class="w">We</span> <span class="w">draw</span> <span class="w">it</span></span>
-          <span class="hold__row"><span class="w">before</span> <span class="w">we</span> <span class="w">build</span> <span class="w">it.</span></span>
-        </h1>
-      </div>
 
-      <div class="opening__lede reveal-late">
-        <p class="body">Websites, shops and business apps, engineered to the millimetre, tested until nothing breaks, and handed over ready to run.</p>
-        <div class="opening__actions">
-          <a class="btn btn--ink" href="#sheet-08"><span>Start a project</span></a>
-          <a class="btn btn--line" href="#sheet-03"><span>See the sheets</span></a>
+
+        <!-- SHEET 01: THE FIRST DRAWING -->
+        <div id="sheet-01" class="layer sheet--plate" data-sheet="01" data-title="The first drawing" data-drawn="Design" data-checked="Engineering" data-approved="Security">
+          <div class="frame" aria-hidden="true">
+            <div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+            <div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+          </div>
+          <figure class="plate">
+            <img class="plate__img" src="media/plates/bell-us186787-sheet1.webp" width="1600" height="1740"
+                 alt="Patent drawing, sheet 1 of A. G. Bell's US Patent 186,787 (1877): Fig. 1, a box telephone with a speaking tube, and Fig. 2, its vertical section.">
+          </figure>
+          <div class="read read--plate">
+            <p class="read__eyebrow mono">Fig. 1 · 1877</p>
+            <h2 class="read__title display">Every phone starts on paper.</h2>
+            <p class="read__body body">US Patent 186,787, granted to Alexander Graham Bell on 30&nbsp;January 1877. Fig.&nbsp;1 is, in his words, &ldquo;a perspective view of one form of my electric telephone.&rdquo;</p>
+            <p class="read__note mono">Plate: US Patent 186,787, sheet 1 · public domain</p>
+          </div>
+        </div>
+        <svg class="redraw" aria-hidden="true"></svg>
+        <canvas class="phone-canvas" role="img" aria-label="Concept phone LOFTHAUL, pulled apart into six labelled layers: Glass, Interface, Flow, Logic, Data, Lock."></canvas>
+        <div id="s01-final" class="read read--final">
+          <p class="read__eyebrow mono">Apps and phones</p>
+          <h2 class="read__title display">The whole business in one pocket.</h2>
+          <p class="read__body body">Six layers, each drawn before it is built: what the hand meets, every screen, the flow, the rules, the data and the lock.</p>
+          <p class="read__tag mono"><span>Concept sheet</span> LOFTHAUL, a drone-delivery dispatcher. Made up to show the range, not a client.</p>
         </div>
       </div>
-
-      <p class="cue mono reveal-late" aria-hidden="true"><i class="cue__rule"></i><span>Scroll to assemble</span></p>
     </section>
 
-    <!-- SHEETS 01–09: drawn in later slices -->
-    <section id="sheet-01" class="sheet sheet--todo" data-sheet="01" data-title="Principles"><div class="todo"><p class="todo__no display">01</p><p class="todo__name mono">Principles · to be drawn</p></div></section>
-    <section id="sheet-02" class="sheet sheet--todo" data-sheet="02" data-title="Method"><div class="todo"><p class="todo__no display">02</p><p class="todo__name mono">Method · to be drawn</p></div></section>
-    <section id="sheet-03" class="sheet sheet--todo" data-sheet="03" data-title="Work"><div class="todo"><p class="todo__no display">03</p><p class="todo__name mono">Work · to be drawn</p></div></section>
-    <section id="sheet-04" class="sheet sheet--todo" data-sheet="04" data-title="Services"><div class="todo"><p class="todo__no display">04</p><p class="todo__name mono">Services · to be drawn</p></div></section>
-    <section id="sheet-05" class="sheet sheet--todo" data-sheet="05" data-title="Also on the board"><div class="todo"><p class="todo__no display">05</p><p class="todo__name mono">Also on the board · to be drawn</p></div></section>
-    <section id="sheet-06" class="sheet sheet--todo" data-sheet="06" data-title="Process"><div class="todo"><p class="todo__no display">06</p><p class="todo__name mono">Process · to be drawn</p></div></section>
-    <section id="sheet-07" class="sheet sheet--todo" data-sheet="07" data-title="Studio"><div class="todo"><p class="todo__no display">07</p><p class="todo__name mono">Studio · to be drawn</p></div></section>
-    <section id="sheet-08" class="sheet sheet--todo" data-sheet="08" data-title="Contact"><div class="todo"><p class="todo__no display">08</p><p class="todo__name mono">Contact · to be drawn</p></div></section>
-    <section id="sheet-09" class="sheet sheet--todo" data-sheet="09" data-title="Spec sheet"><div class="todo"><p class="todo__no display">09</p><p class="todo__name mono">Spec sheet · to be drawn</p></div></section>
+    <!-- SHEETS 02–09: drawn in later slices -->
+    <section id="sheet-02" class="sheet sheet--todo" data-sheet="02" data-title="Principles" data-drawn="Strategy" data-checked="Design" data-approved="Engineering"><div class="todo"><p class="todo__no display">02</p><p class="todo__name mono">Principles · to be drawn</p></div></section>
+    <section id="sheet-03" class="sheet sheet--todo" data-sheet="03" data-title="Disciplines" data-drawn="Engineering" data-checked="Security" data-approved="Strategy"><div class="todo"><p class="todo__no display">03</p><p class="todo__name mono">Disciplines · to be drawn</p></div></section>
+    <section id="sheet-04" class="sheet sheet--todo" data-sheet="04" data-title="Method" data-drawn="Strategy" data-checked="Engineering" data-approved="Design"><div class="todo"><p class="todo__no display">04</p><p class="todo__name mono">Method · to be drawn</p></div></section>
+    <section id="sheet-05" class="sheet sheet--todo" data-sheet="05" data-title="Work" data-drawn="Design" data-checked="AI" data-approved="Engineering"><div class="todo"><p class="todo__no display">05</p><p class="todo__name mono">Work · to be drawn</p></div></section>
+    <section id="sheet-06" class="sheet sheet--todo" data-sheet="06" data-title="Process" data-drawn="Engineering" data-checked="Security" data-approved="Strategy"><div class="todo"><p class="todo__no display">06</p><p class="todo__name mono">Process · to be drawn</p></div></section>
+    <section id="sheet-07" class="sheet sheet--todo" data-sheet="07" data-title="Studio" data-drawn="Strategy" data-checked="Design" data-approved="Security"><div class="todo"><p class="todo__no display">07</p><p class="todo__name mono">Studio · to be drawn</p></div></section>
+    <section id="sheet-08" class="sheet sheet--todo" data-sheet="08" data-title="Contact" data-drawn="Design" data-checked="Strategy" data-approved="Engineering"><div class="todo"><p class="todo__no display">08</p><p class="todo__name mono">Contact · to be drawn</p></div></section>
+    <section id="sheet-09" class="sheet sheet--todo" data-sheet="09" data-title="Spec sheet" data-drawn="Engineering" data-checked="AI" data-approved="Security"><div class="todo"><p class="todo__no display">09</p><p class="todo__name mono">Spec sheet · to be drawn</p></div></section>
   </main>
 </div>
 
@@ -130,9 +166,11 @@
 <aside id="titleblock" class="titleblock mono reveal-late" aria-label="Title block">
   <div class="tb__cell tb__cell--wide"><span class="tb__k">Project</span><span class="tb__v">Wajih Mansouri · Studio</span></div>
   <div class="tb__cell"><span class="tb__k">Sheet</span><span class="tb__v"><b class="tb__sheet">00</b> / 09</span></div>
-  <div class="tb__cell"><span class="tb__k">Title</span><span class="tb__v tb__title">Opening</span></div>
+  <div class="tb__cell tb__cell--title"><span class="tb__k">Title</span><span class="tb__v tb__title">Opening</span></div>
   <div class="tb__cell"><span class="tb__k">Scale</span><span class="tb__v">1:1</span></div>
-  <div class="tb__cell"><span class="tb__k">Drawn</span><span class="tb__v">W.M.</span></div>
+  <div class="tb__cell"><span class="tb__k">Drawn</span><span class="tb__v tb__drawn">Design</span></div>
+  <div class="tb__cell"><span class="tb__k">Checked</span><span class="tb__v tb__checked">Engineering</span></div>
+  <div class="tb__cell"><span class="tb__k">Approved</span><span class="tb__v tb__approved">Strategy</span></div>
   <div class="tb__cell"><span class="tb__k">Rev</span><span class="tb__v">11.26</span></div>
 </aside>
 
