@@ -1,1 +1,150 @@
-/* sheet 08: Contact */
+/* sheet 08: Contact, the live work order. Colours only through tokens. */
+
+#sheet-08 .s08__stage { background: transparent; overflow: clip; }
+/* the work order's unit: 1rem, or less when the screen is short for its width (16:9), so it fits the frame */
+#sheet-08 { --u: min(1rem, calc(100vh / 56.25)); --u: min(1rem, calc(100lvh / 56.25)); }
+@media (max-width: 1023px) { #sheet-08 { --u: 1rem; } }
+
+/* ---------- entry: the title block grows into the work order (SVG, lines only) ---------- */
+#sheet-08 .s08__grow { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; visibility: hidden; }
+#sheet-08 .s08g-outer { fill: var(--paper); stroke: var(--ink); stroke-width: 1; }
+#sheet-08 .s08g-outer.is-selected { fill: none; stroke-dasharray: 4 3; }
+#sheet-08 .s08g-cell { fill: none; stroke: rgba(var(--ink-rgb), .45); stroke-width: 1; }
+#sheet-08 .s08g-grip { fill: var(--paper); stroke: var(--ink); stroke-width: 1; }
+#sheet-08 .s08g-grip.is-hot { fill: var(--ink); }
+#sheet-08 .s08g-band { stroke: var(--graphite); stroke-width: 1; stroke-dasharray: 2 4; }
+
+/* ---------- the sheet ---------- */
+#sheet-08 .s08__sheet {
+  position: absolute; left: 0; right: 0; top: 0; min-height: 100%; display: flex; flex-direction: column; visibility: hidden;
+  padding: calc(var(--strip-h) + .75rem + var(--zone)) calc(var(--frame) + var(--zone)) calc(var(--frame) + var(--zone));
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid-major) 1px, transparent 1px), linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-minor) 1px, transparent 1px), linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+  background-size: 6.25rem 6.25rem, 6.25rem 6.25rem, 1.25rem 1.25rem, 1.25rem 1.25rem;
+  background-position: -6rem -6rem;
+}
+#sheet-08.is-shown .s08__sheet { visibility: visible; }
+#sheet-08 .s08__sheet > .frame { inset: calc(var(--strip-h) + .75rem) var(--frame) var(--frame); }
+
+/* the work order: one clean printed form inside the drawing frame; its bottom-right cell is the page's title block */
+#sheet-08 .s08__wo {
+  position: relative; flex: 1; display: grid; background: var(--paper); border: 1px solid var(--ink);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) var(--tbw, calc(23.7 * var(--u)));
+  grid-template-rows: auto minmax(0, 1fr) auto var(--tbh, calc(7.7 * var(--u)));
+  grid-template-areas: "head head no" "way have tb" "reach send tb" "direct direct .";
+}
+#sheet-08 .s08__form { display: contents; }
+#sheet-08 [data-cell] { position: relative; padding: calc(1.15 * var(--u)) calc(1.5 * var(--u)) calc(1.2 * var(--u)); min-width: 0; }
+#sheet-08 .s08__head { grid-area: head; padding-top: calc(1.5 * var(--u)); }
+#sheet-08 .s08__no { grid-area: no; border-left: 1px solid rgba(var(--ink-rgb), .45); display: flex; flex-direction: column; gap: calc(.55 * var(--u)); padding-top: calc(1.5 * var(--u)); }
+#sheet-08 .s08__field--way { grid-area: way; border-top: 1px solid rgba(var(--ink-rgb), .45); }
+#sheet-08 .s08__field--have { grid-area: have; border-top: 1px solid rgba(var(--ink-rgb), .45); border-left: 1px solid rgba(var(--ink-rgb), .45); }
+#sheet-08 .s08__field--reach { grid-area: reach; border-top: 1px solid rgba(var(--ink-rgb), .45); }
+#sheet-08 .s08__send { grid-area: send; border-top: 1px solid rgba(var(--ink-rgb), .45); border-left: 1px solid rgba(var(--ink-rgb), .45); }
+#sheet-08 .s08__tb { grid-area: tb; border-top: 1px solid rgba(var(--ink-rgb), .45); border-left: 1px solid rgba(var(--ink-rgb), .45); padding: 0; display: flex; flex-direction: column; }
+#sheet-08 .s08__direct { grid-area: direct; border-top: 1px solid rgba(var(--ink-rgb), .45); display: flex; flex-direction: column; justify-content: center; gap: calc(.5 * var(--u)); }
+
+/* the contents appear once the cells are drawn (the cells themselves are there at once: no see-through) */
+#sheet-08 [data-cell] > * { opacity: 0; transition: opacity .25s var(--ease-out); }
+#sheet-08.is-shown [data-cell] > * { opacity: 1; }
+
+/* ---------- type ---------- */
+#sheet-08 .s08__k { display: block; color: var(--graphite); font-size: calc(.625 * var(--u)); }
+#sheet-08 .s08__v { color: var(--ink); font-size: calc(.75 * var(--u)); }
+#sheet-08 .s08__eyebrow { font-size: calc(.6875 * var(--u)); color: var(--graphite); margin-bottom: calc(.9 * var(--u)); }
+#sheet-08 .s08__title { font-size: calc(4.2 * var(--u)); color: var(--ink); }
+#sheet-08 .s08__lede { font-size: calc(1.1875 * var(--u)); line-height: 1.42; color: var(--ink); max-width: calc(36 * var(--u)); margin-top: calc(.9 * var(--u)); }
+#sheet-08 .s08__kv { display: flex; justify-content: space-between; align-items: baseline; gap: calc(1 * var(--u)); border-bottom: 1px solid rgba(var(--ink-rgb), .15); padding-bottom: calc(.4 * var(--u)); }
+#sheet-08 .s08__kv .s08__k { display: inline; }
+
+/* ---------- fields ---------- */
+#sheet-08 .s08__field { display: flex; flex-direction: column; }
+#sheet-08 .s08__label { display: flex; align-items: center; gap: calc(.65 * var(--u)); font-size: calc(1.375 * var(--u)); line-height: 1.2; color: var(--ink); }
+#sheet-08 .s08__n { display: inline-grid; place-items: center; flex: none; width: calc(1.75 * var(--u)); height: calc(1.75 * var(--u)); border: 1px solid var(--ink); border-radius: 50%; font-size: calc(.625 * var(--u)); }
+#sheet-08 .s08__hint { margin: calc(.35 * var(--u)) 0 calc(.7 * var(--u)) calc(2.4 * var(--u)); font-size: calc(1 * var(--u)); line-height: 1.35; color: var(--graphite); }
+#sheet-08 .s08__input {
+  display: block; width: 100%; font: inherit; font-family: var(--f-body); font-size: calc(1.25 * var(--u)); line-height: 1.4; color: var(--ink);
+  background: var(--paper); border: 1px solid rgba(var(--ink-rgb), .55); border-radius: 0; padding: calc(.55 * var(--u)) calc(.75 * var(--u)); resize: none;
+  -webkit-appearance: none; appearance: none;
+}
+#sheet-08 textarea.s08__input { flex: 1; min-height: calc(6.5 * var(--u)); }
+#sheet-08 .s08__field--have textarea.s08__input { min-height: calc(5 * var(--u)); }
+#sheet-08 input.s08__input { height: calc(3.25 * var(--u)); }
+#sheet-08 .s08__input:hover { border-color: var(--ink); }
+#sheet-08 .s08__input { scroll-margin: 7rem 0 calc(var(--tbh, 3rem) + 2rem); }
+#sheet-08 .s08__input:focus { outline: 2px solid var(--ink); outline-offset: 2px; border-color: var(--ink); }
+/* an error takes the hint's place, in words: nothing below it moves */
+#sheet-08 .s08__err { margin: calc(.35 * var(--u)) 0 calc(.7 * var(--u)) calc(2.4 * var(--u)); font-size: calc(1 * var(--u)); line-height: 1.35; color: var(--ink); }
+#sheet-08 .s08__err:empty { display: none; }
+#sheet-08 .has-err .s08__hint { display: none; }
+#sheet-08 .s08__err::before { content: "Check · "; font-family: var(--f-mono); font-size: calc(.6875 * var(--u)); letter-spacing: var(--mono-track); text-transform: uppercase; }
+#sheet-08 .has-err .s08__input { border: 2px solid var(--ink); }
+
+/* ---------- the live title block ---------- */
+#sheet-08 .s08__row { padding: calc(.8 * var(--u)) calc(1.25 * var(--u)) calc(.85 * var(--u)); border-top: 1px solid rgba(var(--ink-rgb), .3); }
+#sheet-08 .s08__row:first-child { border-top: 0; }
+#sheet-08 .s08__row--disc { flex: 1; }
+#sheet-08 .s08__project { display: block; font-size: calc(1.75 * var(--u)); line-height: 1.05; margin-top: calc(.35 * var(--u)); color: var(--ink); overflow-wrap: anywhere; }
+#sheet-08 .s08__project.is-empty { color: var(--graphite); }
+#sheet-08 .s08__dl { list-style: none; margin-top: calc(.45 * var(--u)); display: grid; gap: calc(.18 * var(--u)); }
+#sheet-08 .s08__d { display: grid; grid-template-columns: calc(.75 * var(--u)) auto 1fr; align-items: center; gap: calc(.55 * var(--u)); font-family: var(--f-mono); font-size: calc(.6875 * var(--u)); letter-spacing: var(--mono-track); text-transform: uppercase; color: var(--graphite); line-height: 1.5; }
+#sheet-08 .s08__box { width: calc(.75 * var(--u)); height: calc(.75 * var(--u)); border: 1px solid rgba(var(--ink-rgb), .55); position: relative; }
+#sheet-08 .s08__d.is-hit { color: var(--ink); }
+#sheet-08 .s08__d.is-hit .s08__box { border-color: var(--ink); background: var(--ink); box-shadow: inset 0 0 0 2px var(--paper); }
+#sheet-08 .s08__hit { font-style: normal; text-transform: none; color: var(--graphite); font-size: calc(.625 * var(--u)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
+#sheet-08 .s08__row--count { display: grid; grid-template-columns: auto 1fr; align-items: end; column-gap: calc(1 * var(--u)); }
+#sheet-08 .s08__row--count .s08__k { grid-column: 1 / -1; }
+#sheet-08 .s08__count { font-size: calc(2.6 * var(--u)); line-height: 1; margin-top: calc(.25 * var(--u)); color: var(--ink); font-variant-numeric: tabular-nums; }
+#sheet-08 .s08__why { color: var(--graphite); font-size: calc(.5625 * var(--u)); line-height: 1.4; padding-bottom: calc(.3 * var(--u)); }
+#sheet-08 .s08__row--reply .s08__v { display: block; margin-top: calc(.3 * var(--u)); }
+
+/* ---------- send ---------- */
+#sheet-08 .s08__btns { display: flex; flex-wrap: wrap; gap: calc(.75 * var(--u)); margin: calc(.7 * var(--u)) 0 calc(.8 * var(--u)); }
+#sheet-08 .s08__btn { height: calc(3.25 * var(--u)); padding: 0 calc(1.4 * var(--u)); font-size: calc(.75 * var(--u)); }
+#sheet-08 .s08__note { font-size: calc(1 * var(--u)); line-height: 1.38; color: var(--graphite); max-width: calc(30 * var(--u)); }
+#sheet-08 .s08__status { font-size: calc(1 * var(--u)); line-height: 1.38; color: var(--ink); margin-top: calc(.5 * var(--u)); }
+#sheet-08 .s08__status:empty { display: none; }
+/* the status takes the note's place: nothing moves */
+#sheet-08 .has-status .s08__note { display: none; }
+#sheet-08 .s08__status { margin-top: 0; max-width: calc(30 * var(--u)); }
+
+/* ---------- direct ---------- */
+#sheet-08 .s08__lines { display: flex; flex-wrap: wrap; align-items: baseline; gap: calc(.4 * var(--u)) calc(1.75 * var(--u)); font-size: calc(1.1875 * var(--u)); color: var(--ink); max-width: calc(100% - calc(1 * var(--u))); }
+#sheet-08 .s08__link { border-bottom: 1px solid rgba(var(--ink-rgb), .45); transition: border-color .2s; }
+#sheet-08 .s08__link:hover { border-color: var(--ink); }
+#sheet-08 .s08__link:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+#sheet-08 .s08__place { color: var(--graphite); }
+
+/* ---------- mobile: one column, big targets, the live title block right before the send buttons ---------- */
+@media (max-width: 1023px) {
+  #sheet-08 .s08__wo {
+    grid-template-columns: minmax(0, 1fr); grid-template-rows: none;
+    grid-template-areas: "head" "no" "way" "have" "reach" "tb" "send" "direct";
+  }
+  #sheet-08 [data-cell] { padding: 1rem 1rem 1.1rem; border-left: 0 !important; }
+  #sheet-08 .s08__no { border-top: 1px solid rgba(var(--ink-rgb), .45); flex-direction: row; flex-wrap: wrap; gap: .4rem 1.25rem; padding-top: .8rem; }
+  #sheet-08 .s08__kv { border: 0; padding: 0; gap: .5rem; }
+  #sheet-08 .s08__title { font-size: 2.75rem; }
+  #sheet-08 .s08__lede { font-size: 1.0625rem; }
+  #sheet-08 .s08__label { font-size: 1.25rem; }
+  #sheet-08 .s08__hint, #sheet-08 .s08__err { margin-left: 0; font-size: 1rem; }
+  #sheet-08 .s08__input { font-size: 1.125rem; padding: .7rem .8rem; }
+  #sheet-08 textarea.s08__input { min-height: 8rem; flex: none; }
+  #sheet-08 .s08__field--have textarea.s08__input { min-height: 6rem; }
+  #sheet-08 input.s08__input { height: 3.5rem; }
+  #sheet-08 .s08__tb { padding: 0; }
+  #sheet-08 .s08__row { padding: .8rem 1rem; }
+  #sheet-08 .s08__btns { flex-direction: column; }
+  #sheet-08 .s08__btn { flex: none; height: 3.5rem; width: 100%; justify-content: center; font-size: .75rem; }
+  #sheet-08 .s08__lines { flex-direction: column; gap: .6rem; font-size: 1.0625rem; }
+  #sheet-08 .s08__link { padding: .35rem 0; }
+  /* room for the page's title block at the bottom right */
+  #sheet-08 .s08__direct { padding-bottom: calc(var(--tbh, 2.6rem) + 1.5rem); }
+}
+
+/* ---------- reduced motion: the finished form, nothing moves ---------- */
+#sheet-08.is-static .s08__grow { display: none; }
+#sheet-08.is-static .s08__sheet { position: relative; min-height: 100vh; min-height: 100lvh; visibility: visible; }
+#sheet-08.is-static [data-cell] > * { opacity: 1; transition: none; }

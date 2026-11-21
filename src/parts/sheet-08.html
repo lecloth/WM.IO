@@ -1,3 +1,90 @@
-    <section id="sheet-08" class="chapter" data-sheet="08" data-title="Contact" data-drawn="Design" data-checked="Strategy" data-approved="Engineering" style="--units: 3">
-      <div class="chapter__stage sheet--todo-stage"><div class="todo"><p class="todo__no display">08</p><p class="todo__name mono">Contact · to be drawn</p></div></div>
+    <!-- SHEET 08: CONTACT. Entry: the page's title block grows out of its corner into the work order (cells subdividing
+         into the form). The work order's own title block fills in live as the visitor types, all in the browser.
+         Sending hands the work order to the visitor's own email app (mailto:) or WhatsApp (wa.me); nothing is sent
+         from the page. Contact details come from site/js/settings.js. -->
+    <section id="sheet-08" class="chapter s08" data-sheet="08" data-title="Contact" data-drawn="Design" data-checked="Strategy" data-approved="Engineering" style="--units: 2.2">
+      <div class="chapter__stage s08__stage">
+        <svg class="s08__grow" aria-hidden="true"></svg>
+        <div class="s08__sheet">
+          <div class="frame" aria-hidden="true">
+            <div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+            <div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+          </div>
+
+          <div class="s08__wo">
+            <header class="s08__head" data-cell>
+              <p class="s08__eyebrow mono">Work order · Sheet 08 · Contact</p>
+              <h2 class="s08__title display">Bring us the problem.</h2>
+              <p class="s08__lede">Three questions. Your answers become a work order, and it goes out from your own email or WhatsApp.</p>
+            </header>
+
+            <div class="s08__no" data-cell>
+              <p class="s08__kv"><span class="s08__k mono">Work order</span><span class="s08__v mono" data-out="no">WO-····</span></p>
+              <p class="s08__kv"><span class="s08__k mono">Date</span><span class="s08__v mono" data-out="date"></span></p>
+              <p class="s08__kv"><span class="s08__k mono">Drawn by</span><span class="s08__v mono">You</span></p>
+            </div>
+
+            <form class="s08__form" novalidate aria-label="Work order">
+              <div class="s08__field s08__field--way" data-cell>
+                <label class="s08__label" for="s08-way"><span class="s08__n mono">01</span>What&rsquo;s in the way?</label>
+                <p class="s08__hint" id="s08-way-hint">The problem, in your own words. One line is enough.</p>
+                <p class="s08__err" id="s08-way-err" aria-live="polite"></p>
+                <textarea class="s08__input" id="s08-way" name="way" rows="5" maxlength="1500" required aria-required="true" aria-describedby="s08-way-hint s08-way-err" data-lenis-prevent></textarea>
+              </div>
+
+              <div class="s08__field s08__field--have" data-cell>
+                <label class="s08__label" for="s08-have"><span class="s08__n mono">02</span>What do you have today?</label>
+                <p class="s08__hint" id="s08-have-hint">A website, an app, a spreadsheet, or nothing yet. Optional.</p>
+                <textarea class="s08__input" id="s08-have" name="have" rows="3" maxlength="1000" aria-describedby="s08-have-hint" data-lenis-prevent></textarea>
+              </div>
+
+              <div class="s08__field s08__field--reach" data-cell>
+                <label class="s08__label" for="s08-reach"><span class="s08__n mono">03</span>How do we reach you?</label>
+                <p class="s08__hint" id="s08-reach-hint">Email or phone. Optional: we can reply where you send this from.</p>
+                <p class="s08__err" id="s08-reach-err" aria-live="polite"></p>
+                <input class="s08__input" id="s08-reach" name="reach" type="text" maxlength="160" autocomplete="email" autocapitalize="off" spellcheck="false" aria-describedby="s08-reach-hint s08-reach-err">
+              </div>
+            </form>
+
+            <aside class="s08__tb" data-cell aria-label="Work order title block, filled in as you type">
+              <div class="s08__row s08__row--project">
+                <span class="s08__k mono">Project</span>
+                <span class="s08__project display" data-out="project">Waiting for the problem</span>
+              </div>
+              <div class="s08__row s08__row--disc">
+                <span class="s08__k mono">Disciplines it needs</span>
+                <ul class="s08__dl" data-out="disciplines"></ul>
+              </div>
+              <div class="s08__row s08__row--count">
+                <span class="s08__k mono">Sheets</span>
+                <span class="s08__count display" data-out="sheets">00</span>
+                <span class="s08__why mono">Diagnose, one per discipline, hand over</span>
+              </div>
+              <div class="s08__row s08__row--reply">
+                <span class="s08__k mono">Reply by</span>
+                <span class="s08__v mono" data-out="reply">Where you send from</span>
+              </div>
+            </aside>
+
+            <div class="s08__send" data-cell>
+              <p class="s08__k mono" id="s08-send-k">Send to the board</p>
+              <div class="s08__btns" role="group" aria-labelledby="s08-send-k">
+                <a class="btn btn--ink s08__btn" id="s08-mail" href="#"><span>Send by email</span></a>
+                <a class="btn btn--line s08__btn" id="s08-wa" href="#" target="_blank" rel="noopener"><span>Send on WhatsApp</span></a>
+              </div>
+              <p class="s08__note">Opens your own email app or WhatsApp with the work order written out. You press send there; nothing is sent from this page.</p>
+              <p class="s08__status" role="status" aria-live="polite"></p>
+            </div>
+
+            <div class="s08__direct" data-cell>
+              <p class="s08__k mono">Or write to us directly</p>
+              <p class="s08__lines">
+                <a class="s08__link" data-setting="email-link" href="#"><span data-setting="email"></span></a>
+                <a class="s08__link" data-setting="wa-link" href="#" target="_blank" rel="noopener">WhatsApp <span data-setting="whatsapp"></span></a>
+                <span class="s08__place">Studio in <span data-setting="location"></span></span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>

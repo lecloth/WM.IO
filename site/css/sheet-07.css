@@ -1,1 +1,98 @@
-/* sheet 07: Studio */
+/* sheet 07: Studio. The fold (entry), the bench in plan, the founder card. Colours only through tokens. */
+
+#sheet-07 .s07__stage { background: transparent; }
+/* our own sheet: paper with a still copy of the board grid (aligned to the board's), revealed as sheet 06 folds away */
+#sheet-07 .s07__sheet {
+  position: absolute; inset: 0; background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid-major) 1px, transparent 1px), linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-minor) 1px, transparent 1px), linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+  background-size: 6.25rem 6.25rem, 6.25rem 6.25rem, 1.25rem 1.25rem, 1.25rem 1.25rem;
+  background-position: -6rem -6rem;
+}
+
+/* ---------- the fold layer (entry) ---------- */
+#sheet-07 .s07__fold { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+#sheet-07 .s07f-crease__dark { stroke: rgba(var(--ink-rgb), .55); stroke-width: 1; }
+#sheet-07 .s07f-crease__light { stroke: rgba(var(--paper-rgb), .85); stroke-width: 1; }
+#sheet-07 .s07f-paper { fill: var(--paper); }
+#sheet-07 .s07f-tone { fill: var(--ink); fill-opacity: 0; }
+#sheet-07 .s07f-edge { fill: none; stroke: var(--ink); stroke-width: 1; }
+#sheet-07 .s07f-hinge { stroke: var(--ink); stroke-width: 1.5; }
+
+/* ---------- Fig. 7: the bench ---------- */
+#sheet-07 .s07__fig { position: absolute; left: 50%; right: calc(var(--frame) + var(--zone) + 3rem); top: calc(var(--strip-h) + 4.25rem); }
+#sheet-07 .s07__cap { color: var(--graphite); margin-bottom: 3.4rem; }
+#sheet-07 .s07__draw { position: relative; width: 100%; aspect-ratio: 640 / 440; }
+#sheet-07 .s07__plan { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+#sheet-07 .s07__labels { position: absolute; inset: 0; pointer-events: none; }
+#sheet-07 .s07__legend { display: none; }
+
+#sheet-07 .s07p-line { fill: none; stroke: var(--ink); stroke-width: 1; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+#sheet-07 .s07p-line--heavy { stroke-width: 1.4; }
+#sheet-07 .s07p-line--fine { stroke: var(--graphite); }
+#sheet-07 .s07p-wall { fill: url(#s07-hatch); stroke: none; opacity: 0; transition: opacity .25s linear; }
+#sheet-07 .s07p-wall.is-on { opacity: 1; }
+#sheet-07 .s07p-hatchline { stroke: rgba(var(--ink-rgb), .55); stroke-width: 1; vector-effect: non-scaling-stroke; }
+#sheet-07 .s07p-dot { fill: var(--ink); opacity: 0; }
+#sheet-07 .s07p-dot.is-on { opacity: 1; }
+#sheet-07 .s07p-leaf .s07p-line { fill: var(--paper); }
+#sheet-07 .s07p-leaf.is-named .s07p-line { fill: var(--ink); }
+#sheet-07 .s07p-route { fill: none; stroke: var(--ink); stroke-width: 1; stroke-dasharray: 5 3; vector-effect: non-scaling-stroke; }
+#sheet-07 .s07p-trailmask { fill: none; stroke: #fff; stroke-width: 8; }
+#sheet-07 .s07p-sheet { visibility: hidden; }
+#sheet-07 .s07p-sheet__paper { fill: var(--paper); stroke: var(--ink); stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+#sheet-07 .s07p-sheet__tb { fill: none; stroke: var(--ink); stroke-width: 1; vector-effect: non-scaling-stroke; }
+#sheet-07 .s07p-sheet.is-filed { visibility: hidden !important; }
+
+/* labels: HTML over the drawing so they stay legible at any scale; shown or hidden, never half */
+#sheet-07 .s07l-desk, #sheet-07 .s07l-stamp, #sheet-07 .s07l-under { position: absolute; margin: 0; opacity: 0; visibility: hidden; transition: opacity .25s var(--ease-out), visibility 0s .25s; white-space: nowrap; }
+#sheet-07 .is-on { opacity: 1; visibility: inherit; transition: opacity .25s var(--ease-out), visibility 0s; }
+#sheet-07 .s07l-desk { transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; gap: .2rem; font-size: .625rem; color: var(--ink); }
+#sheet-07 .s07l-no { display: inline-grid; place-items: center; min-width: 1.6rem; height: 1.6rem; border: 1px solid var(--ink); border-radius: 50%; font-size: .625rem; background: var(--paper); }
+#sheet-07 .s07l-sub { color: var(--graphite); font-size: .5625rem; }
+#sheet-07 .s07l-stamp { font-size: .5625rem; letter-spacing: .08em; color: var(--ink); border: 1px solid var(--ink); padding: .12rem .32rem .1rem; background: var(--paper); }
+#sheet-07 .s07l-stamp--filed { transform: translateX(-100%); }
+#sheet-07 .s07l-stamp__short { display: none; }
+#sheet-07 .s07l-under { transform: translateX(-50%); font-size: .625rem; color: var(--ink); display: flex; flex-direction: column; gap: .15rem; }
+#sheet-07 .s07l-under--door { transform: translateX(-.25rem); }
+#sheet-07 .s07l-under--door span { color: var(--graphite); }
+#sheet-07 .s07l-under--door b { font-weight: 500; }
+
+/* ---------- reading moments ---------- */
+#sheet-07 .s07__read { left: 12.5%; top: 25%; width: min(29rem, 32%); }
+#sheet-07 .s07__read .read__title { font-size: 4.4rem; }
+#sheet-07 .s07__read .read__note { line-height: 1.6; }
+#sheet-07 .s07__plate { display: inline-flex; border: 1px solid var(--ink); margin: 0 0 1.25rem; font-size: .75rem; }
+#sheet-07 .s07__plate span { padding: .5rem .75rem .45rem; }
+#sheet-07 .s07__plate span + span { border-left: 1px solid var(--ink); color: var(--graphite); }
+
+/* ---------- mobile ---------- */
+@media (max-width: 1023px) {
+  #sheet-07 .s07__fig { left: 1.6rem; right: 1.25rem; top: calc(var(--strip-h) + 2.4rem); }
+  #sheet-07 .s07__cap { margin-bottom: 2.2rem; }
+  #sheet-07 .s07l-name, #sheet-07 .s07l-sub { display: none; }
+  #sheet-07 .s07l-no { min-width: 1.35rem; height: 1.35rem; font-size: .5625rem; }
+  #sheet-07 .s07l-stamp { font-size: .5625rem; padding: .05rem .25rem; }
+  #sheet-07 .s07l-stamp__long { display: none; }
+  #sheet-07 .s07l-stamp__short { display: inline; }
+  #sheet-07 .s07l-under { font-size: .5625rem; }
+  #sheet-07 .s07__legend { display: grid; grid-template-columns: repeat(5, auto); justify-content: space-between; gap: .35rem .5rem; margin-top: 1.4rem; color: var(--graphite); font-size: .5625rem; }
+  #sheet-07 .s07__legend span:nth-child(n+6) { grid-row: 2; }
+  #sheet-07 .s07__read { left: 1.25rem; right: 1.25rem; top: auto; bottom: 4.5rem; width: auto; }
+  #sheet-07 .s07__read .read__title { font-size: 2.3rem; }
+  #sheet-07 .s07__read .read__note { display: none; }
+  #sheet-07 .s07__plate { margin-bottom: .75rem; font-size: .625rem; }
+}
+
+/* ---------- reduced motion: one calm finished sheet ---------- */
+#sheet-07.is-static .s07__fold { display: none; }
+#sheet-07.is-static .s07__sheet { position: relative; min-height: 100vh; min-height: 100lvh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); column-gap: 5%; row-gap: 3.5rem; align-content: start;
+  padding: calc(var(--strip-h) + 5rem) calc(var(--frame) + var(--zone) + 3rem) 10rem 12.5%; }
+#sheet-07.is-static .s07__read { position: relative; left: auto; right: auto; top: auto; bottom: auto; width: auto; grid-column: 1; }
+#sheet-07.is-static .s07__fig { position: relative; left: auto; right: auto; top: auto; grid-column: 2; grid-row: 1 / span 2; align-self: start; }
+@media (max-width: 1023px) {
+  #sheet-07.is-static .s07__sheet { grid-template-columns: minmax(0, 1fr); padding: calc(var(--strip-h) + 2.5rem) 1.25rem 6rem; row-gap: 2rem; }
+  #sheet-07.is-static .s07__fig { grid-column: 1; grid-row: 1; }
+  #sheet-07.is-static .s07__read { grid-column: 1; grid-row: auto; padding: 0; }
+}
