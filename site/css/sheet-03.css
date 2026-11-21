@@ -1,1 +1,112 @@
-/* sheet 03: Disciplines */
+/* sheet 03: Disciplines (builder D1; shared by sheet-03 and sheet-03c sections, class prefix .d3).
+   Colours only through tokens. Text is shown or not (class toggles, fades <= .25 s). */
+
+/* ---------- the sheet: opaque paper with the board's grid, inside a transparent stage ---------- */
+.d3 .d3__stage { background: transparent; }
+.d3__sheet {
+  position: absolute; inset: 0; background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+  background-size: 6.25rem 6.25rem, 6.25rem 6.25rem, 1.25rem 1.25rem, 1.25rem 1.25rem;
+  background-position: -1px -1px;
+}
+.d3__sheet.is-unmeasured { visibility: hidden; }
+
+/* the plan chest: the sheet is drawn up from below with a hairline leading edge and a drawer tab */
+.d3__sheet.is-drawn { will-change: transform; box-shadow: 0 -1px 0 var(--ink); }
+.d3__sheet::before { content: ""; position: absolute; left: 0; right: 0; top: .375rem; height: 1px; background: rgba(var(--ink-rgb), .3); opacity: 0; }
+.d3__sheet.is-drawn::before { opacity: 1; }
+.d3__tab { position: absolute; left: 12.5%; bottom: 100%; display: flex; gap: 1.25rem; align-items: center; height: 2rem; padding: 0 .9rem;
+  background: var(--paper); border: 1px solid var(--ink); border-bottom: 0; color: var(--ink); white-space: nowrap; visibility: hidden; }
+.d3__tab span:first-child { color: var(--graphite); }
+.d3__tab.is-on { visibility: visible; }
+
+/* ---------- reading moment 1: the plate ---------- */
+.d3__plate { position: absolute; left: 12.5%; top: calc(var(--strip-h) + 2.6rem); height: calc(100lvh - var(--strip-h) - 5.6rem);
+  aspect-ratio: var(--ar); max-width: 46%; background: var(--paper); box-shadow: 0 0 0 .75rem var(--paper); transition: opacity .2s linear; }
+.d3__plate.is-gone, .d3__sheet.is-measuring .d3__plate { opacity: 0; }
+.d3__plate-img { display: block; width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; user-select: none; }
+
+/* ---------- the redraw ---------- */
+.d3__draw { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.d3__fig path { fill: none; stroke: var(--ink); stroke-width: var(--sw, 1px); stroke-linejoin: round; }
+.d3__out path { fill: none; stroke: var(--ink); stroke-width: 1.25px; stroke-linecap: round; stroke-linejoin: round; }
+.d3__out path.thin { stroke-width: 1px; stroke: rgba(var(--ink-rgb), .55); }
+.d3__out path.dim { stroke-width: 1px; }
+.d3__out path.centre { stroke: var(--graphite); stroke-width: 1px; stroke-dasharray: 14 4 2 4; }
+.d3__out path.dash { stroke-width: 1px; stroke-dasharray: 6 4; }
+.d3__out path.arrow { fill: var(--ink); stroke: none; }
+.d3__out path.centre, .d3__out path.dash, .d3__out path.arrow { transition: opacity .2s linear; }
+.d3__labels { opacity: 0; visibility: hidden; transition: opacity .25s var(--ease-out), visibility 0s .25s; }
+.d3__labels.is-on { opacity: 1; visibility: visible; transition: opacity .25s var(--ease-out), visibility 0s; }
+.d3__labels text { font-family: var(--f-mono); font-size: .6875rem; letter-spacing: var(--mono-track); text-transform: uppercase; fill: var(--ink);
+  paint-order: stroke; stroke: var(--paper); stroke-width: 4px; stroke-linejoin: round; }
+.d3__labels text.sub { fill: var(--graphite); font-size: .625rem; }
+.d3__labels .lead { fill: none; stroke: var(--ink); stroke-width: 1px; }
+.d3__labels .dot { fill: var(--ink); }
+
+/* the years between the plate and today: a dimension line under the drawing */
+.d3__span { position: absolute; height: 2.6rem; visibility: hidden; }
+.d3__span.is-on { visibility: visible; }
+.d3__span-svg { position: absolute; left: 0; top: 0; width: 100%; height: 20px; overflow: visible; }
+.d3__span-svg line { stroke: var(--ink); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.d3__span-svg path { fill: var(--ink); }
+.d3__span-a, .d3__span-b { position: absolute; top: 26px; color: var(--graphite); }
+.d3__span-a { left: 0; } .d3__span-b { right: 0; }
+.d3__span-v { position: absolute; left: 50%; top: -.3rem; transform: translateX(-50%); padding: 0 .5rem; background: var(--paper); color: var(--ink); white-space: nowrap; opacity: 0; transition: opacity .2s linear; }
+.d3__span.is-full .d3__span-v { opacity: 1; }
+
+/* ---------- reading moments ---------- */
+.d3__read--plate { top: 24%; }
+.d3__read--line { top: 20%; }
+.d3 .read__title { font-size: 3.6rem; }
+.d3__read--line .read__title { font-size: 3.4rem; }
+.d3__offer { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1.5rem; list-style: none; }
+.d3__offer li { border: 1px solid rgba(var(--ink-rgb), .45); padding: .22rem .55rem; color: var(--ink); }
+.d3__ref { display: inline-flex; align-items: center; gap: .85rem; margin-top: 1.4rem; color: var(--ink); font-size: .6875rem; padding: .2rem .2rem .2rem 0; }
+.d3__ref > span:last-child { border-bottom: 1px solid currentColor; padding-bottom: .1rem; }
+.d3__bubble { position: relative; display: grid; grid-template-rows: 1fr 1fr; width: 2.75rem; height: 2.75rem; border: 1px solid var(--ink); border-radius: 50%; overflow: hidden; text-align: center; line-height: 1; }
+.d3__bubble::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--ink); }
+.d3__bubble b { align-self: end; padding-bottom: .2rem; font-weight: 500; }
+.d3__bubble i { font-style: normal; padding-top: .25rem; color: var(--graphite); font-size: .5625rem; }
+@media (hover: hover) { .d3__ref:hover > span:last-child { border-bottom-width: 2px; } .d3__ref:hover .d3__bubble { background: var(--ink); color: var(--paper); } .d3__ref:hover .d3__bubble i { color: var(--paper); } .d3__ref:hover .d3__bubble::after { background: var(--paper); } }
+.d3__ref:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+
+/* ---------- the chapter change into 03: dimension lines measure the sheet before it appears ---------- */
+.d3__measure { position: absolute; inset: 0; pointer-events: none; z-index: 3; display: none; }
+.d3__measure-svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; }
+.d3__measure-svg line, .d3__measure-svg .d3__mframe, .d3__measure-svg .d3__mmark { stroke: var(--ink); stroke-width: 1px; fill: none; }
+.d3__measure-svg path:not(.d3__mframe):not(.d3__mmark) { fill: var(--ink); stroke: none; }
+.d3__mv { position: absolute; transform: translate(-50%, -50%); padding: .12rem .5rem; background: var(--paper); color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; visibility: hidden; }
+.d3__mv.is-on { visibility: visible; }
+.d3__mv--h { transform: translate(-50%, -50%) rotate(-90deg); }
+.d3__mv--name { transform: translate(-50%, 0); color: var(--graphite); font-size: .625rem; opacity: 0; transition: opacity .25s var(--ease-out); }
+.d3__mv--name.is-on { opacity: 1; }
+
+/* ---------- reduced motion: each discipline as two finished panels (plate + caption, drawing + line) ---------- */
+.d3.is-final .d3__sheet { position: relative; height: 200vh; height: 200lvh; }
+.d3.is-final .d3__read { top: 24vh; top: 24lvh; }
+.d3.is-final .d3__read--line { top: calc(100vh + 20vh); top: calc(100lvh + 20lvh); }
+.d3.is-final .d3__sheet::after { content: ""; position: absolute; left: var(--frame); right: var(--frame); top: 100lvh; height: 1px; background: rgba(var(--ink-rgb), .35); }
+.d3.is-final .d3__tab, .d3.is-final .d3__measure { display: none; }
+.d3__still { position: absolute; left: 12.5%; top: 30lvh; width: 40%; height: auto; }
+
+/* ---------- mobile ---------- */
+@media (max-width: 1023px) {
+  .d3__tab { left: 1.25rem; gap: .75rem; padding: 0 .6rem; font-size: .5625rem; }
+  .d3__plate { left: 0; right: 0; margin: 0 auto; top: calc(var(--strip-h) + 1.75rem); height: 42lvh; max-width: calc(100% - 2.5rem); box-shadow: 0 0 0 .5rem var(--paper); }
+  .d3 .read__title, .d3__read--line .read__title { font-size: 2.15rem; }
+  .d3__read--plate, .d3__read--line { top: auto; bottom: 4.5rem; }
+  .d3 .read__note { display: none; }
+  .d3__offer { margin-top: .9rem; gap: .3rem; }
+  .d3__offer li { font-size: .5625rem; padding: .15rem .4rem; }
+  .d3__labels text { font-size: .5rem; stroke-width: 3px; }
+  .d3__span-a, .d3__span-b { top: 24px; font-size: .5625rem; }
+  .d3__ref { margin-top: .9rem; }
+  .d3.is-final .d3__read { top: auto; bottom: calc(100lvh + 4.5rem); }
+  .d3.is-final .d3__read--line { top: auto; bottom: 4.5rem; }
+  .d3__still { left: 1.25rem; width: calc(100% - 2.5rem); top: calc(var(--strip-h) + 3rem); }
+}

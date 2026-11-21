@@ -59,7 +59,8 @@ function rangeOf(el) {
     return [() => actEl.offsetTop + el.offsetTop, () => actEl.offsetTop + actEl.offsetHeight];
   }
   // a chapter takes over the board half-way through its entry (it overlaps the previous sheet by one viewport)
-  if (el.classList.contains('chapter') && !engine.reduced) return [() => absTop(el) + vh() * 0.5, () => absTop(el) + el.offsetHeight - vh() * 0.5];
+  // (its entry is p 0 -> 1, i.e. scroll absTop - vh .. absTop; the next chapter takes over at the middle of its own entry)
+  if (el.classList.contains('chapter') && !engine.reduced) return [() => absTop(el) - vh() * 0.5, () => absTop(el) + el.offsetHeight - vh() * 1.5];
   return [() => absTop(el), () => absTop(el) + el.offsetHeight];
 }
 els.forEach((el) => {
@@ -83,7 +84,7 @@ function targetOf(id) {
   if (!el) return 0;
   const sp = !engine.reduced && act1.spans[el.dataset.sheet] && actEl.contains(el) ? act1.spans[el.dataset.sheet] : null;
   if (sp) return actEl.offsetTop + (sp[0] === 0 ? 0 : (sp[0] + 1.0) * vh());
-  if (el.classList.contains('chapter') && !engine.reduced) return absTop(el) + vh();
+  if (el.classList.contains('chapter') && !engine.reduced) return absTop(el) + vh() * 0.25;
   return el;
 }
 engine.targetOf = targetOf;

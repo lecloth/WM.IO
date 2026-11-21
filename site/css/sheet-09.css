@@ -39,3 +39,8 @@
   #sheet-09 .s09__table th, #sheet-09 .s09__table td { font-size: .9375rem; padding: .4rem .3rem; }
   #sheet-09 .s09__read--end { left: 1.25rem; right: 1.25rem; width: auto; top: 30%; }
 }
+@media (max-width: 1023px) {
+  #sheet-09.is-static .s09__read, #sheet-09.is-static .s09__table { margin: 0 1.25rem 2rem; }
+  #sheet-09 .s09__table { table-layout: fixed; }
+  #sheet-09 .s09__table td.mono, #sheet-09 .s09__table tbody th { white-space: normal; overflow-wrap: anywhere; }
+}

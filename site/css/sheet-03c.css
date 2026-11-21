@@ -1,1 +1,30 @@
-/* sheet 03c */
+/* sheet 03c: Disciplines, consulting + monthly care (builder D1). The shared .d3 rules live in sheet-03.css. */
+
+/* monthly care: the drawing set's revisions table, growing one revision at a time */
+.d3__revs { position: absolute; left: 12.5%; top: calc(var(--strip-h) + 6rem); width: 44%; }
+.d3__revs { transition: opacity .2s linear; }
+.d3__revs.is-off { opacity: 0; }
+.d3__revs figcaption { display: flex; justify-content: space-between; gap: 1rem; padding-bottom: .6rem; color: var(--ink); }
+.d3__table { width: 100%; border-collapse: collapse; background: var(--paper); font-size: .6875rem; }
+.d3__table th, .d3__table td { border: 1px solid rgba(var(--ink-rgb), .4); padding: .55rem .7rem; text-align: left; font-weight: 400; vertical-align: top; }
+.d3__table thead th { color: var(--graphite); font-size: .5625rem; border-color: var(--ink); }
+.d3__table thead { border: 1px solid var(--ink); }
+.d3__table td:first-child { width: 3.2rem; text-align: center; color: var(--ink); font-weight: 500; }
+.d3__table td:nth-child(3) { width: 4.2rem; text-align: center; }
+.d3__table tbody tr { opacity: 0; transition: opacity .2s linear; }
+.d3__table tbody tr.is-on { opacity: 1; }
+.d3--care .d3__read--line { top: 26%; }
+
+@media (max-width: 1023px) {
+  .d3__revs { left: 1.25rem; right: 1.25rem; width: auto; top: calc(var(--strip-h) + 2rem); }
+  .d3__revs figcaption { flex-direction: column; gap: .2rem; }
+  .d3__table { font-size: .5625rem; }
+  .d3__table th, .d3__table td { padding: .4rem .4rem; }
+  .d3__table td:first-child { width: 2rem; }
+  .d3__table td:nth-child(3) { width: 2.6rem; }
+  .d3--care .d3__read--line { top: auto; }
+}
+.d3--care.is-final .d3__sheet { height: 100vh; height: 100lvh; }
+.d3--care.is-final .d3__sheet::after { display: none; }
+.d3--care.is-final .d3__read--line { top: 26lvh; }
+@media (max-width: 1023px) { .d3--care.is-final .d3__read--line { top: auto; bottom: 4.5rem; } }
