@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-type="a" data-phase="loading">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wajih Mansouri — software studio, Tunis</title>
+  <meta name="description" content="Websites, online shops and business apps, drawn before they are built.">
+  <script>
+    /* Runs before first paint: type pairing preview (?type=a|b|c), reduced motion, return visit,
+       and the real load-progress counter that the timeline strip draws itself with. */
+    (function () {
+      var d = document.documentElement, q = location.search.match(/type=([abc])/);
+      if (q) d.dataset.type = q[1];
+      var rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var seen = false;
+      try { seen = localStorage.getItem('wm:opened') === '1'; } catch (e) {}
+      if (/[?&]first\b/.test(location.search)) seen = false;
+      d.dataset.motion = rm ? 'reduce' : 'full';
+      d.dataset.visit = seen ? 'return' : 'first';
+      var tasks = ['css', 'gsap', 'st', 'lenis', 'app', 'fonts', 'load'], done = {};
+      window.__wm = {
+        t0: performance.now(), progress: 0, reduced: rm, returning: seen,
+        done: function (k) {
+          if (done[k]) return; done[k] = 1;
+          var n = 0; for (var i = 0; i < tasks.length; i++) if (done[tasks[i]]) n++;
+          this.progress = n / tasks.length;
+          document.dispatchEvent(new CustomEvent('wm:progress', { detail: this.progress }));
+        }
+      };
+      addEventListener('load', function () { __wm.done('load'); });
+    })();
+  </script>
+  <link rel="preload" href="fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/site.css" onload="__wm.done('css')">
+  <script defer src="vendor/gsap.min.js" onload="__wm.done('gsap')"></script>
+  <script defer src="vendor/ScrollTrigger.min.js" onload="__wm.done('st')"></script>
+  <script defer src="vendor/lenis.min.js" onload="__wm.done('lenis')"></script>
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+
+<!-- TIMELINE STRIP: names the sheets, draws itself with the real load, then fills as you scroll -->
+<nav id="strip" class="strip" aria-label="Sheets">
+  <div class="strip__base" aria-hidden="true"></div>
+  <ol class="strip__list">
+    <li class="strip__seg" style="--i:0"><a href="#sheet-00"><span class="strip__no">00</span><span class="strip__name">Opening</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:1"><a href="#sheet-01"><span class="strip__no">01</span><span class="strip__name">Principles</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:2"><a href="#sheet-02"><span class="strip__no">02</span><span class="strip__name">Method</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:3"><a href="#sheet-03"><span class="strip__no">03</span><span class="strip__name">Work</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:4"><a href="#sheet-04"><span class="strip__no">04</span><span class="strip__name">Services</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:5"><a href="#sheet-05"><span class="strip__no">05</span><span class="strip__name">Also</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:6"><a href="#sheet-06"><span class="strip__no">06</span><span class="strip__name">Process</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:7"><a href="#sheet-07"><span class="strip__no">07</span><span class="strip__name">Studio</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:8"><a href="#sheet-08"><span class="strip__no">08</span><span class="strip__name">Contact</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:9"><a href="#sheet-09"><span class="strip__no">09</span><span class="strip__name">Spec</span></a><i class="strip__fill"></i></li>
+  </ol>
+</nav>
+<script>
+  /* Draw the strip from the real load progress. It never runs ahead of the load, and it takes at
+     least 0.5 s on a first visit so the drawing is readable. */
+  (function () {
+    var strip = document.getElementById('strip'), shown = 0, minMs = __wm.returning || __wm.reduced ? 0 : 500;
+    function tick() {
+      var cap = minMs ? Math.min(1, (performance.now() - __wm.t0) / minMs) : 1;
+      var target = Math.min(__wm.progress, cap);
+      shown += (target - shown) * 0.35;
+      if (target - shown < (target === 1 ? 0.02 : 0.002)) shown = target;
+      strip.style.setProperty('--load', shown.toFixed(4));
+      __wm.shown = shown;
+      if (shown < 1) requestAnimationFrame(tick);
+      else document.dispatchEvent(new Event('wm:loaded'));
+    }
+    requestAnimationFrame(tick);
+  })();
+</script>
+
+<!-- THE BOARD -->
+<div id="board" class="board">
+  <div class="board__grid" aria-hidden="true"></div>
+
+  <main id="sheets">
+    <!-- SHEET 00: OPENING -->
+    <section id="sheet-00" class="sheet sheet--opening" data-sheet="00" data-title="Opening">
+      <div class="frame" aria-hidden="true">
+        <div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+        <div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+      </div>
+      <div class="centre-lines" aria-hidden="true"><i class="centre-lines__h"></i><i class="centre-lines__v"></i></div>
+
+      <p class="opening__id mono reveal-late">Wajih Mansouri<br><span class="graphite">Software studio · Tunis</span></p>
+      <p class="opening__fig mono reveal-late" aria-hidden="true">Fig. 00</p>
+
+      <div class="hold">
+        <div class="dim dim--hold reveal-late" aria-hidden="true">
+          <svg class="dim__svg" preserveAspectRatio="none"><line class="dim__ext dim__ext--a"/><line class="dim__ext dim__ext--b"/><line class="dim__line"/><path class="dim__arrow dim__arrow--a"/><path class="dim__arrow dim__arrow--b"/></svg>
+          <span class="dim__value mono">— mm</span>
+        </div>
+        <h1 class="hold__line display">
+          <span class="hold__row"><span class="w">We</span> <span class="w">draw</span> <span class="w">it</span></span>
+          <span class="hold__row"><span class="w">before</span> <span class="w">we</span> <span class="w">build</span> <span class="w">it.</span></span>
+        </h1>
+      </div>
+
+      <div class="opening__lede reveal-late">
+        <p class="body">Websites, shops and business apps, engineered to the millimetre, tested until nothing breaks, and handed over ready to run.</p>
+        <div class="opening__actions">
+          <a class="btn btn--ink" href="#sheet-08"><span>Start a project</span></a>
+          <a class="btn btn--line" href="#sheet-03"><span>See the sheets</span></a>
+        </div>
+      </div>
+
+      <p class="cue mono reveal-late" aria-hidden="true"><i class="cue__rule"></i><span>Scroll to assemble</span></p>
+    </section>
+
+    <!-- SHEETS 01–09: drawn in later slices -->
+    <section id="sheet-01" class="sheet sheet--todo" data-sheet="01" data-title="Principles"><div class="todo"><p class="todo__no display">01</p><p class="todo__name mono">Principles · to be drawn</p></div></section>
+    <section id="sheet-02" class="sheet sheet--todo" data-sheet="02" data-title="Method"><div class="todo"><p class="todo__no display">02</p><p class="todo__name mono">Method · to be drawn</p></div></section>
+    <section id="sheet-03" class="sheet sheet--todo" data-sheet="03" data-title="Work"><div class="todo"><p class="todo__no display">03</p><p class="todo__name mono">Work · to be drawn</p></div></section>
+    <section id="sheet-04" class="sheet sheet--todo" data-sheet="04" data-title="Services"><div class="todo"><p class="todo__no display">04</p><p class="todo__name mono">Services · to be drawn</p></div></section>
+    <section id="sheet-05" class="sheet sheet--todo" data-sheet="05" data-title="Also on the board"><div class="todo"><p class="todo__no display">05</p><p class="todo__name mono">Also on the board · to be drawn</p></div></section>
+    <section id="sheet-06" class="sheet sheet--todo" data-sheet="06" data-title="Process"><div class="todo"><p class="todo__no display">06</p><p class="todo__name mono">Process · to be drawn</p></div></section>
+    <section id="sheet-07" class="sheet sheet--todo" data-sheet="07" data-title="Studio"><div class="todo"><p class="todo__no display">07</p><p class="todo__name mono">Studio · to be drawn</p></div></section>
+    <section id="sheet-08" class="sheet sheet--todo" data-sheet="08" data-title="Contact"><div class="todo"><p class="todo__no display">08</p><p class="todo__name mono">Contact · to be drawn</p></div></section>
+    <section id="sheet-09" class="sheet sheet--todo" data-sheet="09" data-title="Spec sheet"><div class="todo"><p class="todo__no display">09</p><p class="todo__name mono">Spec sheet · to be drawn</p></div></section>
+  </main>
+</div>
+
+<!-- TITLE BLOCK: a real drawing title block, updates as sheets pass -->
+<aside id="titleblock" class="titleblock mono reveal-late" aria-label="Title block">
+  <div class="tb__cell tb__cell--wide"><span class="tb__k">Project</span><span class="tb__v">Wajih Mansouri · Studio</span></div>
+  <div class="tb__cell"><span class="tb__k">Sheet</span><span class="tb__v"><b class="tb__sheet">00</b> / 09</span></div>
+  <div class="tb__cell"><span class="tb__k">Title</span><span class="tb__v tb__title">Opening</span></div>
+  <div class="tb__cell"><span class="tb__k">Scale</span><span class="tb__v">1:1</span></div>
+  <div class="tb__cell"><span class="tb__k">Drawn</span><span class="tb__v">W.M.</span></div>
+  <div class="tb__cell"><span class="tb__k">Rev</span><span class="tb__v">11.26</span></div>
+</aside>
+
+<!-- THE SINGULARITY / CURTAIN (difference blend: whatever it covers flips black/white) -->
+<div id="curtain" class="curtain" aria-hidden="true">
+  <div class="curtain__panel curtain__panel--top"><i class="curtain__edge"></i></div>
+  <div class="curtain__panel curtain__panel--bottom"><i class="curtain__edge"></i></div>
+  <div class="sing">
+    <i class="sing__point"></i>
+    <i class="sing__line"></i>
+    <svg class="sing__ruler" preserveAspectRatio="none"></svg>
+    <span class="sing__scale mono">Scale 1:1</span>
+  </div>
+</div>
+
+<!-- CAD CROSSHAIR CURSOR (desktop, fine pointers only) -->
+<div id="xhair" class="xhair" aria-hidden="true">
+  <i class="xhair__h"></i><i class="xhair__v"></i><i class="xhair__box"></i>
+  <span class="xhair__read mono">X 0000 · Y 0000</span>
+</div>
+
+<noscript><style>.curtain{display:none}.reveal-late,.hold__line .w{opacity:1!important;transform:none!important}</style></noscript>
+</body>
+</html>
