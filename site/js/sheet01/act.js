@@ -24,7 +24,7 @@ export const T = {
   labels: [12.7, 13.3], finalText: 13.35,     // reading moment 2
   end: 15.65,
 };
-export const SPANS = { '00': [0, T.swap], '01': [T.swap, T.end + 1] };
+export const SPANS = { '00': [0, T.swap], '01': [T.swap, T.end - 0.5] };   // sheet 02 takes over half-way through its entry
 
 function fmtRead(ms) {
   const s = Math.max(1, Math.round(ms / 1000));
@@ -172,7 +172,7 @@ export function initAct1(engine) {
     phone.set({ turn: tn, explode: ex, develop: dv, labels: span(p, ...T.labels), zoomOut: tn, shiftX: (phone.state.shiftXFinal || 0) * tn });
     if (fl > 0) phone.render();
     html.classList.toggle('is-blue', p >= T.develop[0] + 0.55 && p < T.end - 0.5);
-    finalRead.classList.toggle('is-on', p >= T.finalText && p < T.end - 0.02);
+    finalRead.classList.toggle('is-on', p >= T.finalText && p < T.end - 0.8);
     canvas.classList.toggle('is-live', p >= T.finalText);
   }
 

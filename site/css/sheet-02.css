@@ -1,1 +1,88 @@
-/* sheet 02: Principles */
+/* sheet 02: Principles. Four calm reading moments on a clean sheet, Leonardo's machine studies in the margin. */
+
+/* ---- entry: drafting film over the blueprint, then a white backing sheet slides in under it ---- */
+#sheet-02 .s02__back { position: absolute; inset: 0; background: var(--paper); transform: translate3d(101%, 0, 0); }
+#sheet-02 .s02__back::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 1px; background: rgba(var(--ink-rgb), .5); }
+#sheet-02 .s02__film { position: absolute; inset: 0; transform: translate3d(0, 101%, 0);
+  background: rgba(var(--paper-rgb), var(--film-a, .3)); }
+/* matte film: a code-made fibre texture, very faint (same recipe as the board's film) */
+#sheet-02 .s02__film::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .55;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='480'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .9' numOctaves='2' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 .07 0 0 0 0 .07 0 0 0 0 .07 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"); }
+#sheet-02 .s02__film::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: rgba(var(--ink-rgb), .55); }
+#sheet-02 .s02__film.is-set::after, #sheet-02 .s02__film.is-set::before { opacity: 0; }
+#sheet-02 .s02__tape { position: absolute; top: calc(var(--strip-h) + .2rem); width: 5.5rem; height: 1.5rem; background: rgba(var(--paper-rgb), .72); border: 1px solid rgba(var(--ink-rgb), .22); }
+#sheet-02 .s02__tape--l { left: 2.5rem; }
+#sheet-02 .s02__tape--r { right: 2.5rem; }
+#sheet-02 .s02__film.is-set .s02__tape { display: none; }
+
+.s02__h { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---- margin plates: Leonardo's studies as an ink mask, so they always print in the site's ink token ---- */
+#sheet-02 .s02__plates { position: absolute; inset: 0; pointer-events: none; }
+#sheet-02 .s02__study { position: absolute; left: 0; top: 0; background: var(--ink); visibility: hidden;
+  -webkit-mask: var(--src) center / 100% 100% no-repeat; mask: var(--src) center / 100% 100% no-repeat; }
+#sheet-02 .s02__study.is-on { visibility: visible; }
+#sheet-02 .s02__fig { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+#sheet-02 .pl { fill: none; stroke: var(--ink); stroke-width: var(--sw, 1px); stroke-linejoin: round; }
+#sheet-02 .pl.heavy { stroke-width: var(--sw-heavy, 1.6px); }
+#sheet-02 .pl.thin { stroke: var(--graphite); }
+#sheet-02 .pl.centre { stroke-dasharray: var(--centre); stroke: var(--graphite); }
+#sheet-02 .pf { fill: var(--ink); stroke: none; }
+#sheet-02 .pf.dot { stroke: var(--paper); stroke-width: var(--sw, 1px); }
+#sheet-02 .pt { fill: var(--ink); font-family: var(--f-mono); font-size: var(--fs, 11px); letter-spacing: .03em; }
+#sheet-02 .pt.halo { paint-order: stroke; stroke: var(--paper); stroke-width: var(--halo, 4px); stroke-linejoin: round; }
+#sheet-02 .trace .pt { paint-order: stroke; stroke: var(--paper); stroke-width: var(--halo, 4px); }
+#sheet-02 .trace .pl { stroke-linecap: round; }
+
+/* the scan line that traces a plate into hairlines and back */
+#sheet-02 .s02__scan { position: absolute; left: 0; top: 0; width: 1px; height: 0; background: var(--ink); visibility: hidden; transform: translate3d(var(--x, 0px), var(--y, 0px), 0); }
+#sheet-02 .s02__scan.is-on { visibility: visible; }
+#sheet-02 .s02__scan span { position: absolute; top: -1.15rem; left: 0; font-size: .5625rem; color: var(--ink); white-space: nowrap; }
+#sheet-02 .s02__scan span::after { content: " \2192"; }
+
+/* ---- reading moments: shown or hidden, never half-faded under motion ---- */
+#sheet-02 .s02__list { position: absolute; inset: 0; pointer-events: none; }
+#sheet-02 .s02__read, #sheet-02 .s02__cap { opacity: 0; visibility: hidden; transition: opacity .22s var(--ease-out), visibility 0s .22s; }
+#sheet-02 .s02__item.is-on .s02__read, #sheet-02 .s02__item.is-on .s02__cap { opacity: 1; visibility: inherit; transition: opacity .22s var(--ease-out), visibility 0s; pointer-events: auto; }
+#sheet-02 .s02__read { position: absolute; left: 12.5%; top: 27%; width: min(34rem, 40%); }
+#sheet-02 .s02__read .read__eyebrow { color: var(--graphite); margin-bottom: 1.4rem; }
+#sheet-02 .s02__title { font-size: 7.4rem; color: var(--ink); margin: 0 0 1.6rem -.04em; }
+#sheet-02 .s02__line { font-size: 2.55rem; line-height: 1.12; letter-spacing: -.012em; color: var(--ink); max-width: 30rem; }
+#sheet-02 .s02__cap { position: absolute; left: var(--cap-x, 58%); top: var(--cap-y, 80%); width: var(--cap-w, 30%); font-size: .625rem; line-height: 1.55; color: var(--ink); text-transform: none; letter-spacing: .02em; }
+#sheet-02 .s02__cap span { display: block; color: var(--graphite); text-transform: uppercase; letter-spacing: var(--mono-track); margin-bottom: .2rem; }
+
+#sheet-02 .s02__index { position: absolute; left: 12.5%; top: calc(var(--strip-h) + .75rem + var(--zone) + 1.6rem); display: flex; gap: 1.75rem; color: var(--graphite);
+  opacity: 0; visibility: hidden; transition: opacity .22s, visibility 0s .22s; }
+#sheet-02 .s02__index.is-on { opacity: 1; visibility: inherit; transition: opacity .22s, visibility 0s; }
+#sheet-02 .s02__index li { position: relative; padding-bottom: .35rem; transition: color .25s var(--ease-out); }
+#sheet-02 .s02__index li::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--ink); transform: scaleX(0); transform-origin: 0 50%; transition: transform .25s var(--ease-out); }
+#sheet-02 .s02__index li.is-on { color: var(--ink); }
+#sheet-02 .s02__index li.is-on::after { transform: scaleX(1); }
+
+@media (max-width: 1023px) {
+  #sheet-02 .s02__read { left: 2.25rem; right: 1.75rem; width: auto; top: auto; bottom: 4.6rem; }
+  #sheet-02 .s02__read .read__eyebrow { margin-bottom: .6rem; }
+  #sheet-02 .s02__title { font-size: 3.6rem; margin-bottom: .7rem; }
+  #sheet-02 .s02__line { font-size: 1.55rem; }
+  #sheet-02 .s02__cap { left: 2.25rem; width: calc(100% - 4rem); font-size: .5625rem; }
+  #sheet-02 .s02__cap span { margin-bottom: .1rem; }
+  #sheet-02 .s02__index { left: 2.25rem; gap: .9rem; font-size: .5625rem; top: calc(var(--strip-h) + .75rem + var(--zone) + .6rem); }
+  #sheet-02 .s02__tape { width: 3.5rem; height: 1.1rem; }
+}
+
+/* ---- reduced motion: four finished principles, one under the other ---- */
+#sheet-02.is-static .s02__film { position: relative; inset: auto; transform: none; background: var(--paper); padding: calc(var(--strip-h) + 3rem) 12.5% 6rem; }
+#sheet-02.is-static .s02__film::before, #sheet-02.is-static .s02__film::after, #sheet-02.is-static .s02__tape,
+#sheet-02.is-static .s02__back, #sheet-02.is-static .s02__plates, #sheet-02.is-static .s02__fig,
+#sheet-02.is-static .s02__scan, #sheet-02.is-static .s02__index { display: none; }
+#sheet-02.is-static .s02__list { position: relative; inset: auto; display: grid; gap: 5rem; }
+#sheet-02.is-static .s02__item { display: grid; grid-template-columns: 1.1fr 1fr; gap: 1.25rem 4rem; align-items: center; }
+#sheet-02.is-static .s02__read, #sheet-02.is-static .s02__cap { position: relative; left: auto; top: auto; bottom: auto; right: auto; width: auto; opacity: 1; visibility: visible; }
+#sheet-02.is-static .s02__read { grid-column: 1; grid-row: 1 / span 2; }
+#sheet-02.is-static .s02__still { grid-column: 2; grid-row: 1; width: 100%; background: var(--ink); -webkit-mask: var(--src) center / contain no-repeat; mask: var(--src) center / contain no-repeat; }
+#sheet-02.is-static .s02__cap { grid-column: 2; grid-row: 2; }
+@media (max-width: 1023px) {
+  #sheet-02.is-static .s02__film { padding: calc(var(--strip-h) + 2rem) 1.25rem 5rem; }
+  #sheet-02.is-static .s02__item { grid-template-columns: 1fr; }
+  #sheet-02.is-static .s02__read, #sheet-02.is-static .s02__still, #sheet-02.is-static .s02__cap { grid-column: 1; grid-row: auto; }
+}
