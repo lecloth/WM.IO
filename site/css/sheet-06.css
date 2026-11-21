@@ -1,1 +1,123 @@
-/* sheet 06: Process */
+/* sheet 06: Process. The machine drawing (a closed ring of six gears), Detail B (the stress test), the doors entry. */
+
+/* the sheet: clean drafting film with its own still grid (opaque from the moment the doors shut) */
+#sheet-06 .s6__sheet {
+  position: absolute; inset: 0;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+  background-size: 6.25rem 6.25rem, 6.25rem 6.25rem, 1.25rem 1.25rem, 1.25rem 1.25rem;
+}
+/* while the doors are shut only the line and gear 1 exist: plain sheet (it reads as black through the doors) */
+#sheet-06 .s6__sheet.is-black { background-image: none; }
+#sheet-06 .s6__sheet.is-black .frame, #sheet-06 .s6__sheet.is-black .s6__fig { visibility: hidden; }
+
+#sheet-06 .s6__fig { position: absolute; left: calc(var(--frame) + var(--zone) + 1.25rem); top: calc(var(--strip-h) + .75rem + var(--zone) + .9rem); color: var(--graphite); }
+
+/* ---------- the doors: two panels that invert whatever they cover ---------- */
+#sheet-06 .s6__doors { position: absolute; inset: 0; pointer-events: none; z-index: 3; overflow: hidden; }
+#sheet-06 .s6__door { position: absolute; top: 0; bottom: 0; left: 0; width: 50%; will-change: transform;
+  -webkit-backdrop-filter: invert(1) grayscale(1); backdrop-filter: invert(1) grayscale(1); }
+#sheet-06 .s6__door--l { transform: translateX(-100%); }
+#sheet-06 .s6__door--r { left: 50%; transform: translateX(100%); }
+@supports not ((backdrop-filter: invert(1)) or (-webkit-backdrop-filter: invert(1))) {
+  #sheet-06 .s6__door { background: var(--ink); }
+}
+
+/* ---------- the machine drawing ---------- */
+#sheet-06 .s6__mech { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+#sheet-06 .m-teeth { fill: var(--paper); stroke: var(--ink); stroke-width: 1.15px; stroke-linejoin: round; }
+#sheet-06 .m-line { fill: none; stroke: var(--ink); stroke-width: 1px; }
+#sheet-06 .m-line--thin { stroke: var(--graphite); }
+#sheet-06 .m-gear:not(.is-meshed) .m-teeth, #sheet-06 .m-gear:not(.is-meshed) .m-line { stroke: var(--graphite); }
+#sheet-06 .m-hatch line { stroke: var(--ink); stroke-width: .75px; }
+#sheet-06 .m-shaft-rim { fill: none; }
+#sheet-06 .m-centre { fill: none; stroke: var(--graphite); stroke-width: 1px; stroke-dasharray: 16 3 2 3; }
+#sheet-06 .m-pitch { fill: none; stroke: var(--graphite); stroke-width: 1px; stroke-dasharray: 11 3 2 3; }
+#sheet-06 .m-cons { fill: none; stroke: rgba(var(--ink-rgb), .3); stroke-width: 1px; }
+#sheet-06 .m-vline { stroke: var(--ink); stroke-width: 1px; }
+#sheet-06 .m-dim line, #sheet-06 .m-dim path { fill: none; stroke: var(--ink); stroke-width: 1px; }
+#sheet-06 .m-dim .m-arrow, #sheet-06 .m-arrow { fill: var(--ink); stroke: none; }
+#sheet-06 .m-txt, #sheet-06 .m-name, #sheet-06 .m-num {
+  font-family: var(--f-mono); font-size: .625rem; letter-spacing: var(--mono-track); text-transform: uppercase; fill: var(--ink);
+  paint-order: stroke; stroke: var(--paper); stroke-width: 4px; stroke-linejoin: round; }
+#sheet-06 .m-txt--g { fill: var(--graphite); }
+#sheet-06 .m-num { font-size: .6875rem; stroke: none; }
+#sheet-06 .m-pcd text, #sheet-06 .m-callout text { visibility: hidden; }
+#sheet-06 .m-pcd.is-txt text, #sheet-06 .m-callout.is-txt text { visibility: visible; }
+#sheet-06 .m-leader { fill: none; stroke: var(--ink); stroke-width: 1px; }
+#sheet-06 .m-dot { fill: var(--ink); }
+#sheet-06 .m-balloon { fill: var(--paper); stroke: var(--ink); stroke-width: 1px; }
+#sheet-06 .m-label.is-active .m-balloon { fill: var(--ink); }
+#sheet-06 .m-label.is-active .m-num { fill: var(--paper); }
+#sheet-06 .m-callout__c { fill: none; stroke: var(--ink); stroke-width: 1px; }
+#sheet-06 .m-callout__t { font-size: .75rem; }
+
+/* ---------- Detail B: the stress test ---------- */
+#sheet-06 .s6__detail { position: absolute; left: 0; top: 0; width: 0; height: 0; visibility: hidden; background: var(--paper); outline: 1px solid var(--ink); outline-offset: -1px; z-index: 1; }
+#sheet-06 .s6__stress { display: block; overflow: visible; }
+#sheet-06 .s6__detail text { visibility: hidden; }
+#sheet-06 .s6__detail.is-txt text { visibility: inherit; }
+#sheet-06 .s-txt { font-family: var(--f-mono); font-size: 10px; letter-spacing: .03em; text-transform: uppercase; fill: var(--ink); }
+#sheet-06 .s-head { font-size: 10.5px; }
+#sheet-06 .s-g { fill: var(--graphite); }
+#sheet-06 .s-small { font-size: 8.5px; }
+#sheet-06 .s-tick { font-size: 8.5px; }
+#sheet-06 .s-note { font-size: 8.5px; text-transform: none; letter-spacing: 0; }
+#sheet-06 .s-big { font-family: var(--f-mono); font-size: 22px; fill: var(--ink); }
+#sheet-06 .s-state { font-size: 11px; }
+#sheet-06 .s-state.is-held { font-weight: 500; }
+#sheet-06 .s-f { font-family: var(--f-display); font-style: italic; font-size: 17px; text-transform: none; }
+#sheet-06 .s-out { fill: none; stroke: var(--ink); stroke-width: 1.4px; stroke-linejoin: round; }
+#sheet-06 .s-out.is-phantom { stroke: var(--graphite); stroke-width: 1px; stroke-dasharray: 9 3 2 3; }
+#sheet-06 .s-hatch line { stroke: rgba(var(--ink-rgb), .5); stroke-width: .7px; }
+#sheet-06 .s-iso { fill: none; stroke: var(--ink); stroke-width: 1px; }
+#sheet-06 .s-crack-gap { fill: none; stroke: var(--paper); stroke-linejoin: round; stroke-linecap: round; }
+#sheet-06 .s-crack { fill: none; stroke: var(--ink); stroke-width: 1.6px; stroke-linejoin: round; }
+#sheet-06 .s-arrow line { stroke: var(--ink); stroke-width: 1.4px; }
+#sheet-06 .s-arrow path { fill: var(--ink); }
+#sheet-06 .s-centre { fill: none; stroke: var(--graphite); stroke-width: 1px; stroke-dasharray: 12 3 2 3; }
+#sheet-06 .s-lead { fill: none; stroke: var(--ink); stroke-width: 1px; }
+#sheet-06 .s-dot { fill: var(--ink); }
+#sheet-06 .s-gauge line { stroke: var(--ink); stroke-width: 1px; }
+#sheet-06 .s-gauge .s-limit { stroke-dasharray: 4 3; }
+#sheet-06 .s-bar { stroke: var(--ink); stroke-width: 3px; }
+#sheet-06 .s-mark { fill: var(--ink); }
+#sheet-06 .s-box { fill: none; stroke: rgba(var(--ink-rgb), .45); stroke-width: 1px; }
+#sheet-06 .s-thin { fill: none; stroke: var(--ink); stroke-width: .9px; }
+#sheet-06 .s-shear { fill: none; stroke: var(--graphite); stroke-width: 1px; stroke-dasharray: 5 3; }
+#sheet-06 .s-pin { fill: var(--paper); stroke: var(--ink); stroke-width: 1px; }
+#sheet-06 .s-hook { fill: none; stroke: var(--ink); stroke-width: 2.2px; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- reading moments ---------- */
+#sheet-06 .s6-read { z-index: 2; }
+#sheet-06 .s6-read .read__title { font-size: 3.6rem; }
+#sheet-06 .s6-read--intro .read__title { font-size: 3.9rem; }
+#sheet-06 .s6-no { display: inline-grid; place-items: center; width: 1.25rem; height: 1.25rem; margin-right: .6rem; border: 1px solid var(--ink); border-radius: 50%; color: var(--ink); vertical-align: middle; transform: translateY(-.05rem); }
+
+@media (max-width: 1023px) {
+  #sheet-06 .s6__fig { display: none; }
+  #sheet-06 .s6-read .read__title, #sheet-06 .s6-read--intro .read__title { font-size: 2.2rem; }
+  #sheet-06 .m-txt { font-size: .5625rem; }
+}
+
+/* ---------- reduced motion: the machine drawn finished, all six stages as calm static content ---------- */
+#sheet-06.is-static .s6__stage { min-height: 0; }
+#sheet-06.is-static .s6__sheet { position: relative; inset: auto; display: grid; grid-template-columns: 54% 1fr; column-gap: 3.5rem; align-items: start;
+  padding: calc(var(--strip-h) + 3.5rem) calc(var(--frame) + var(--zone) + 3rem) 6rem calc(var(--frame) + var(--zone) + 1.5rem); }
+#sheet-06.is-static .s6__mech { position: sticky; top: calc(var(--strip-h) + 1.5rem); grid-column: 1; grid-row: 1 / span 2; width: 100%; height: calc(100vh - var(--strip-h) - 4rem); }
+#sheet-06.is-static .s6__reads { grid-column: 2; grid-row: 1; }
+#sheet-06.is-static .s6-read { position: relative; left: auto; right: auto; top: auto; bottom: auto; width: auto; padding: 0; margin: 0 0 3rem; opacity: 1; visibility: visible; background: transparent; }
+#sheet-06.is-static .s6-read .read__title { font-size: 2.8rem; margin-bottom: .9rem; }
+#sheet-06.is-static .s6__detail { position: relative; grid-column: 2; grid-row: 2; width: 100%; aspect-ratio: 600 / 452; height: auto; visibility: visible; margin-bottom: 4rem; }
+#sheet-06.is-static .s6__doors { display: none; }
+@media (max-width: 1023px) {
+  #sheet-06.is-static .s6__sheet { grid-template-columns: 1fr; padding: calc(var(--strip-h) + 2.5rem) 1.25rem 7rem; }
+  #sheet-06.is-static .s6__mech { position: relative; top: auto; grid-row: 1; height: auto; aspect-ratio: 1 / 1.02; margin-bottom: 1.5rem; }
+  #sheet-06.is-static .s6__reads { grid-column: 1; grid-row: 2; }
+  #sheet-06.is-static .s6__detail { grid-column: 1; grid-row: 3; aspect-ratio: 340 / 480; }
+  #sheet-06.is-static .s6-read .read__title { font-size: 2.2rem; }
+}
