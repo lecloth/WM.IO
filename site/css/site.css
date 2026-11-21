@@ -222,7 +222,7 @@ html[data-motion="reduce"] body { overflow: auto !important; }
    SLICE 2 — act 1: opening + sheet 01 (the first drawing) in one sticky stage
    ===================================================================================== */
 :root { --prus: #173F73; --blueprint-ink: #ECF1F6; }
-.act { position: relative; height: calc(15.65 * 100vh); height: calc(15.65 * 100lvh); }
+.act { position: relative; height: calc(16.65 * 100vh); height: calc(16.65 * 100lvh); }
 .act__stage { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; }
 .layer { position: absolute; inset: 0; }
 #sheet-01 { visibility: hidden; }
@@ -347,3 +347,14 @@ html:has(.act__stage.is-shut) .board__grid { opacity: 0; }
   .hist__svg, .hist__img { width: 5.5rem; height: auto; max-height: 8rem; }
   .hist__line { font-size: 1rem; }
 }
+
+/* =====================================================================================
+   CHAPTER CONTRACT (sheets 02–09): see site/js/engine/kit.js
+   ===================================================================================== */
+.chapter { position: relative; height: calc((var(--units, 3) + 1) * 100vh); height: calc((var(--units, 3) + 1) * 100lvh); margin-top: -100vh; margin-top: -100lvh; }
+.chapter__stage { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; }
+.chapter__stage.is-entering { position: fixed; left: 0; right: 0; top: 0; }
+.chapter__stage.is-away { visibility: hidden; }
+.chapter.is-static { height: auto; margin-top: 0; }
+.chapter.is-static .chapter__stage { position: relative; height: auto; min-height: 100vh; min-height: 100lvh; overflow: visible; visibility: visible; }
+.sheet--todo-stage { display: grid; place-items: center; background: var(--paper); border-top: 1px solid rgba(18,18,18,.2); }

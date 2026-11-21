@@ -2,7 +2,11 @@
 scroll steps (mobile) and record every animation frame.
   python tools/fps.py [--mobile]
 Prints average fps, the 95th-percentile frame time and the share of frames slower than 25 ms."""
-import argparse, asyncio, json, time
+import argparse, sys
+from pathlib import Path as _P
+sys.path.insert(0, str(_P(__file__).resolve().parent))
+from browserlock import BrowserLock
+import asyncio, json, time
 
 
 async def main():
@@ -38,4 +42,5 @@ async def main():
     print(json.dumps({"mobile": a.mobile, "scrollEnd": end, **res, "errors": errs}))
 
 
-asyncio.run(main())
+with BrowserLock():
+    asyncio.run(main())

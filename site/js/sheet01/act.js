@@ -21,7 +21,7 @@ export const T = {
   history: [3.3, SW0 + (NSW - 1) * STEP + SWEEP + 0.4],
   fill: [10.6, 11.1], turn: [11.1, 12.2], explode: [11.2, 12.45], develop: [11.5, 12.7],
   labels: [12.7, 13.3], finalText: 13.35,     // reading moment 2
-  end: 14.65,
+  end: 15.65,
 };
 export const SPANS = { '00': [0, T.swap], '01': [T.swap, T.end + 1] };
 
@@ -161,7 +161,7 @@ export function initAct1(engine) {
     const tn = ease(span(p, ...T.turn)), ex = ease(span(p, ...T.explode)), dv = span(p, ...T.develop);
     phone.set({ turn: tn, explode: ex, develop: dv, labels: span(p, ...T.labels), zoomOut: tn, shiftX: (phone.state.shiftXFinal || 0) * tn });
     if (fl > 0) phone.render();
-    html.classList.toggle('is-blue', p >= T.develop[0] + 0.55 && p < T.end + 0.5);
+    html.classList.toggle('is-blue', p >= T.develop[0] + 0.55 && p < T.end - 0.5);
     finalRead.classList.toggle('is-on', p >= T.finalText && p < T.end - 0.02);
     canvas.classList.toggle('is-live', p >= T.finalText);
   }

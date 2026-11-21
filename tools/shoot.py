@@ -7,7 +7,10 @@ Adapted from the screenshot tool I wrote for the santalarch clone (see ENGINE_RE
            --mouse x,y, --w/--h, --prefix
 Times are ms after navigation start. Prints console errors.
 """
-import argparse
+import argparse, sys
+from pathlib import Path as _P
+sys.path.insert(0, str(_P(__file__).resolve().parent))
+from browserlock import BrowserLock
 import asyncio
 import json
 import time
@@ -78,4 +81,5 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    with BrowserLock():
+        asyncio.run(main())

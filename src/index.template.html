@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" data-phase="loading">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wajih Mansouri — studio, Tunis</title>
+  <meta name="description" content="Websites, apps, platforms, security and AI, drawn before they are built.">
+  <script>
+    /* Runs before first paint: reduced motion, return visit,
+       and the real load-progress counter that the timeline strip draws itself with. */
+    (function () {
+      var d = document.documentElement;
+      var rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var seen = false;
+      try { seen = localStorage.getItem('wm:opened') === '1'; } catch (e) {}
+      if (/[?&]first\b/.test(location.search)) seen = false;
+      d.dataset.motion = rm ? 'reduce' : 'full';
+      d.dataset.visit = seen ? 'return' : 'first';
+      var tasks = ['css', 'gsap', 'st', 'lenis', 'app', 'fonts', 'load'], done = {};
+      window.__wm = {
+        t0: performance.now(), progress: 0, reduced: rm, returning: seen,
+        done: function (k) {
+          if (done[k]) return; done[k] = 1;
+          var n = 0; for (var i = 0; i < tasks.length; i++) if (done[tasks[i]]) n++;
+          this.progress = n / tasks.length;
+          document.dispatchEvent(new CustomEvent('wm:progress', { detail: this.progress }));
+        }
+      };
+      addEventListener('load', function () { __wm.done('load'); });
+    })();
+  </script>
+  <link rel="preload" href="fonts/newsreader-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/dm-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/site.css" onload="__wm.done('css')">
+<!-- @styles -->
+  <script defer src="vendor/gsap.min.js" onload="__wm.done('gsap')"></script>
+  <script defer src="vendor/ScrollTrigger.min.js" onload="__wm.done('st')"></script>
+  <script defer src="vendor/lenis.min.js" onload="__wm.done('lenis')"></script>
+  <script type="importmap">{ "imports": {
+    "three": "./vendor/three/three.module.min.js",
+    "three/addons/": "./vendor/three/addons/"
+  } }</script>
+  <link rel="modulepreload" href="vendor/three/three.module.min.js">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+
+<!-- TIMELINE STRIP: names the sheets, draws itself with the real load, then fills as you scroll -->
+<nav id="strip" class="strip" aria-label="Sheets">
+  <div class="strip__base" aria-hidden="true"></div>
+  <ol class="strip__list">
+    <li class="strip__seg" style="--i:0"><a href="#sheet-00"><span class="strip__no">00</span><span class="strip__name">Opening</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:1"><a href="#sheet-01"><span class="strip__no">01</span><span class="strip__name">First drawing</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:2"><a href="#sheet-02"><span class="strip__no">02</span><span class="strip__name">Principles</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:3"><a href="#sheet-03"><span class="strip__no">03</span><span class="strip__name">Disciplines</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:4"><a href="#sheet-04"><span class="strip__no">04</span><span class="strip__name">Method</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:5"><a href="#sheet-05"><span class="strip__no">05</span><span class="strip__name">Work</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:6"><a href="#sheet-06"><span class="strip__no">06</span><span class="strip__name">Process</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:7"><a href="#sheet-07"><span class="strip__no">07</span><span class="strip__name">Studio</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:8"><a href="#sheet-08"><span class="strip__no">08</span><span class="strip__name">Contact</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:9"><a href="#sheet-09"><span class="strip__no">09</span><span class="strip__name">Spec</span></a><i class="strip__fill"></i></li>
+  </ol>
+</nav>
+<script>
+  /* Draw the strip from the real load progress. It never runs ahead of the load, and it takes at
+     least 0.5 s on a first visit so the drawing is readable. */
+  (function () {
+    var strip = document.getElementById('strip'), shown = 0, minMs = __wm.returning || __wm.reduced ? 0 : 500;
+    function tick() {
+      var cap = minMs ? Math.min(1, (performance.now() - __wm.t0) / minMs) : 1;
+      var target = Math.min(__wm.progress, cap);
+      shown += (target - shown) * 0.35;
+      if (target - shown < (target === 1 ? 0.02 : 0.002)) shown = target;
+      strip.style.setProperty('--load', shown.toFixed(4));
+      __wm.shown = shown;
+      if (shown < 1) requestAnimationFrame(tick);
+      else document.dispatchEvent(new Event('wm:loaded'));
+    }
+    requestAnimationFrame(tick);
+  })();
+</script>
+
+<!-- THE BOARD -->
+<div id="board" class="board">
+  <div class="board__grid" aria-hidden="true"></div>
+
+  <main id="sheets">
+    <!-- ACT 1: sheet 00 (opening) and sheet 01 (the first drawing) share one sticky stage -->
+    <section id="act-1" class="act">
+      <div class="act__stage">
+        <!-- SHEET 00: OPENING -->
+        <div id="sheet-00" class="layer sheet--opening" data-sheet="00" data-title="Opening" data-drawn="Design" data-checked="Engineering" data-approved="Strategy">
+          <div class="frame" aria-hidden="true">
+            <div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+            <div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+          </div>
+          <div class="centre-lines" aria-hidden="true"><i class="centre-lines__h"></i><i class="centre-lines__v"></i></div>
+
+          <p class="opening__id mono reveal-late">Wajih Mansouri<br><span class="graphite">Studio · Tunis</span></p>
+          <p class="opening__fig mono reveal-late" aria-hidden="true">Fig. 00</p>
+
+          <div class="hold">
+            <div class="dim dim--hold reveal-late" aria-hidden="true">
+              <svg class="dim__svg" preserveAspectRatio="none"><line class="dim__ext dim__ext--a"/><line class="dim__ext dim__ext--b"/><line class="dim__line"/><path class="dim__arrow dim__arrow--a"/><path class="dim__arrow dim__arrow--b"/></svg>
+              <span class="dim__value mono">— mm</span>
+            </div>
+            <h1 class="hold__line display">
+              <span class="hold__row"><span class="w">We</span> <span class="w">draw</span> <span class="w">it</span></span>
+              <span class="hold__row"><span class="w">before</span> <span class="w">we</span> <span class="w">build</span> <span class="w">it.</span></span>
+            </h1>
+          </div>
+
+          <div class="opening__lede reveal-late">
+            <p class="body">Websites, apps, platforms, security and AI, engineered to the millimetre, tested until nothing breaks, and run long after launch.</p>
+            <div class="opening__actions">
+              <a class="btn btn--ink" href="#sheet-08"><span>Start a project</span></a>
+              <a class="btn btn--line" href="#sheet-03"><span>See the sheets</span></a>
+            </div>
+          </div>
+
+          <p class="cue mono reveal-late" aria-hidden="true"><i class="cue__rule"></i><span>Scroll to assemble</span></p>
+        </div>
+
+
+        <!-- SHEET 01: THE FIRST DRAWING -->
+        <div id="sheet-01" class="layer sheet--plate" data-sheet="01" data-title="The first drawing" data-drawn="Design" data-checked="Engineering" data-approved="Security">
+          <div class="frame" aria-hidden="true">
+            <div class="frame__zones frame__zones--top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+            <div class="frame__zones frame__zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+          </div>
+          <figure class="plate">
+            <img class="plate__img" src="media/plates/bell-us186787-sheet1.webp" width="1600" height="1740"
+                 alt="Patent drawing, sheet 1 of A. G. Bell's US Patent 186,787 (1877): Fig. 1, a box telephone with a speaking tube, and Fig. 2, its vertical section.">
+          </figure>
+          <div class="read read--plate">
+            <p class="read__eyebrow mono">Fig. 1 · US Patent 186,787 · 1877</p>
+            <h2 class="read__title display">Every phone starts on paper.</h2>
+            <p class="read__body body">This is the drawing filed with Alexander Graham Bell&rsquo;s telephone patent, granted on 30&nbsp;January 1877. It is one of the first drawings of a telephone ever published, so the story of the phone starts here.</p>
+            <p class="read__note mono">Plate: US Patent 186,787, sheet 1 · public domain</p>
+          </div>
+          <div class="read read--era" aria-live="off">
+            <p class="read__eyebrow mono">Fig. 1 · From the patent</p>
+            <p class="read__title display">1877</p>
+            <p class="read__body body"></p>
+          </div>
+          <div class="years" aria-hidden="true">
+            <svg class="years__svg" preserveAspectRatio="none"></svg>
+            <div class="years__marker"><i></i><span class="years__label mono"></span></div>
+            <span class="years__name mono">Years · 1870–2030</span>
+          </div>
+        </div>
+        <svg class="redraw" aria-hidden="true"></svg>
+        <canvas class="phone-canvas" role="img" aria-label="Concept phone LOFTHAUL, pulled apart into six labelled layers: Glass, Interface, Flow, Logic, Data, Lock."></canvas>
+        <section id="s01-history" class="hist" aria-label="A short history of the phone">
+          <p class="mono hist__eyebrow">The phone, 1877 to today</p>
+          <ol class="hist__list"></ol>
+        </section>
+        <div id="s01-final" class="read read--final">
+          <p class="read__eyebrow mono">Apps and phones</p>
+          <h2 class="read__title display">The whole business in one pocket.</h2>
+          <p class="read__body body">Six layers, each drawn before it is built: what the hand meets, every screen, the flow, the rules, the data and the lock.</p>
+          <p class="read__tag mono"><span>Concept sheet</span> LOFTHAUL, a drone-delivery dispatcher. Made up to show the range, not a client.</p>
+        </div>
+      </div>
+    </section>
+
+<!-- @part sheet-02 -->
+<!-- @part sheet-03 -->
+<!-- @part sheet-03b -->
+<!-- @part sheet-03c -->
+<!-- @part sheet-04 -->
+<!-- @part sheet-05 -->
+<!-- @part sheet-06 -->
+<!-- @part sheet-07 -->
+<!-- @part sheet-08 -->
+<!-- @part sheet-09 -->
+  </main>
+</div>
+
+<!-- TITLE BLOCK: a real drawing title block, updates as sheets pass -->
+<aside id="titleblock" class="titleblock mono reveal-late" aria-label="Title block">
+  <div class="tb__cell tb__cell--wide"><span class="tb__k">Project</span><span class="tb__v">Wajih Mansouri · Studio</span></div>
+  <div class="tb__cell"><span class="tb__k">Sheet</span><span class="tb__v"><b class="tb__sheet">00</b> / 09</span></div>
+  <div class="tb__cell tb__cell--title"><span class="tb__k">Title</span><span class="tb__v tb__title">Opening</span></div>
+  <div class="tb__cell"><span class="tb__k">Scale</span><span class="tb__v">1:1</span></div>
+  <div class="tb__cell"><span class="tb__k">Drawn</span><span class="tb__v tb__drawn">Design</span></div>
+  <div class="tb__cell"><span class="tb__k">Checked</span><span class="tb__v tb__checked">Engineering</span></div>
+  <div class="tb__cell"><span class="tb__k">Approved</span><span class="tb__v tb__approved">Strategy</span></div>
+  <div class="tb__cell"><span class="tb__k">Rev</span><span class="tb__v">11.26</span></div>
+</aside>
+
+<!-- THE SINGULARITY / CURTAIN (difference blend: whatever it covers flips black/white) -->
+<div id="curtain" class="curtain" aria-hidden="true">
+  <div class="curtain__panel curtain__panel--top"><i class="curtain__edge"></i></div>
+  <div class="curtain__panel curtain__panel--bottom"><i class="curtain__edge"></i></div>
+  <div class="sing">
+    <i class="sing__point"></i>
+    <i class="sing__line"></i>
+    <svg class="sing__ruler" preserveAspectRatio="none"></svg>
+    <span class="sing__scale mono">Scale 1:1</span>
+  </div>
+  <div class="cut">
+    <span class="cut__mark cut__mark--a mono">A</span><span class="cut__mark cut__mark--b mono">A</span>
+    <span class="cut__name mono">Section A–A</span>
+    <span class="cut__read mono">Sheet 00 · read</span>
+  </div>
+</div>
+
+<!-- CAD CROSSHAIR CURSOR (desktop, fine pointers only) -->
+<div id="xhair" class="xhair" aria-hidden="true">
+  <i class="xhair__h"></i><i class="xhair__v"></i><i class="xhair__box"></i>
+  <span class="xhair__read mono">X 0000 · Y 0000</span>
+</div>
+
+<noscript><style>.curtain{display:none}.reveal-late,.hold__line .w{opacity:1!important;transform:none!important}</style></noscript>
+</body>
+</html>

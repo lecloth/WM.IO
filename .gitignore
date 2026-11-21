@@ -4,3 +4,5 @@ tools/package-lock.json
 __pycache__/
 tools/pylib/
 tools/sources/
+.browser.lock
+tools/.browser.lock
