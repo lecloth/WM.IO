@@ -1,1 +1,87 @@
-/* sheet 04: Method */
+/* sheet 04: Method. An inverted sheet: ink ground, paper lines and text (the --ink / --paper tokens swapped). */
+
+/* the passing sheet (entry): outside the section so its difference blend reaches the sheet underneath */
+.s04-pass { position: fixed; inset: 0; pointer-events: none; visibility: hidden; mix-blend-mode: difference;
+  background: var(--s04-pass, var(--paper)); transform: translate3d(-100%, 0, 0); }
+.s04-pass.is-on { visibility: visible; }
+/* paper laid under everything on the board, in the passing sheet's footprint, so transparent parts of the sheet below
+   (the bare drafting film) also invert to ink instead of blending with nothing */
+.s04-under { position: fixed; inset: 0; z-index: 1; pointer-events: none; visibility: hidden; background: var(--paper); transform: translate3d(-100%, 0, 0); }
+.s04-under.is-on { visibility: visible; }
+.s04-pass__marks { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.s04-pass__marks line, .s04-pass__marks circle { stroke: var(--ink); stroke-width: 1; fill: none; vector-effect: non-scaling-stroke; }
+.s04-pass__marks text { fill: var(--ink); font-family: var(--f-mono); font-size: 10px; letter-spacing: .06em; }
+html[data-motion="reduce"] .s04-pass, html[data-motion="reduce"] .s04-under { display: none; }
+
+/* token swap: the parent captures the root values, the sheet re-declares them inverted */
+#sheet-04 .s04 { --s04-fg: var(--paper-rgb); --s04-bg: var(--ink-rgb); }
+#sheet-04 .s04__sheet {
+  --ink-rgb: var(--s04-fg); --paper-rgb: var(--s04-bg);
+  --ink: rgb(var(--ink-rgb)); --paper: rgb(var(--paper-rgb));
+  --hair: rgba(var(--ink-rgb), .8); --graphite: rgba(var(--ink-rgb), .64);
+  position: absolute; inset: 0; background: var(--paper); color: var(--ink);
+  clip-path: inset(0 var(--clip-r, 0px) 0 0);
+}
+#sheet-04 .s04__edge { position: absolute; top: 0; bottom: 0; left: 0; width: 1px; background: rgb(var(--paper-rgb)); visibility: hidden; transform: translate3d(var(--edge-x, 0px), 0, 0); }
+#sheet-04 .s04__edge.is-on { visibility: visible; }
+#sheet-04 .s04__edge::before, #sheet-04 .s04__edge::after { content: ""; position: absolute; left: -6px; width: 13px; height: 1px; background: rgb(var(--paper-rgb)); }
+#sheet-04 .s04__edge::before { top: calc(var(--strip-h) + 2.25rem); }
+#sheet-04 .s04__edge::after { bottom: 2.25rem; }
+
+.s04__h { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* the drawing */
+.s04__fig { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+#sheet-04 .pl{ fill: none; stroke: var(--ink); stroke-width: var(--sw, 1px); stroke-linejoin: round; stroke-linecap: butt; }
+#sheet-04 .pl.heavy{ stroke-width: var(--sw-heavy, 1.75px); }
+#sheet-04 .pl.thin{ stroke: var(--graphite); }
+#sheet-04 .pl.hidden{ stroke-dasharray: var(--dash); stroke: var(--graphite); }
+#sheet-04 .pl.centre{ stroke-dasharray: var(--centre); stroke: var(--graphite); }
+#sheet-04 .pf{ fill: var(--ink); stroke: none; }
+#sheet-04 .pt{ fill: var(--ink); font-family: var(--f-mono); font-size: var(--fs, 11px); letter-spacing: .03em; }
+#sheet-04 .pt.graphite{ fill: var(--graphite); }
+#sheet-04 .pt.strong{ font-weight: 500; }
+
+/* reading moments: shown or hidden, never half-faded under motion */
+.s04__steps { position: absolute; inset: 0; pointer-events: none; }
+.s04__read, .s04__cap { opacity: 0; visibility: hidden; transition: opacity .22s var(--ease-out), visibility 0s .22s; }
+.s04__step.is-on .s04__read, .s04__step.is-on .s04__cap { opacity: 1; visibility: inherit; transition: opacity .22s var(--ease-out), visibility 0s; pointer-events: auto; }
+.s04__read { position: absolute; left: 63%; top: 23%; width: min(28rem, 28.5%); }
+.s04__read .read__eyebrow { color: var(--graphite); }
+.s04__title { font-size: 3.9rem; color: var(--ink); margin-bottom: 1.25rem; }
+.s04__sub { font-size: 1.9rem; line-height: 1.12; letter-spacing: -.01em; color: var(--ink); margin: -.35rem 0 1.25rem; }
+.s04__read .read__body { color: var(--ink); }
+.s04__cap { position: absolute; left: 8%; bottom: calc(var(--frame) + var(--zone) + 1.4rem); color: var(--graphite); }
+
+.s04__index { position: absolute; left: 8%; top: calc(var(--strip-h) + .75rem + var(--zone) + 1.6rem); display: flex; gap: 1.75rem; color: var(--graphite); }
+.s04__index li { position: relative; padding-bottom: .35rem; transition: color .25s var(--ease-out); }
+.s04__index li::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--ink); transform: scaleX(0); transform-origin: 0 50%; transition: transform .25s var(--ease-out); }
+.s04__index li.is-on { color: var(--ink); }
+.s04__index li.is-on::after { transform: scaleX(1); }
+.s04__index { opacity: 0; visibility: hidden; transition: opacity .22s, visibility 0s .22s; }
+.s04__index.is-on { opacity: 1; visibility: inherit; transition: opacity .22s, visibility 0s; }
+
+@media (max-width: 1023px) {
+  .s04__read { left: 2.25rem; right: 1.75rem; width: auto; top: auto; bottom: 4.6rem; }
+  .s04__title { font-size: 2.3rem; margin-bottom: .6rem; }
+  .s04__sub { font-size: 1.3rem; margin: -.1rem 0 .7rem; }
+  .s04__read .read__body { font-size: 1.0625rem; }
+  .s04__read .read__eyebrow { margin-bottom: .5rem; }
+  .s04__cap { left: 2.25rem; right: 1.75rem; bottom: auto; top: var(--s04-cap-y, 50%); font-size: .625rem; }
+  .s04__index { left: 2.25rem; right: 1.75rem; gap: .9rem; font-size: .5625rem; top: calc(var(--strip-h) + .75rem + var(--zone) + .6rem); }
+}
+
+/* reduced motion: four finished steps, one under the other, on one long ink sheet */
+#sheet-04.is-static .s04__sheet { position: relative; inset: auto; clip-path: none; padding: calc(var(--strip-h) + 3rem) 8% 6rem; }
+#sheet-04.is-static .s04__edge, #sheet-04.is-static .s04__fig, #sheet-04.is-static .s04__index { display: none; }
+#sheet-04.is-static .s04__steps { position: relative; inset: auto; display: grid; gap: 4.5rem; }
+#sheet-04.is-static .s04__step { display: grid; grid-template-columns: 1.35fr 1fr; gap: 3rem; align-items: center; }
+#sheet-04.is-static .s04__read, #sheet-04.is-static .s04__cap { position: relative; left: auto; top: auto; bottom: auto; right: auto; width: auto; opacity: 1; visibility: visible; }
+#sheet-04.is-static .s04__read { grid-column: 2; grid-row: 1; }
+#sheet-04.is-static .s04__figs { grid-column: 1; grid-row: 1 / span 2; width: 100%; height: auto; aspect-ratio: 800 / 560; overflow: visible; }
+#sheet-04.is-static .s04__cap { grid-column: 2; grid-row: 2; align-self: start; }
+@media (max-width: 1023px) {
+  #sheet-04.is-static .s04__sheet { padding: calc(var(--strip-h) + 2rem) 1.25rem 5rem; }
+  #sheet-04.is-static .s04__step { grid-template-columns: 1fr; gap: 1.25rem; }
+  #sheet-04.is-static .s04__read, #sheet-04.is-static .s04__figs, #sheet-04.is-static .s04__cap { grid-column: 1; grid-row: auto; }
+}
