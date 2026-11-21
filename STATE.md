@@ -1,153 +1,97 @@
 # STATE — Wajih Mansouri studio site (local experiment)
 
-Read `STUDIO_BRIEF.md` first (Part 2c overrides everything above it). This file holds the decisions, what Wajih
-picked, what is done and what comes next.
+**After any context compaction:** re-read this file and `STUDIO_BRIEF.md` Parts 2b, 2c, 2d, 3 and 4 before continuing.
 Serve: `python -m http.server 8108 --bind 127.0.0.1 --directory "C:\wajih-mansouri-studio\site"`. Port 8108 only.
 
-## Decisions by Wajih
+## How the run works now (Part 2d, Wajih's call)
 
-### Part 2c (21 Nov 2026, night): overrides everything above it
+- Build every remaining slice back to back to the finished site. No review stops, no "2–3 options first", no question batches. Pick the best and log why under "Decisions I made alone".
+- **After each slice:**
+  - freeze-frame test at 1440×900 and 390×844;
+  - no console errors, smooth scrolling (`tools/fps.py`), reduced motion;
+  - commit "studio: slice N - <short title>";
+  - update this file.
+- **At the end:**
+  1. the full bug sweep from the run message;
+  2. commit "studio: final - full site, bug sweep clean";
+  3. one final report.
+- Stop early only for a real blocker.
 
-- **A full studio:** websites, apps and phones, platforms and web apps, engineering and infrastructure, cybersecurity, AI, consulting, monthly care. The voice is "we", go big.
-- **No fabricated proof, ever:** no invented clients, testimonials, numbers, certifications (ISO, SOC 2, pen-test certificates), awards, or named or pictured team members. Made-up work is always labelled "Concept sheet".
-- **Cleanliness for readability (hard rule):**
-  - Reading moments are calm: text on clean sheets, generous whitespace, nothing moves under or behind text, and the grid and fibre go still and fade where text sits.
-  - Spectacle happens only between reading moments, inside sticky scenes.
-  - One idea per screen. Body lines at most about 65 characters; body text at least 18 px on desktop.
-  - **Freeze-frame test:** pause on any frame mid-scroll and every piece of text on it must be readable.
-- **Every discipline starts from its ancestor machine:** a public-domain plate redraws itself into what the studio builds today.
-  - Websites ← rotary printing press.
-  - Apps and phones ← Bell-era telephone.
-  - Platforms ← telephone switchboard.
-  - Engineering ← Edison-era electrical distribution.
-  - Cybersecurity ← Yale-era pin-tumbler lock.
-  - AI ← Babbage's Analytical Engine + Jacquard cards.
-  - Consulting ← surveyor's theodolite.
-  - Care has no ancestor.
-  - Verify each plate is public domain and genuine; swap the ancestor if no good plate exists.
-- **AI offer:**
-  - agents with human checkpoints;
-  - AI inside products;
-  - private AI;
-  - AI security ("We attack your AI before someone else does").
-  - Lovelace line (1843, Note G) only after checking the exact wording against a primary source.
-- **Title blocks** show DRAWN / CHECKED / APPROVED by discipline (design, engineering, security, AI, strategy), never a person.
-- **Fourth principle, Locked:** "Security is drawn on sheet one, not bolted on at the end."
-- **Studio:** "A bench, not a body shop." The founder card stays short and never mentions past builds.
-- **Contact:** the work order's title block fills in live as the visitor types, with no outside service.
-- **Two more concept products for 05 Work:** an insurer's AI claims assistant; a payments company's live security command board.
-- **Copy:** the hold line stays "We draw it before we build it." The line under it is "Websites, apps, platforms, security and AI, engineered to the millimetre, tested until nothing breaks, and run long after launch." Wajih keeps "tested until nothing breaks".
-- **Sheets:** 00 Opening · 01 The first drawing · 02 Principles (Exact, Felt, Proven, Locked) · 03 Disciplines · 04 Method · 05 Work · 06 Process (Break includes the lock-pick stress test) · 07 Studio · 08 Contact · 09 Spec sheet.
+## Standing decisions (Wajih / the Claude chat for Wajih)
 
-### Part 2b (still standing where 2c doesn't override)
+- **Brief layers:**
+  - 2b: B&W first; blue once as a cyanotype, then only at plate moments. Made-up products only, never Wajih's builds. Assets are sourced or made in code.
+  - 2c: full studio, "we". No fabricated proof: no invented clients, testimonials, numbers, certifications, awards or people. Concept work is labelled "Concept sheet". Cleanliness: one idea per screen, body ≥18 px on desktop, ≤65 characters per line, nothing moves under text, freeze-frame test. Ancestor plates per discipline. Title blocks show Drawn/Checked/Approved by discipline.
+  - 2d: font pairing B (Newsreader + DM Mono) only; A and C removed. Black moments must do something and no two chapter changes may look alike. Bell's plate gets context, then the phone history.
+- **For the final review:**
+  - no portrait;
+  - the founder card is short and text-only, never mentions past builds, true lines only;
+  - the proudest / annoys / loves questions are skipped.
+- **Contact placeholders for testing:** email `hello@testing`, WhatsApp `+216 00 000 000`, location "Tunis", all in ONE settings file (`site/js/settings.js`). The work order hands the visitor's brief to their own email or WhatsApp app (mailto / wa.me), with no outside service.
+- **Product rotation:** a new made-up product appears on each loop, once the loop and the concept products exist.
 
-- **Look:**
-  - Chalk is out; the site is sharp and precise.
-  - Line language: CAD hairlines plus patent "Fig." plates.
-  - 3D: matte with hairline edges.
-- **Colour:** black and white first. Blue arrives once, as a cyanotype, when the hero phone pulls apart; after that only at patent-plate moments.
-- **Showcased work:** made-up products only, never Wajih's existing builds anywhere. Invented names are web-checked.
-- **Opening:** about 2.5 s on a first visit, skippable, near-instant on return.
-- **Assets:** Wajih supplies none.
-- **Font pairing:** A (Archivo + IBM Plex Mono) stays unless he picks B or C on `/type.html`.
+## Decisions I made alone (log)
 
-## Hard rules (Part 4), short form
+- **Slice 1–2 engine:**
+  - static site, vendored libraries, 1rem = width / 90;
+  - opening timing about 2.3 s to scroll;
+  - the act is a pure function of scroll (freeze-safe);
+  - cyanotype as a real negative (paper → Prussian #173F73, ink → white);
+  - LOFTHAUL as the first concept product, with its colour on hover only.
+- **Slice 3, the 00 → 01 black moment:** the line closes at a 6° angle like a section cut. While shut it is labelled as a drawing section ("A … A", "Section A–A") plus a real measurement of the sheet just read ("Sheet 00 · read in 41 s", timed from scroll-unlock to the cut). It reopens level onto Bell's plate.
+- **Slice 3, phone history:**
+  - every era after Bell is a generic form drawn in code, at a stated scale;
+  - real patent drawings were not used for these eras, to avoid brand-specific designs and licence doubt on post-1927 drawings;
+  - no logos or brand names; the 2007 drawing deliberately has no round home button.
+- **Slice 3, today's phone:** a round punch-hole camera instead of a pill-shaped cutout (the pill reads as one brand).
+- **Slice 3, layout:** the history is drawn at 40% of the width on desktop so the reading text never overlaps it; the years axis is the opening's ruler returning.
+- **Slice 3, type:** body 20 px at 1440 (Newsreader is smaller on the em than Archivo).
 
-- Build only in `C:\wajih-mansouri-studio`. From the santalarch clone, only my own generic engine code (`ENGINE_REUSE.md`). Never a santalarch asset, text or scene.
-- No cartoon characters, ever. `CREDITS.md` logs every outside asset. Port 8108 only.
-- With Wajih:
-  - at most 3 questions a batch, with options and a recommendation;
-  - 2–3 visual options side by side;
-  - one instruction per message;
-  - his to-dos in one block at the bottom.
-- After each approved step: commit with a message starting `studio:` and update this file.
+## Phone history: sources (verified 21 Nov 2026)
 
-## Build decisions taken (mine, open to challenge)
+| Year shown | Line on the site | Source |
+|---|---|---|
+| 1877 | Bell US 186,787, granted 30 Jan 1877; Fig. 1 "a perspective view of one form of my electric telephone" | The patent itself (Google Patents US186787A, page 2 text) |
+| c. 1900 | Candlestick phones, common for about fifty years | Wikipedia "Candlestick telephone": common from the late 1890s to the 1940s |
+| 1920s | Rotary dial replaces the operator for dialling | Wikipedia "Rotary dial"; NY Telephone began switching to dial in 1922; Bell dial service became common in the 1920s |
+| 1963 | Ten push-buttons and tones, first offered in Pennsylvania | Hagley Museum; Wikipedia "Push-button telephone": Touch-Tone offered 18 Nov 1963 in Carnegie and Greensburg, PA, ten-button pad |
+| 1973 | First handheld mobile call, on a New York street | NPR (2023), IEEE Spectrum: Martin Cooper, 3 Apr 1973, Sixth Avenue, Manhattan |
+| 1992 | First text message "Merry Christmas" | History.com, NPR: Neil Papworth, 3 Dec 1992 |
+| 1994 | Touchscreen phone with apps (email, calendar, sketch pad) | Wikipedia "IBM Simon", Computer History Museum: on sale 16 Aug 1994 |
+| 2007 | Multi-touch glass replaces the keypad | Apple press release, 9 Jan 2007 ("Apple Reinvents the Phone with iPhone") |
 
-- **Delivery:** a static site with no build step: HTML + CSS + ES modules. GSAP, ScrollTrigger and Lenis are vendored as classic scripts; three.js 0.183 is an ES module through an import map. 1rem = width / 90 on desktop and width / 24.375 on mobile.
-- **Palette:**
-  - paper #F2F0EB, ink #121212, graphite #6B6A66 (4.8:1);
-  - cyanotype ground #173F73 with ink #ECF1F6 (about 10:1).
-  - Dark version later: #0E0E0E / #F2F0EB / #8C8B86.
-- **Opening (slice 1):**
-  - The curtain is a difference-blend layer in the paper colour.
-  - The strip is drawn by the real load progress.
-  - First visit about 2.3 s to scroll, return about 0.8 s, skip at 12×.
-- **Board grid:** static. Its slice-1 cursor and scroll drift was removed, so nothing moves under text.
-- **Act 1 (sheets 00 + 01) is one sticky stage, 9.4 viewport heights long.** Everything is a pure function of scroll (`render(p)`), so any frame can be frozen. Timeline in viewport-heights of scroll:
+## Architecture (for every remaining slice)
 
-  | Scroll (vh) | What happens |
-  |---|---|
-  | 0–0.9 | The curtain closes over the opening (text it covers inverts, never disappears mid-word) |
-  | 0.86–1.09 | Pure black and the one line; the sheets swap underneath |
-  | 1.05–1.95 | The curtain reopens onto Bell's plate |
-  | 0.95–2.55 | **Reading moment 1**: the plate and its caption; nothing moves |
-  | 2.6 | The plate drops out whole (no half-cut words). Fig. 1 stays, as the real plate pixels plus traced hairlines |
-  | 2.75–3.3 | Fig. 1 travels to the phone's place |
-  | 3.3–4.4 | A sweep turns Bell's ink into hairlines that un-draw while the phone's CAD outline (body, screen, sensor, keys, centre lines) draws on |
-  | 4.35–4.85 | The outline fills into the matte 3D phone (orthographic "drawing" camera, so the outline and the model line up exactly) |
-  | 4.85–6.2 | The phone turns to an axonometric view and pulls apart into Glass, Interface, Flow, Logic, Data, Lock (25 mm gaps) |
-  | 5.25–6.45 | The cyanotype develops: a ragged tide from the phone outwards, paper to Prussian blue, ink to white, the grid included (one shader pass) |
-  | 6.45–7.05 | Labels and leader lines, plus 154.0 / 74.0 mm dimension lines. Label text is either fully on or off, never faded |
-  | 7.1–8.38 | **Reading moment 2**: "The whole business in one pocket." with the Concept sheet tag |
-
-- **Hover:** over the phone's screen in the final state, LOFTHAUL's own colour (signal orange #FF5B1F) appears, rendered in true colour through the cyanotype.
-- **Reduced motion:** act 1 becomes three finished, static sheets one under another: opening, plate, developed exploded phone with its text.
-- **Mobile:** the same story; the phone is smaller and shifted left, the labels sit in a clear column, the reading blocks sit above a one-row title block.
-- **Verified:**
-  - frame rate while scrolling (`tools/fps.py`, headless Chromium, ANGLE D3D11): desktop 1440×900 56–57 fps, p95 16.8 ms; mobile 390×844 56 fps, p95 16.8 ms; about 1–2% of frames over 25 ms;
-  - no console errors.
-- **LOFTHAUL name check:** web-searched 21 Nov 2026 ("Lofthaul" drone delivery); no company or product found.
-- **Regenerating Fig. 1 vectors:**
-  - `tools/sources/` (git-ignored) holds the downloaded PDF and page images; `tools/pylib/` holds PyMuPDF and potracer.
-  - Re-download the PDF from the URL in `CREDITS.md`, extract page 0 to `tools/sources/pdf_p0.png`, crop `(470,555,1690,1150)` to `fig1.png`, then run `python -I tools/trace_fig1.py`.
-
-## Waiting on Wajih
-
-1. Look at sheet 01 and say what feels wrong or right.
-2. Font pairing pick (A / B / C) on `/type.html`. A is in use.
-3. **Later question batches:**
-   - contact email and WhatsApp;
-   - whether Dubai shows as a location;
-   - portrait or not (photo or line drawing);
-   - the "reply within one working day" promise;
-   - what he's proudest of, what annoys him in other studios' sites, sites he loves;
-   - whether the founder card's lines are true.
-
-## Not done yet (known)
-
-- **Product rotation on each loop:** not wired. The page has no loop yet (it arrives with sheet 09) and only one product (LOFTHAUL) is designed. The others come with slice 4.
-- **Sheets 02–09** are placeholders.
+- `site/index.html` is generated from `src/index.template.html` + `src/parts/*.html` by `python -I tools/build.py`.
+- **Each sheet owns:**
+  - its markup in `src/parts/sheet-NN.html`;
+  - its CSS in `site/css/sheet-NN.css`;
+  - its JS in `site/js/sheets/sheet-NN.js`, exporting `init(engine)` and imported by `main.js`.
+- **Shared:** `site/js/engine/core.js` (Lenis, bus, scrollTo), `site/js/engine/kit.js` (clamp/span/ease, scroll scenes, hairline draw-on, theme colours).
+- **Chapter overlap:** every sheet section after act 1 starts with `margin-top: -100lvh` and its own sticky stage. Its first viewport of scroll is its incoming chapter change, drawn over the still-pinned previous stage.
+- **Colours only through tokens** (`--paper`, `--ink`, `--graphite`, `--prus`, `--blueprint-ink`); canvases read them at runtime and redraw on `engine.on('theme')`.
+- **Testing:** `tools/shoot.py`, `tools/fps.py`, `tools/sheet.py`. Browser runs are serialised by a lock, because the plain http.server drops connections under parallel load.
 
 ## Done
 
-- **Slice 1:** `studio: slice 1 - opening, timeline, type options`. Opening, timeline strip, board, title block, CAD cursor, reduced motion, mobile, `/type.html`.
-- **Slice 2:** `studio: slice 2 - first drawing, full-studio copy`.
-  - Part 2c copy in the strip, title blocks (Drawn/Checked/Approved by discipline), opening line and type page.
-  - The line closing and reopening.
-  - Bell's US 186,787 plate (verified, credited) redrawing into the phone outline.
-  - The matte 3D phone built in code, with explode, labels, dimension lines and the cyanotype.
-  - LOFTHAUL designed as a real dispatcher screen.
-  - Freeze-frame checked at 1440×900 and 390×844, reduced motion, hover, frame rate.
+- **Slice 1** (`studio: slice 1 - opening, timeline, type options`).
+- **Slice 2** (`studio: slice 2 - first drawing, full-studio copy`).
+- **Slice 3** (`studio: slice 3 - phone history, section-cut black, Newsreader`):
+  - the plate caption with context;
+  - the phone history, 1877 → today, in 9 figures along a years axis;
+  - the section-cut black moment;
+  - pairing B site-wide, with A, C and `/type.html` removed;
+  - checks: freeze at 1440 and 390; reduced motion (the history as one static sheet); fps 57 desktop / 57 mobile, p95 16.8 ms; no errors.
 
-## Plan: the rest of the site, as slices in order
+## Next (slices in order)
 
-1. **Opening, timeline strip, type options:** done.
-2. **01 The first drawing:** done.
-3. **03 Disciplines, shown as 2–3 options first.**
-   - Source and verify the remaining ancestor plates (printing press, switchboard, Edison distribution, pin-tumbler lock, Analytical Engine + Jacquard cards, theodolite).
-   - Each plate redraws into today's build, one sticky scene each or a shared one.
-   - The lock-pick moment for security.
-   - The punch-card → AI answer moment, with the Lovelace line verified from a primary source.
-4. **The concept products:**
-   - The remaining phones (container port, solar farm, jet charter) and websites (observatory booking, watchmaker shop, hospital bed-flow board), plus the AI claims assistant and the payments security board.
-   - Every name web-checked; each designed for real, in black and white with its own hover colour.
-5. **05 Work:** concept sheets with title blocks, honest "Concept sheet" labels, client colour on hover.
-6. **The thread:** the line closing and opening at every chapter change, sheets passing with black/white inversion, dimension lines measuring the next sheet, tracing-paper slides.
-7. **02 Principles:** Exact, Felt, Proven, Locked on clean sheets, with Da Vinci machine-study margins (public-domain scans, credited).
-8. **04 Method.**
-9. **06 Process:** the Diagnose → Draw → Build → Break → Hand over → Care mechanism; Break as a stress test including the lock pick.
-10. **07 Studio:** the bench, and a short founder card (every line confirmed by Wajih).
-11. **08 Contact:** the live work order (the title block fills in as he types, in the browser, no outside service) with Wajih's real contact details.
-12. **09 Spec sheet:** this site's own measured numbers. The line closes back into the point, the page loops, and the hero phone rotates to the next product on each loop.
-13. **Dark version and final passes:** WCAG AA audit in light and dark, reduced motion, mobile, keyboard and screen reader, cross-browser.
+4. Concept products: the remaining phones and web apps, names web-checked, each with its hover colour.
+5. 02 Principles: Exact, Felt, Proven, Locked, with Da Vinci margins.
+6. 03 Disciplines: ancestor plates, including the security lock-pick and the AI punch-card moment with the Lovelace line.
+7. 04 Method.
+8. 05 Work: concept sheets.
+9. 06 Process: the mechanism and the Break stress test.
+10. 07 Studio + 08 Contact: the bench, the founder card, the live work order and the settings file.
+11. 09 Spec sheet (measured live) + the loop back to the singularity + product rotation.
+12. Dark version (token swap + toggle) and the WCAG AA pass.
+13. Final bug sweep → final commit → report.

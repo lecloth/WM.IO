@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-type="a" data-phase="loading">
+<html lang="en" data-phase="loading">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Wajih Mansouri — studio, Tunis</title>
   <meta name="description" content="Websites, apps, platforms, security and AI, drawn before they are built.">
   <script>
-    /* Runs before first paint: type pairing preview (?type=a|b|c), reduced motion, return visit,
+    /* Runs before first paint: reduced motion, return visit,
        and the real load-progress counter that the timeline strip draws itself with. */
     (function () {
-      var d = document.documentElement, q = location.search.match(/type=([abc])/);
-      if (q) d.dataset.type = q[1];
+      var d = document.documentElement;
       var rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
       var seen = false;
       try { seen = localStorage.getItem('wm:opened') === '1'; } catch (e) {}
@@ -30,8 +29,8 @@
       addEventListener('load', function () { __wm.done('load'); });
     })();
   </script>
-  <link rel="preload" href="fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/newsreader-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/dm-mono-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/site.css" onload="__wm.done('css')">
   <script defer src="vendor/gsap.min.js" onload="__wm.done('gsap')"></script>
   <script defer src="vendor/ScrollTrigger.min.js" onload="__wm.done('st')"></script>
@@ -133,14 +132,28 @@
                  alt="Patent drawing, sheet 1 of A. G. Bell's US Patent 186,787 (1877): Fig. 1, a box telephone with a speaking tube, and Fig. 2, its vertical section.">
           </figure>
           <div class="read read--plate">
-            <p class="read__eyebrow mono">Fig. 1 · 1877</p>
+            <p class="read__eyebrow mono">Fig. 1 · US Patent 186,787 · 1877</p>
             <h2 class="read__title display">Every phone starts on paper.</h2>
-            <p class="read__body body">US Patent 186,787, granted to Alexander Graham Bell on 30&nbsp;January 1877. Fig.&nbsp;1 is, in his words, &ldquo;a perspective view of one form of my electric telephone.&rdquo;</p>
+            <p class="read__body body">This is the drawing filed with Alexander Graham Bell&rsquo;s telephone patent, granted on 30&nbsp;January 1877. It is one of the first drawings of a telephone ever published, so the story of the phone starts here.</p>
             <p class="read__note mono">Plate: US Patent 186,787, sheet 1 · public domain</p>
+          </div>
+          <div class="read read--era" aria-live="off">
+            <p class="read__eyebrow mono">Fig. 1 · From the patent</p>
+            <p class="read__title display">1877</p>
+            <p class="read__body body"></p>
+          </div>
+          <div class="years" aria-hidden="true">
+            <svg class="years__svg" preserveAspectRatio="none"></svg>
+            <div class="years__marker"><i></i><span class="years__label mono"></span></div>
+            <span class="years__name mono">Years · 1870–2030</span>
           </div>
         </div>
         <svg class="redraw" aria-hidden="true"></svg>
         <canvas class="phone-canvas" role="img" aria-label="Concept phone LOFTHAUL, pulled apart into six labelled layers: Glass, Interface, Flow, Logic, Data, Lock."></canvas>
+        <section id="s01-history" class="hist" aria-label="A short history of the phone">
+          <p class="mono hist__eyebrow">The phone, 1877 to today</p>
+          <ol class="hist__list"></ol>
+        </section>
         <div id="s01-final" class="read read--final">
           <p class="read__eyebrow mono">Apps and phones</p>
           <h2 class="read__title display">The whole business in one pocket.</h2>
@@ -183,6 +196,11 @@
     <i class="sing__line"></i>
     <svg class="sing__ruler" preserveAspectRatio="none"></svg>
     <span class="sing__scale mono">Scale 1:1</span>
+  </div>
+  <div class="cut">
+    <span class="cut__mark cut__mark--a mono">A</span><span class="cut__mark cut__mark--b mono">A</span>
+    <span class="cut__name mono">Section A–A</span>
+    <span class="cut__read mono">Sheet 00 · read</span>
   </div>
 </div>
 

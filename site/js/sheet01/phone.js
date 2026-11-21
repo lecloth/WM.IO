@@ -44,7 +44,7 @@ function drawFlow(ctx, W, H) {
   ctx.strokeStyle = '#121212'; ctx.fillStyle = '#121212'; ctx.lineWidth = 3;
   const steps = ['OPEN', 'PICK DRONE', 'CHECK WIND', 'RELEASE', 'TRACK', 'DELIVERED'];
   const bw = W * 0.6, bh = H * 0.075, x = (W - bw) / 2;
-  ctx.font = `500 ${H * 0.026}px "IBM Plex Mono", monospace`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.font = `500 ${H * 0.026}px "DM Mono", monospace`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   steps.forEach((s, i) => {
     const y = H * 0.1 + i * H * 0.145;
     ctx.strokeRect(x, y, bw, bh); ctx.fillText(s, W / 2, y + bh / 2);
@@ -54,7 +54,7 @@ function drawFlow(ctx, W, H) {
   // the "held for wind" branch
   const y3 = H * 0.1 + 2 * H * 0.145 + bh / 2;
   ctx.setLineDash([10, 8]); ctx.beginPath(); ctx.moveTo(x + bw, y3); ctx.lineTo(W * 0.92, y3); ctx.lineTo(W * 0.92, H * 0.1 + bh / 2); ctx.lineTo(x + bw, H * 0.1 + bh / 2); ctx.stroke(); ctx.setLineDash([]);
-  ctx.textAlign = 'left'; ctx.font = `400 ${H * 0.02}px "IBM Plex Mono", monospace`; ctx.fillText('HOLD', W * 0.83, y3 - 18);
+  ctx.textAlign = 'left'; ctx.font = `400 ${H * 0.02}px "DM Mono", monospace`; ctx.fillText('HOLD', W * 0.83, y3 - 18);
 }
 function drawLockMark(ctx, W, H) {
   ctx.fillStyle = '#2E2D2A'; ctx.fillRect(0, 0, W, H);

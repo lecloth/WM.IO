@@ -159,6 +159,118 @@ Rules for them:
 
 ---
 
+## Part 2c: The full studio + cleanliness (21 Nov 2026, night). Overrides Parts 1, 2, 2b and 3 where they differ.
+
+### Wajih's decisions
+- **The studio is growing a team.** Scope: websites, apps and phones, platforms and web apps, engineering and
+  infrastructure, cybersecurity, AI, consulting, and monthly care. Go big on scope and voice: "we", a full studio.
+- **One line held:** no fabricated proof. No invented clients, testimonials, numbers, certifications (ISO, SOC 2,
+  pen-test certificates), awards, or named/pictured team members. Made-up work stays labelled "Concept sheet".
+- **Cleanliness to optimise readability** (Wajih's rule, now hard):
+  - Reading moments are calm: text on clean sheets, generous whitespace; nothing moves under or behind text, and the
+    grid and fibre texture go still and fade wherever text sits.
+  - Spectacle happens between reading moments, inside sticky scenes, never while someone is reading.
+  - One idea per screen. Body lines at most about 65 characters; body text at least 18 px on desktop.
+  - Freeze-frame test: pause on any frame mid-scroll; every piece of text on it must be readable.
+
+### The big idea: every discipline starts from its ancestor machine (the Claude chat's idea; Wajih said yes)
+The hero move (an 1870s telephone figure redrawing itself into the modern phone) becomes the system. Each discipline's
+sheet opens on a public-domain plate of the machine that started it, which redraws itself line by line into what the
+studio builds today.
+
+| Discipline | Ancestor plate | Line |
+| :--- | :--- | :--- |
+| Websites | Rotary printing press | "A front door that never closes." |
+| Apps and phones | Bell-era telephone (the hero) | "The whole business in one pocket." |
+| Platforms and web apps | Telephone switchboard | "Everything connected. Nothing exposed." |
+| Engineering and infrastructure | Edison-era electrical distribution | "The part nobody sees, built like everyone will." |
+| Cybersecurity | Yale-era pin-tumbler lock | "We pick our own locks first." |
+| AI | Babbage's Analytical Engine + Jacquard punch cards | "Machines that do exactly what you need." |
+| Consulting | Surveyor's theodolite | "We measure before anyone builds." |
+| Monthly care | none | "We stay after launch." |
+
+Verify every plate is genuinely public domain and genuinely what it claims to be; log it in `CREDITS.md`. If a good
+plate can't be found for one discipline, swap that ancestor and keep the idea.
+
+### AI (what the studio offers)
+- Agents that do real work: answer customers, write quotes, book, reconcile, on the client's own data, with human
+  checkpoints.
+- AI inside products: search that understands, documents that fill themselves, forecasts.
+- Private AI: models on the client's own servers; the data never leaves.
+- AI security (where AI meets cybersecurity): "We attack your AI before someone else does." Testing for leaks,
+  manipulation and misuse.
+- Section hook: Ada Lovelace (1843, Note G) wrote that the Analytical Engine "can do whatever we know how to order it
+  to perform." Then: "We still build it that way." Verify the exact wording from a primary source before using it.
+
+### Signature moments (the Claude chat's ideas)
+- **AI sheet:** punch cards feed Babbage's engine as you scroll; what comes out is a modern AI answering a real
+  business question.
+- **Security sheet:** the pin-tumbler lock in section view; scroll aligns the pins, a pick attempt fails, then "We
+  pick our own locks first."
+- **Title blocks by discipline:** every sheet's title block shows DRAWN / CHECKED / APPROVED by discipline (e.g.
+  DRAWN: ENGINEERING · CHECKED: SECURITY). A whole studio at work, without inventing a single person.
+- **Fourth principle, Locked:** "Security is drawn on sheet one, not bolted on at the end."
+- **Studio:** "A bench, not a body shop. Specialists at every desk: design, engineering, security, AI, strategy. Every
+  sheet drawn by one, checked by another." The founder card stays short and never mentions past builds.
+- **Contact:** as the visitor describes the problem, the work order's title block fills in live: project name, the
+  disciplines it needs, the sheet count. (How it works is your technical call; it must not need an outside service.)
+- **Two more concept products for 05 Work:** an AI claims assistant for an insurer; a live security command board for
+  a payments company.
+
+### Copy
+- Hold line stays: "We draw it before we build it."
+- New line under it: "Websites, apps, platforms, security and AI, engineered to the millimetre, tested until nothing
+  breaks, and run long after launch."
+
+### The sheets now
+00 Opening · 01 The first drawing (telephone plate → phone → explode → cyanotype) · 02 Principles (Exact, Felt,
+Proven, Locked) · 03 Disciplines (one ancestor plate each; one sticky scene or several, your call) · 04 Method ·
+05 Work (concept sheets) · 06 Process (the mechanism; "Break" includes the lock-pick stress test) · 07 Studio (the
+bench) · 08 Contact (the live work order) · 09 Spec sheet.
+
+---
+
+## Part 2d: After slice 2 (21 Nov 2026, late). Overrides everything above it where they differ.
+
+### Wajih's decisions
+- **Slice 2 is "so beautiful".** Keep its craft level for everything that follows.
+- **Font: pairing B, Newsreader (display optical size) + DM Mono.** Make it the site-wide default, remove pairings A
+  and C (their files, the `/type.html` switch, their CREDITS.md rows).
+- **The black transitions feel expected. Make them slightly more creative** (slightly: no gimmicks):
+  - The line closing and opening stays the signature, but no two chapter changes may look the same.
+  - The pure-black moment must do something, not just wait. Ideas (the Claude chat's; pick or beat them): the line
+    tilts and closes at an angle like a section cut; the line becomes the years ruler of the phone history; the black
+    is a cyanotype negative of the next sheet that develops in; the closing line leaves a dimension of the sheet just
+    read ("Sheet 00 · 2.3 s").
+  - Use the other drafting moves from Part 3 between chapters too: tracing paper sliding over, dimension lines
+    measuring the next sheet before it appears, sheets passing with inversion.
+- **Keep Bell's plate, but give it context, then tell the history of the phone up to the modern one.** On its own, the
+  1877 drawing looks obscure; a short timeline of phones explains it.
+  - Bell's plate gets a clear caption: what it is, who drew it, when (Bell's 1877 telephone patent drawing, US
+    186,787), and why it matters.
+  - Then the phone history, each era redrawing into the next in the same hairline language, each with its year and
+    one plain line of context (at most about 12 words): roughly Bell's telephone (1877) → candlestick desk phone →
+    rotary-dial desk phone → push-button phone → the first handheld mobile → the flip/candybar era → the first
+    touchscreen smartphones → today's phone (the matte 3D phone, which then pulls apart as built).
+  - Verify every date and fact against a reliable source. Use real public-domain patent drawings where they exist
+    (verify each, credit it); otherwise draw the era's generic form in code. No logos, brand names on devices, or a
+    copy of any one brand's recognisable design.
+  - Suggested (the Claude chat's idea): the opening's SCALE 1:1 ruler returns as a years axis (1877 → today) along the
+    bottom, a marker sliding to each era.
+  - Brisk, not a lecture: each era holds just long enough to read its year and line. Freeze-frame test applies.
+
+### How the rest of the build runs (Wajih's call)
+- Build every remaining slice back to back, to the finished site. No stopping for his review between slices, no
+  "2–3 options first" (pick the best yourself and log why), no question batches mid-run.
+- After each slice: freeze-frame test at 1440×900 and 390×844, no console errors, smooth scrolling, reduced motion;
+  commit "studio: slice N - <short title>"; update STATE.md (done / next / decisions taken alone).
+- Stop early only for a real blocker you can't solve yourself.
+- At the end: one full bug sweep (see the run message), then one final report.
+- This file in `C:\wajih-mansouri-studio` is the current brief from now on; re-read Parts 2b, 2c, 2d, 3 and 4
+  after any context compaction.
+
+---
+
 ## Part 3: Creative direction (the Claude chat's taste call, rewritten 21 Nov evening to match Part 2b; challenge it if you have better)
 
 ### The thread: one line

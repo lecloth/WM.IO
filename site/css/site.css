@@ -1,21 +1,11 @@
 /* Wajih Mansouri studio — slice 1: opening, timeline strip, board.
    1rem = window width / 90 on desktop (16px at 1440), window width / 24.375 on mobile (16px at 390). */
 
-/* ---------- fonts (all SIL Open Font License, see CREDITS.md) ---------- */
-@font-face { font-family: "Archivo"; src: url(../fonts/archivo-var.woff2) format("woff2-variations"), url(../fonts/archivo-var.woff2) format("woff2"); font-weight: 100 900; font-stretch: 62% 125%; font-display: block; }
-@font-face { font-family: "IBM Plex Mono"; src: url(../fonts/plex-mono-400.woff2) format("woff2"); font-weight: 400; font-display: block; }
-@font-face { font-family: "IBM Plex Mono"; src: url(../fonts/plex-mono-500.woff2) format("woff2"); font-weight: 500; font-display: block; }
+/* ---------- fonts (SIL Open Font License, see CREDITS.md): Newsreader + DM Mono ---------- */
 @font-face { font-family: "Newsreader"; src: url(../fonts/newsreader-var.woff2) format("woff2-variations"), url(../fonts/newsreader-var.woff2) format("woff2"); font-weight: 200 800; font-display: block; }
 @font-face { font-family: "Newsreader"; src: url(../fonts/newsreader-var-italic.woff2) format("woff2"); font-weight: 200 800; font-style: italic; font-display: block; }
 @font-face { font-family: "DM Mono"; src: url(../fonts/dm-mono-400.woff2) format("woff2"); font-weight: 400; font-display: block; }
 @font-face { font-family: "DM Mono"; src: url(../fonts/dm-mono-500.woff2) format("woff2"); font-weight: 500; font-display: block; }
-@font-face { font-family: "Barlow"; src: url(../fonts/barlow-400.woff2) format("woff2"); font-weight: 400; font-display: block; }
-@font-face { font-family: "Barlow"; src: url(../fonts/barlow-500.woff2) format("woff2"); font-weight: 500; font-display: block; }
-@font-face { font-family: "Barlow"; src: url(../fonts/barlow-600.woff2) format("woff2"); font-weight: 600; font-display: block; }
-@font-face { font-family: "Barlow Semi Condensed"; src: url(../fonts/barlow-sc-500.woff2) format("woff2"); font-weight: 500; font-display: block; }
-@font-face { font-family: "Barlow Semi Condensed"; src: url(../fonts/barlow-sc-600.woff2) format("woff2"); font-weight: 600; font-display: block; }
-@font-face { font-family: "B612 Mono"; src: url(../fonts/b612-mono-400.woff2) format("woff2"); font-weight: 400; font-display: block; }
-@font-face { font-family: "B612 Mono"; src: url(../fonts/b612-mono-700.woff2) format("woff2"); font-weight: 700; font-display: block; }
 
 /* ---------- tokens ---------- */
 :root {
@@ -31,20 +21,7 @@
   --frame: 1rem;
   --zone: 1.25rem;
 
-  /* pairing A (default): Archivo + IBM Plex Mono */
-  --f-display: "Archivo", "Arial Narrow", sans-serif;
-  --f-body: "Archivo", Arial, sans-serif;
-  --f-mono: "IBM Plex Mono", ui-monospace, monospace;
-  --display-stretch: 125%;
-  --display-weight: 560;
-  --display-track: -.035em;
-  --display-lh: .94;
-  --display-size: 5.25rem;
-  --display-case: none;
-  --body-stretch: 100%;
-  --mono-track: .04em;
-}
-[data-type="b"] {
+  /* type: Newsreader (display optical size) + DM Mono */
   --f-display: "Newsreader", Georgia, serif;
   --f-body: "Newsreader", Georgia, serif;
   --f-mono: "DM Mono", ui-monospace, monospace;
@@ -53,19 +30,9 @@
   --display-track: -.025em;
   --display-lh: .96;
   --display-size: 6.4rem;
+  --display-case: none;
+  --body-stretch: 100%;
   --mono-track: .03em;
-}
-[data-type="c"] {
-  --f-display: "Barlow Semi Condensed", "Arial Narrow", sans-serif;
-  --f-body: "Barlow", Arial, sans-serif;
-  --f-mono: "B612 Mono", ui-monospace, monospace;
-  --display-stretch: 100%;
-  --display-weight: 600;
-  --display-track: .005em;
-  --display-lh: .92;
-  --display-size: 6rem;
-  --display-case: uppercase;
-  --mono-track: .02em;
 }
 
 /* ---------- base ---------- */
@@ -82,8 +49,7 @@ ol { list-style: none; }
 
 .display { font-family: var(--f-display); font-stretch: var(--display-stretch); font-weight: var(--display-weight); letter-spacing: var(--display-track); line-height: var(--display-lh); text-transform: var(--display-case); }
 .mono { font-family: var(--f-mono); font-size: .6875rem; letter-spacing: var(--mono-track); text-transform: uppercase; line-height: 1.35; }
-.body { font-size: 1.0625rem; line-height: 1.45; }
-html[data-type="b"] .body { font-size: 1.1875rem; line-height: 1.4; }
+.body { font-size: 1.1875rem; line-height: 1.42; }
 .graphite { color: var(--graphite); }
 
 /* the page is held while the opening plays */
@@ -234,9 +200,7 @@ html[data-motion="reduce"] body { overflow: auto !important; }
 
 /* ---------- mobile ---------- */
 @media (max-width: 1023px) {
-  :root { --strip-h: 2.5rem; --display-size: 3rem; --zone: 1rem; --frame: .625rem; }
-  html[data-type="b"] { --display-size: 3.5rem; }
-  html[data-type="c"] { --display-size: 3.4rem; }
+  :root { --strip-h: 2.5rem; --display-size: 3.5rem; --zone: 1rem; --frame: .625rem; }
   .strip__seg a { justify-content: center; padding: 0; }
   .strip__name { display: none; }
   .strip__seg.is-active { grid-column: span 1; }
@@ -258,11 +222,11 @@ html[data-motion="reduce"] body { overflow: auto !important; }
    SLICE 2 — act 1: opening + sheet 01 (the first drawing) in one sticky stage
    ===================================================================================== */
 :root { --prus: #173F73; --blueprint-ink: #ECF1F6; }
-.act { position: relative; height: calc(9.4 * 100vh); height: calc(9.4 * 100lvh); }
+.act { position: relative; height: calc(15.65 * 100vh); height: calc(15.65 * 100lvh); }
 .act__stage { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; }
 .layer { position: absolute; inset: 0; }
 #sheet-01 { visibility: hidden; }
-.sheet--opening .opening__lede .body, .read__body { font-size: 1.125rem; line-height: 1.5; }   /* >= 18px at 1440 */
+.sheet--opening .opening__lede .body, .read__body { font-size: 1.25rem; line-height: 1.45; }   /* 20px at 1440 */   /* >= 18px at 1440 */
 .opening__lede { width: 27%; }
 .opening__lede .body { max-width: 26rem; }
 
@@ -278,9 +242,7 @@ html[data-motion="reduce"] body { overflow: auto !important; }
 .read { position: absolute; left: 62.5%; top: 26%; width: min(30rem, 31%); padding: 1.25rem 1.25rem 1.4rem; background: var(--paper); opacity: 0; visibility: hidden; transition: opacity .25s var(--ease-out), visibility 0s .25s; }
 .read.is-on { opacity: 1; visibility: inherit; transition: opacity .25s var(--ease-out), visibility 0s; }
 .read__eyebrow { color: var(--graphite); margin-bottom: 1rem; }
-.read__title { font-size: 3.25rem; color: var(--ink); margin-bottom: 1.25rem; }
-[data-type="b"] .read__title { font-size: 3.9rem; }
-[data-type="c"] .read__title { font-size: 3.6rem; }
+.read__title { font-size: 3.9rem; color: var(--ink); margin-bottom: 1.25rem; }
 .read__body { color: var(--ink); max-width: 34rem; }
 .read__note { margin-top: 1.25rem; color: var(--graphite); font-size: .625rem; }
 .read__tag { margin-top: 1.5rem; font-size: .6875rem; line-height: 1.6; }
@@ -289,7 +251,7 @@ html[data-motion="reduce"] body { overflow: auto !important; }
 /* the final reading moment sits on the developed cyanotype */
 .read--final { left: 70%; right: auto; top: 22%; width: min(22rem, 24%); background: transparent; color: var(--blueprint-ink); }
 .read--final .read__title, .read--final .read__body, .read--final .read__eyebrow, .read--final .read__tag { color: var(--blueprint-ink); }
-.read--final .read__title { font-size: 2.75rem; }
+.read--final .read__title { font-size: 3.3rem; }
 
 /* the redraw (Bell's lines -> today's outline) */
 .redraw { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; visibility: hidden; overflow: visible; }
@@ -307,28 +269,81 @@ html.is-blue .xhair { mix-blend-mode: normal; color: var(--blueprint-ink); }
 
 /* reduced motion: three finished sheets, one under the other */
 .act.is-static { height: auto; }
-.act.is-static .act__stage { position: relative; height: auto; overflow: visible; display: grid; grid-template-rows: repeat(3, 100vh); grid-template-rows: repeat(3, 100lvh); }
+.act.is-static .act__stage { position: relative; height: auto; overflow: visible; display: grid; grid-template-rows: 100vh 100vh auto 100vh; grid-template-rows: 100lvh 100lvh auto 100lvh; }
 .act.is-static .layer { position: relative; inset: auto; visibility: visible !important; }
 .act.is-static #sheet-00 { grid-row: 1; grid-column: 1; }
 .act.is-static #sheet-01 { grid-row: 2; grid-column: 1; }
 .act.is-static .redraw, .act.is-static .scanline { display: none; }
-.act.is-static .phone-canvas { position: relative; grid-row: 3; grid-column: 1; height: 100%; opacity: 1; pointer-events: auto; }
-.act.is-static #s01-final { grid-row: 3; grid-column: 1; position: relative; left: auto; right: auto; top: auto; bottom: auto; align-self: start; justify-self: end; margin: 22vh calc(var(--frame) + var(--zone) + 2rem) 0 0; width: min(22rem, 24vw); }
+.act.is-static .phone-canvas { position: relative; grid-row: 4; grid-column: 1; height: 100%; opacity: 1; pointer-events: auto; }
+.act.is-static #s01-final { grid-row: 4; grid-column: 1; position: relative; left: auto; right: auto; top: auto; bottom: auto; align-self: start; justify-self: end; margin: 22vh calc(var(--frame) + var(--zone) + 2rem) 0 0; width: min(22rem, 24vw); }
 @media (max-width: 1023px) { .act.is-static #s01-final { align-self: end; justify-self: stretch; width: auto; margin: 0 1.25rem 4.5rem; } }
 
 @media (max-width: 1023px) {
   .plate { left: 1.25rem; right: 1.25rem; height: auto; width: calc(100% - 2.5rem); top: calc(var(--strip-h) + 2rem); }
   .scanline { left: 1.25rem; top: calc(var(--strip-h) + 1.5rem); bottom: auto; height: calc((100vw - 2.5rem) * 1.0875 + 1rem); }
   .read { left: 1.25rem; right: 1.25rem; width: auto; top: auto; bottom: 4.5rem; padding: 1rem 1rem 1.1rem; }
-  .read__title { font-size: 1.9rem; margin-bottom: .75rem; }
-  .read__body, .sheet--opening .opening__lede .body { font-size: 1rem; }
+  .read__title { font-size: 2.3rem; margin-bottom: .75rem; }
+  .read__body, .sheet--opening .opening__lede .body { font-size: 1.0625rem; }
   .read__eyebrow { margin-bottom: .5rem; }
   .read__note { margin-top: .75rem; }
   .read--final { left: 1.25rem; right: 1.25rem; top: auto; bottom: 4.5rem; width: auto; }
-  .read--final .read__title { font-size: 1.75rem; }
+  .read--final .read__title { font-size: 2.1rem; }
   .read--final .read__body { display: none; }
   .opening__lede { width: auto; }
 }
 
 /* while the curtain is shut, the board's grid goes too: black, and the one line */
 html:has(.act__stage.is-shut) .board__grid { opacity: 0; }
+
+/* ---- slice 3: the phone history ---- */
+.read--era { top: 30%; }
+.read--era .read__title { font-size: 6.4rem; line-height: .9; margin-bottom: 1rem; }
+.years { position: absolute; left: 12.5%; width: 46%; bottom: calc(var(--frame) + var(--zone) + 2.6rem); height: 2.4rem; opacity: 0; visibility: hidden; }
+.years.is-on { opacity: 1; visibility: inherit; }
+.years__svg { position: absolute; left: 0; top: 0; width: 100%; height: 30px; overflow: visible; }
+.years__svg line { stroke: var(--ink); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.years__svg text { fill: var(--graphite); font-family: var(--f-mono); font-size: 10px; letter-spacing: .03em; }
+.years__marker { position: absolute; left: 0; top: -1.6rem; width: 0; }
+.years__marker i { position: absolute; left: -.5px; top: 0; width: 1px; height: calc(1.6rem + 12px); background: var(--ink); }
+.years__marker i::after { content: ""; position: absolute; left: -4px; bottom: -1px; border: 4.5px solid transparent; border-bottom-color: var(--ink); }
+.years__label { position: absolute; left: .45rem; top: -.15rem; white-space: nowrap; color: var(--ink); font-size: .6875rem; }
+.years__name { position: absolute; right: 0; top: -1.5rem; color: var(--graphite); font-size: .5625rem; }
+
+/* the section cut on the closed curtain (inside the difference layer: black here reads as paper) */
+.cut { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
+.cut.is-on { opacity: 1; }
+.cut__mark { position: absolute; top: 50%; font-size: 1rem; color: #000; transform: translateY(-50%); }
+.cut__mark::before { content: ""; position: absolute; top: calc(50% - 1.1rem); width: 3px; height: 2.2rem; background: #000; }
+.cut__mark::after { content: ""; position: absolute; top: calc(50% + 1.1rem); border: 6px solid transparent; border-top-color: #000; }
+.cut__mark--a { left: 10%; padding-left: 1rem; }
+.cut__mark--a::before { left: 0; } .cut__mark--a::after { left: -4.5px; }
+.cut__mark--b { right: 10%; padding-right: 1rem; }
+.cut__mark--b::before { right: 0; } .cut__mark--b::after { right: -4.5px; }
+.cut__name { position: absolute; left: 50%; top: calc(50% - 2.4rem); transform: translateX(-50%); color: #000; font-size: .75rem; white-space: nowrap; }
+.cut__read { position: absolute; left: 50%; top: calc(50% + 1.1rem); transform: translateX(-50%); color: #000; font-size: .75rem; white-space: nowrap; }
+
+/* reduced motion: the history as one finished sheet */
+.hist { display: none; }
+.act.is-static .hist { display: block; grid-row: 3; grid-column: 1; position: relative; padding: calc(var(--strip-h) + 3rem) 12.5% 4rem; background: var(--paper); border-top: 1px solid rgba(18,18,18,.2); }
+.hist__eyebrow { color: var(--graphite); margin-bottom: 2rem; }
+.hist__list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem 2rem; }
+.hist__item { display: grid; grid-template-columns: 7.5rem 1fr; gap: 1rem; align-items: center; }
+.hist__svg { width: 7.5rem; height: 10rem; overflow: visible; }
+.hist__svg path { fill: none; stroke: var(--ink); stroke-width: 1px; vector-effect: non-scaling-stroke; }
+.hist__img { width: 7.5rem; height: auto; }
+.hist__fig { color: var(--graphite); font-size: .625rem; }
+.hist__year { font-size: 2.2rem; margin: .25rem 0 .4rem; }
+.hist__line { font-size: 1.125rem; line-height: 1.4; }
+
+@media (max-width: 1023px) {
+  .read--era { top: auto; bottom: 4.5rem; }
+  .read--era .read__title { font-size: 3.4rem; }
+  .years { left: 1.25rem; right: 1.25rem; width: auto; bottom: auto; top: 62%; }
+  .years__name { display: none; }
+  .cut__mark--a { left: 6%; } .cut__mark--b { right: 6%; }
+  .act.is-static .hist { padding: calc(var(--strip-h) + 2rem) 1.25rem 3rem; }
+  .hist__list { grid-template-columns: 1fr; gap: 1.75rem; }
+  .hist__item { grid-template-columns: 5.5rem 1fr; }
+  .hist__svg, .hist__img { width: 5.5rem; height: auto; max-height: 8rem; }
+  .hist__line { font-size: 1rem; }
+}

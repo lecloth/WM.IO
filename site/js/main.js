@@ -5,13 +5,8 @@ import { initAct1 } from './sheet01/act.js';
 
 window.__wm.done('app');
 
-// fonts of the active pairing count towards the real load progress
-const FAMILIES = {
-  a: ['560 1em Archivo', '400 1em Archivo', '400 1em "IBM Plex Mono"', '500 1em "IBM Plex Mono"'],
-  b: ['420 1em Newsreader', '400 1em Newsreader', '400 1em "DM Mono"'],
-  c: ['600 1em "Barlow Semi Condensed"', '400 1em Barlow', '400 1em "B612 Mono"'],
-};
-Promise.all((FAMILIES[document.documentElement.dataset.type] || FAMILIES.a).map((f) => document.fonts.load(f)))
+// the site's two families count towards the real load progress
+Promise.all(['420 1em Newsreader', '400 1em Newsreader', '400 1em "DM Mono"', '500 1em "DM Mono"'].map((f) => document.fonts.load(f)))
   .catch(() => {}).then(() => window.__wm.done('fonts'));
 
 const { ScrollTrigger } = engine;
@@ -44,9 +39,14 @@ const vh = () => innerHeight;
 const inAct = (s) => engine.reduced ? null : act1.spans[s.dataset.sheet];
 sheets.forEach((sheet, i) => {
   const sp = inAct(sheet);
+  const staticAct = engine.reduced && actEl.contains(sheet);      // reduced motion: act 1 is laid out in flow
   const cfg = sp
     ? { start: () => actEl.offsetTop + sp[0] * vh(), end: () => actEl.offsetTop + sp[1] * vh() }
-    : { trigger: sheet, start: 'top top', end: 'bottom top' };
+    : staticAct
+      ? (sheet.id === 'sheet-00'
+        ? { start: () => actEl.offsetTop, end: () => actEl.offsetTop + document.getElementById('sheet-01').offsetTop }
+        : { start: () => actEl.offsetTop + sheet.offsetTop, end: () => actEl.offsetTop + actEl.offsetHeight })
+      : { trigger: sheet, start: 'top top', end: 'bottom top' };
   ScrollTrigger.create({
     ...cfg,
     onUpdate: (st) => segs[i]?.style.setProperty('--p', st.progress.toFixed(4)),
@@ -75,5 +75,6 @@ initCursor(engine);
 
 runOpening(engine, () => {
   engine.lockScroll(false);
+  engine.emit('opening:done');
   ScrollTrigger.refresh();
 });

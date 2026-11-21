@@ -19,8 +19,8 @@ export function drawLofthaul(canvas, { accent = false } = {}) {
   const c = canvas.getContext('2d');
   const ACC = accent ? '#FF5B1F' : '#F2F0EB';
   const BG = '#0C0C0C', INK = '#EDEBE6', DIM = '#8F8E89', LINE = '#2B2B29', LINE2 = '#3B3B38';
-  const mono = (sz, w = 400) => `${w} ${sz}px "IBM Plex Mono", ui-monospace, monospace`;   // ctx is already scaled by S
-  const sans = (sz, w = 500) => `${w} ${sz}px "Archivo", Arial, sans-serif`;
+  const mono = (sz, w = 400) => `${w} ${sz}px "DM Mono", ui-monospace, monospace`;   // ctx is already scaled by S
+  const sans = (sz, w = 500) => `${w} ${sz}px "Newsreader", Georgia, serif`;
   c.save();
   c.fillStyle = BG; c.fillRect(0, 0, canvas.width, canvas.height);
   c.scale(S, S);
