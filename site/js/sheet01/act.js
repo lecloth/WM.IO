@@ -6,6 +6,7 @@
 import { PhoneScene } from './phone.js';
 import { Redraw } from './redraw.js';
 import { ERAS, toPaths } from './eras.js';
+import { currentPhoneProduct, nextPhoneProduct } from '../products/rotation.js';
 
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const span = (p, a, b) => clamp((p - a) / (b - a));
@@ -55,6 +56,15 @@ export function initAct1(engine) {
   const frame = L01.querySelector('.frame');
 
   const phone = new PhoneScene(canvas);
+  // the concept product on the phone's screen: one of the made-up phones, the next one after every loop of the page
+  const tag = finalRead.querySelector('.read__tag');
+  function applyProduct(p) {
+    phone.setProduct(p);
+    const label = document.createElement('span'); label.textContent = 'Concept sheet';
+    tag.replaceChildren(label, ` ${p.name}, ${p.desc}. Made up to show the range, not a client.`);
+    canvas.setAttribute('aria-label', `Concept phone ${p.name}, ${p.desc}, pulled apart into six labelled layers: Glass, Interface, Flow, Logic, Data, Lock.`);
+  }
+  applyProduct(currentPhoneProduct());
   const redraw = new Redraw(stage.querySelector('.redraw'));
   let P = -1;
   let readStart = 0, readMs = 0;
@@ -175,6 +185,13 @@ export function initAct1(engine) {
     if (hit !== hovering) { hovering = hit; phone.setScreen({ accent: hit }); phone.set({ hover: hit ? 1 : 0 }); phone.render(); }
   });
   canvas.addEventListener('pointerleave', () => { if (hovering) { hovering = false; phone.setScreen({ accent: false }); phone.set({ hover: 0 }); phone.render(); } });
+  // the page looped back to the singularity: the phone reassembles as the next concept product
+  engine.on('loop:wrap', () => {
+    hovering = false; phone.set({ hover: 0 });
+    phone.setScreen({ accent: false });
+    applyProduct(nextPhoneProduct());
+    phone.render(true);
+  });
 
   let st = null;
   if (engine.reduced) {

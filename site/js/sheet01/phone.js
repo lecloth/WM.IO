@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
-import { drawLofthaul } from './lofthaul.js';
+import { LOFTHAUL } from '../products/lofthaul.js';
 
 const PHONE = { w: 74, h: 154 };              // mm
 const GAP = 25;                               // mm between layers when fully exploded
@@ -39,10 +39,11 @@ function canvasTex(w, h, draw) {
 }
 
 // ---------- textures drawn in code ----------
-function drawFlow(ctx, W, H) {
+// the 03 FLOW layer: the product's user flow, with its one loop back (e.g. "held for wind")
+function drawFlow(ctx, W, H, flow = LOFTHAUL.flow) {
   ctx.fillStyle = '#F2F0EB'; ctx.fillRect(0, 0, W, H);
   ctx.strokeStyle = '#121212'; ctx.fillStyle = '#121212'; ctx.lineWidth = 3;
-  const steps = ['OPEN', 'PICK DRONE', 'CHECK WIND', 'RELEASE', 'TRACK', 'DELIVERED'];
+  const steps = flow.steps;
   const bw = W * 0.6, bh = H * 0.075, x = (W - bw) / 2;
   ctx.font = `500 ${H * 0.026}px "DM Mono", monospace`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   steps.forEach((s, i) => {
@@ -51,10 +52,14 @@ function drawFlow(ctx, W, H) {
     if (i < steps.length - 1) { ctx.beginPath(); ctx.moveTo(W / 2, y + bh); ctx.lineTo(W / 2, y + H * 0.145); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(W / 2 - 10, y + H * 0.145 - 14); ctx.lineTo(W / 2, y + H * 0.145); ctx.lineTo(W / 2 + 10, y + H * 0.145 - 14); ctx.stroke(); }
   });
-  // the "held for wind" branch
-  const y3 = H * 0.1 + 2 * H * 0.145 + bh / 2;
-  ctx.setLineDash([10, 8]); ctx.beginPath(); ctx.moveTo(x + bw, y3); ctx.lineTo(W * 0.92, y3); ctx.lineTo(W * 0.92, H * 0.1 + bh / 2); ctx.lineTo(x + bw, H * 0.1 + bh / 2); ctx.stroke(); ctx.setLineDash([]);
-  ctx.textAlign = 'left'; ctx.font = `400 ${H * 0.02}px "DM Mono", monospace`; ctx.fillText('HOLD', W * 0.83, y3 - 18);
+  // the loop back (LOFTHAUL: "held for wind", from step 2 to step 0)
+  if (flow.hold) {
+    const [from, to, label] = flow.hold;
+    const yf = H * 0.1 + from * H * 0.145 + bh / 2, yt = H * 0.1 + to * H * 0.145 + bh / 2;
+    ctx.setLineDash([10, 8]); ctx.beginPath(); ctx.moveTo(x + bw, yf); ctx.lineTo(W * 0.92, yf); ctx.lineTo(W * 0.92, yt); ctx.lineTo(x + bw, yt); ctx.stroke(); ctx.setLineDash([]);
+    ctx.textAlign = 'left'; ctx.font = `400 ${H * 0.02}px "DM Mono", monospace`;
+    ctx.fillText(label, W * 0.83 - Math.max(0, ctx.measureText(label).width - ctx.measureText('HOLD').width), yf - 18);
+  }
 }
 function drawLockMark(ctx, W, H) {
   ctx.fillStyle = '#2E2D2A'; ctx.fillRect(0, 0, W, H);
@@ -187,15 +192,16 @@ export class PhoneScene {
     });
     // 03 FLOW — the user flow, drawn before it is built
     const flow = L('Flow', 'How a tired thumb gets through it', 5.6);
-    const ft = canvasTex(512, 1104, drawFlow); this.flowTex = ft;
+    const ft = canvasTex(512, 1104, (ctx, w, h) => drawFlow(ctx, w, h)); this.flowTex = ft;
     this.part(flow, slab(68, 148, 0.3, 9), this.matte(0xF2F0EB));
     const fp = new THREE.Mesh(faceUV(new THREE.ShapeGeometry(roundedRect(68, 148, 9), 10), 68, 148), new THREE.MeshBasicMaterial({ map: ft.tex }));
     fp.position.z = 0.16; flow.add(fp);
     // 02 INTERFACE — the screen
     const ui = L('Interface', 'Every screen drawn and measured', 6.3);
     this.part(ui, slab(70, 150, 0.6, 9.5), this.matte(0x111111), { color: INK_HEX });
-    this.screenCanvas = document.createElement('canvas'); this.screenCanvas.width = 780; this.screenCanvas.height = 1688;
-    drawLofthaul(this.screenCanvas);
+    this.product = this.product || LOFTHAUL; this.accent = false;
+    this.screenCanvas = document.createElement('canvas'); this.screenCanvas.width = this.product.w * 2; this.screenCanvas.height = this.product.h * 2;
+    this.product.draw(this.screenCanvas, { accent: false });
     this.screenTex = new THREE.CanvasTexture(this.screenCanvas); this.screenTex.colorSpace = THREE.SRGBColorSpace; this.screenTex.anisotropy = 8;
     this.screen = new THREE.Mesh(faceUV(new THREE.ShapeGeometry(roundedRect(68, 147.2, 8.6), 12), 68, 147.2), new THREE.MeshBasicMaterial({ map: this.screenTex }));
     this.screen.position.z = 0.32; this.screen.layers.enable(1); ui.add(this.screen);
@@ -209,14 +215,27 @@ export class PhoneScene {
 
   /** redraw every code-drawn texture (call once the web fonts are in) */
   refreshTextures() {
-    drawLofthaul(this.screenCanvas); this.screenTex.needsUpdate = true;
-    drawFlow(this.flowTex.canvas.getContext('2d'), this.flowTex.canvas.width, this.flowTex.canvas.height); this.flowTex.tex.needsUpdate = true;
+    this.product.draw(this.screenCanvas, { accent: this.accent }); this.screenTex.needsUpdate = true;
+    drawFlow(this.flowTex.canvas.getContext('2d'), this.flowTex.canvas.width, this.flowTex.canvas.height, this.product.flow || LOFTHAUL.flow); this.flowTex.tex.needsUpdate = true;
     this.dirty = true;
   }
 
+  /** hover: redraw the screen with or without the product's own accent colour */
   setScreen({ accent }) {
-    drawLofthaul(this.screenCanvas, { accent });
+    this.accent = !!accent;
+    this.product.draw(this.screenCanvas, { accent: this.accent });
     this.screenTex.needsUpdate = true; this.dirty = true;
+  }
+
+  /** swap the concept product on the screen (and its user flow on the 03 FLOW layer); phones are 390 x 844 */
+  setProduct(product) {
+    if (!product || product === this.product) return;
+    this.product = product;
+    if (this.screenCanvas.width !== product.w * 2 || this.screenCanvas.height !== product.h * 2) {
+      this.screenCanvas.width = product.w * 2; this.screenCanvas.height = product.h * 2;
+      this.screenTex.dispose();                       // a resized canvas needs a fresh GPU texture
+    }
+    this.refreshTextures();
   }
 
   resize() {

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Concept products · dev gallery</title>
+<!-- Dev only: every concept product at 1:1, plain and with its hover accent, for checking by screenshot.
+     ?solo=<id>[&accent=1]  one product alone at 1:1 in the top-left corner (web products fill a 1440 x 900 viewport)
+     ?dpr=2                 draw the canvases at 2x
+     ?only=phone|web        filter -->
+<style>
+  @font-face { font-family: "Newsreader"; src: url(../fonts/newsreader-var.woff2) format("woff2-variations"), url(../fonts/newsreader-var.woff2) format("woff2"); font-weight: 200 800; font-display: block; }
+  @font-face { font-family: "Newsreader"; src: url(../fonts/newsreader-var-italic.woff2) format("woff2"); font-weight: 200 800; font-style: italic; font-display: block; }
+  @font-face { font-family: "DM Mono"; src: url(../fonts/dm-mono-400.woff2) format("woff2"); font-weight: 400; font-display: block; }
+  @font-face { font-family: "DM Mono"; src: url(../fonts/dm-mono-500.woff2) format("woff2"); font-weight: 500; font-display: block; }
+  :root { --paper: #F2F0EB; --ink: #121212; --graphite: #6B6A66; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); }
+  body { font: 400 16px/1.5 "DM Mono", monospace; }
+  .mono { font-family: "DM Mono", monospace; text-transform: uppercase; letter-spacing: .02em; font-size: 12px; }
+  header.top { padding: 40px 48px 8px; }
+  header.top h1 { font: 500 44px/1.05 "Newsreader", serif; margin: 0 0 8px; }
+  header.top p { margin: 0; color: var(--graphite); }
+  .item { padding: 40px 0 24px; border-top: 1px solid #12121222; }
+  .meta { display: flex; align-items: baseline; gap: 18px; padding: 0 48px 16px; flex-wrap: wrap; }
+  .meta h2 { font: 600 28px/1 "Newsreader", serif; margin: 0; }
+  .meta .sw { display: inline-flex; align-items: center; gap: 8px; }
+  .meta .sw i { width: 18px; height: 18px; border: 1px solid var(--ink); display: inline-block; }
+  .pair { display: flex; gap: 40px; padding: 0 48px; align-items: flex-start; }
+  .pair figure { margin: 0; }
+  .pair figcaption { margin-top: 8px; color: var(--graphite); }
+  .item--web .pair { flex-direction: column; gap: 24px; padding: 0; }
+  .item--web figcaption { padding: 0 48px; }
+  .phone canvas { border-radius: 44px; outline: 1px solid var(--ink); outline-offset: 6px; }
+  canvas { display: block; }
+  body.solo { overflow: hidden; }
+  body.solo canvas { position: fixed; left: 0; top: 0; }
+</style>
+</head>
+<body>
+<script type="module">
+import { PRODUCTS, ensureFonts } from '../js/products/index.js';
+const q = new URLSearchParams(location.search);
+const dpr = parseFloat(q.get('dpr') || devicePixelRatio || 1);
+const make = (p, accent) => {
+  const c = document.createElement('canvas');
+  c.width = Math.round(p.w * dpr); c.height = Math.round(p.h * dpr);
+  c.style.width = p.w + 'px'; c.style.height = p.h + 'px';
+  p.draw(c, { accent });
+  return c;
+};
+await ensureFonts();
+const solo = q.get('solo');
+if (solo) {
+  document.body.classList.add('solo');
+  const p = PRODUCTS.find((x) => x.id === solo);
+  document.body.appendChild(make(p, q.get('accent') === '1'));
+} else {
+  const head = document.createElement('header'); head.className = 'top';
+  head.innerHTML = `<h1>Concept products</h1><p class="mono">Dev gallery · ${PRODUCTS.length} products · drawn at 1:1 · plain, then with the hover accent · made up to show the range, not clients</p>`;
+  document.body.appendChild(head);
+  const only = q.get('only');
+  PRODUCTS.filter((p) => !only || p.form === only).forEach((p, i) => {
+    const s = document.createElement('section'); s.className = `item item--${p.form}`; s.id = p.id;
+    s.innerHTML = `<div class="meta"><span class="mono">${String(i + 1).padStart(2, '0')}</span><h2>${p.name}</h2>
+      <span class="mono">${p.kind}</span><span class="mono">${p.industry}</span><span class="mono">${p.form} · ${p.w} × ${p.h}</span>
+      <span class="sw mono"><i style="background:${p.accent}"></i>${p.accent}</span></div><div class="pair ${p.form}"></div>`;
+    const pair = s.querySelector('.pair');
+    [false, true].forEach((a) => {
+      const f = document.createElement('figure'); f.appendChild(make(p, a));
+      const cap = document.createElement('figcaption'); cap.className = 'mono'; cap.textContent = a ? 'Hover · accent on' : 'Default · black and white';
+      f.appendChild(cap); pair.appendChild(f);
+    });
+    document.body.appendChild(s);
+  });
+}
+document.documentElement.dataset.ready = '1';
+</script>
+</body>
+</html>
