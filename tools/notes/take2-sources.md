@@ -22,7 +22,7 @@ Raw downloads sit in `tools/sources/take2/<object>/<slug>/` (git-ignored). Files
 
 | Object | Best 3D (licence, size) | Best picture (licence) | Status |
 |---|---|---|---|
-| Pin-tumbler lock (Yale lineage) | **"Cutaway Lock" by zbzzn**, Printables 250197, CC BY. 21 STLs, one per part (plug, housing, lid, clip, 5 key pins, drivers, 6 keys), 7.8 MB, 156,526 triangles (68k of it one optional driver). No springs or cam meshes | Yale's own patent US 48,475 (1865, PD), already in the site | Wajih downloads the 3D (needs login) |
+| Pin-tumbler lock (Yale lineage) | **"Cutaway Lock" by zbzzn**, Printables 250197, CC BY. 21 STLs, one per part (plug, housing, lid, clip, 5 key pins, drivers, 6 keys), 7.8 MB, 156,526 triangles (68k of it one optional driver). No springs or cam meshes | Yale's own patent US 48,475 (1865, PD), already in the site | Downloaded by Wajih, used (A, B) |
 | Gear train | **"Pendulum Clock" by Steve**, Printables 2508, CC BY: a real built 8-day clock, every wheel a separate STL (~10k triangles each). Historical: "The Antikythera Mechanism" by Thomas Weibel, Sketchfab, CC BY, 868k faces, GLB 42 MB | Encyclopédie *Recueil de planches*, "Horlogerie", 1765 (Goussier del., Bénard sculp.), PD, Internet Archive / Getty: full gear trains in plan and section, an exploded watch | Picture downloaded; 3D needs login |
 | Bell's 1877 telephone | **None usable.** Smithsonian's scan is non-commercial; the only CC BY Sketchfab one says it was made with AI | **du Moncel, *The Telephone…* (1879), Fig. 16**: Bell's box telephone in section (magnet, coil, diaphragm, mouthpiece), PD, IA. Photo: Daderot, "Bell's big box telephone, 1876", NMAH, CC0, 4320×3240 | Fig. 16 downloaded and used; photo manual |
 | Hand printing press | **"Columbian Press No 3180" by arboo**, Sketchfab, CC BY 4.0, 232k faces, 26 materials, 7 animations (parts very likely separate). Alt: "Albion No. 6551" (William Morris's press), CC BY 4.0, 787k faces | **"Clymer and Dixon's patent Columbian printing press"**, lithograph 1852, Wellcome, Public Domain Mark, 2244×3400, parts drawn apart. Also Farey 1819, two Encyclopédie press plates, Amman 1568 (all PDM) | Pictures downloaded, Columbian used; 3D needs login |
@@ -35,4 +35,4 @@ Raw downloads sit in `tools/sources/take2/<object>/<slug>/` (git-ignored). Files
   `hughes-cards-fig6-7.webp`: crops of the scans above, kept with their paper (C1–C3 cards).
 - `site/media/paper/miller-1905-paper.webp`: a blank margin of Miller 1905 (IA scan page n262), mirrored into a tile: the real
   paper under A2.
-- The lock model (A1–A3, B1–B3): see `CREDITS.md` once downloaded.
+- The lock model (A1–A3, B1–B3): "Cutaway Lock" by zbzzn, CC BY 4.0, downloaded by Wajih 22 Nov; 15 of its 21 STLs in `site/media/models/lock/` (see `CREDITS.md`). Checked: the parts sit in their assembled positions, and key ABCDE lifts every stack by exactly 2.2 mm to the shear line at z = 16 mm.

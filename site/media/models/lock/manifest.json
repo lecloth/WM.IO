@@ -1,0 +1,24 @@
+{
+  "title": "Pin-tumbler lock",
+  "credit": "\"Cutaway Lock\" by zbzzn, Printables model 250197, CC BY 4.0 (https://www.printables.com/model/250197). Restyled and animated for this site.",
+  "units": "mm; files sit in their assembled positions; Z up, the key enters from +Y; shear line at z = 16",
+  "rotate": [-90, 0, 180],
+  "pins": { "y": [-9.7, -22.7, -35.7, -48.7, -61.7], "shear": 16, "lift": 2.2 },
+  "parts": [
+    { "file": "body.stl", "id": "housing", "name": "Housing", "sub": "Holds still. Cut open so you can see in", "mat": "brass", "order": 0, "explode": [0, 0, 0] },
+    { "file": "core.stl", "id": "plug", "name": "Plug", "sub": "Turns only when every pin agrees", "mat": "brass", "order": 1, "explode": [0, 110, 0] },
+    { "file": "clip.stl", "id": "clip", "name": "Clip", "sub": "Keeps the plug in", "mat": "steel", "order": 2, "explode": [0, -45, 0] },
+    { "file": "pin-a.stl", "id": "keypin1", "group": "keypins", "name": "Key pins", "sub": "Five lengths, one for each cut of the key", "mat": "brass", "order": 3, "explode": [0, 0, 62] },
+    { "file": "pin-b.stl", "id": "keypin2", "group": "keypins", "mat": "brass", "order": 3, "explode": [0, 0, 62], "label": false },
+    { "file": "pin-c.stl", "id": "keypin3", "group": "keypins", "mat": "brass", "order": 3, "explode": [0, 0, 62], "label": false },
+    { "file": "pin-d.stl", "id": "keypin4", "group": "keypins", "mat": "brass", "order": 3, "explode": [0, 0, 62], "label": false },
+    { "file": "pin-e.stl", "id": "keypin5", "group": "keypins", "mat": "brass", "order": 3, "explode": [0, 0, 62], "label": false },
+    { "file": "driver-standard.stl", "id": "driver1", "group": "drivers", "name": "Driver pins", "sub": "Block the turn until they're lifted", "mat": "dark", "order": 4, "explode": [0, 0, 100] },
+    { "file": "driver-spool.stl", "id": "driver2", "group": "drivers", "mat": "dark", "order": 4, "explode": [0, 0, 100], "label": false },
+    { "file": "driver-mushroom.stl", "id": "driver3", "group": "drivers", "mat": "dark", "order": 4, "explode": [0, 0, 100], "label": false },
+    { "file": "driver-serrated.stl", "id": "driver4", "group": "drivers", "mat": "dark", "order": 4, "explode": [0, 0, 100], "label": false },
+    { "file": "driver-tpin.stl", "id": "driver5", "group": "drivers", "mat": "dark", "order": 4, "explode": [0, 0, 100], "label": false },
+    { "file": "lid.stl", "id": "cap", "name": "Cap", "sub": "Holds the springs down on the pins", "mat": "brass", "order": 5, "explode": [0, 0, 150] },
+    { "file": "key_abcde.stl", "id": "key", "name": "Key", "sub": "Lifts each stack to the same line", "mat": "steel", "order": 6, "explode": [0, 150, 0] }
+  ]
+}

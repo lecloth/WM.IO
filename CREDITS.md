@@ -77,6 +77,12 @@ Search log and every candidate: `tools/notes/take2-sources.md`. Crops keep the o
 | `take2/hughes-cards-fig6-7.webp` | "Mr. J. Hughes improved Cards for weaving figured Silks", Plate 5, Figs. 6–7 (drawn by C. Varley, engraved by G. Gladwin) | Wellcome Collection V0024104, https://wellcomecollection.org/works/v7gbu44b | Public Domain Mark (Wellcome catalogue API) | Lab C1–C3 ("AI working for me"). No date shown: Wellcome's "1753" can't be right (Varley b. 1781) |
 | `paper/miller-1905-paper.webp` | A blank margin of Miller 1905, IA scan page n262 (the page after p. 242), desaturated and mirrored into a seamless tile | Same IA item as above | Public domain | Lab A2: the real paper under the metals |
 
+## Take 2 3D model (`site/media/models/lock/`)
+
+| Files | What it is | Source | Licence | Where used |
+|---|---|---|---|---|
+| `body.stl`, `core.stl`, `lid.stl`, `clip.stl`, `pin-a…e.stl`, `driver-{standard,spool,mushroom,serrated,tpin}.stl`, `key_abcde.stl` (15 of the 21 files, unmodified binary STL, 7.2 MB, 148,042 triangles) + our own `manifest.json` (part names, explode offsets) | **"Cutaway Lock" by zbzzn**: a 5-pin pin-tumbler cutaway (housing, plug, retaining clip, cap, five key pins, five drivers including security pins, keys), parts in their assembled positions | Printables model 250197, https://www.printables.com/model/250197, downloaded by Wajih (logged in) on 22 Nov 2026 as `cutaway-lock-250197.zip` (21 STLs + Printables' info sheet) | **CC BY 4.0** (commercial use allowed; credit required): "Cutaway Lock" by zbzzn, https://creativecommons.org/licenses/by/4.0/. Changes: restyled (matte, brass/steel, X-ray), taken apart and animated; pins lifted by the key's own profile | Style lab A1–A3 (assembly) and B1–B3 (trip into the lock). On the live site the credit line goes in the caption and the spec sheet |
+
 ## Made in code (no outside asset)
 
 - Drafting-film grid and fibre texture: CSS gradients plus an inline SVG `feTurbulence` filter (`site/css/site.css`).

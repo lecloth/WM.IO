@@ -69,8 +69,8 @@ export async function create(mount, ctx) {
         reveal.material.opacity = clamp(1 - span(p, 0.45, 0.6)) * Math.min(1, open * 4);
         reveal.visible = reveal.material.opacity > 0.001;
         camera.position.set(0, 0, keys(p, [[0, d0], [0.12, d0], [0.5, d0 * 0.86], [0.92, 0.6]]));
-        room.classList.toggle('on', p > 0.6);
         holder.style.opacity = String(1 - span(p, 0.86, 0.96));
+        room.classList.toggle('on', p > 0.6);
       },
     };
   }
@@ -140,8 +140,9 @@ export async function create(mount, ctx) {
           w.visible = w.position.z < z - 0.02;
           w.material.uniforms.open.value = ease(span(p, i * seg + seg * 0.5, i * seg + seg * 0.85));
         });
-        room.classList.toggle('on', p > 0.95);
-        holder.style.opacity = String(1 - span(p, 0.95, 0.985));
+        // the corridor has fully faded into the light before the room's words appear (freeze-frame safe)
+        holder.style.opacity = String(1 - span(p, 0.92, 0.95));
+        room.classList.toggle('on', p >= 0.95);
       },
     };
   }

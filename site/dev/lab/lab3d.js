@@ -56,7 +56,7 @@ export function disposeScene(scene, renderer) {
  *  height left for it and shifts the camera's centre into the middle of that band */
 export const SAFE = { top: 118, bottom: 84 };
 export function safeBand(camera, W, H, safe = SAFE) {
-  const top = Math.min(safe.top, H * 0.2), bottom = Math.min(safe.bottom, H * 0.16);
+  const top = Math.min(safe.top, H * 0.36), bottom = Math.min(safe.bottom, H * 0.16);
   camera.setViewOffset(W, H, 0, -(top - bottom) / 2, W, H);
   return { frac: (H - top - bottom) / H, wfrac: (W - 24) / W };
 }

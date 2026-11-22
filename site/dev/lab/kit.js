@@ -39,7 +39,11 @@ export function loadKit(base) {
       p.explodeV = new THREE.Vector3(...(p.explode || [0, 0, 0])).applyMatrix4(rot).multiplyScalar(s);
     });
     parts.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-    return { ...man, parts, size: box.getSize(new THREE.Vector3()).multiplyScalar(s) };
+    // model (mm) -> world: rotate, centre, scale. Directions use rot and s only.
+    const xf = new THREE.Matrix4().makeScale(s, s, s).multiply(new THREE.Matrix4().makeTranslation(-c.x, -c.y, -c.z)).multiply(rot);
+    const toWorld = (x, y, z) => new THREE.Vector3(x, y, z).applyMatrix4(xf);
+    const dirWorld = (x, y, z) => new THREE.Vector3(x, y, z).applyMatrix4(rot).normalize();
+    return { ...man, parts, scale: s, xf, toWorld, dirWorld, size: box.getSize(new THREE.Vector3()).multiplyScalar(s) };
   })());
   return cache.get(base);
 }

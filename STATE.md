@@ -29,12 +29,14 @@ Take 1's history below.
 
 ### Take 2 log
 - **Setup:** brief Part 5 committed; every tool, `tools/AGENT_BRIEF.md` and this file point at 8109 and the Take 2 folder.
-- **Style lab:** `site/dev/lab.html` (shell, vibration, fps readout, A1–A3 code, C1–C3, D1–D2 done; B1–B3 not built).
-  - **Blocker:** every good free 3D lock is behind a Printables / Sketchfab login. Wajih is downloading
-    "Cutaway Lock" by zbzzn (Printables 250197, CC BY) into `tools/sources/take2/lock/`. Next: unzip, write
-    `site/media/models/lock/manifest.json` (parts, names, explode offsets; check whether the STLs sit in assembled
-    positions or print positions), check A1–A3, build B1–B3 (dive / section ride / room of locks), measure, commit.
-  - A1–A3 and B1–B3 show an honest "waiting for the real 3D lock" note until then (nothing drawn in code).
+- **Style lab: complete, waiting on Wajih's picks** (`site/dev/lab.html`, A1–A3, B1–B3, C1–C3, D1–D2).
+  - All on the real lock ("Cutaway Lock" by zbzzn, CC BY 4.0; `site/media/models/lock/manifest.json` names the parts).
+    The STLs sit in assembled positions (Z up, key from +Y); key ABCDE lifts every stack 2.2 mm to the shear line (z 16).
+  - Tested on the real phone (SM-S918N, Adreno 740, Chrome 157) over adb + CDP (`tools/phonelab.py`): A, B, D about
+    60 fps while scrolling (p95 16.7–16.8 ms); C about 57 fps while tapping. The phone drops its screen to 24 Hz when
+    nothing moves, so idle measurements read low: measure while something moves.
+  - Freeze-frame, reduced motion (finished frames, no vibration), no console errors: checked.
+  - Next after the picks: page 1 (Enter + hook) with the picked looks; wording batch to Wajih.
 - **Real sources:** `tools/notes/take2-sources.md` (summary + pointers to the three detailed logs), `CREDITS.md`.
   No free 3D exists for Bell's telephone, the Difference Engine or Jacquard cards; real scans exist and are downloaded.
 - **Viewports:** `site/dev/viewport.html`. Wajih's laptop window: _waiting for his numbers_. His phone reports
