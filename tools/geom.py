@@ -10,7 +10,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browserlock import BrowserLock
 
 SIZES = "384x734,390x844,1280x720,1366x768,1440x900,1920x1080"
-STOP_P = {"S0": 0.11, "S1": 0.92, "S2": 2.81}
+STOP_P = {"S0": 0.12, "morph": 0.66, "S1": 1.5, "fade": 2.08, "S2": 2.78, "YOU": 3.08, "TASK": 3.24, "STAMPS": 3.45, "END": 3.8}
+SETTLE = {"STAMPS": 1600, "END": 1600}
 GOTO_JS = """async (p) => { const e = window.__t2.engine; const y = window.__p1.yAt(p); if (e.lenis) e.lenis.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y);
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); e.ScrollTrigger.update(); return scrollY; }"""
 MEASURE_JS = r"""(stop) => {
@@ -22,22 +23,33 @@ MEASURE_JS = r"""(stop) => {
   add('titleblock', document.querySelector('.titleblock'), 'chrome');
   document.querySelectorAll('.p1-txt.on').forEach((t) => {
     // a text block's real ink: its children, not the full-width box
-    [...t.children].forEach((c, i) => add(`text ${t.dataset.stop}.${i} (${c.className.split(' ')[0]})`, c, 'text'));
+    [...t.children].forEach((c, i) => add(`text ${t.dataset.k}.${i} (${c.className.split(' ')[0]})`, c, 'text'));
   });
+  // the travelling word belongs to the line it stands in (its slot there is see-through by design)
+  const fly = document.querySelector('.p1-fly'), fs = fly && fly.dataset.state;
+  if (fs && fs !== 'off') add(`text ${fs === 'a' ? 's2' : fs === 'c' ? 'task' : 'you'}.fly`, fly.querySelector(fs === 'a' ? '.lo' : '.up'), 'text');
+  document.querySelectorAll('.p1-stamp.is-in').forEach((s, i) => add(`stamp ${s.textContent.trim()}`, s, 'stamp'));
   document.querySelectorAll('.p1-lbl.on').forEach((l) => add('label ' + l.textContent, l, 'label'));
   add('credit', document.querySelector('.p1__credit'), 'text');
   const pf = document.querySelector('.p1__plate'); if (vis(pf)) items.push({ name: 'plate', kind: 'picture', ...R(pf) });
-  if (window.__p1 && +getComputedStyle(document.querySelector('.p1__canvas')).opacity > 0.05 && stop !== 'S0') {
-    const b = window.__p1.box(); items.push({ name: 'phone', kind: 'picture', l: b.left, t: b.top, r: b.right, b: b.bottom });
+  const p1 = window.__p1, band = p1 ? p1.band() : null;
+  if (p1 && p1.lines.drawn) {   // Bell's lines on their way: between the plate and the phone they're landing on
+    const a = p1.plate(), b = p1.box();
+    items.push({ name: 'lines', kind: 'picture', l: Math.min(a.left, b.left), t: Math.min(a.top, b.top), r: Math.max(a.left + a.width, b.right), b: Math.max(a.top + a.height, b.bottom) });
   }
-  const band = window.__p1 ? window.__p1.band() : null;
+  if (p1 && +getComputedStyle(document.querySelector('.p1__canvas')).opacity > 0.05) {
+    const b = p1.box(); items.push({ name: 'phone', kind: 'picture', l: b.left, t: b.top, r: b.right, b: b.bottom });
+  }
   return { W, H, items, band };
 }"""
 
 def check(m, stop):
     W, H, items, problems = m["W"], m["H"], m["items"], []
+    band = m.get("band")
     for it in items:
-        if it["kind"] in ("picture", "text", "label") and (it["l"] < -0.5 or it["t"] < -0.5 or it["r"] > W + 0.5 or it["b"] > H + 0.5):
+        if it["kind"] == "picture" and band and (it["l"] < band["left"] - 1 or it["t"] < band["top"] - 1 or it["r"] > W - band["right"] + 1 or it["b"] > H - band["bottom"] + 1):
+            problems.append(f"{it['name']} leaves its band ({it['l']:.0f},{it['t']:.0f})-({it['r']:.0f},{it['b']:.0f}); band ({band['left']:.0f},{band['top']:.0f})-({W - band['right']:.0f},{H - band['bottom']:.0f})")
+        if it["kind"] in ("picture", "text", "label", "stamp") and (it["l"] < -0.5 or it["t"] < -0.5 or it["r"] > W + 0.5 or it["b"] > H + 0.5):
             problems.append(f"{it['name']} leaves the screen ({it['l']:.0f},{it['t']:.0f})-({it['r']:.0f},{it['b']:.0f}) in {W}x{H}")
     def hit(a, b, pad=0):
         return a["l"] < b["r"] - pad and b["l"] < a["r"] - pad and a["t"] < b["b"] - pad and b["t"] < a["b"] - pad
@@ -75,7 +87,7 @@ async def main(a):
                 top = await page.evaluate("document.getElementById('page-01').offsetTop"); vh = await page.evaluate("innerHeight")
                 for stop, p in STOP_P.items():
                     await page.evaluate(GOTO_JS, p, isolated_context=False)
-                    await page.wait_for_timeout(600)
+                    await page.wait_for_timeout(SETTLE.get(stop, 700))
                     m = await page.evaluate(MEASURE_JS, stop, isolated_context=False)
                     probs = check(m, stop)
                     shot = out / f"{size}_{theme}_{stop}.png"; await page.screenshot(path=str(shot))

@@ -53,9 +53,9 @@ async def main(a):
             state = await c.eval("JSON.stringify({ phase: document.documentElement.dataset.phase, activated: navigator.userActivation.hasBeenActive, vibrate: typeof navigator.vibrate })")
             print("after tap", state, flush=True)
             await asyncio.sleep(1.2)
-            stops = {0.11: 'S0', 0.92: 'S1', 2.81: 'S2'}
-            for p in [0.11, 0.5, 0.92, 1.45, 1.8, 2.2, 2.81]:
-                await c.eval(f"{GOTO}({p})"); await asyncio.sleep(1.0); await shot(f"p1_{int(p * 1000):04d}")
+            stops = {0.12: 'S0', 0.66: 'morph', 1.5: 'S1', 2.08: 'fade', 2.78: 'S2', 3.08: 'YOU', 3.24: 'TASK', 3.45: 'STAMPS', 3.8: 'END'}
+            for p in [0.12, 0.3, 0.38, 0.5, 0.66, 0.8, 0.95, 1.15, 1.5, 1.8, 2.08, 2.2, 2.45, 2.78, 3.08, 3.24, 3.45, 3.8]:
+                await c.eval(f"{GOTO}({p})"); await asyncio.sleep(1.8 if p >= 3.4 else 1.0); await shot(f"p1_{int(p * 1000):04d}")
                 if p in stops:
                     m = json.loads(await c.eval(f"JSON.stringify(({MEASURE_JS})('{stops[p]}'))"))
                     probs = check(m, stops[p]); print(f"geometry on the phone {stops[p]} ({m['W']}x{m['H']}):", probs or 'clean', flush=True)

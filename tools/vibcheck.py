@@ -1,5 +1,5 @@
 """Count navigator.vibrate calls on page 1: after a tap on the point, after a key press, and with reduced motion.
-  python -I tools/vibcheck.py   (expect: tap = 1 tap buzz + 6 snaps; key = none; reduced = none)"""
+  python -I tools/vibcheck.py   (expect: tap = 1 tap buzz + 6 snaps + 7 stamps; key = none; reduced = none)"""
 import asyncio, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -12,15 +12,15 @@ async def run(mode):
         await ctx.add_init_script("window.__vib=[]; navigator.vibrate = (ms) => { window.__vib.push(ms); return true; };")
         page = await ctx.new_page()
         await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
-        if mode != "reduced":
-            await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
-            if mode == "tap": await page.tap("#enter")
-            else: await page.keyboard.press("Enter")
+        await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
+        if mode in ("tap", "reduced"): await page.tap("#enter")   # reduced: a real tap on the still gate must stay silent
+        else: await page.keyboard.press("Enter")
         await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000); await page.wait_for_timeout(800)
         if mode != "reduced":
-            for k in range(0, 61):
+            for k in range(0, 81):
                 await page.evaluate(f"(() => {{ const e = window.__t2.engine; e.lenis.scrollTo(window.__p1.yAt({k * 0.05}), {{ immediate: true, force: true }}); e.ScrollTrigger.update(); }})()", isolated_context=False)
-                await page.wait_for_timeout(40)
+                await page.wait_for_timeout(80)
+            await page.wait_for_timeout(1600)   # the stamps land on a timed beat
         print(mode, "vibrate calls:", await page.evaluate("window.__vib", isolated_context=False))
         await b.close()
 with BrowserLock():

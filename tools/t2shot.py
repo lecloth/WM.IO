@@ -25,8 +25,10 @@ async def open_page(pw, a):
 
 async def enter(page, a, out, tag):
     await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
-    if a.reduced:
-        await page.wait_for_timeout(1500); return
+    if a.reduced:   # the still gate: shoot it, then enter at once
+        await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
+        await page.wait_for_timeout(400); await page.screenshot(path=str(out / f"{tag}_gate.png"))
+        await page.keyboard.press("Enter"); await page.wait_for_timeout(1200); return
     await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
     if a.gate:
         await page.wait_for_timeout(600); await page.screenshot(path=str(out / f"{tag}_gate.png"))

@@ -21,19 +21,18 @@ async def main(a):
         if a.dark: await ctx.add_init_script("try{localStorage.setItem('wm:theme','dark')}catch(e){}")
         page = await ctx.new_page(); ev = lambda js, arg=None: page.evaluate(js, arg, isolated_context=False)
         await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
-        if not a.reduced:
-            await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
-            await page.keyboard.press("Enter")
+        await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)   # reduced motion: the still gate
+        await page.keyboard.press("Enter")
         await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
         await page.wait_for_timeout(800)
         await ev("new Promise(r => { const s = document.createElement('script'); s.src = 'vendor/axe.min.js'; s.onload = r; document.head.appendChild(s); })")
         length = await ev("document.getElementById('page-01').offsetHeight / innerHeight")
         total = await ev("document.documentElement.scrollHeight / innerHeight")
         out = {"size": a.size, "dark": a.dark, "reduced": a.reduced, "page1_screens": round(length, 2), "whole_page_screens": round(total, 2), "stops": {}}
-        stops = {"S0": 0.11, "S1": 0.92, "S2": 2.81} if not a.reduced else {"all": None}
+        stops = {"S0": 0.12, "morph": 0.66, "S1": 1.5, "fade": 2.08, "S2": 2.78, "YOU": 3.08, "TASK": 3.24, "STAMPS": 3.45, "END": 3.8} if not a.reduced else {"all": None}
         top = await ev("document.getElementById('page-01').offsetTop")
         for k, p in stops.items():
-            if p is not None: await ev(GOTO_JS, p); await page.wait_for_timeout(600)
+            if p is not None: await ev(GOTO_JS, p); await page.wait_for_timeout(1600 if k in ("STAMPS", "END") else 700)
             out["stops"][k] = await ev(AXE)
         await b.close()
     print(json.dumps(out, indent=1))

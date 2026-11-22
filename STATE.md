@@ -14,15 +14,15 @@ Take 1's history below.
 - **How it runs:** style lab first (Wajih points) → one page at a time: build → wording batch → his S23 test →
   geometry check → commit → this file. Stop for Wajih only at style picks, each page's wording, each page's phone review.
 
-### Running order (Part 5 "Lab picks" + "Copy and the team page", ~35 viewports in total)
+### Running order (Part 5 "Lab picks" + "Copy and the team page" + "Page 1 refinements", ~36 viewports in total)
 
 | # | Page | What happens | Viewports | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | Enter + hook | Tap the point; Bell's 1877 plate becomes today's phone as an X-ray (named pieces) → matte → real materials | ~4 | **built, waiting for Wajih's phone review + wording** |
+| 1 | Enter + hook | Beacon → Bell's sheet dissolves into its lines → lines bend into the X-ray phone → pieces named → kinetic line, pieces join, blue fades → real → "…to serve you." → YOU → the task, seven stamps → "Now, what do you need?" | ~5 | **rebuilt (Part 5 "Page 1 refinements"), waiting for Wajih's phone review** |
 | 2 | For you | Visitor taps what fits them; the page answers; taps pre-tick the checklist | ~3 | stub |
 | 3 | Checklist 1 | The C3 work slip, short version; "or see how we think" | ~1 | stub |
 | 4 | Four trips | Security showpiece (~5: lock's A journey → failed pick → B3 → today); AI, websites, apps lighter (~3 each) | ~14 | stub |
-| 5 | How we work | The gears: four principles, the Break stress test | ~4 | stub |
+| 5 | How we work | The gears: Wajih's seven steps (Understood, Imagined, Drawn, Tested, Felt, Refined, Delivered), each a gear with a title, one short line and a real image; the Break stress test inside "Tested"; Take 1's four principles dropped | ~4 | stub |
 | 6 | Work: the corridor | Four apps + one website, each a doorway with a meaningful entry (our own designs) | ~5 | stub |
 | 7 | Team | Three placeholder cards (image + bio), clearly marked | ~1 | stub |
 | 8 | The final room | Full C3 work slip, founder line, every way to reach us (switches in settings.js) | ~2 | stub |
@@ -31,17 +31,38 @@ Take 1's history below.
 ### Page structure (Take 2)
 - `src/index.template.html` + `src/parts/page-01.html` + `src/parts/stubs.html` → `python -I tools/build.py` → `site/index.html`.
   Build links `site/css/page-*.css` only. Entry: `site/js/main.js` (Take 1's is kept as `site/js/main.take1.js`, not bundled).
-- Page 1: `site/js/page01/page.js` (scroll story, stops, labels, reduced motion), `site/js/page01/phone.js` (six-part phone,
-  three looks, two clipping-plane wipes), `site/css/page-01.css` (also the 9-segment strip, gate, draft flag, stubs).
-- Enter: `site/js/enter.js` (gate; tap/click/Enter/Space/wheel/swipe all enter; only a pointer tap/click unlocks vibration).
+- Page 1: `site/js/page01/page.js` (scroll story over 4 screens of scroll, stops, labels, the travelling "you", stamps,
+  reduced motion), `site/js/page01/phone.js` (six-part phone, three looks as soft whole-phone cross-fades over a depth
+  pre-pass, projected-box camera fit, its X-ray edge loops for the handover), `site/js/page01/lines.js` (Bell's traced
+  outlines: ink twin as a cached bitmap, the journey in WebGL), `site/css/page-01.css` (also the strip, beacon gate, stubs).
+  Data: `site/media/plates/bell-us186787-lines.bin` (`tools/trace_plate.py`), `site/media/paper/stamp-grain.webp`
+  (`tools/stamp_grain.py`).
+- Enter: `site/js/enter.js` (beacon gate; tap/click/Enter/Space/wheel/swipe all enter; only a pointer tap/click unlocks
+  vibration; reduced motion: the same gate, still, enters at once).
   Vibration: `site/js/engine/haptics.js`.
 - Kept on disk for reuse, not loaded: Take 1 sheets (`site/js/sheets`, `sheet01..08`, `src/parts/sheet-*.html`,
   `site/css/sheet-*.css`), `opening.js` (its loop replay), `products/`, `settings.js`, the lab.
 - Tests: `tools/t2shot.py` (stops), `tools/geom.py` (geometry check, 6 sizes × light/dark × stops), `tools/axe2.py`
-  (axe + lengths), `tools/fps2.py` (emulated fps), `tools/phonep1.py` (real phone: real tap, fps, shots, geometry),
-  `tools/vibcheck.py` (vibration rules). Positions in tests are scroll progress (`__p1.yAt(p)`), not screens.
+  (axe + lengths), `tools/fps2.py` (emulated fps), `tools/fps_seg.py` (emulated fps per story segment), `tools/phonep1.py`
+  (real phone: real tap, fps, shots, geometry), `tools/vibcheck.py` (vibration rules). Positions in tests are scroll
+  progress in screens (`__p1.yAt(p)`, 0..4); page 1's named stops are `__p1.stops` (S0 0.12, morph 0.66, S1 1.5,
+  fade 2.08, S2 2.78, YOU 3.08, TASK 3.24, STAMPS 3.45, END 3.8).
 
 ### Take 2 log
+- **Page 1 rebuilt to Part 5 "Page 1 refinements" (22 Nov, evening).** Wording signed off by Wajih; Draft flags removed
+  (only the phone screen's page-2 preview stays a draft, flagged on the screen). 5.0 screens long at 384×734 and
+  1440×900 (whole page 36.0); reduced motion 4.0. Emulated (headless Chrome, real GPU): 60 fps in every segment after
+  moving the line journey to WebGL (it was 29 fps as one huge canvas-2D path). Handover: 100% (384×734) / 99.3%
+  (1440×900) of the landed lines' pixels lie within 2 px of the X-ray's own lines. Geometry: 0 problems (6 sizes ×
+  light/dark × 9 stops). axe: 0. Vibration: tap + 6 snaps (14 ms) + 7 stamps (12 ms); none after a key or with reduced
+  motion. No console errors. **Real-phone run pending**: the S23 wasn't on adb or mDNS during this session.
+  - Decisions I made alone: the whole sheet is traced (header, Fig. 1, Fig. 2), not only Fig. 1, so everything on it
+    becomes the phone; the blue comes in right after the lines appear (0.40–0.52), so the lines travel white on blue and
+    never grey on half-blue; text and line colour pick whichever of ink/paper contrasts more with the sheet as it is
+    (≥ 4.3:1 at the switch, display sizes); the matte → real change is a soft whole-phone cross-fade too (no scan line
+    anywhere); exploded pieces stack down the screen on phones (labels left/right) and across on desktop (labels
+    above/below); stamps in cyanotype blue ink (on dark film: light ink), grain from the 1905 paper scan; the kinetic
+    line lands word by word in place (no reflow); "you" → "YOU" is one word travelling between its three places.
 - **Setup:** brief Part 5 committed; every tool, `tools/AGENT_BRIEF.md` and this file point at 8109 and the Take 2 folder.
 - **Page 1 (Enter + hook): built.** 4.0 screens long at 384×734 and 1440×900 (whole page 35.0). Real phone (384×719 with
   the address bar): 60 fps while scrolling (p95 16.8 ms). Geometry: 0 problems (6 sizes × light/dark × 3 stops, plus the real

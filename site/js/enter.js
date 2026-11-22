@@ -1,8 +1,9 @@
-// Take 2 enter: a black screen, the breathing point, and the top strip drawing itself from the real page load
-// (Take 1's). Tap or click the point, press Enter or Space, or simply scroll or swipe: all of them enter, so nobody
-// gets stuck. Only a tap or click unlocks vibration (browsers allow it only after a real tap).
-// Then the point stretches into the SCALE 1:1 line, and the line opens like a curtain onto page 1.
-// Reduced motion: no gate, the finished page.
+// Take 2 enter: a black screen, the beacon (a breathing dot sending out slow fading rings), "Glad you're finally
+// here." above it and "Tap to start" under it, and the top strip drawing itself from the real page load (Take 1's).
+// Tap or click, press Enter or Space, or simply scroll or swipe: all of them enter, so nobody gets stuck. Only a tap
+// or click unlocks vibration (browsers allow it only after a real tap).
+// Then the dot stretches into the SCALE 1:1 line, and the line opens like a curtain onto page 1.
+// Reduced motion: the same beacon, still; any of the above enters at once, with no vibration.
 import { buildRuler } from './opening.js';
 import { haptics } from './engine/haptics.js';
 
@@ -14,9 +15,25 @@ export function runEnter(engine, onDone) {
   const q = (s) => curtain.querySelector(s);
 
   if (engine.reduced) {
-    html.dataset.phase = 'ready'; curtain.style.visibility = 'hidden'; btn.hidden = true;
-    document.querySelectorAll('.reveal-late').forEach((el) => { el.style.opacity = '1'; });
-    onDone?.(); return;
+    // the same beacon, still; a tap, click, key or scroll enters at once (no animation, no vibration)
+    let gone = false;
+    const show = () => { html.dataset.phase = 'gate'; btn.classList.add('is-ready'); try { btn.focus({ preventScroll: true }); } catch (e) {} };
+    const go = () => {
+      if (gone) return; gone = true; offR();
+      html.dataset.phase = 'ready'; curtain.style.visibility = 'hidden'; btn.hidden = true;
+      document.querySelectorAll('.reveal-late').forEach((el) => { el.style.opacity = '1'; });
+      try { document.getElementById('page-01')?.focus?.({ preventScroll: true }); } catch (e) {}
+      onDone?.();
+    };
+    const k = (e) => { if (['Enter', ' ', 'Spacebar', 'ArrowDown', 'PageDown', 'End'].includes(e.key)) { e.preventDefault(); go(); } };
+    const w = (e) => { if (Math.abs(e.deltaY) > 2) go(); };
+    const tm = () => go();
+    btn.addEventListener('click', go);
+    addEventListener('keydown', k, true); addEventListener('wheel', w, { passive: true }); addEventListener('touchmove', tm, { passive: true });
+    const offR = () => { removeEventListener('keydown', k, true); removeEventListener('wheel', w); removeEventListener('touchmove', tm); };
+    if ((window.__wm.shown ?? 0) >= 1) document.fonts.ready.then(show);
+    else document.addEventListener('wm:loaded', () => document.fonts.ready.then(show), { once: true });
+    return;
   }
 
   let loaded = (window.__wm.shown ?? 0) >= 1, wanted = false, started = false;

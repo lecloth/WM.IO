@@ -1,8 +1,10 @@
 // Page 1: today's phone, built in code from Take 1's three.js hero phone (rounded slabs, matte parts, hairline edges),
-// now as six real parts (Glass, Screen, Frame, Board, Battery, Back) and three looks that wipe across it:
-//   X-ray (the drawing: cyanotype blue, white lines)  ->  matte (built: hairline edges)  ->  real materials.
-// Each part carries one mesh per look; two moving clipping planes decide which look shows where, so the phone
-// "dresses up" as a scan line crosses it. No logos, no brand shapes (two plain round lenses, a round punch-hole).
+// as six real parts (Glass, Screen, Frame, Board, Battery, Back) and three looks:
+//   X-ray (the drawing: white lines and glow on cyanotype blue)  ->  matte (built: hairline edges)  ->  real materials.
+// The looks change by soft cross-fades over the WHOLE phone (never a wipe, never a phone cut in half): a depth-only
+// pre-pass keeps the solid looks to their front surfaces, so a half-built phone reads as one object in two looks.
+// The X-ray's own edge lines are exported as screen-space loops, so Bell's traced lines can land exactly on them.
+// No logos, no brand shapes (two plain round lenses, a round punch-hole).
 import * as THREE from 'three';
 import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
@@ -35,13 +37,37 @@ function faceUV(geo, w, h) {
   for (let i = 0; i < p.count; i++) uv.setXY(i, (p.getX(i) + w / 2) / w, (p.getY(i) + h / 2) / h);
   uv.needsUpdate = true; return geo;
 }
+// chain an EdgesGeometry's loose segments into polylines (closed loops where they close)
+function chains(eg) {
+  const a = eg.attributes.position.array, n = a.length / 6, key = (i) => `${a[i].toFixed(3)},${a[i + 1].toFixed(3)},${a[i + 2].toFixed(3)}`;
+  const at = new Map(), used = new Uint8Array(n);
+  for (let s = 0; s < n; s++) for (const e of [0, 3]) { const k = key(s * 6 + e); if (!at.has(k)) at.set(k, []); at.get(k).push(s); }
+  const out = [];
+  for (let s0 = 0; s0 < n; s0++) {
+    if (used[s0]) continue; used[s0] = 1;
+    const pts = [[a[s0 * 6], a[s0 * 6 + 1], a[s0 * 6 + 2]], [a[s0 * 6 + 3], a[s0 * 6 + 4], a[s0 * 6 + 5]]];
+    for (let guard = 0; guard < n; guard++) {
+      const last = pts[pts.length - 1], k = `${last[0].toFixed(3)},${last[1].toFixed(3)},${last[2].toFixed(3)}`;
+      const nx = (at.get(k) || []).find((s) => !used[s]); if (nx === undefined) break;
+      used[nx] = 1; const o = a.slice(nx * 6, nx * 6 + 6);
+      const k0 = `${o[0].toFixed(3)},${o[1].toFixed(3)},${o[2].toFixed(3)}`;
+      pts.push(k0 === k ? [o[3], o[4], o[5]] : [o[0], o[1], o[2]]);
+    }
+    out.push(pts);
+  }
+  return out;
+}
 
-// the screen, drawn in code: the next page's question, so the phone hands over to "For you" (placeholder words)
-export function drawScreen(c, { dark = false } = {}) {
+// the screen, drawn in code: the next page's question, so the phone hands over to "For you" (its words are a draft)
+export function drawScreen(c) {
   const x = c.getContext('2d'), W = c.width, H = c.height, k = W / 390;
   x.fillStyle = '#F2F0EB'; x.fillRect(0, 0, W, H);
   x.fillStyle = '#121212';
   x.font = `500 ${13 * k}px "DM Mono", monospace`; x.fillText('02 · FOR YOU', 28 * k, 92 * k);
+  // the draft flag (Wajih hasn't signed off this preview's words)
+  x.font = `500 ${10 * k}px "DM Mono", monospace`;
+  const fw = x.measureText('DRAFT').width + 12 * k; x.setLineDash([3 * k, 2 * k]); x.lineWidth = 1 * k;
+  x.strokeRect(W - 28 * k - fw, 79 * k, fw, 17 * k); x.setLineDash([]); x.fillText('DRAFT', W - 22 * k - fw, 92 * k);
   x.font = `420 ${44 * k}px Newsreader, Georgia, serif`;
   ['What do', 'you need?'].forEach((t, i) => x.fillText(t, 26 * k, (170 + i * 48) * k));
   const chips = ['A website', 'An app', 'My systems are a mess', 'AI working for me', 'Keep it secure'];
@@ -58,21 +84,18 @@ export function drawScreen(c, { dark = false } = {}) {
 }
 
 const XRAY_VS = `
-#include <clipping_planes_pars_vertex>
 varying vec3 vN; varying vec3 vV;
 void main(){ vec4 mvPosition = modelViewMatrix * vec4(position,1.); vN = normalize(normalMatrix * normal); vV = normalize(-mvPosition.xyz);
-  gl_Position = projectionMatrix * mvPosition;
-  #include <clipping_planes_vertex>
-}`;
+  gl_Position = projectionMatrix * mvPosition; }`;
 const XRAY_FS = `
-#include <clipping_planes_pars_fragment>
 uniform float uFade; varying vec3 vN; varying vec3 vV;
 void main(){
-  #include <clipping_planes_fragment>
   float f = 1. - abs(dot(normalize(vN), normalize(vV)));
   float a = (.05 + pow(f, 2.2) * .55) * uFade;
   gl_FragColor = vec4(vec3(.93, .95, .97) * a, a);
 }`;
+// render order: depth pre-pass, X-ray glow, X-ray lines, matte, matte hairlines, real, glass
+const RO = { pre: 0, xray: 1, white: 2, matte: 3, ink: 4, real: 5, glass: 6 };
 
 export class Phone {
   constructor(canvas) {
@@ -81,61 +104,63 @@ export class Phone {
     this.dpr = Math.min(devicePixelRatio || 1, 2);
     this.renderer.setPixelRatio(this.dpr);
     this.renderer.setClearColor(0x000000, 0);
-    this.renderer.localClippingEnabled = true;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping; this.renderer.toneMappingExposure = 1.0;
+    this.renderer.sortObjects = true;
     this.scene = new THREE.Scene();
     const pm = new THREE.PMREMGenerator(this.renderer);
     this.envTex = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose();
-    this.camera = new THREE.PerspectiveCamera(28, 1, 20, 3000);
+    this.camera = new THREE.PerspectiveCamera(28, 1, 20, 4000);
     this.scene.add(new THREE.HemisphereLight(0xffffff, 0xb9b6ae, 1.6));
     const key = new THREE.DirectionalLight(0xffffff, 1.4); key.position.set(-0.6, 1, 1.4); this.scene.add(key);
     this.root = new THREE.Group(); this.scene.add(this.root);
-    // the two wipes: plane A splits X-ray | matte, plane B splits matte | real (world-space, moved each frame)
-    this.planeA = new THREE.Plane(new THREE.Vector3(1, 0, 0), 0);
-    this.planeB = new THREE.Plane(new THREE.Vector3(1, 0, 0), 0);
-    this.lineMats = [];
-    this.parts = [];
+    this.lineMats = []; this.parts = [];
+    this.L = { xray: [], white: [], pre: [], matte: [], ink: [], real: [] };   // materials per look
     this.build();
   }
 
-  lineMat(color, opacity, planes) {
-    const m = new LineMaterial({ color, linewidth: 1, worldUnits: false, transparent: true, opacity, clippingPlanes: planes });
+  lineMat(color, opacity, depthTest) {
+    const m = new LineMaterial({ color, linewidth: 1, worldUnits: false, transparent: true, opacity, depthTest, depthWrite: false });
     this.lineMats.push(m); return m;
   }
 
   build() {
-    const A = this.planeA, B = this.planeB;
-    const notA = new THREE.Plane(), notB = new THREE.Plane();   // filled in update(): the other side of each wipe
-    this.notA = notA; this.notB = notB;
-    this.xrayMats = []; this.whiteLines = [];
+    const L = this.L;
     const xrayMat = () => { const m = new THREE.ShaderMaterial({ vertexShader: XRAY_VS, fragmentShader: XRAY_FS, uniforms: { uFade: { value: 1 } },
-      transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, clipping: true, clippingPlanes: [notA] }); this.xrayMats.push(m); return m; };
-    const matte = (hex) => new THREE.MeshStandardMaterial({ color: hex, roughness: 0.95, metalness: 0, envMapIntensity: 0, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1, clippingPlanes: [A, notB] });
-    const real = (o) => new THREE.MeshStandardMaterial({ envMap: this.envTex, clippingPlanes: [B], ...o });
-    // screen texture
+      transparent: true, depthWrite: false, depthTest: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }); L.xray.push(m); return m; };
+    const preMat = new THREE.MeshBasicMaterial({ colorWrite: false, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 2 }); L.pre.push(preMat);
+    const look = (m, list, base = 1) => { m.transparent = true; m.depthWrite = false; m.userData.base = base; list.push(m); return m; };
+    const matte = (hex) => look(new THREE.MeshStandardMaterial({ color: hex, roughness: 0.95, metalness: 0, envMapIntensity: 0 }), L.matte);
+    const real = (o) => look(o.isMaterial ? o : new THREE.MeshStandardMaterial({ envMap: this.envTex, ...o }), L.real, o.isMaterial ? 1 : (o.opacity ?? 1));
     this.screenCanvas = document.createElement('canvas'); this.screenCanvas.width = 780; this.screenCanvas.height = 1688;
     drawScreen(this.screenCanvas);
     this.screenTex = new THREE.CanvasTexture(this.screenCanvas); this.screenTex.colorSpace = THREE.SRGBColorSpace; this.screenTex.anisotropy = 8;
 
     const P = (name, z, pieces) => {
       const g = new THREE.Group(); g.userData = { name, z }; this.root.add(g);
-      const part = { name, group: g, z, meshes: [] };
-      pieces.forEach(({ geo, pos = [0, 0, 0], matte: mh, real: ro, edges = true, edgeOpacity = 1, xray = true }) => {
+      const part = { name, group: g, z, loops: [], corners: [] };
+      pieces.forEach(({ geo, pos = [0, 0, 0], matte: mh, real: ro, edges = true, edgeOpacity = 1, xray = true, glass = false }) => {
         const holder = new THREE.Group(); holder.position.set(...pos); g.add(holder);
-        if (xray) { const m = new THREE.Mesh(geo, xrayMat()); holder.add(m); part.meshes.push(m); }
-        const mm = new THREE.Mesh(geo, matte(mh)); holder.add(mm); part.meshes.push(mm);
-        const rm = new THREE.Mesh(geo, ro.isMaterial ? ro : real(ro)); holder.add(rm); part.meshes.push(rm);
+        const add = (mat, ro_) => { const m = new THREE.Mesh(geo, mat); m.renderOrder = ro_; holder.add(m); return m; };
+        if (xray) add(xrayMat(), RO.xray);
+        if (!glass) add(preMat, RO.pre);
+        add(matte(mh), glass ? RO.glass : RO.matte);
+        add(real(ro), glass ? RO.glass : RO.real);
+        geo.computeBoundingBox(); const b = geo.boundingBox;
+        for (const x of [b.min.x, b.max.x]) for (const y of [b.min.y, b.max.y]) for (const zz of [b.min.z, b.max.z]) part.corners.push({ holder, v: new THREE.Vector3(x, y, zz) });
         if (edges) {
-          const eg = new THREE.EdgesGeometry(geo, 30), lg = new LineSegmentsGeometry().fromEdgesGeometry(eg); eg.dispose();
-          const wl = this.lineMat(0xECF1F6, 0.8 * edgeOpacity, [notA]); wl.userData.o = 0.8 * edgeOpacity; this.whiteLines.push(wl);
-          holder.add(new LineSegments2(lg, wl));   // white lines while it's a drawing
-          holder.add(new LineSegments2(lg, this.lineMat(0x121212, 1 * edgeOpacity, [A, notB])));   // ink hairlines while built
+          const eg = new THREE.EdgesGeometry(geo, 30), lg = new LineSegmentsGeometry().fromEdgesGeometry(eg);
+          chains(eg).forEach((c) => part.loops.push({ holder, pts: c.map((q) => new THREE.Vector3(...q)) }));
+          eg.dispose();
+          const wl = this.lineMat(0xECF1F6, 0.8 * edgeOpacity, false); wl.userData.base = 0.8 * edgeOpacity; L.white.push(wl);
+          const w = new LineSegments2(lg, wl); w.renderOrder = RO.white; holder.add(w);          // white lines while it's a drawing
+          const il = this.lineMat(0x121212, edgeOpacity, true); il.userData.base = edgeOpacity; L.ink.push(il);
+          const k = new LineSegments2(lg, il); k.renderOrder = RO.ink; holder.add(k);            // ink hairlines while built
         }
       });
       g.position.z = z; this.parts.push(part); return part;
     };
-    const screenReal = new THREE.MeshBasicMaterial({ map: this.screenTex, clippingPlanes: [B], toneMapped: false });
+    const screenReal = new THREE.MeshBasicMaterial({ map: this.screenTex, toneMapped: false });
     // back to front; z = assembled depth (mm)
     P('Back', -3.4, [
       { geo: slab(74, 154, 0.9, 11), matte: 0xE8E6E1, real: { color: 0xD8D4CB, roughness: 0.42, metalness: 0 } },
@@ -154,14 +179,21 @@ export class Phone {
       { geo: faceUV(new THREE.ShapeGeometry(roundedRect(68, 147, 8.6), 12), 68, 147), pos: [0, 0, 0.45], matte: 0x2A2A2A, real: screenReal, edges: false, xray: false },
     ]);
     P('Glass', 3.6, [
-      { geo: slab(74, 154, 0.8, 11), matte: 0xF7F6F2, real: { color: 0xffffff, roughness: 0.02, metalness: 0, transparent: true, opacity: 0.12, depthWrite: false }, edgeOpacity: 0.7 },
+      // the glass is see-through: no depth pre-pass, faint in both solid looks, drawn last
+      { geo: slab(74, 154, 0.8, 11), matte: 0xF7F6F2, real: { color: 0xffffff, roughness: 0.02, metalness: 0, opacity: 0.12 }, edgeOpacity: 0.7, glass: true },
       { geo: disc(1.9, 0.9), pos: [0, 69, 0.1], matte: 0x0A0A0A, real: { color: 0x050505, roughness: 0.1, metalness: 0 } },
     ]);
-    // the glass's matte face hides the screen once built; make it faint so the screen reads through
-    this.parts.find((p) => p.name === 'Glass').meshes.forEach((m) => { if (m.material.isMeshStandardMaterial && m.material.envMapIntensity === 0) { m.material.transparent = true; m.material.opacity = 0.25; m.material.depthWrite = false; } });
+    this.L.matte.forEach((m) => { if (m.color.getHex() === 0xF7F6F2) m.userData.base = 0.25; });
+    this.looks({ xray: 1, built: 0, real: 0 });
+  }
+  /** compile every look's shaders up front (each look's first appearance would otherwise stall a frame) */
+  warm() {
+    const all = Object.values(this.L).flat(), vis = all.map((m) => m.visible);
+    all.forEach((m) => { m.visible = true; });
+    try { this.renderer.compile(this.scene, this.camera); } catch (e) {}
+    all.forEach((m, i) => { m.visible = vis[i]; });
   }
 
-  /** layout in CSS px and state: explode 0..1, turn (radians yaw), tilt, wipes a/b as 0..1 across the phone */
   resize(w, h) {
     this.W = w; this.H = h;
     this.renderer.setSize(w, h, false);
@@ -169,48 +201,77 @@ export class Phone {
     this.lineMats.forEach((m) => m.resolution.set(w * this.dpr, h * this.dpr));
   }
 
-  set({ explodeEach, yaw, pitch, wipeA, wipeB, gap = 26, fit, fade = 1 }) {
-    this.parts.forEach((p, i) => { p.group.position.z = p.z + (i - 2.5) * gap * explodeEach[i]; });
-    if (fade !== this._fade) { this._fade = fade; this.xrayMats.forEach((m) => { m.uniforms.uFade.value = fade; }); this.whiteLines.forEach((m) => { m.opacity = m.userData.o * fade; }); }
-    this.root.rotation.set(pitch, yaw, 0);
-    this.root.updateMatrixWorld(true);
-    // wipes sweep in world X across the phone's current screen extent (left to right)
-    const box = new THREE.Box3().setFromObject(this.root);
-    const xa = THREE.MathUtils.lerp(box.min.x - 2, box.max.x + 2, wipeA), xb = THREE.MathUtils.lerp(box.min.x - 2, box.max.x + 2, wipeB);
-    this.planeA.set(new THREE.Vector3(-1, 0, 0), xa);     // matte shows where x < xa
-    this.notA.set(new THREE.Vector3(1, 0, 0), -xa);       // x-ray shows where x > xa
-    this.planeB.set(new THREE.Vector3(-1, 0, 0), xb);     // real shows where x < xb
-    this.notB.set(new THREE.Vector3(1, 0, 0), -xb);       // matte limited to x > xb
-    this.box = box; this.wipeX = [xa, xb];
-    // camera: fit the live bounding sphere into the band given by fit = { top, bottom, left, right } in CSS px
-    const sph = box.getBoundingSphere(new THREE.Sphere());
-    const f = fit || { top: 0, bottom: 0, left: 0, right: 0 };
-    const t = Math.tan(this.camera.fov * Math.PI / 360);
-    const hf = (this.H - f.top - f.bottom) / this.H, wf = (this.W - f.left - f.right) / this.W;
-    const d = Math.max(sph.radius / t / hf, sph.radius / t / this.camera.aspect / wf) * 1.02;
-    this.camera.setViewOffset(this.W, this.H, -(f.left - f.right) / 2, -(f.top - f.bottom) / 2, this.W, this.H);
-    this.camera.position.set(sph.center.x, sph.center.y, sph.center.z + d);
-    this.camera.lookAt(sph.center);
-    this.camera.updateMatrixWorld();
-    this.sphere = sph;
+  /** the three looks as weights: xray = the drawing's strength (0 hidden .. 1), built = X-ray -> matte, real = matte -> real */
+  looks({ xray, built, real }) {
+    const k = `${xray.toFixed(4)}|${built.toFixed(4)}|${real.toFixed(4)}`; if (k === this._looks) return; this._looks = k;
+    const L = this.L, x = xray * (1 - built);
+    L.xray.forEach((m) => { m.uniforms.uFade.value = x; m.visible = x > 0.001; });
+    L.white.forEach((m) => { m.opacity = m.userData.base * x; m.visible = x > 0.001; });
+    L.pre.forEach((m) => { m.visible = built > 0.001; });
+    L.matte.forEach((m) => { m.opacity = m.userData.base * built; m.visible = built > 0.001 && real < 0.999; });
+    L.ink.forEach((m) => { m.opacity = m.userData.base * built * (1 - real); m.visible = built > 0.001 && real < 0.999; });
+    L.real.forEach((m) => { m.opacity = m.userData.base * built * real; m.visible = built * real > 0.001; });
   }
 
-  /** screen x (CSS px) of a world x at the phone's centre height, for the background wipes */
-  screenX(xw) {
-    const v = new THREE.Vector3(xw, this.sphere.center.y, this.sphere.center.z).project(this.camera);
-    return (v.x + 1) / 2 * this.W;
+  /** pose: explodeEach[i] 0..1 per part (back to front), gap in mm, yaw/pitch in radians, fit = the band in CSS px */
+  set({ explodeEach, yaw, pitch, gap = 52, fit }) {
+    this.parts.forEach((p, i) => { p.group.position.z = p.z + (i - 2.5) * gap * explodeEach[i]; });
+    this.root.rotation.set(pitch, yaw, 0);
+    this.root.updateMatrixWorld(true);
+    const f = fit || { top: 0, bottom: 0, left: 0, right: 0 };
+    const bw = this.W - f.left - f.right, bh = this.H - f.top - f.bottom;
+    // the parts' corners in world space (a tight box for slabs), their centre, then fit their PROJECTED box to the band
+    const pts = []; this.parts.forEach((p) => p.corners.forEach((c) => pts.push(c.v.clone().applyMatrix4(c.holder.matrixWorld))));
+    const box = new THREE.Box3().setFromPoints(pts), ctr = box.getCenter(new THREE.Vector3());
+    const t = Math.tan(this.camera.fov * Math.PI / 360);
+    let d = box.getBoundingSphere(new THREE.Sphere()).radius / t * 1.2, ox = 0, oy = 0;
+    this.camera.setViewOffset(this.W, this.H, -(f.left - f.right) / 2, -(f.top - f.bottom) / 2, this.W, this.H);
+    for (let it = 0; it < 3; it++) {
+      this.camera.position.set(ctr.x + ox, ctr.y + oy, ctr.z + d); this.camera.lookAt(ctr.x + ox, ctr.y + oy, ctr.z);
+      this.camera.updateMatrixWorld();
+      let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9; const v = new THREE.Vector3();
+      pts.forEach((q) => { v.copy(q).project(this.camera); const sx = (v.x + 1) / 2 * this.W, sy = (1 - v.y) / 2 * this.H;
+        if (sx < x0) x0 = sx; if (sx > x1) x1 = sx; if (sy < y0) y0 = sy; if (sy > y1) y1 = sy; });
+      const s = Math.max((x1 - x0) / bw, (y1 - y0) / bh) / 0.96;
+      // centre the projected box in the band (world units per px at this distance)
+      const upp = 2 * d * t / this.H;
+      ox += ((x0 + x1) / 2 - (f.left + this.W - f.right) / 2) * upp;
+      oy -= ((y0 + y1) / 2 - (f.top + this.H - f.bottom) / 2) * upp;
+      d *= s;
+    }
+    this.camera.position.set(ctr.x + ox, ctr.y + oy, ctr.z + d); this.camera.lookAt(ctr.x + ox, ctr.y + oy, ctr.z);
+    this.camera.updateMatrixWorld();
+    this.pts = pts;
   }
+
   /** screen position (CSS px) of a point on a part (local coords of its group) */
   project(part, x, y, z) {
     const v = new THREE.Vector3(x, y, z).applyMatrix4(part.group.matrixWorld).project(this.camera);
     return [(v.x + 1) / 2 * this.W, (1 - v.y) / 2 * this.H];
   }
-  /** the phone's projected bounding box (CSS px), for the geometry check */
+  /** a part's projected box (CSS px) */
+  partBox(part) {
+    const v = new THREE.Vector3(); let l = 1e9, r = -1e9, t = 1e9, b = -1e9;
+    part.corners.forEach((c) => { v.copy(c.v).applyMatrix4(c.holder.matrixWorld).project(this.camera);
+      const x = (v.x + 1) / 2 * this.W, y = (1 - v.y) / 2 * this.H; l = Math.min(l, x); r = Math.max(r, x); t = Math.min(t, y); b = Math.max(b, y); });
+    return { left: l, right: r, top: t, bottom: b, cx: (l + r) / 2, cy: (t + b) / 2 };
+  }
+  /** the phone's projected box (CSS px), for the geometry check */
   screenBox() {
-    const b = this.box, pts = [];
-    for (const x of [b.min.x, b.max.x]) for (const y of [b.min.y, b.max.y]) for (const z of [b.min.z, b.max.z]) pts.push(new THREE.Vector3(x, y, z).project(this.camera));
-    const xs = pts.map((v) => (v.x + 1) / 2 * this.W), ys = pts.map((v) => (1 - v.y) / 2 * this.H);
-    return { left: Math.min(...xs), right: Math.max(...xs), top: Math.min(...ys), bottom: Math.max(...ys) };
+    const v = new THREE.Vector3(); let l = 1e9, r = -1e9, t = 1e9, b = -1e9;
+    this.pts.forEach((q) => { v.copy(q).project(this.camera); const x = (v.x + 1) / 2 * this.W, y = (1 - v.y) / 2 * this.H;
+      l = Math.min(l, x); r = Math.max(r, x); t = Math.min(t, y); b = Math.max(b, y); });
+    return { left: l, right: r, top: t, bottom: b };
+  }
+  /** the X-ray's edge lines as screen-space polylines (CSS px) at the current pose: where Bell's lines land */
+  loops2D() {
+    const v = new THREE.Vector3(), out = [];
+    this.parts.forEach((p) => p.loops.forEach(({ holder, pts }) => {
+      const a = new Float32Array(pts.length * 2);
+      pts.forEach((q, i) => { v.copy(q).applyMatrix4(holder.matrixWorld).project(this.camera); a[i * 2] = (v.x + 1) / 2 * this.W; a[i * 2 + 1] = (1 - v.y) / 2 * this.H; });
+      out.push(a);
+    }));
+    return out;
   }
   refreshScreen() { drawScreen(this.screenCanvas); this.screenTex.needsUpdate = true; }
   render() { this.renderer.render(this.scene, this.camera); }
