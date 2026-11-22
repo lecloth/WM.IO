@@ -45,7 +45,7 @@ function easeInOut(t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2,
 /** Heavy smooth scroll: a long expo-out glide per wheel step, slowed wheel. Off with reduced motion. */
 export function initScroll() {
   if (reduced) { engine.emit('scroll:ready', null); return null; }
-  const lenis = new Lenis({ duration: 1.8, wheelMultiplier: 0.65, touchMultiplier: 1, autoRaf: false });
+  const lenis = new Lenis({ duration: 1.1, wheelMultiplier: 0.9, touchMultiplier: 1, autoRaf: false });   // Take 2: lighter on desktop; touch screens keep their own scrolling
   engine.lenis = lenis;
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((t) => lenis.raf(t * 1000));

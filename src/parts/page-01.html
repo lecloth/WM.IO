@@ -1,0 +1,36 @@
+    <!-- PAGE 01: ENTER + HOOK. Bell's 1877 plate -> today's phone as an X-ray, pieces apart and named -> it turns and
+         dresses up as matte (built) -> real materials on paper. Scroll-driven (site/js/page01/page.js). -->
+    <section id="page-01" class="p1" data-sheet="01" data-title="Enter" data-drawn="Design" data-checked="Engineering" data-approved="Strategy" aria-label="Page 1: from Bell's 1877 telephone to today's phone">
+      <div class="p1__stage">
+        <div class="p1__bg p1__bg--blue" aria-hidden="true"></div>
+        <div class="p1__bg p1__bg--real" aria-hidden="true"></div>
+        <i class="p1__scan p1__scan--a" aria-hidden="true"></i>
+        <i class="p1__scan p1__scan--b" aria-hidden="true"></i>
+
+        <figure class="p1__plate">
+          <img class="p1__plate-img" src="media/plates/bell-us186787-sheet1.webp" width="1600" height="1740"
+               alt="Patent drawing from A. G. Bell's US Patent 186,787 (1877): Fig. 1, a box telephone with a speaking tube, and Fig. 2, its section.">
+        </figure>
+
+        <canvas class="p1__canvas" role="img" aria-label="Today's phone in six pieces: glass, screen, frame, board, battery and back. It turns and assembles from a blue X-ray drawing into a matte model, then into real materials."></canvas>
+        <canvas class="p1__leaders" aria-hidden="true"></canvas>
+        <div class="p1__labels" aria-hidden="true"></div>
+
+        <!-- text lands only at the stops, never while the picture moves (all wording is a placeholder until Wajih signs it off) -->
+        <div class="p1-txt p1-txt--s0" data-stop="0">
+          <p class="p1-txt__eyebrow mono"><span class="ph">Draft</span>A. G. Bell · US 186,787 · 1877</p>
+          <h1 class="p1-txt__h display">It began on paper.</h1>
+        </div>
+        <div class="p1-txt p1-txt--s1 is-dark" data-stop="1">
+          <p class="p1-txt__eyebrow mono"><span class="ph">Draft</span>Today's phone · six pieces</p>
+          <h2 class="p1-txt__h display">Every piece, named.</h2>
+        </div>
+        <div class="p1-txt p1-txt--s2" data-stop="2">
+          <p class="p1-txt__eyebrow mono"><span class="ph">Draft</span>Drawn · built · real</p>
+          <h2 class="p1-txt__h display">Made for real.</h2>
+          <p class="p1-txt__line">Now, what do you need?</p>
+          <a class="p1-next" href="#page-02"><span>For you</span><i aria-hidden="true">↓</i></a>
+        </div>
+        <p class="p1__credit mono" aria-hidden="true">Plate: US Patent 186,787 · public domain</p>
+      </div>
+    </section>

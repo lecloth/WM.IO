@@ -14,22 +14,41 @@ Take 1's history below.
 - **How it runs:** style lab first (Wajih points) → one page at a time: build → wording batch → his S23 test →
   geometry check → commit → this file. Stop for Wajih only at style picks, each page's wording, each page's phone review.
 
-### Running order (Part 5, ~34 viewports in total)
+### Running order (Part 5 "Lab picks" + "Copy and the team page", ~35 viewports in total)
 
 | # | Page | What happens | Viewports | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | Enter + hook | Tap the point; Bell's 1877 telephone floats in named pieces, reassembles into today's phone, which opens into its layers | ~4 | not started |
-| 2 | For you | Visitor taps what fits them; the page answers; taps pre-tick the checklist | ~3 | not started |
-| 3 | Checklist 1 | Their ticks, an optional box, Send (WhatsApp / email); "or see how we think" | ~1 | not started |
-| 4 | Four trips | Lock → security; Babbage + Lovelace → AI; press → websites; switchboard → apps. One line in, one line out | ~14 | not started |
-| 5 | Work | Four concept apps assemble from named pieces, "Concept sheet" | ~4 | not started |
-| 6 | How we work | The gears: Exact, Felt, Proven, Locked; the Break stress test | ~4 | not started |
-| 7 | The ending | A door into the final room, full checklist, founder line, contact | ~3 | not started |
-| 8 | Spec sheet | The page measuring itself live, then the loop back to the point | ~1 | not started |
+| 1 | Enter + hook | Tap the point; Bell's 1877 plate becomes today's phone as an X-ray (named pieces) → matte → real materials | ~4 | **built, waiting for Wajih's phone review + wording** |
+| 2 | For you | Visitor taps what fits them; the page answers; taps pre-tick the checklist | ~3 | stub |
+| 3 | Checklist 1 | The C3 work slip, short version; "or see how we think" | ~1 | stub |
+| 4 | Four trips | Security showpiece (~5: lock's A journey → failed pick → B3 → today); AI, websites, apps lighter (~3 each) | ~14 | stub |
+| 5 | How we work | The gears: four principles, the Break stress test | ~4 | stub |
+| 6 | Work: the corridor | Four apps + one website, each a doorway with a meaningful entry (our own designs) | ~5 | stub |
+| 7 | Team | Three placeholder cards (image + bio), clearly marked | ~1 | stub |
+| 8 | The final room | Full C3 work slip, founder line, every way to reach us (switches in settings.js) | ~2 | stub |
+| 9 | Spec sheet | One screen of live numbers, then the loop back to the point | ~1 | stub |
+
+### Page structure (Take 2)
+- `src/index.template.html` + `src/parts/page-01.html` + `src/parts/stubs.html` → `python -I tools/build.py` → `site/index.html`.
+  Build links `site/css/page-*.css` only. Entry: `site/js/main.js` (Take 1's is kept as `site/js/main.take1.js`, not bundled).
+- Page 1: `site/js/page01/page.js` (scroll story, stops, labels, reduced motion), `site/js/page01/phone.js` (six-part phone,
+  three looks, two clipping-plane wipes), `site/css/page-01.css` (also the 9-segment strip, gate, draft flag, stubs).
+- Enter: `site/js/enter.js` (gate; tap/click/Enter/Space/wheel/swipe all enter; only a pointer tap/click unlocks vibration).
+  Vibration: `site/js/engine/haptics.js`.
+- Kept on disk for reuse, not loaded: Take 1 sheets (`site/js/sheets`, `sheet01..08`, `src/parts/sheet-*.html`,
+  `site/css/sheet-*.css`), `opening.js` (its loop replay), `products/`, `settings.js`, the lab.
+- Tests: `tools/t2shot.py` (stops), `tools/geom.py` (geometry check, 6 sizes × light/dark × stops), `tools/axe2.py`
+  (axe + lengths), `tools/fps2.py` (emulated fps), `tools/phonep1.py` (real phone: real tap, fps, shots, geometry),
+  `tools/vibcheck.py` (vibration rules). Positions in tests are scroll progress (`__p1.yAt(p)`), not screens.
 
 ### Take 2 log
 - **Setup:** brief Part 5 committed; every tool, `tools/AGENT_BRIEF.md` and this file point at 8109 and the Take 2 folder.
-- **Style lab: complete, waiting on Wajih's picks** (`site/dev/lab.html`, A1–A3, B1–B3, C1–C3, D1–D2).
+- **Page 1 (Enter + hook): built.** 4.0 screens long at 384×734 and 1440×900 (whole page 35.0). Real phone (384×719 with
+  the address bar): 60 fps while scrolling (p95 16.8 ms). Geometry: 0 problems (6 sizes × light/dark × 3 stops, plus the real
+  phone). axe: 0 violations. Reduced motion: three static frames, no vibration. Wording: all draft, batch sent to Wajih.
+  - Lesson: on the phone the stage is 100lvh but the visible height is smaller while the address bar shows; layout uses
+    innerHeight for the band. Emulation can't show this: always run `tools/phonep1.py`.
+- **Style lab: complete; Wajih picked** ("I love everything": the A journey, B3, C3 slip, D2 corridor → Work) (`site/dev/lab.html`, A1–A3, B1–B3, C1–C3, D1–D2).
   - All on the real lock ("Cutaway Lock" by zbzzn, CC BY 4.0; `site/media/models/lock/manifest.json` names the parts).
     The STLs sit in assembled positions (Z up, key from +Y); key ABCDE lifts every stack 2.2 mm to the shear line (z 16).
   - Tested on the real phone (SM-S918N, Adreno 740, Chrome 157) over adb + CDP (`tools/phonelab.py`): A, B, D about
