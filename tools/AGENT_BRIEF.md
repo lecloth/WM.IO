@@ -2,12 +2,14 @@
 
 You are one of several builders finishing a local studio website for Wajih Mansouri, in parallel. The lead (me) set up
 the engine, sheet 00 (opening) and sheet 01 (Bell's plate → phone history → 3D phone → cyanotype). Wajih called sheet 01
-"so beautiful": **every sheet you build must hold that craft level.** Study it first: open http://127.0.0.1:8108/ and
+"so beautiful": **every sheet you build must hold that craft level.** Study it first: open http://127.0.0.1:8109/ and
 scroll through, and read `site/js/sheet01/*.js` and `site/css/site.css`.
 
 ## Read first
-1. `C:\wajih-mansouri-studio\STUDIO_BRIEF.md`: Parts 2b, 2c, 2d, 3, 4 (2d overrides 2c overrides 2b overrides 3).
-2. `C:\wajih-mansouri-studio\STATE.md`: decisions, architecture.
+1. `C:\wajih-mansouri-studio - Take 2\STUDIO_BRIEF.md`: Part 5 first (Take 2 overrides everything above it), then
+   Parts 2b, 2c, 2d, 3, 4 (2d overrides 2c overrides 2b overrides 3).
+2. `C:\wajih-mansouri-studio - Take 2\STATE.md`: decisions, architecture.
+   (`C:\wajih-mansouri-studio` is Take 1 and frozen: never write to it or run anything in it.)
 3. This file.
 
 ## Hard rules (from the brief, non-negotiable)
@@ -34,9 +36,9 @@ scroll through, and read `site/js/sheet01/*.js` and `site/css/site.css`.
 - **Every date/fact** you put on the site: verify with a reliable source (use web search) and list the source in your
   notes file.
 - Product names you invent: web-search each; drop any a real company in that industry uses; log the check.
-- Serve/test only on port 8108 (already running: `python -m http.server 8108 --bind 127.0.0.1 --directory site`).
-  If it is down, restart it with exactly that command from `C:\wajih-mansouri-studio`. Never use ports 8000, 8100–8102,
-  8105–8107.
+- Serve/test only on port 8109 (already running: `python -m http.server 8109 --bind 127.0.0.1 --directory site`).
+  If it is down, restart it with exactly that command from `C:\wajih-mansouri-studio - Take 2`. Never use ports 8000,
+  8100–8102 or 8105–8108.
 - **Do not git commit** (the lead commits each slice). Do not edit files you don't own (list in your task). If you
   need a change in a shared file, describe it in your final report instead.
 
@@ -72,7 +74,7 @@ scroll through, and read `site/js/sheet01/*.js` and `site/css/site.css`.
 - **Performance:** render on demand (only when p changes), no per-frame layout thrash, `will-change` sparingly.
   Target ≥ 55 fps while scrolling (`python -I tools/fps.py` measures act 1; adapt a copy for your sheet if useful).
 
-## Tools (Python, run from `C:\wajih-mansouri-studio`)
+## Tools (Python, run from `C:\wajih-mansouri-studio - Take 2`)
 - `python -I tools/shoot.py --ys 20000,21000 --out tools/shots/<you> --prefix x [--mobile] [--reduced] [--mouse x,y] [--times ms,...]`
   screenshots (1440×900 default). View them with the Read tool. `tools/sheet.py <dir> <prefix> <out.jpg> <cols>` makes
   a contact sheet. Find your sheet's scroll range: `document.getElementById('sheet-NN')` top (scrollY) in the page;

@@ -55,7 +55,7 @@ async def main():
         ctx = await b.new_context(**kw)
         if a.dark: await ctx.add_init_script("try{localStorage.setItem('wm:theme','dark')}catch(e){}")
         page = await ctx.new_page()
-        await page.goto("http://127.0.0.1:8108/", wait_until="load"); await page.wait_for_timeout(3500)
+        await page.goto("http://127.0.0.1:8109/", wait_until="load"); await page.wait_for_timeout(3500)
         res = []
         if a.full:
             for y in [int(v) for v in a.full.split(",")]:

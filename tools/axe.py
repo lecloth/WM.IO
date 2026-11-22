@@ -21,7 +21,7 @@ async def main():
         ctx = await b.new_context(**kw)
         if a.dark: await ctx.add_init_script("try{localStorage.setItem('wm:theme','dark')}catch(e){}")
         page = await ctx.new_page()
-        await page.goto("http://127.0.0.1:8108/", wait_until="load")
+        await page.goto("http://127.0.0.1:8109/", wait_until="load")
         ev = lambda js: page.evaluate(js, isolated_context=False)
         for _ in range(60):
             if await ev("document.documentElement.dataset.phase === 'ready' || document.documentElement.dataset.motion === 'reduce'"): break

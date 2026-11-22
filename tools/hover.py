@@ -21,7 +21,7 @@ async def main():
         b = await pw.chromium.launch(headless=True, args=["--use-gl=angle", "--use-angle=d3d11"])
         page = await (await b.new_context(viewport={"width": 1440, "height": 900})).new_page()
         errs = []; page.on("pageerror", lambda e: errs.append(str(e)[:200]))
-        await page.goto("http://127.0.0.1:8108/", wait_until="load")
+        await page.goto("http://127.0.0.1:8109/", wait_until="load")
         await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
         go = lambda y: page.evaluate(f"() => (window.__engine.lenis.scrollTo({y},{{immediate:true, force:true}}), scrollTo(0,{y}))", isolated_context=False)
         # hero phone (act 1 final reading moment)

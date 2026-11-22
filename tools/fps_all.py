@@ -27,9 +27,9 @@ async def main():
             net["n"] += 1
             if r.status not in (200, 204, 304): net["bad"].append([r.status, r.url[:140]])
         page.on("response", on_resp)
-        page.on("request", lambda r: (not r.url.startswith(("http://127.0.0.1:8108/", "data:", "blob:"))) and net["external"].append(r.url[:140]))
+        page.on("request", lambda r: (not r.url.startswith(("http://127.0.0.1:8109/", "data:", "blob:"))) and net["external"].append(r.url[:140]))
         page.on("requestfailed", lambda r: net["bad"].append(["failed", r.url[:140]]))
-        await page.goto("http://127.0.0.1:8108/", wait_until="load")
+        await page.goto("http://127.0.0.1:8109/", wait_until="load")
         await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
         await page.wait_for_timeout(800)
         secs = await page.evaluate("() => [...document.querySelectorAll('section[data-sheet], #act-1')].map(e => [e.id, Math.round(e.getBoundingClientRect().top + scrollY)])")

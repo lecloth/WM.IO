@@ -11,7 +11,7 @@ async def main():
             kw = dict(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True)
             if red: kw["reduced_motion"] = "reduce"
             page = await (await b.new_context(**kw)).new_page()
-            await page.goto("http://127.0.0.1:8108/", wait_until="load"); await page.wait_for_timeout(4000)
+            await page.goto("http://127.0.0.1:8109/", wait_until="load"); await page.wait_for_timeout(4000)
             r = await page.evaluate("""(() => ({ sw: document.documentElement.scrollWidth, iw: innerWidth,
               wide: [...document.querySelectorAll('.d3 *')].filter(e => e.getBoundingClientRect().right > 391 && !e.closest('.d3__sheet.is-drawn')).slice(0, 8).map(e => (e.className.baseVal ?? e.className) + ':' + Math.round(e.getBoundingClientRect().right)) }))()""")
             print("reduced" if red else "normal", json.dumps(r))

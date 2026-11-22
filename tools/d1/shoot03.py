@@ -29,7 +29,7 @@ async def main():
         logs = []
         page.on("console", lambda m: m.type in ("error", "warning") and logs.append(f"{m.type}: {m.text}"[:300]))
         page.on("pageerror", lambda e: logs.append(f"pageerror: {e}"[:300]))
-        await page.goto("http://127.0.0.1:8108/", wait_until="load"); 
+        await page.goto("http://127.0.0.1:8109/", wait_until="load"); 
         try: await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
         except Exception as e: print("phase never ready:", await page.evaluate("document.documentElement.dataset.phase"), logs[:10])
         await page.wait_for_timeout(800)

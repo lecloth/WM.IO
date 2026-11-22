@@ -25,15 +25,15 @@ async def main(mobile):
         page = await ctx.new_page()
         errs = []; page.on("pageerror", lambda e: errs.append(str(e)[:200])); page.on("console", lambda m: m.type in ("error", "warning") and errs.append(m.text[:200]))
         # first visit
-        t0 = time.perf_counter(); await page.goto("http://127.0.0.1:8108/?first", wait_until="commit")
+        t0 = time.perf_counter(); await page.goto("http://127.0.0.1:8109/?first", wait_until="commit")
         out["first_visit_s"] = await until_ready(page, t0)
         out["first_visit_flag"] = await page.evaluate("document.documentElement.dataset.visit")
         # return visit
-        t0 = time.perf_counter(); await page.goto("http://127.0.0.1:8108/", wait_until="commit")
+        t0 = time.perf_counter(); await page.goto("http://127.0.0.1:8109/", wait_until="commit")
         out["return_visit_s"] = await until_ready(page, t0)
         out["return_visit_flag"] = await page.evaluate("document.documentElement.dataset.visit")
         # first visit again, skipped with a key press after 400 ms
-        t0 = time.perf_counter(); await page.goto("http://127.0.0.1:8108/?first", wait_until="commit")
+        t0 = time.perf_counter(); await page.goto("http://127.0.0.1:8109/?first", wait_until="commit")
         await page.wait_for_timeout(400); await page.keyboard.press("Space")
         out["skip_s"] = await until_ready(page, t0)
         await page.wait_for_timeout(1500)
@@ -41,7 +41,7 @@ async def main(mobile):
         out["after_skip"] = await page.evaluate("() => ({ y: scrollY, tb: document.querySelector('.tb__title').textContent, lockedBody: document.body.style.overflow })")
         # loops: the tag before, then after each loop
         await page.evaluate("() => localStorage.removeItem('wm:product')")
-        await page.goto("http://127.0.0.1:8108/", wait_until="load"); await until_ready(page, time.perf_counter())
+        await page.goto("http://127.0.0.1:8109/", wait_until="load"); await until_ready(page, time.perf_counter())
         await page.wait_for_timeout(500)
         out["loop0"] = await page.evaluate(TAG)
         for k in (1, 2):

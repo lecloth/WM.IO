@@ -9,7 +9,7 @@ async def main(mobile):
         kw = dict(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True) if mobile else dict(viewport={"width": 1440, "height": 900})
         page = await (await b.new_context(**kw)).new_page()
         errs = []; page.on("pageerror", lambda e: errs.append(str(e)[:200]))
-        await page.goto("http://127.0.0.1:8108/", wait_until="load"); await page.wait_for_timeout(3500)
+        await page.goto("http://127.0.0.1:8109/", wait_until="load"); await page.wait_for_timeout(3500)
         before = await page.evaluate("() => localStorage.getItem('wm:product')")
         await page.evaluate("() => window.scrollTo(0, document.documentElement.scrollHeight)")
         out = []

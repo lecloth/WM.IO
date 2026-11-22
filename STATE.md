@@ -1,7 +1,44 @@
 # STATE — Wajih Mansouri studio site (local experiment)
 
-**After any context compaction:** re-read this file and `STUDIO_BRIEF.md` Parts 2b, 2c, 2d, 3 and 4 before continuing.
-Serve: `python -m http.server 8108 --bind 127.0.0.1 --directory "C:\wajih-mansouri-studio\site"`. Port 8108 only.
+## Take 2 (started 22 Nov 2026)
+
+**Read `STUDIO_BRIEF.md` Part 5 first.** It overrides everything above it in the brief, and this section overrides
+Take 1's history below.
+
+- **Folder:** `C:\wajih-mansouri-studio - Take 2` (this one).
+- **Frozen:** `C:\wajih-mansouri-studio` is Take 1, git tag `take-1` (= `0c404ed`). Never write to it, never run anything in it.
+- **Serve:** `python -m http.server 8109 --bind 127.0.0.1 --directory "C:\wajih-mansouri-studio - Take 2\site"`.
+  Port 8109 only (Take 1 keeps 8108; never 8000, 8100–8102, 8105–8108).
+- **Commits:** "studio take 2: <short title>"; the final commit gets tag `take-2`.
+- **Phone:** Galaxy S23 over wireless debugging, `adb reverse tcp:8109 tcp:8109` (the site never leaves 127.0.0.1).
+- **How it runs:** style lab first (Wajih points) → one page at a time: build → wording batch → his S23 test →
+  geometry check → commit → this file. Stop for Wajih only at style picks, each page's wording, each page's phone review.
+
+### Running order (Part 5, ~34 viewports in total)
+
+| # | Page | What happens | Viewports | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | Enter + hook | Tap the point; Bell's 1877 telephone floats in named pieces, reassembles into today's phone, which opens into its layers | ~4 | not started |
+| 2 | For you | Visitor taps what fits them; the page answers; taps pre-tick the checklist | ~3 | not started |
+| 3 | Checklist 1 | Their ticks, an optional box, Send (WhatsApp / email); "or see how we think" | ~1 | not started |
+| 4 | Four trips | Lock → security; Babbage + Lovelace → AI; press → websites; switchboard → apps. One line in, one line out | ~14 | not started |
+| 5 | Work | Four concept apps assemble from named pieces, "Concept sheet" | ~4 | not started |
+| 6 | How we work | The gears: Exact, Felt, Proven, Locked; the Break stress test | ~4 | not started |
+| 7 | The ending | A door into the final room, full checklist, founder line, contact | ~3 | not started |
+| 8 | Spec sheet | The page measuring itself live, then the loop back to the point | ~1 | not started |
+
+### Take 2 log
+- **Setup:** brief Part 5 committed; every tool, `tools/AGENT_BRIEF.md` and this file point at 8109 and the Take 2 folder.
+- **Style lab:** `site/dev/lab.html` (A1–A3 assembly, B1–B3 lock trip, C1–C3 For you, D1–D2 door). Waiting on Wajih's picks.
+- **Real sources:** `tools/notes/take2-sources.md` (every find), `CREDITS.md` (every file used).
+- **Viewports:** `site/dev/viewport.html`; Wajih's laptop window: _waiting for his numbers_; S23: _see below_.
+
+---
+
+# Take 1 history (frozen at tag `take-1`; kept for reference)
+
+**After any context compaction:** re-read this file and `STUDIO_BRIEF.md` Part 5, then Parts 2b, 2c, 2d, 3 and 4 before continuing.
+(Take 1 was served on 8108 from its own folder. Take 2 serves on 8109 only: see the serve line above.)
 
 ## How the run works now (Part 2d, Wajih's call)
 

@@ -41,7 +41,7 @@ async def main():
         page = await ctx.new_page()
         errs = []; page.on("pageerror", lambda e: errs.append(str(e)[:200]))
         page.on("console", lambda m: m.type in ("error", "warning") and errs.append(m.text[:200]))
-        await page.goto("http://127.0.0.1:8108/", wait_until="load")
+        await page.goto("http://127.0.0.1:8109/", wait_until="load")
         for _ in range(60):
             if await page.evaluate("document.documentElement.dataset.phase === 'ready' || document.documentElement.dataset.motion === 'reduce'", isolated_context=False): break
             await page.wait_for_timeout(200)

@@ -7,7 +7,7 @@ async def main(ys):
     async with async_playwright() as pw:
         b = await pw.chromium.launch(headless=True, args=["--use-gl=angle", "--use-angle=d3d11"])
         page = await (await b.new_context(viewport={"width": 1440, "height": 900})).new_page()
-        await page.goto("http://127.0.0.1:8108/", wait_until="load"); await page.wait_for_timeout(3500)
+        await page.goto("http://127.0.0.1:8109/", wait_until="load"); await page.wait_for_timeout(3500)
         for y in ys:
             await page.mouse.move(700, 400)
             await page.evaluate(f"window.scrollTo(0,{y})"); await page.wait_for_timeout(1500)

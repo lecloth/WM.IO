@@ -1,7 +1,7 @@
-"""Timed screenshots of the local studio site (port 8108) for checking motion by eye.
+"""Timed screenshots of the local studio site (port 8109) for checking motion by eye.
 Adapted from the screenshot tool I wrote for the santalarch clone (see ENGINE_REUSE.md).
 
-  python tools/shoot.py --url http://127.0.0.1:8108/ --times 200,800,1400,2000,2600 --out shots/x
+  python tools/shoot.py --url http://127.0.0.1:8109/ --times 200,800,1400,2000,2600 --out shots/x
   options: --reduced (prefers-reduced-motion), --return (load once, then reload = return visit),
            --skip-at MS (press a key at MS), --mobile (390x844 touch), --ys 900,1800 (after the opening),
            --mouse x,y, --w/--h, --prefix
@@ -19,7 +19,7 @@ from pathlib import Path
 
 async def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--url", default="http://127.0.0.1:8108/")
+    ap.add_argument("--url", default="http://127.0.0.1:8109/")
     ap.add_argument("--times", default="")
     ap.add_argument("--ys", default="")
     ap.add_argument("--out", required=True)

@@ -5,7 +5,7 @@ off 127.0.0.1 (mailto: / wa.me hand-offs are reported separately: they are links
 import re, sys, urllib.request, urllib.parse, json
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1] / "site"
-BASE = "http://127.0.0.1:8108/"
+BASE = "http://127.0.0.1:8109/"
 files = [ROOT / "index.html", *sorted((ROOT / "css").glob("*.css")), *sorted((ROOT / "dist").glob("*.js")), *sorted((ROOT / "js").rglob("*.js"))]
 pat = [
     re.compile(r'''\b(?:src|href|poster)\s*=\s*["']([^"'#\s+,<>{}][^"'\s<>+{}]*)["']'''),
@@ -23,7 +23,7 @@ for f in files:
             if u.startswith(("data:", "%23")) or u.startswith("#") or u.startswith("blob:") or "${" in u: continue
             if u.startswith(("mailto:", "https://wa.me", "tel:")): handoff.add(u[:80]); continue
             if re.match(r"^[a-z]+:", u) or u.startswith("//"):
-                if u.startswith(("http://www.w3.org/", "http://127.0.0.1:8108")): continue
+                if u.startswith(("http://www.w3.org/", "http://127.0.0.1:8109")): continue
                 ext.add((u[:100], f.relative_to(ROOT).as_posix())); continue
             if u in ("three",) or u.startswith("three/"):
                 u = "vendor/three/" + ("three.module.min.js" if u == "three" else "addons/" + u[len("three/addons/"):])
