@@ -22,6 +22,7 @@ No other font files are shipped. Pairings A and C were removed in slice 3 with `
 | `gsap.min.js`, `ScrollTrigger.min.js` | GSAP 3.15.0 + ScrollTrigger 3.15.0 (GreenSock, now Webflow) | npm `gsap` | GSAP Standard "no charge" licence, https://gsap.com/standard-license. Free for commercial websites; **not** an open-source (OSI) licence. No attribution required; the copyright headers in both files are kept intact, as the licence asks. | Opening timeline, strip fills, title block, every scroll scene (via `site/js/engine/core.js`) |
 | `lenis.min.js` | Lenis 1.3.17 (darkroom.engineering) | npm `lenis` (file identical to `lenis/dist/lenis.min.js`) | MIT. The minified file carries no notice, so the licence text is shipped beside it as `site/vendor/lenis-LICENSE.txt` (added by the truth sweep) | Heavy smooth scroll |
 | `three/three.module.min.js`, `three/three.core.min.js`, `three/addons/lines/{LineSegments2,LineSegmentsGeometry,LineMaterial}.js`, `three/addons/geometries/RoundedBoxGeometry.js` | three.js r183 (0.183.0) core + four addons | npm `three` (identical to `three/build/three.module.min.js`) | MIT; full text shipped as `site/vendor/three/LICENSE.txt` | The 3D hero phone on sheet 01 (loaded through the import map; not bundled into `site/dist/`) |
+| `three/addons/loaders/{GLTFLoader,STLLoader}.js`, `three/addons/utils/{BufferGeometryUtils,SkeletonUtils}.js`, `three/addons/environments/RoomEnvironment.js` (Take 2) | three.js r183 addons, unmodified | npm `three` 0.183.0 (`examples/jsm/`) | MIT (same `site/vendor/three/LICENSE.txt`) | Take 2 style lab (`site/dev/lab/`): loading the real 3D models, the studio-light environment for A2 |
 | `axe.min.js` | axe-core 4.14.1 (Deque Systems), unmodified | npm `axe-core` (identical file) | Mozilla Public License 2.0; full text shipped as `site/vendor/axe-LICENSE.txt`, MPL header kept in the file | Sheet 09: the live accessibility check (WCAG 2.1 A/AA rules), loaded on demand |
 
 `site/dist/` holds only this site's own code bundled by esbuild (three, gsap and lenis stay external), so it adds
@@ -63,6 +64,18 @@ name and figure description below was read in the patent's own text (PDF text la
 
 **On-site credit:** each caption names Leonardo, the codex, the folio and the decade; the sheet 09 colophon names the
 Biblioteca Nacional de España as the source of the folios (the BNE asks reusers to cite the source).
+
+## Take 2 scans (`site/media/take2/`, `site/media/paper/`), used in the style lab
+
+Search log and every candidate: `tools/notes/take2-sources.md`. Crops keep the original paper, ink and wear.
+
+| File | What it is | Source | Licence | Where used |
+|---|---|---|---|---|
+| `take2/dumoncel-1879-fig16.webp` | Th. du Moncel, *The Telephone, the Microphone and the Phonograph* (New York: Harper, 1879), p. 49, Fig. 16: Bell's box telephone in section | Internet Archive `telephonemicroph00dumorich` (University of California Libraries scan), https://archive.org/details/telephonemicroph00dumorich | Public domain (US, 1879; IA: NOT_IN_COPYRIGHT) | Lab C1–C3 ("An app") |
+| `take2/columbian-press-1852.webp` | "Clymer and Dixon's patent Columbian printing press", lithograph, London, 31 Jan 1852 (C. F. Light del., Martin & Hood lith.), whole plate | Wellcome Collection 46115i, https://wellcomecollection.org/works/gzv6egr4 | Public Domain Mark (Wellcome catalogue API) | Lab C1–C3 ("A website") |
+| `take2/miller-1905-fig215.webp` | Kempster B. Miller, *American Telephone Practice* (1905), p. 242, Fig. 215 "Front view of Paris switch-board section" | Internet Archive `americantelepho00mill` (Library of Congress copy), https://archive.org/details/americantelepho00mill | Public domain (US, 1905; LoC: no known restrictions) | Lab C1–C3 ("My systems are a mess") |
+| `take2/hughes-cards-fig6-7.webp` | "Mr. J. Hughes improved Cards for weaving figured Silks", Plate 5, Figs. 6–7 (drawn by C. Varley, engraved by G. Gladwin) | Wellcome Collection V0024104, https://wellcomecollection.org/works/v7gbu44b | Public Domain Mark (Wellcome catalogue API) | Lab C1–C3 ("AI working for me"). No date shown: Wellcome's "1753" can't be right (Varley b. 1781) |
+| `paper/miller-1905-paper.webp` | A blank margin of Miller 1905, IA scan page n262 (the page after p. 242), desaturated and mirrored into a seamless tile | Same IA item as above | Public domain | Lab A2: the real paper under the metals |
 
 ## Made in code (no outside asset)
 

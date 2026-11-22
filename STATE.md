@@ -29,9 +29,23 @@ Take 1's history below.
 
 ### Take 2 log
 - **Setup:** brief Part 5 committed; every tool, `tools/AGENT_BRIEF.md` and this file point at 8109 and the Take 2 folder.
-- **Style lab:** `site/dev/lab.html` (A1–A3 assembly, B1–B3 lock trip, C1–C3 For you, D1–D2 door). Waiting on Wajih's picks.
-- **Real sources:** `tools/notes/take2-sources.md` (every find), `CREDITS.md` (every file used).
-- **Viewports:** `site/dev/viewport.html`; Wajih's laptop window: _waiting for his numbers_; S23: _see below_.
+- **Style lab:** `site/dev/lab.html` (shell, vibration, fps readout, A1–A3 code, C1–C3, D1–D2 done; B1–B3 not built).
+  - **Blocker:** every good free 3D lock is behind a Printables / Sketchfab login. Wajih is downloading
+    "Cutaway Lock" by zbzzn (Printables 250197, CC BY) into `tools/sources/take2/lock/`. Next: unzip, write
+    `site/media/models/lock/manifest.json` (parts, names, explode offsets; check whether the STLs sit in assembled
+    positions or print positions), check A1–A3, build B1–B3 (dive / section ride / room of locks), measure, commit.
+  - A1–A3 and B1–B3 show an honest "waiting for the real 3D lock" note until then (nothing drawn in code).
+- **Real sources:** `tools/notes/take2-sources.md` (summary + pointers to the three detailed logs), `CREDITS.md`.
+  No free 3D exists for Bell's telephone, the Difference Engine or Jacquard cards; real scans exist and are downloaded.
+- **Viewports:** `site/dev/viewport.html`. Wajih's laptop window: _waiting for his numbers_. His phone reports
+  model **SM-S918N (Galaxy S23 Ultra)**, Chrome 157: **384 × 734 CSS px @ 2.8125** (screen set to 1080 × 2316,
+  Chrome's address bar showing). Read over adb + DevTools (`tools/phone.py`); the phone was locked, so no on-phone fps yet.
+- **Tools:** `tools/phone.py` (drive phone Chrome over CDP, only its own tab), `tools/labshot.py` (lab screenshots + fps
+  in S23 emulation).
+- **Decisions I made alone:** D1 uses Yale's own patent sheet as the two doors; D2 a corridor of the site's patent plates
+  whose doorways only cut open as you leave each stop (so every plate is whole and readable while you're stopped); C cards
+  use real book scans with their paper instead of Take 1's cleaned plates; the Hughes plate shows no date (Wellcome's 1753
+  is impossible).
 
 ---
 

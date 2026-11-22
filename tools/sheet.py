@@ -4,10 +4,10 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 d, pre, outp = Path(sys.argv[1]), sys.argv[2], sys.argv[3]
 cols = int(sys.argv[4]) if len(sys.argv) > 4 else 3
-fs = sorted(d.glob(f"{pre}_*.jpg"))
+fs = sorted([*d.glob(f"{pre}*.jpg"), *d.glob(f"{pre}*.png")])
 ims = [Image.open(f) for f in fs]
 w, h = ims[0].size
-s = 480 / w if w > 600 else 0.6
+s = 480 / w if w > 600 else (1 if w < 500 else 0.6)
 tw, th = int(w * s), int(h * s)
 rows = (len(ims) + cols - 1) // cols
 sheet = Image.new("RGB", (cols * (tw + 4), rows * (th + 18)), (255, 0, 255))

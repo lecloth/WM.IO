@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Viewport · dev</title>
+<style>
+  @font-face { font-family: "DM Mono"; src: url("../fonts/dm-mono-500.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+  :root { --paper: #F2F0EB; --ink: #121212; --graphite: #6B6A66; }
+  @media (prefers-color-scheme: dark) { :root { --paper: #0E0E0E; --ink: #F2F0EB; --graphite: #8C8B86; } }
+  html, body { margin: 0; height: 100%; background: var(--paper); color: var(--ink); }
+  body { font-family: "DM Mono", ui-monospace, monospace; font-weight: 500; display: grid; place-items: center; text-align: center; }
+  main { padding: 16px; }
+  #size { font-size: clamp(40px, 11vw, 160px); letter-spacing: -0.02em; line-height: 1; white-space: nowrap; }
+  #dpr { font-size: clamp(22px, 5vw, 64px); margin-top: .3em; }
+  p { color: var(--graphite); font-size: clamp(14px, 2.2vw, 20px); line-height: 1.5; max-width: 40ch; margin: 1.6em auto 0; text-transform: uppercase; letter-spacing: .04em; }
+  #more { font-size: clamp(12px, 1.6vw, 15px); margin-top: 1.2em; }
+</style>
+</head>
+<body>
+<main>
+  <div id="size" aria-live="polite">— × —</div>
+  <div id="dpr">@ —</div>
+  <p>innerWidth × innerHeight @ devicePixelRatio. Updates live as the window changes.</p>
+  <p id="more"></p>
+</main>
+<script>
+  const $ = id => document.getElementById(id);
+  function show() {
+    $('size').textContent = innerWidth + ' × ' + innerHeight;
+    $('dpr').textContent = '@ ' + (Math.round(devicePixelRatio * 1000) / 1000);
+    const vv = window.visualViewport;
+    $('more').textContent = 'screen ' + screen.width + ' × ' + screen.height +
+      (vv ? ' · visual ' + Math.round(vv.width) + ' × ' + Math.round(vv.height) : '');
+  }
+  addEventListener('resize', show);
+  if (window.visualViewport) visualViewport.addEventListener('resize', show);
+  show();
+</script>
+</body>
+</html>
