@@ -468,3 +468,48 @@ At the very end the line closes back into the point and the page loops to the si
 2. **Then one page at a time, in the running order.** For each page: build → wording batch to Wajih → he tests it on
    his S23 → geometry check → commit → `STATE.md` updated.
 3. Stop for Wajih only at style picks, each page's wording, and each page's phone review.
+
+### Lab picks and the new running order (22 Nov, afternoon). Overrides the running order above.
+
+Wajih: "I love everything." He mixes the options instead of picking one per letter:
+- **A becomes one journey, the site's signature, on both today's phone (the hook) and the lock (the security trip):**
+  the object starts as the **A3 X-ray** (the drawing, pieces apart with names), rotates and dresses up as **A1**
+  (matte, built), then keeps turning and assembling as you scroll until it is **A2** (real materials on paper).
+  Drawn → built → real. This means blue (the X-ray) now comes first, as the drawing stage.
+- **Take 1's lock-pick scene comes back**, remade with the real 3D lock: a thief's pick tries every pin and **fails**;
+  the lock holds.
+- **B3 is the wow:** the right key takes us through the keyhole into a room of the same lock repeated, unlocking in a
+  wave, which folds back into one.
+- **C3, the work slip, is the checklist** (both times): ticks print onto the slip, plus a text box and a **big,
+  unmissable Send**. Ways to reach us: **WhatsApp, email, phone call, send from the page, book a call slot**. Sending
+  from the page and booking need outside services once the site is public: build them fully now, each behind a
+  switch in `site/js/settings.js`; locally they hand over to the visitor's email app.
+- **D2's corridor becomes the Work page.** Its doorways are modern app and website designs, slick, each in a clearly
+  different style. Each one is entered through something meaningful in it (the camera lens, a map pin, the dot on
+  the "i"), never a lazy "the page opens". Engineering grid, old-school drawing sheets and historical engineering
+  sheets appear here and there. The last doorway opens into the final room.
+  - **The designs are ours.** Never show anyone else's UI work as ours (that would be fabricated proof, whatever the
+    licence). Free material goes in only as ingredients: icons, photos, fonts.
+
+| # | Page | What happens | Leads to | Viewports |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | Enter + hook | Tap the point. Bell's 1877 plate (the real scan) becomes today's phone as an X-ray, pieces apart with names; the A journey turns and assembles it into matte, then into real materials. | For you | ~4 |
+| 2 | For you | As agreed above. | Checklist 1 | ~3 |
+| 3 | Checklist 1 | The C3 work slip, short version; "or see how we think". | The trips | ~1 |
+| 4 | Four trips | **Security is the showpiece (~5):** the lock's A journey → the failed pick → B3 → out into security today. **AI, websites, apps are lighter (~3 each):** one meaningful way in, one way out. | How we work | ~14 |
+| 5 | How we work | The gears (moved before Work): four principles as four gears, the Break stress test. | Work | ~4 |
+| 6 | Work: the corridor | Booking app, Watch, Delivery tracker, Property app, plus one website, each a doorway with a meaningful entry. | The final room | ~5 |
+| 7 | The final room | The full C3 work slip, the founder line, every way to reach us. | Spec sheet | ~2 |
+| 8 | Spec sheet | One screen of live numbers, then the loop back to the point. | The start | ~1 |
+
+The story: how we think (trips) → how we work (gears) → what we make (corridor) → let's start (the slip).
+The lab (`site/dev/lab.html`) stays as the reference for every look above.
+
+### Copy and the team page (22 Nov, afternoon). Overrides the above where they differ.
+- **Super short and sweet.** Major headlines of a few words; any line under them stays short. Cut every word that
+  isn't needed. All wording still goes past Wajih page by page.
+- **New page: the team**, just before the final room. The corridor's last doorway opens onto the team, then the work
+  slip, so the visitor sees the people right before pressing Send. Running order: … 6 Work (the corridor) → **7 Team
+  (~1 viewport)** → 8 The final room → 9 Spec sheet. Total about 35 viewports.
+  - **Three cards** (the company is three people): each an image placeholder and a short bio placeholder, clearly
+    marked as placeholders. No made-up names, faces or bios. Real people go in before anything goes public.
