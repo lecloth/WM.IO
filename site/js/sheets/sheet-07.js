@@ -6,7 +6,7 @@
 //              (p 4 -> 5 is held under sheet 08's entry)
 // render(p) is a pure function of p; text is either on or off.
 import { chapter, span, ease } from '../engine/kit.js';
-import { createFold } from '../sheet07/fold.js';
+import { createFold, FT } from '../sheet07/fold.js';
 import { buildPlan } from '../sheet07/plan.js';
 
 const T = {
@@ -44,17 +44,20 @@ export function init(engine) {
     fr = plan.stopFractions();
   }
 
-  let lastClip = '';
+  let lastClip = '', prev06 = null;
   function setClip(v) { if (v !== lastClip) { lastClip = v; sheet.style.clipPath = v; } }
 
   function render(p) {
     // ---- entry: the fold ----
+    // the old sheet's words leave as the first crease is drawn: a fold never cuts through text (freeze-frame rule)
+    prev06 = prev06 || document.querySelector('#sheet-06 .chapter__stage');
+    prev06?.classList.toggle('is-filing', p > FT.crease[0] && p < 1);
     const hole = p < 1 ? fold.render(p) : (fold.render(1), null);
     if (hole) {
       const { xh, yh, W, H } = hole;
-      sheet.style.visibility = xh > 0.5 ? 'visible' : 'hidden';
+      sheet.style.visibility = xh > 0.5 ? 'inherit' : 'hidden';
       setClip(`polygon(0 0, ${W}px 0, ${W}px ${yh.toFixed(1)}px, ${xh.toFixed(1)}px ${yh.toFixed(1)}px, ${xh.toFixed(1)}px ${H}px, 0 ${H}px)`);
-    } else { sheet.style.visibility = 'visible'; setClip('none'); }
+    } else { sheet.style.visibility = 'inherit'; setClip('none'); }
     // ---- the bench ----
     plan.draw(span(p, ...T.draw));
     plan.labels(p >= T.labels);
@@ -70,7 +73,7 @@ export function init(engine) {
     reduced() {
       // finished state: the plan drawn, the route complete, the door named; both reading moments shown
       fold.render(1);
-      sheet.style.visibility = 'visible';
+      sheet.style.visibility = 'inherit';
       layout();
       plan.draw(1); plan.labels(true); plan.route(1); plan.door(1, true);
       readBench.classList.add('is-on'); readFounder.classList.add('is-on');

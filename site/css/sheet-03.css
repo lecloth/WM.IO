@@ -22,7 +22,7 @@
 .d3__tab { position: absolute; left: 12.5%; bottom: 100%; display: flex; gap: 1.25rem; align-items: center; height: 2rem; padding: 0 .9rem;
   background: var(--paper); border: 1px solid var(--ink); border-bottom: 0; color: var(--ink); white-space: nowrap; visibility: hidden; }
 .d3__tab span:first-child { color: var(--graphite); }
-.d3__tab.is-on { visibility: visible; }
+.d3__tab.is-on { visibility: inherit; }
 
 /* ---------- reading moment 1: the plate ---------- */
 .d3__plate { position: absolute; left: 12.5%; top: calc(var(--strip-h) + 2.6rem); height: calc(100lvh - var(--strip-h) - 5.6rem);
@@ -41,7 +41,7 @@
 .d3__out path.arrow { fill: var(--ink); stroke: none; }
 .d3__out path.centre, .d3__out path.dash, .d3__out path.arrow { transition: opacity .2s linear; }
 .d3__labels { opacity: 0; visibility: hidden; transition: opacity .25s var(--ease-out), visibility 0s .25s; }
-.d3__labels.is-on { opacity: 1; visibility: visible; transition: opacity .25s var(--ease-out), visibility 0s; }
+.d3__labels.is-on { opacity: 1; visibility: inherit; transition: opacity .25s var(--ease-out), visibility 0s; }
 .d3__labels text { font-family: var(--f-mono); font-size: .6875rem; letter-spacing: var(--mono-track); text-transform: uppercase; fill: var(--ink);
   paint-order: stroke; stroke: var(--paper); stroke-width: 4px; stroke-linejoin: round; }
 .d3__labels text.sub { fill: var(--graphite); font-size: .625rem; }
@@ -50,7 +50,7 @@
 
 /* the years between the plate and today: a dimension line under the drawing */
 .d3__span { position: absolute; height: 2.6rem; visibility: hidden; }
-.d3__span.is-on { visibility: visible; }
+.d3__span.is-on { visibility: inherit; }
 .d3__span-svg { position: absolute; left: 0; top: 0; width: 100%; height: 20px; overflow: visible; }
 .d3__span-svg line { stroke: var(--ink); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .d3__span-svg path { fill: var(--ink); }
@@ -81,7 +81,7 @@
 .d3__measure-svg line, .d3__measure-svg .d3__mframe, .d3__measure-svg .d3__mmark { stroke: var(--ink); stroke-width: 1px; fill: none; }
 .d3__measure-svg path:not(.d3__mframe):not(.d3__mmark) { fill: var(--ink); stroke: none; }
 .d3__mv { position: absolute; transform: translate(-50%, -50%); padding: .12rem .5rem; background: var(--paper); color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; visibility: hidden; }
-.d3__mv.is-on { visibility: visible; }
+.d3__mv.is-on { visibility: inherit; }
 .d3__mv--h { transform: translate(-50%, -50%) rotate(-90deg); }
 .d3__mv--name { transform: translate(-50%, 0); color: var(--graphite); font-size: .625rem; opacity: 0; transition: opacity .25s var(--ease-out); }
 .d3__mv--name.is-on { opacity: 1; }
@@ -110,3 +110,6 @@
   .d3.is-final .d3__read--line { top: auto; bottom: 4.5rem; }
   .d3__still { left: 1.25rem; width: calc(100% - 2.5rem); top: calc(var(--strip-h) + 3rem); }
 }
+
+/* entry: sheet 02's words leave before the dimension lines run across the sheet (toggled by sheet03/entry.js) */
+#sheet-02 .chapter__stage.is-measured-out :is(.read, .mono, .s02__read, .s02__cap, .s02__index, text) { visibility: hidden; opacity: 0; transition: opacity .2s, visibility 0s .2s; }

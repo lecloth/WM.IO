@@ -3,11 +3,11 @@
 /* the passing sheet (entry): outside the section so its difference blend reaches the sheet underneath */
 .s04-pass { position: fixed; inset: 0; pointer-events: none; visibility: hidden; mix-blend-mode: difference;
   background: var(--s04-pass, var(--paper)); transform: translate3d(-100%, 0, 0); }
-.s04-pass.is-on { visibility: visible; }
+.s04-pass.is-on { visibility: inherit; }
 /* paper laid under everything on the board, in the passing sheet's footprint, so transparent parts of the sheet below
    (the bare drafting film) also invert to ink instead of blending with nothing */
 .s04-under { position: fixed; inset: 0; z-index: 1; pointer-events: none; visibility: hidden; background: var(--paper); transform: translate3d(-100%, 0, 0); }
-.s04-under.is-on { visibility: visible; }
+.s04-under.is-on { visibility: inherit; }
 .s04-pass__marks { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .s04-pass__marks line, .s04-pass__marks circle { stroke: var(--ink); stroke-width: 1; fill: none; vector-effect: non-scaling-stroke; }
 .s04-pass__marks text { fill: var(--ink); font-family: var(--f-mono); font-size: 10px; letter-spacing: .06em; }
@@ -23,7 +23,7 @@ html[data-motion="reduce"] .s04-pass, html[data-motion="reduce"] .s04-under { di
   clip-path: inset(0 var(--clip-r, 0px) 0 0);
 }
 #sheet-04 .s04__edge { position: absolute; top: 0; bottom: 0; left: 0; width: 1px; background: rgb(var(--paper-rgb)); visibility: hidden; transform: translate3d(var(--edge-x, 0px), 0, 0); }
-#sheet-04 .s04__edge.is-on { visibility: visible; }
+#sheet-04 .s04__edge.is-on { visibility: inherit; }
 #sheet-04 .s04__edge::before, #sheet-04 .s04__edge::after { content: ""; position: absolute; left: -6px; width: 13px; height: 1px; background: rgb(var(--paper-rgb)); }
 #sheet-04 .s04__edge::before { top: calc(var(--strip-h) + 2.25rem); }
 #sheet-04 .s04__edge::after { bottom: 2.25rem; }

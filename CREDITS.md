@@ -1,24 +1,87 @@
-# CREDITS — every outside asset and library
+# CREDITS: every outside asset in `site/`
 
-| Asset | Source | Licence | Where it is used |
-|---|---|---|---|
-| Newsreader (variable: weight 200–800, optical size 6–72) v5.3.0 | Fontsource npm `@fontsource-variable/newsreader` (Production Type, via Google Fonts) | SIL OFL 1.1 (`LICENSE-newsreader.txt`) | `site/fonts/newsreader-var*.woff2`; the site typeface for headlines and body |
-| DM Mono 400, 500 v5.3.0 | Fontsource npm `@fontsource/dm-mono` (Colophon Foundry) | SIL OFL 1.1 (`LICENSE-dm-mono.txt`) | `site/fonts/dm-mono-*.woff2`; labels, strip, title blocks, dimensions, product screens |
-| GSAP 3.15.0 + ScrollTrigger | npm `gsap` (GreenSock / Webflow) | GSAP Standard "no charge" license, https://gsap.com/standard-license | `site/vendor/gsap.min.js`, `site/vendor/ScrollTrigger.min.js`; opening timeline, strip fills, title block |
-| Lenis 1.3.17 | npm `lenis` (darkroom.engineering) | MIT | `site/vendor/lenis.min.js`; heavy smooth scroll |
-| three.js 0.183.0 (core + `LineSegments2`, `LineSegmentsGeometry`, `LineMaterial`, `RoundedBoxGeometry` addons) | npm `three` | MIT (`site/vendor/three/LICENSE.txt`) | `site/vendor/three/`; the hero phone on sheet 01 |
-| **Patent plate:** A. G. Bell, US Patent 186,787, "Improvement in Electric Telegraphy", granted 30 Jan 1877, drawing sheet 1 (Figs. 1–3) | USPTO scan via Google Patents: https://patents.google.com/patent/US186787A (PDF: patentimages.storage.googleapis.com/1c/e2/db/6cda4a354add60/US186787.pdf) | Public domain (a US patent from 1877; US works published before 1931 are in the public domain, and patent drawings are not subject to copyright) | `site/media/plates/bell-us186787-sheet1.webp` (header, Fig. 1, Fig. 2, levels adjusted); `site/media/plates/bell-us186787-fig1.webp` (Fig. 1 crop, ink on transparent); `site/js/sheet01/bell-fig1.js` (Fig. 1 traced to vectors). Verified: the patent's own text reads "Figure 1 is a perspective view of one form of my electric telephone. Fig. 2 is a vertical section of the same". |
+Rebuilt by the truth sweep on 21 Nov 2026 from the files actually on disk (`site/fonts`, `site/vendor`, `site/media/**`).
+Every licence below was checked against its source page or licence text on that date; the checks and URLs are logged
+in `tools/notes/sweep-truth.md`. Nothing else in `site/` comes from outside: everything not listed here is drawn or
+written in code for this site (see the last section).
+
+## Typefaces (`site/fonts/`)
+
+| File | What it is | Source | Licence | Where used |
+|---|---|---|---|---|
+| `newsreader-var.woff2`, `newsreader-var-italic.woff2` | Newsreader, variable (weight 200–800, optical size 6–72), roman + italic, v5.3.0 | npm `@fontsource-variable/newsreader` (Production Type, via Google Fonts), https://github.com/productiontype/Newsreader | SIL Open Font License 1.1; full text shipped as `site/fonts/LICENSE-newsreader.txt` | Site-wide: headlines, body, product screens |
+| `dm-mono-400.woff2`, `dm-mono-500.woff2` | DM Mono 400 and 500, v5.3.0 | npm `@fontsource/dm-mono` (Colophon Foundry for Google), https://github.com/googlefonts/dm-mono | SIL Open Font License 1.1; full text shipped as `site/fonts/LICENSE-dm-mono.txt` | Labels, strip, title blocks, dimensions, product screens |
+
+No other font files are shipped. Pairings A and C were removed in slice 3 with `/type.html`; none of their files or
+`@font-face` rules remain (checked: `site/css/*.css` declares only the four files above).
+
+## Libraries (`site/vendor/`)
+
+| File(s) | Library | Source | Licence | Where used |
+|---|---|---|---|---|
+| `gsap.min.js`, `ScrollTrigger.min.js` | GSAP 3.15.0 + ScrollTrigger 3.15.0 (GreenSock, now Webflow) | npm `gsap` | GSAP Standard "no charge" licence, https://gsap.com/standard-license. Free for commercial websites; **not** an open-source (OSI) licence. No attribution required; the copyright headers in both files are kept intact, as the licence asks. | Opening timeline, strip fills, title block, every scroll scene (via `site/js/engine/core.js`) |
+| `lenis.min.js` | Lenis 1.3.17 (darkroom.engineering) | npm `lenis` (file identical to `lenis/dist/lenis.min.js`) | MIT. The minified file carries no notice, so the licence text is shipped beside it as `site/vendor/lenis-LICENSE.txt` (added by the truth sweep) | Heavy smooth scroll |
+| `three/three.module.min.js`, `three/three.core.min.js`, `three/addons/lines/{LineSegments2,LineSegmentsGeometry,LineMaterial}.js`, `three/addons/geometries/RoundedBoxGeometry.js` | three.js r183 (0.183.0) core + four addons | npm `three` (identical to `three/build/three.module.min.js`) | MIT; full text shipped as `site/vendor/three/LICENSE.txt` | The 3D hero phone on sheet 01 (loaded through the import map; not bundled into `site/dist/`) |
+| `axe.min.js` | axe-core 4.14.1 (Deque Systems), unmodified | npm `axe-core` (identical file) | Mozilla Public License 2.0; full text shipped as `site/vendor/axe-LICENSE.txt`, MPL header kept in the file | Sheet 09: the live accessibility check (WCAG 2.1 A/AA rules), loaded on demand |
+
+`site/dist/` holds only this site's own code bundled by esbuild (three, gsap and lenis stay external), so it adds
+no outside code.
+
+## Plates and scans (`site/media/`)
+
+### US patent drawings (`site/media/plates/`)
+
+All six are United States patents granted 1863–1883. Public domain: US works published before 1931 are in the public
+domain, and USPTO patent text and drawings are generally not subject to copyright
+(https://www.uspto.gov/terms-use-uspto-websites). Scans: USPTO page images as served by Google Patents. Every date,
+name and figure description below was read in the patent's own text (PDF text layer) by the truth sweep.
+
+| Files | Patent (verified from the specification) | Source | Licence | Where used |
+|---|---|---|---|---|
+| `bell-us186787-sheet1.webp` (header, Figs. 1–2, levels adjusted); `bell-us186787-fig1.webp` (Fig. 1, ink on transparent); traced vectors in `site/js/sheet01/bell-fig1.js` | **US 186,787**, Alexander Graham Bell of Boston, "Improvement in Electric Telegraphy", dated 30 Jan 1877 (filed 15 Jan 1877), 2 sheets. Fig. 1 "a perspective view of one form of my electric telephone"; Fig. 2 "a vertical section of the same"; D sounding box, E speaking-tube. Bell's second telephone patent (it cites his No. 174,465 of 7 Mar 1876). | https://patents.google.com/patent/US186787A · PDF https://patentimages.storage.googleapis.com/1c/e2/db/6cda4a354add60/US186787.pdf | Public domain | Sheet 01 plate and redraw, the phone history's Fig. 1, sheet 03.2 recap |
+| `bullock-us38200-sheet.webp`, `bullock-us38200-fig.webp`; traced `site/js/sheet03/plates/bullock-us38200.js` | **US 38,200**, William Bullock of Pittsburg, Pennsylvania, "Printing-Machine", dated 14 Apr 1863, 5 sheets; sheet 1, Fig. 1. Paper "furnished to the machine in a continuous web or roll", sheets "severed from the web, printed on both sides", passing "once only through the press"; "eighteen thousand sheets of newspapers or other printed matter in an hour". | https://patents.google.com/patent/US38200A/en · PDF https://patentimages.storage.googleapis.com/pdfs/US38200.pdf | Public domain | Sheet 03.1 Websites |
+| `firman-us252576-sheet.webp`, `firman-us252576-fig.webp`; traced `site/js/sheet03/plates/firman-us252576.js` | **US 252,576**, Leroy B. Firman of Chicago, assignor to the Western Electric Manufacturing Company, "Multiple Switch-Board for Telephone-Exchanges", dated 17 Jan 1882 (filed 7 Jan 1881); Fig. 1 (boards A A1 A2 + indicator board B), drawn turned on the sheet | https://patents.google.com/patent/US252576A/en · PDF https://patentimages.storage.googleapis.com/pdfs/US252576.pdf | Public domain | Sheet 03.3 Platforms |
+| `edison-us274290-sheet.webp`, `edison-us274290-fig.webp`; traced `site/js/sheet03/plates/edison-us274290.js` | **US 274,290**, Thomas A. Edison of Menlo Park, New Jersey, "System of Electrical Distribution", dated 20 Mar 1883 (filed 27 Nov 1882), 3 sheets; sheet 1 = Figs. 1–4; the redraw uses Figs. 1–2 | https://patents.google.com/patent/US274290A/en · PDF https://patentimages.storage.googleapis.com/pdfs/US274290.pdf | Public domain | Sheet 03.4 Engineering and infrastructure |
+| `sec-yale-us48475-sheet.webp`, `sec-yale-us48475-fig4.webp` (Figs. 4 and 6, turned upright); traced `site/js/sheet03b/yale-fig4.js` | **US 48,475**, Linus Yale Jr. of Shelburne Falls, Massachusetts, "Improvement in Locks", dated 27 Jun 1865; one drawing sheet, Figs. 1–20 | https://patents.google.com/patent/US48475A · PDF https://patentimages.storage.googleapis.com/7f/9d/64/b736a3027fc5bf/US48475.pdf | Public domain | Sheet 03 Security plate and redraw |
+| `holmes-us275913-sheet.webp`, `holmes-us275913-fig.webp`; traced `site/js/sheet03/plates/holmes-us275913.js` | **US 275,913**, Joseph W. Holmes of Batavia, New York, "Solar Theodolite", dated 17 Apr 1883 (filed 12 Sep 1882), 2 sheets; sheet 1 = Figs. 1 and 3 (elevations) | https://patents.google.com/patent/US275913A/en · PDF https://patentimages.storage.googleapis.com/pdfs/US275913.pdf | Public domain | Sheet 03.7 Consulting |
+
+### Babbage and Jacquard (`site/media/plates/`)
+
+| File | What it is | Source | Licence | Where used |
+|---|---|---|---|---|
+| `ai-babbage-plan25-1840.webp` | Charles Babbage, Plan 25, "The General Plan of Mr Babbage's Great Calculating Engine", inscribed "Plan 25 · 6 August 1840"; photographed as displayed at the Computer History Museum | Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Babbage_Analytical_Engine_Plan_1840_CHM.agr.jpg (1920 px rendition), photo by **ArnoldReinhold** ("Own work", 2018) | Drawing: public domain (Babbage d. 1871). **Photo: CC BY 4.0**, https://creativecommons.org/licenses/by/4.0/. Changes made: cropped, converted to greyscale, flat-field corrected, levels. | Sheet 03 AI plate and redraw. **On-site attribution** (CC BY 4.0 §3(a): credit, licence link, changes indicated): the plate's caption reads "photo ArnoldReinhold, CC BY 4.0, cropped and toned", with "ArnoldReinhold" linked to the Commons file page and "CC BY 4.0" linked to the licence; the sheet 09 colophon also notes the one CC BY photo. |
+| `ai-posselt-1888-fig22.webp` | E. A. Posselt, *The Jacquard Machine Analyzed and Explained, with an Appendix on the Preparation of Jacquard Cards*, Philadelphia, 1888 (title page; "Copyrighted, 1887"), Fig. 22, a punched Jacquard card | Internet Archive `jacquardmachinea00poss` (Library of Congress copy), https://archive.org/details/jacquardmachinea00poss | Public domain (US, published 1888). IA/LoC rights line: "The Library of Congress is unaware of any copyright restrictions for this item." | Sheet 03 AI plate; the code-drawn cards follow its layout |
+
+### Leonardo da Vinci, Codex Madrid I (`site/media/davinci/`)
+
+| File | Folio (verified against the RWTH Aachen edition's folio titles and figure notes) | Source | Licence | Where used |
+|---|---|---|---|---|
+| `madrid1-f016r-fusee.webp` | f. 16r, "Clock: compensation of declining spring force" (spring drum, toothed spiral, conical pinion; note "Ogni arte dimanda il suo strumento") | Biblioteca Nacional de España, Mss/8937 (Codex Madrid I, 1490–1499). File: the BNE scan as served by the RWTH Aachen Codex Madrid I edition, https://www.codex-madrid.rwth-aachen.de/folia1/f016r.jpg (plain folio file, no RWTH graphics), mirrored back to reading orientation, cropped, inked to an alpha mask | Drawing: public domain (Leonardo d. 1519). Scan: the BNE releases its public-domain images for free reuse, commercial included, citing the source (BNE open-data entry lists CC BY 4.0: https://datos.gob.es/es/catalogo/ea0019768-biblioteca-digital-documentos-en-dominio-publico1); in the EU a faithful reproduction of a public-domain work gets no new copyright (Directive 2019/790, Art. 14). | Sheet 02, Principle 01 "Exact" |
+| `madrid1-f079v-springs.webp` | f. 79v, "Lock springs" (Fig. 2: a model spring with a thick base and a thin tapering arm) | Same codex: https://www.codex-madrid.rwth-aachen.de/folia1/f079v.jpg | Same | Principle 02 "Felt" |
+| `madrid1-f004v-force-gauge.webp` | f. 4v, "Screw: instrument for measuring the force of a screw drive" (frame, threaded rod, nut with weight, lever notched for weights; a load on a rope over a pulley) | Same codex: https://www.codex-madrid.rwth-aachen.de/folia1/f004v.jpg | Same | Principle 03 "Proven" |
+| `madrid1-f050r-lock.webp` | f. 50r, "Lock technique: pincer locks" (a chest lock that snaps shut by itself; the key is needed only to open it) | Same codex: https://www.codex-madrid.rwth-aachen.de/folia1/f050r.jpg | Same | Principle 04 "Locked" |
+
+**On-site credit:** each caption names Leonardo, the codex, the folio and the decade; the sheet 09 colophon names the
+Biblioteca Nacional de España as the source of the folios (the BNE asks reusers to cite the source).
 
 ## Made in code (no outside asset)
 
 - Drafting-film grid and fibre texture: CSS gradients plus an inline SVG `feTurbulence` filter (`site/css/site.css`).
-- Ruler, dimension line, drawing frame with zone markers, centre lines, title block, CAD crosshair: HTML/CSS/SVG written for this site.
-- The phone history drawings (c. 1900 candlestick to 2007): generic forms drawn in code (`site/js/sheet01/eras.js`), no logos, no brand names, no copy of any one maker's design. Facts and sources: STATE.md, "Phone history: sources".
-- The hero phone (six layers, edges, materials), the cyanotype develop shader, the labels and dimension lines: three.js and GLSL written for this site.
-- LOFTHAUL (made-up concept product): screen UI, city map, flow diagram and lock mark are drawn in code (`site/js/sheet01/lofthaul.js`, `phone.js`). The name was web-searched on 21 Nov 2026 ("Lofthaul" drone delivery): no company or product found.
+- Ruler, dimension lines, drawing frames with zone markers, centre lines, title blocks, CAD crosshair: HTML/CSS/SVG.
+- The phone history drawings (c. 1900 to 2007): generic forms drawn in code (`site/js/sheet01/eras.js`); no logos, no
+  brand names, no copy of any one maker's design. Facts: STATE.md "Phone history: sources" and `tools/notes/sweep-truth.md`.
+- The hero phone (six layers, edges, materials), the cyanotype shader, labels and dimensions: three.js and GLSL.
+- The nine concept products (LOFTHAUL, QUAYCALL, STRINGWALK, OVERWING, NIGHTWELL, HALVANE, WARDCAST, QUILLFIELD,
+  FERNPAY) and the AI sheet's quote for "Hollin & Pike Joinery": made-up names (web-checked, `tools/notes/products.md`,
+  `tools/notes/sheet-03b.md`), screens drawn on canvas in code, always labelled "Concept sheet".
+- Today's drawings on sheet 03, the pin-tumbler lock and pick, Babbage's engine redraw and its cards, the Method
+  drawings (sheet 04), the gear ring and stress test (sheet 06), the bench plan and fold (sheet 07), the work order
+  (sheet 08), the spec sheet (sheet 09): SVG/CSS/JS written for this site.
+- `site/dev/products.html` (dev gallery): uses only the products library and the two typefaces above.
 
 ## Dev-only tools (not shipped in `site/`)
 
-- Patchright / Playwright Chromium for screenshots, frame-rate checks (`tools/shoot.py`, `tools/fps.py`); Pillow for contact sheets (`tools/sheet.py`).
-- PyMuPDF (AGPL, dev only, not shipped) to extract the patent pages from the PDF; potracer (GPL port of potrace, dev only, not shipped) to trace Fig. 1 into vectors (`tools/trace_fig1.py`). Only their output paths ship, not the libraries.
-
+- Patchright / Playwright Chromium for screenshots and frame-rate checks; Pillow for contact sheets; esbuild for the
+  bundle (`tools/node_modules`).
+- PyMuPDF (AGPL, dev only) to read and extract the patent PDFs; potracer (GPL port of potrace, dev only) to trace the
+  plate figures into vectors. Only their output paths ship, not the tools.

@@ -79,7 +79,7 @@ export class Mech {
       el('path', { class: 'm-arrow', d: `M${xa} ${yd}l8 -2.6v5.2Z M${xb} ${yd}l-8 -2.6v5.2Z` }, g);
       const t = el('text', { x: (xa + xb) / 2, y: yd - 6, 'text-anchor': 'middle', class: 'm-txt' }, g);
       t.textContent = `${Math.round((ext.x1 - ext.x0) * MM)} mm · 6 gears · m ${MM}`;
-      this.dimG = g;
+      this.dimG = g; this.dimT = t;
     }
 
     this.gears = STAGES.map((st, i) => {
@@ -244,6 +244,8 @@ export class Mech {
     });
     this.polyDraw(st.plan);
     this.dimG.style.visibility = st.plan >= 1 ? '' : 'hidden';
+    // the ghosted train keeps its lines, never a half-faded figure: the dimension text goes while it is dimmed
+    this.dimT.style.visibility = st.dim > 0.01 ? 'hidden' : '';
     this.pcdLine(st.pcd);
     this.pcd.classList.toggle('is-txt', st.pcd >= 1 && st.pcdText);
     this.pcd.style.visibility = st.pcd > 0 ? '' : 'hidden';

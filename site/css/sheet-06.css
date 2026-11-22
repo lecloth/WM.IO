@@ -47,7 +47,7 @@
 #sheet-06 .m-txt--g { fill: var(--graphite); }
 #sheet-06 .m-num { font-size: .6875rem; stroke: none; }
 #sheet-06 .m-pcd text, #sheet-06 .m-callout text { visibility: hidden; }
-#sheet-06 .m-pcd.is-txt text, #sheet-06 .m-callout.is-txt text { visibility: visible; }
+#sheet-06 .m-pcd.is-txt text, #sheet-06 .m-callout.is-txt text { visibility: inherit; }
 #sheet-06 .m-leader { fill: none; stroke: var(--ink); stroke-width: 1px; }
 #sheet-06 .m-dot { fill: var(--ink); }
 #sheet-06 .m-balloon { fill: var(--paper); stroke: var(--ink); stroke-width: 1px; }

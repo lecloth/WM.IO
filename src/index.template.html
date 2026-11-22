@@ -15,11 +15,18 @@
       try { seen = localStorage.getItem('wm:opened') === '1'; } catch (e) {}
       if (/[?&]first\b/.test(location.search)) seen = false;
       d.dataset.motion = rm ? 'reduce' : 'full';
+      /* every full-motion visit starts at the singularity: no restored scroll position, and a #sheet link is
+         remembered and travelled to once the opening is done (main.js) */
+      var jumpTo = '';
+      if (!rm) {
+        try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
+        if (/^#sheet-\d\d$/.test(location.hash)) { jumpTo = location.hash; try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
+      }
       try { if (localStorage.getItem('wm:theme') === 'dark') d.dataset.theme = 'dark'; } catch (e) {}
       d.dataset.visit = seen ? 'return' : 'first';
       var tasks = ['css', 'gsap', 'st', 'lenis', 'app', 'fonts', 'load'], done = {};
       window.__wm = {
-        t0: performance.now(), progress: 0, reduced: rm, returning: seen,
+        t0: performance.now(), progress: 0, reduced: rm, returning: seen, jumpTo: jumpTo,
         done: function (k) {
           if (done[k]) return; done[k] = 1;
           var n = 0; for (var i = 0; i < tasks.length; i++) if (done[tasks[i]]) n++;
@@ -144,7 +151,7 @@
           <div class="read read--plate">
             <p class="read__eyebrow mono">Fig. 1 · US Patent 186,787 · 1877</p>
             <h2 class="read__title display">Every phone starts on paper.</h2>
-            <p class="read__body body">This is the drawing filed with Alexander Graham Bell&rsquo;s telephone patent, granted on 30&nbsp;January 1877. It is one of the first drawings of a telephone ever published, so the story of the phone starts here.</p>
+            <p class="read__body body">This is the drawing filed with Alexander Graham Bell&rsquo;s second telephone patent, granted on 30&nbsp;January 1877. It is one of the first drawings of a telephone ever published, so our story of the phone starts here.</p>
             <p class="read__note mono">Plate: US Patent 186,787, sheet 1 · public domain</p>
           </div>
           <div class="read read--era" aria-live="off">
@@ -196,7 +203,7 @@
   <div class="tb__cell"><span class="tb__k">Checked</span><span class="tb__v tb__checked">Engineering</span></div>
   <div class="tb__cell"><span class="tb__k">Approved</span><span class="tb__v tb__approved">Strategy</span></div>
   <div class="tb__cell"><span class="tb__k">Rev</span><span class="tb__v">11.26</span></div>
-  <button class="tb__theme" type="button" aria-pressed="false" aria-label="Print the sheets dark"><span class="tb__k">Print</span><span class="tb__v tb__theme-v">Light</span></button>
+  <button class="tb__theme" type="button"><span class="tb__k">Print</span><span class="tb__v tb__theme-v">Light</span><span class="sr-only tb__theme-sr">, switch to dark</span></button>
 </aside>
 
 <!-- THE SINGULARITY / CURTAIN (difference blend: whatever it covers flips black/white) -->

@@ -49,7 +49,7 @@ export function createGrow(svg) {
 
   function render(p) {
     if (!G || p < GT.select[0] || p >= GT.off) { svg.style.visibility = 'hidden'; return; }
-    svg.style.visibility = 'visible';
+    svg.style.visibility = 'inherit';
     const { A, B, tb, morphs } = G;
     const g1 = ease(span(p, ...GT.grow)), g2 = ease(span(p, ...GT.split));
     const O = L(A, B, g1);
@@ -59,14 +59,14 @@ export function createGrow(svg) {
     outer.classList.toggle('is-selected', g1 === 0);
     // grips: corners and mid-points of the object being stretched (only while it is being stretched)
     const showGrips = p >= GT.select[0] + 0.02 && p < GT.grow[1];
-    gripsG.style.visibility = showGrips ? 'visible' : 'hidden';
+    gripsG.style.visibility = showGrips ? 'inherit' : 'hidden';
     if (showGrips) {
       const pts = [[S.x, S.y], [S.x + S.w / 2, S.y], [S.x + S.w, S.y], [S.x + S.w, S.y + S.h / 2], [S.x + S.w, S.y + S.h], [S.x + S.w / 2, S.y + S.h], [S.x, S.y + S.h], [S.x, S.y + S.h / 2]];
       grips.forEach((gr, i) => { gr.setAttribute('x', (pts[i][0] - 3.5).toFixed(1)); gr.setAttribute('y', (pts[i][1] - 3.5).toFixed(1)); gr.classList.toggle('is-hot', i === 0 && g1 > 0 && g1 < 1); });
     }
     // the rubber band from where the corner was picked up to where it is now
     const bandOn = g1 > 0 && g1 < 1;
-    band.style.visibility = bandOn ? 'visible' : 'hidden';
+    band.style.visibility = bandOn ? 'inherit' : 'hidden';
     if (bandOn) { band.setAttribute('x1', A.x - 5); band.setAttribute('y1', A.y - 5); band.setAttribute('x2', S.x.toFixed(1)); band.setAttribute('y2', S.y.toFixed(1)); }
     // cells: the title block's own cells scale with it, then subdivide / merge into the work order's cells
     const mapped = (r) => ({ x: O.x + (r.x - A.x) / A.w * O.w, y: O.y + (r.y - A.y) / A.h * O.h, w: r.w / A.w * O.w, h: r.h / A.h * O.h });

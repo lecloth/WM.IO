@@ -21,7 +21,7 @@
 #sheet-02 .s02__plates { position: absolute; inset: 0; pointer-events: none; }
 #sheet-02 .s02__study { position: absolute; left: 0; top: 0; background: var(--ink); visibility: hidden;
   -webkit-mask: var(--src) center / 100% 100% no-repeat; mask: var(--src) center / 100% 100% no-repeat; }
-#sheet-02 .s02__study.is-on { visibility: visible; }
+#sheet-02 .s02__study.is-on { visibility: inherit; }
 #sheet-02 .s02__fig { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 #sheet-02 .pl { fill: none; stroke: var(--ink); stroke-width: var(--sw, 1px); stroke-linejoin: round; }
 #sheet-02 .pl.heavy { stroke-width: var(--sw-heavy, 1.6px); }
@@ -36,7 +36,7 @@
 
 /* the scan line that traces a plate into hairlines and back */
 #sheet-02 .s02__scan { position: absolute; left: 0; top: 0; width: 1px; height: 0; background: var(--ink); visibility: hidden; transform: translate3d(var(--x, 0px), var(--y, 0px), 0); }
-#sheet-02 .s02__scan.is-on { visibility: visible; }
+#sheet-02 .s02__scan.is-on { visibility: inherit; }
 #sheet-02 .s02__scan span { position: absolute; top: -1.15rem; left: 0; font-size: .5625rem; color: var(--ink); white-space: nowrap; }
 #sheet-02 .s02__scan span::after { content: " \2192"; }
 
@@ -68,6 +68,8 @@
   #sheet-02 .s02__cap span { margin-bottom: .1rem; }
   #sheet-02 .s02__index { left: 2.25rem; gap: .9rem; font-size: .5625rem; top: calc(var(--strip-h) + .75rem + var(--zone) + .6rem); }
   #sheet-02 .s02__tape { width: 3.5rem; height: 1.1rem; }
+  /* the scan's tag sits under the plate on phones: above it, it would collide with the zone numbers and the index */
+  #sheet-02 .s02__scan span { top: auto; bottom: -1.3rem; }
 }
 
 /* ---- reduced motion: four finished principles, one under the other ---- */

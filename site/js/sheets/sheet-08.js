@@ -170,16 +170,23 @@ export function init(engine) {
   function layout() { sizeToTitleBlock(); growLayout(true); }
 
   // ---------- render ----------
-  let shown = null;
+  let shown = null, prev07 = null, stripH = 0;
   function render(p) {
     // while someone is typing, the work order stays finished whatever the scroll does
     const pe = form.contains(document.activeElement) ? Math.max(p, 1) : p;
     if (pe < GT.split[0] && keyNow() !== tbKey) growLayout(pe < GT.grow[0]);
     grow.render(pe);
+    // sheet 07's words leave as the title block is selected: the growing block never cuts through text
+    prev07 = prev07 || document.querySelector('#sheet-07 .chapter__stage');
+    prev07?.classList.toggle('is-handing', p > GT.select[0] && p < 1);
     const on = pe >= GT.show;
     if (on !== shown) { shown = on; section.classList.toggle('is-shown', on); }
     const ty = -clamp(p - 1, 0, S) * vh();
     sheet.style.transform = ty ? `translate3d(0, ${ty.toFixed(1)}px, 0)` : '';
+    // a tall work order (phones) travels up under the timeline strip: cut it at the strip, so its words never run
+    // through the strip's own labels (the strip is a see-through difference layer)
+    stripH = stripH || document.getElementById('strip')?.offsetHeight || 0;
+    sheet.style.clipPath = ty ? `inset(${(stripH - ty).toFixed(1)}px 0 0 0)` : '';
   }
 
   chapter(engine, section, {

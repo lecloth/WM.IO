@@ -25,7 +25,7 @@
   background-size: 6.25rem 6.25rem, 6.25rem 6.25rem, 1.25rem 1.25rem, 1.25rem 1.25rem;
   background-position: -6rem -6rem;
 }
-#sheet-08.is-shown .s08__sheet { visibility: visible; }
+#sheet-08.is-shown .s08__sheet { visibility: inherit; }
 #sheet-08 .s08__sheet > .frame { inset: calc(var(--strip-h) + .75rem) var(--frame) var(--frame); }
 
 /* the work order: one clean printed form inside the drawing frame; its bottom-right cell is the page's title block */
@@ -148,3 +148,6 @@
 #sheet-08.is-static .s08__grow { display: none; }
 #sheet-08.is-static .s08__sheet { position: relative; min-height: 100vh; min-height: 100lvh; visibility: visible; }
 #sheet-08.is-static [data-cell] > * { opacity: 1; transition: none; }
+
+/* entry: sheet 07's words leave before the growing title block crosses them (toggled by sheet-08.js; a short fade) */
+#sheet-07 .chapter__stage.is-handing :is(.read, .mono, text, .s07__labels) { visibility: hidden; opacity: 0; transition: opacity .2s, visibility 0s .2s; }

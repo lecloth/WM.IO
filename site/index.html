@@ -15,11 +15,18 @@
       try { seen = localStorage.getItem('wm:opened') === '1'; } catch (e) {}
       if (/[?&]first\b/.test(location.search)) seen = false;
       d.dataset.motion = rm ? 'reduce' : 'full';
+      /* every full-motion visit starts at the singularity: no restored scroll position, and a #sheet link is
+         remembered and travelled to once the opening is done (main.js) */
+      var jumpTo = '';
+      if (!rm) {
+        try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
+        if (/^#sheet-\d\d$/.test(location.hash)) { jumpTo = location.hash; try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
+      }
       try { if (localStorage.getItem('wm:theme') === 'dark') d.dataset.theme = 'dark'; } catch (e) {}
       d.dataset.visit = seen ? 'return' : 'first';
       var tasks = ['css', 'gsap', 'st', 'lenis', 'app', 'fonts', 'load'], done = {};
       window.__wm = {
-        t0: performance.now(), progress: 0, reduced: rm, returning: seen,
+        t0: performance.now(), progress: 0, reduced: rm, returning: seen, jumpTo: jumpTo,
         done: function (k) {
           if (done[k]) return; done[k] = 1;
           var n = 0; for (var i = 0; i < tasks.length; i++) if (done[tasks[i]]) n++;
@@ -153,7 +160,7 @@
           <div class="read read--plate">
             <p class="read__eyebrow mono">Fig. 1 · US Patent 186,787 · 1877</p>
             <h2 class="read__title display">Every phone starts on paper.</h2>
-            <p class="read__body body">This is the drawing filed with Alexander Graham Bell&rsquo;s telephone patent, granted on 30&nbsp;January 1877. It is one of the first drawings of a telephone ever published, so the story of the phone starts here.</p>
+            <p class="read__body body">This is the drawing filed with Alexander Graham Bell&rsquo;s second telephone patent, granted on 30&nbsp;January 1877. It is one of the first drawings of a telephone ever published, so our story of the phone starts here.</p>
             <p class="read__note mono">Plate: US Patent 186,787, sheet 1 · public domain</p>
           </div>
           <div class="read read--era" aria-live="off">
@@ -348,7 +355,7 @@
           <p class="s3b__status mono" aria-hidden="true"><span class="s3b__status-k">State</span><span class="s3b__status-v"></span></p>
           <div class="read s3b__read s3b__read--plate">
             <p class="read__eyebrow mono">Figs. 4 and 6 · US Patent 48,475 · 1865</p>
-            <h2 class="read__title display">A lock, drawn before it was built.</h2>
+            <h2 class="read__title display">A lock, drawn against the pick.</h2>
             <p class="read__body body">Linus Yale Jr.&rsquo;s lock patent, granted on 27&nbsp;June 1865. Pins of different lengths must all be lined up by the key before the cylinder can turn. He wrote that the improvements were partly for &ldquo;the security of locks against picking&rdquo;.</p>
             <p class="read__note mono">Plate: US Patent 48,475, L. Yale Jr. · public domain</p>
           </div>
@@ -394,9 +401,9 @@
           <p class="s3b__status mono" aria-hidden="true"><span class="s3b__status-k">Cards in</span><span class="s3b__status-v"></span></p>
           <div class="read s3b__read s3b__read--plate">
             <p class="read__eyebrow mono">Plan 25 · 1840 · and a Jacquard card, 1888</p>
-            <h2 class="read__title display">A machine that ran on cards.</h2>
+            <h2 class="read__title display">A machine drawn to run on cards.</h2>
             <p class="read__body body">Charles Babbage&rsquo;s general plan of his Analytical Engine, dated 6&nbsp;August 1840. It was never finished. Its orders were to come on punched cards, borrowed from the Jacquard loom, which wove patterns into brocade.</p>
-            <p class="read__note mono">Plan 25: C. Babbage, 1840 · public domain · photo ArnoldReinhold, CC BY 4.0<br>Card: E. A. Posselt, The Jacquard Machine, 1888, Fig. 22 · public domain</p>
+            <p class="read__note mono">Plan 25: C. Babbage, 1840 · public domain · photo <a href="https://commons.wikimedia.org/wiki/File:Babbage_Analytical_Engine_Plan_1840_CHM.agr.jpg" target="_blank" rel="noopener">ArnoldReinhold</a>, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>, cropped and toned<br>Card: E. A. Posselt, The Jacquard Machine, 1888, Fig. 22 · public domain</p>
           </div>
           <div class="read s3b__read s3b__read--quote">
             <p class="read__eyebrow mono">Note G · A. A. L. · 1843</p>
@@ -901,7 +908,7 @@
           </table>
           <div class="s09__read s09__read--end">
             <p class="read__eyebrow mono">Colophon</p>
-            <p class="read__body body">Drawn and built in Tunis. Plates are public domain; typefaces and libraries are open licence. The line now closes back into the point it came from.</p>
+            <p class="read__body body">Drawn and built in Tunis. Plates are public domain; Leonardo&rsquo;s folios are from the Biblioteca Nacional de Espa&ntilde;a, and one photo is credited under CC&nbsp;BY&nbsp;4.0. Typefaces are open licence; libraries are open source or free to use. The line now closes back into the point it came from.</p>
             <p class="s09__foot mono">© 2026 Wajih Mansouri · Drawn and built in Tunis</p>
             <a class="btn btn--line s09__again" href="#sheet-00"><span>Back to the first sheet</span></a>
           </div>
@@ -921,7 +928,7 @@
   <div class="tb__cell"><span class="tb__k">Checked</span><span class="tb__v tb__checked">Engineering</span></div>
   <div class="tb__cell"><span class="tb__k">Approved</span><span class="tb__v tb__approved">Strategy</span></div>
   <div class="tb__cell"><span class="tb__k">Rev</span><span class="tb__v">11.26</span></div>
-  <button class="tb__theme" type="button" aria-pressed="false" aria-label="Print the sheets dark"><span class="tb__k">Print</span><span class="tb__v tb__theme-v">Light</span></button>
+  <button class="tb__theme" type="button"><span class="tb__k">Print</span><span class="tb__v tb__theme-v">Light</span><span class="sr-only tb__theme-sr">, switch to dark</span></button>
 </aside>
 
 <!-- THE SINGULARITY / CURTAIN (difference blend: whatever it covers flips black/white) -->

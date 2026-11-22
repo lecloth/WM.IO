@@ -133,12 +133,12 @@ export class Plot {
       const a = it.at * 0.75;
       if (it.kind === 'stroke') {
         const k = clamp((t - a) / 0.25);
-        const v = k <= 0 ? 'hidden' : 'visible';
+        const v = k <= 0 ? 'hidden' : 'inherit';
         const off = (it.len * (1 - k)).toFixed(2);
         if (it.last !== off) { it.el.style.strokeDashoffset = off; it.el.style.visibility = v; it.last = off; }
       } else {
         const on = t >= Math.min(1, a + 0.2);
-        if (it.last !== on) { it.el.style.visibility = on ? 'visible' : 'hidden'; it.last = on; }
+        if (it.last !== on) { it.el.style.visibility = on ? 'inherit' : 'hidden'; it.last = on; }
       }
     }
   }

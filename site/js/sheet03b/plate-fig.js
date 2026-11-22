@@ -38,7 +38,7 @@ export class PlateFig {
   }
 
   render(move, sweep, visible) {
-    this.g.style.visibility = visible ? 'visible' : 'hidden';
+    this.g.style.visibility = visible ? 'inherit' : 'hidden';
     if (!visible || !this.from) return;
     const m = ease(move), F = this.from, T = this.to, c = this.fig.crop;
     const cx = F.cx + (T.cx - F.cx) * m, cy = F.cy + (T.cy - F.cy) * m, s = F.s + (T.s - F.s) * m, rot = this.rot0 * (1 - m);

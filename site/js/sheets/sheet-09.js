@@ -51,10 +51,19 @@ function runAxe() {
   axePromise = new Promise((resolve) => {
     const s = document.createElement('script');
     s.src = 'vendor/axe.min.js';
-    s.onload = () => {
+    // never measure a page in mid-fade: wait (up to 3 s) until no CSS transition is running, or contrast reads low
+    const settled = () => new Promise((res) => {
+      const t0 = performance.now();
+      const check = () => {
+        const busy = document.getAnimations?.().some((a) => a.playState === 'running' && typeof CSSTransition !== 'undefined' && a instanceof CSSTransition);
+        if (!busy || performance.now() - t0 > 3000) res(); else setTimeout(check, 120);
+      };
+      check();
+    });
+    s.onload = () => settled().then(() => {
       window.axe.run(document, { resultTypes: ['violations'], runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } })
         .then((r) => { window.__axe = r; resolve(r); }).catch(() => resolve(null));
-    };
+    });
     s.onerror = () => resolve(null);
     document.head.appendChild(s);
   });
@@ -111,11 +120,21 @@ export function init(engine) {
     const shrink = ease(span(p, 0.05, 0.6));
     if (prevStage) {
       if (p > 0 && p < 1) {
-        const r = slotRect(8), vw = stage.clientWidth, sc = 1 + (r.w / vw - 1) * shrink;
+        // the sheet lands inside its slot, above the slot's label, whatever the slot's shape (portrait on a phone)
+        const r = slotRect(8), vw = stage.clientWidth, H = stage.clientHeight, W = vw;
+        const label = parseFloat(getComputedStyle(document.documentElement).fontSize) * 1.9;
+        const fit = Math.min(r.w / vw, (r.h - label) / H);
+        const tx = r.x + (r.w - vw * fit) / 2, ty = r.y;
+        const sc = 1 + (fit - 1) * shrink;
         prevStage.style.transformOrigin = '0 0';
-        prevStage.style.transform = `translate(${r.x * shrink}px, ${r.y * shrink}px) scale(${sc})`;
+        prevStage.style.transform = `translate(${tx * shrink}px, ${ty * shrink}px) scale(${sc})`;
         prevStage.style.outline = shrink > 0 ? '1px solid var(--ink)' : '';
-      } else { prevStage.style.transform = ''; prevStage.style.outline = ''; }
+        // the shrinking sheet lies on top of the set: cut its footprint out of the set, so no slot or label is ever
+        // drawn across the sheet's words (it passes over the set as a whole sheet)
+        const hx = tx * shrink, hy = ty * shrink, hw = vw * sc, hh = H * sc;
+        const hole = `polygon(evenodd, 0 0, ${W}px 0, ${W}px ${H}px, 0 ${H}px, 0 0, ${hx.toFixed(1)}px ${hy.toFixed(1)}px, ${(hx + hw).toFixed(1)}px ${hy.toFixed(1)}px, ${(hx + hw).toFixed(1)}px ${(hy + hh).toFixed(1)}px, ${hx.toFixed(1)}px ${(hy + hh).toFixed(1)}px, ${hx.toFixed(1)}px ${hy.toFixed(1)}px)`;
+        set.style.clipPath = shrink < 0.999 ? hole : '';
+      } else { prevStage.style.transform = ''; prevStage.style.outline = ''; set.style.clipPath = ''; }
     }
     set.classList.toggle('is-on', p > 0.08 && p < 0.96);
     scaleFrom.classList.toggle('is-on', p > 0.08 && p < 0.35);
@@ -164,8 +183,15 @@ export function init(engine) {
     });
   }
 
+  // the drawing set keeps clear of the page's title block (its slot labels are never under it)
+  const grid = section.querySelector('.s09__grid');
+  function layout() {
+    const tb = document.getElementById('titleblock')?.getBoundingClientRect();
+    grid.style.bottom = tb && tb.height ? `${Math.max(0, Math.round(innerHeight - tb.top + 12))}px` : '';
+  }
+
   chapter(engine, section, {
-    render,
+    render, layout,
     reduced() {
       readSpec.classList.add('is-on'); table.classList.add('is-on'); readEnd.classList.add('is-on');
       sheet.style.clipPath = 'none';

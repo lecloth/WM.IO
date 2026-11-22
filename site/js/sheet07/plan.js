@@ -174,7 +174,7 @@ export function buildPlan(svg, labels) {
     /** route progress r 0..1 over [0 .. chest]; returns the index of the last stop reached */
     route(r) {
       const on = r > 0;
-      sheet.style.visibility = on ? 'visible' : 'hidden';
+      sheet.style.visibility = on ? 'inherit' : 'hidden';
       const s = clamp(r) * stops[3];
       route.style.strokeDasharray = `${s.toFixed(1)} ${routeLen}`;
       const q = route.getPointAtLength(Math.max(0, s));
@@ -187,7 +187,7 @@ export function buildPlan(svg, labels) {
     stopFractions: () => stops.map((s) => s / stops[3]),
     /** door: a 0..1 opens the leaf and draws its swing; named shows the name plate */
     door(a, named, shown = true) {
-      leaf.style.visibility = shown ? 'visible' : 'hidden';
+      leaf.style.visibility = shown ? 'inherit' : 'hidden';
       leaf.setAttribute('transform', `rotate(${(-90 * a).toFixed(2)} ${hinge[0]} ${hinge[1]})`);
       arc.style.opacity = a > 0.001 ? '1' : '0';
       arc.style.strokeDasharray = `${(arcLen * a).toFixed(1)} ${arcLen}`;

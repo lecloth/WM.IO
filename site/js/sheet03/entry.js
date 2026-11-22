@@ -61,6 +61,9 @@ export class MeasureEntry {
   render(p) {
     if (!this.f || Math.abs(p - this.P) < 1e-4) return;
     this.P = p;
+    // sheet 02's words leave as the first dimension line runs out: on a phone the lines would cross them
+    this.prev = this.prev || document.querySelector('#sheet-02 .chapter__stage');
+    this.prev?.classList.toggle('is-measured-out', p > 0.03 && p < 1);
     const f = this.f;
     const active = p < 0.9;
     this.box.style.display = active ? 'block' : 'none';

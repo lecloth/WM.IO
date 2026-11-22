@@ -85,7 +85,7 @@ export function initAct1(engine) {
       l.setAttribute('x1', X(y)); l.setAttribute('x2', X(y)); l.setAttribute('y1', 0); l.setAttribute('y2', big ? 9 : y % 10 === 0 ? 5 : 3); svg.appendChild(l);
       if (big) { const t = document.createElementNS(ns, 'text'); t.setAttribute('x', X(y)); t.setAttribute('y', 22); t.setAttribute('text-anchor', 'middle'); t.textContent = y; svg.appendChild(t); }
     }
-    years._X = X;
+    years._X = X; years._W = w;
   }
 
   function layout() {
@@ -166,27 +166,35 @@ export function initAct1(engine) {
       let yr = ERAS[0].num;
       for (let k = 0; k < NSW; k++) yr += (ERAS[k + 1].num - ERAS[k].num) * ease(sweeps[k]);
       marker.style.transform = `translateX(${years._X(yr)}px)`;
+      // near the right end of the axis the year reads to the left of the marker, so it never runs off the axis
+      markerLabel.classList.toggle('is-left', years._X(yr) > years._W - 64);
       markerLabel.textContent = era >= 0 ? ERAS[era].year : '';
     }
     // ---- the phone: fill, turn, explode, develop, labels ----
     canvas.style.opacity = String(fl);
     const tn = ease(span(p, ...T.turn)), ex = ease(span(p, ...T.explode)), dv = span(p, ...T.develop);
-    phone.set({ turn: tn, explode: ex, develop: dv, labels: span(p, ...T.labels), zoomOut: tn, shiftX: (phone.state.shiftXFinal || 0) * tn });
+    // the layer labels leave with the reading text, before sheet 02's tracing film reaches them (freeze-frame rule)
+    phone.set({ turn: tn, explode: ex, develop: dv, labels: p < T.end - 0.8 ? span(p, ...T.labels) : 0, zoomOut: tn, shiftX: (phone.state.shiftXFinal || 0) * tn });
     if (fl > 0) phone.render();
     html.classList.toggle('is-blue', p >= T.develop[0] + 0.55 && p < T.end - 0.5);
     finalRead.classList.toggle('is-on', p >= T.finalText && p < T.end - 0.8);
     canvas.classList.toggle('is-live', p >= T.finalText);
+    // keyboard: the phone can take focus while its reading moment is on (focus shows the product's own colours)
+    const tab = p >= T.finalText && p < T.end - 0.8 ? 0 : -1;
+    if (canvas.tabIndex !== tab) { canvas.tabIndex = tab; if (tab < 0 && document.activeElement === canvas) canvas.blur(); }
   }
 
   // hover: the concept product's own colour appears only while the pointer is on its screen
   let hovering = false;
   canvas.addEventListener('pointermove', (e) => {
-    if (P < T.finalText) return;
+    if (!engine.reduced && P < T.finalText) return;   // reduced motion: the finished phone takes hover too
     const r = canvas.getBoundingClientRect();
     const hit = phone.hitScreen(e.clientX - r.left, e.clientY - r.top);
     if (hit !== hovering) { hovering = hit; phone.setScreen({ accent: hit }); phone.set({ hover: hit ? 1 : 0 }); phone.render(); }
   });
   canvas.addEventListener('pointerleave', () => { if (hovering) { hovering = false; phone.setScreen({ accent: false }); phone.set({ hover: 0 }); phone.render(); } });
+  canvas.addEventListener('focus', () => { hovering = true; phone.setScreen({ accent: true }); phone.set({ hover: 1 }); phone.render(); });
+  canvas.addEventListener('blur', () => { hovering = false; phone.setScreen({ accent: false }); phone.set({ hover: 0 }); phone.render(); });
   // the page looped back to the singularity: the phone reassembles as the next concept product
   engine.on('loop:wrap', () => {
     hovering = false; phone.set({ hover: 0 });
@@ -201,6 +209,7 @@ export function initAct1(engine) {
     act.classList.add('is-static');
     html.classList.remove('is-blue');
     readPlate.classList.add('is-on'); finalRead.classList.add('is-on');
+    canvas.tabIndex = 0;
     buildStaticHistory();
     const settle = () => {
       const sr = canvas.getBoundingClientRect();
@@ -221,6 +230,12 @@ export function initAct1(engine) {
     onRefresh: () => layout(),
   });
   document.fonts.ready.then(() => { phone.refreshTextures(); layout(); });
+  // warm the 3D phone up while the reader is still on the plate: its first frame compiles the shaders and uploads the
+  // screen textures (a ~0.3 s stall on a phone if it happens mid-scroll). The canvas is still invisible here.
+  engine.on('opening:done', () => {
+    const warm = () => document.fonts.ready.then(() => { if (P < T.fill[0]) { try { phone.render(true); } catch (e) { /* first real frame will try again */ } } });
+    (window.requestIdleCallback || ((f) => setTimeout(f, 600)))(warm, { timeout: 2500 });
+  });
   let rt = 0;
   addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(layout, 120); });
   return { spans: SPANS, trigger: st };

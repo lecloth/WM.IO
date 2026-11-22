@@ -23,13 +23,13 @@
 #sheet-09 .s09__table th, #sheet-09 .s09__table td { text-align: left; vertical-align: top; padding: .42rem .6rem; border-bottom: 1px solid rgba(18,18,18,.28); font-size: 1rem; line-height: 1.35; color: var(--ink); }
 #sheet-09 .s09__table thead th { font-size: .625rem; color: var(--graphite); border-bottom: 1px solid var(--ink); padding-bottom: .4rem; }
 #sheet-09 .s09__table tbody th { font-family: var(--f-body); font-weight: 500; white-space: nowrap; }
-#sheet-09 .s09__table td.mono { font-size: .8125rem; white-space: nowrap; color: var(--ink); }
+#sheet-09 .s09__table td.mono { font-size: .8125rem; white-space: normal; overflow-wrap: anywhere; color: var(--ink); }
 #sheet-09 .s09__table td:last-child { color: var(--graphite); font-size: .9375rem; }
 #sheet-09 .s09__table thead th:nth-child(1) { width: 27%; } #sheet-09 .s09__table thead th:nth-child(2) { width: 24%; }
 #sheet-09 .s09__read--spec { top: 15%; }
 #sheet-09.is-static .s09__set { display: none; }
 #sheet-09.is-static .s09__sheet { position: relative; clip-path: none; min-height: 100lvh; padding: calc(var(--strip-h) + 3rem) 0 4rem; }
-#sheet-09.is-static .s09__read, #sheet-09.is-static .s09__table { position: relative; left: auto; top: auto; margin: 0 12.5% 2rem; width: auto; max-width: 46rem; }
+#sheet-09.is-static .s09__read, #sheet-09.is-static .s09__table { position: relative; left: auto; top: auto; right: auto; bottom: auto; margin: 0 12.5% 2rem; width: auto; max-width: 46rem; }
 @media (max-width: 1023px) {
   #sheet-09 .s09__grid { left: 1.25rem; right: 1.25rem; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(5, 1fr); gap: .6rem; top: calc(var(--strip-h) + 4.5rem); }
   #sheet-09 .s09__scale { left: 1.25rem; }

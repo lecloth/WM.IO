@@ -116,7 +116,7 @@ export function init(engine) {
     const dim = p < e6 ? ease(span(p, b + 0.1, b + 0.3)) : 1 - ease(span(p, e6 + 0.1, e6 + 0.3));
     const callout = p < e6 + 0.25 ? span(p, b, b + 0.22) : 0;
     const open = p < e6 ? ease(span(p, b + 0.25, b + 0.5)) : 1 - ease(span(p, e6 + 0.02, e6 + 0.22));
-    detail.style.visibility = inBreak && open > 0 ? 'visible' : 'hidden';
+    detail.style.visibility = inBreak && open > 0 ? 'inherit' : 'hidden';
     if (inset && open > 0) detail.style.clipPath = open >= 1 ? 'none' : `circle(${(inset.r0 + (inset.r1 - inset.r0) * open).toFixed(1)}px at ${inset.cx.toFixed(1)}px ${inset.cy.toFixed(1)}px)`;
     detail.classList.toggle('is-txt', p >= b + 0.5 && p < e6);
     if (inBreak) {

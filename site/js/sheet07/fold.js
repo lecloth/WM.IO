@@ -70,7 +70,7 @@ export function createFold(svg) {
     if (!G) return null;
     const { W, H, X0, Y0, nv, w, nh, hh } = G;
     if (p >= FT.file[1]) { svg.style.visibility = 'hidden'; return null; }
-    svg.style.visibility = 'visible';
+    svg.style.visibility = 'inherit';
     // crease lines draw on, one after another
     const cd = span(p, ...FT.crease);
     const N = creases.length, dur = 0.45, step = N > 1 ? (1 - dur) / (N - 1) : 0;

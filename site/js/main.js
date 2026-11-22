@@ -21,6 +21,7 @@ Promise.all(['420 1em Newsreader', '400 1em Newsreader', '400 1em "DM Mono"', '5
   .catch(() => {}).then(() => window.__wm.done('fonts'));
 
 const { ScrollTrigger } = engine;
+if (!engine.reduced) scrollTo(0, 0);   // the opening always plays from the top (no restored scroll, see index head)
 initScroll();
 engine.lockScroll(!engine.reduced);
 initTheme(engine);
@@ -65,9 +66,17 @@ function rangeOf(el) {
   if (el.classList.contains('chapter') && !engine.reduced) return [() => absTop(el) - vh() * 0.5, () => absTop(el) + el.offsetHeight - vh() * 1.5];
   return [() => absTop(el), () => absTop(el) + el.offsetHeight];
 }
-els.forEach((el) => {
-  const [a, b] = rangeOf(el);
+const elRanges = els.map((el) => rangeOf(el));
+els.forEach((el, i) => {
+  const [a, b] = elRanges[i];
   ScrollTrigger.create({ start: a, end: b, onToggle: (st) => { if (st.isActive) { setTitleBlock(el); setSeg(parseInt(el.dataset.sheet, 10)); } } });
+});
+// after any jump (strip click, loop, big instant scroll) settle on whichever sheet holds the board, by position
+ScrollTrigger.addEventListener('scrollEnd', () => {
+  const y = engine.lenis?.scroll ?? scrollY;
+  let pick = 0;
+  elRanges.forEach((r, i) => { if (y >= r[0]() - 1) pick = i; });
+  setTitleBlock(els[pick]); setSeg(parseInt(els[pick].dataset.sheet, 10));
 });
 const groups = new Map();
 els.forEach((el) => { const n = parseInt(el.dataset.sheet, 10); if (!groups.has(n)) groups.set(n, []); groups.get(n).push(el); });
@@ -105,4 +114,7 @@ runOpening(engine, () => {
   engine.lockScroll(false);
   engine.emit('opening:done');
   ScrollTrigger.refresh();
+  // arrived on a #sheet-NN link: travel there once the opening has played
+  const jump = window.__wm.jumpTo;
+  if (jump && document.querySelector(jump)) { window.__wm.jumpTo = ''; engine.scrollTo(targetOf(jump), { duration: 1.6 }); }
 });

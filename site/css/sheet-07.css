@@ -96,3 +96,6 @@
   #sheet-07.is-static .s07__fig { grid-column: 1; grid-row: 1; }
   #sheet-07.is-static .s07__read { grid-column: 1; grid-row: auto; padding: 0; }
 }
+
+/* entry: sheet 06's words leave before the fold crosses them (toggled by sheet-07.js; a short fade, never scrubbed) */
+#sheet-06 .chapter__stage.is-filing :is(.read, .mono, text) { visibility: hidden; opacity: 0; transition: opacity .2s, visibility 0s .2s; }

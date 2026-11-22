@@ -14,7 +14,7 @@
     linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
   background-size: 6.25rem 6.25rem, 6.25rem 6.25rem, 1.25rem 1.25rem, 1.25rem 1.25rem;
 }
-#sheet-05 .s5__board.is-on { visibility: visible; }
+#sheet-05 .s5__board.is-on { visibility: inherit; }
 #sheet-05 .s5__board:not(.is-on) .s5-sheet.is-vis, #sheet-05 .s5__board:not(.is-on) .s5-read.is-on { visibility: hidden; }
 /* chrome over the developed negative (like sheet 01's blue sheet) */
 html.s5-blue .strip, html.s5-blue .xhair { mix-blend-mode: normal; color: var(--blueprint-ink); }
@@ -31,7 +31,7 @@ html.s5-blue .strip, html.s5-blue .xhair { mix-blend-mode: normal; color: var(--
 /* ---------- a concept sheet ---------- */
 #sheet-05 .s5__set { position: absolute; inset: 0; pointer-events: none; }
 #sheet-05 .s5-sheet { position: absolute; left: 0; top: 0; visibility: hidden; }
-#sheet-05 .s5-sheet.is-vis { visibility: visible; }
+#sheet-05 .s5-sheet.is-vis { visibility: inherit; }
 #sheet-05 .s5__set .s5-sheet.is-vis { pointer-events: auto; will-change: transform; }
 #sheet-05 .s5-paper { position: absolute; inset: 0; background: var(--paper); border: 1px solid var(--hair); outline: none;
   box-shadow: .375rem .375rem 0 -1px var(--paper), .375rem .375rem 0 0 rgba(var(--ink-rgb), .3), .75rem .75rem 0 -1px var(--paper), .75rem .75rem 0 0 rgba(var(--ink-rgb), .16); }
@@ -138,7 +138,7 @@ html.s5-blue .strip, html.s5-blue .xhair { mix-blend-mode: normal; color: var(--
     linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
   background-size: 6.25rem 6.25rem, 6.25rem 6.25rem, 1.25rem 1.25rem, 1.25rem 1.25rem; }
 #sheet-05 .s5__neg.is-on { display: block; }
-#sheet-05 .s5__neg .s5-sheet { visibility: visible; }
+#sheet-05 .s5__neg .s5-sheet { visibility: inherit; }
 /* while it develops only the ground and the lines come up; the image and every label fix in at once */
 #sheet-05 .s5__neg :is(.s5-c, .s5-paper__fig, .s5-lab, .s5-notes, .s5-tb, .a-txt, .a-arr, .frame__zones, .s5-win__blank) { opacity: 0; visibility: hidden; transition: opacity .25s var(--ease-out), visibility 0s .25s; }
 #sheet-05 .s5__neg.is-fixed :is(.s5-c, .s5-paper__fig, .s5-lab, .s5-notes, .s5-tb, .a-txt, .a-arr, .frame__zones, .s5-win__blank) { opacity: 1; visibility: inherit; transition: opacity .25s var(--ease-out), visibility 0s; }
@@ -152,7 +152,7 @@ html.s5-blue .strip, html.s5-blue .xhair { mix-blend-mode: normal; color: var(--
 
 /* the darkroom label */
 #sheet-05 .s5__dev { position: absolute; z-index: 5; left: 65.5rem; top: calc(50% + 1rem); color: var(--blueprint-ink); visibility: hidden; }
-#sheet-05 .s5__dev.is-on { visibility: visible; }
+#sheet-05 .s5__dev.is-on { visibility: inherit; }
 #sheet-05 .s5__dev-b, #sheet-05 .s5__dev.is-fixed .s5__dev-a { display: none; }
 #sheet-05 .s5__dev.is-fixed .s5__dev-b { display: inline; }
 
@@ -172,7 +172,7 @@ html.s5-blue .strip, html.s5-blue .xhair { mix-blend-mode: normal; color: var(--
   #sheet-05 .s5-tb__c:nth-child(n+5) { border-bottom: 0; }
   #sheet-05 .s5-tb__c--name, #sheet-05 .s5-tb__c--sheet, #sheet-05 .s5-tb__c--scale { border-bottom: 1px solid rgba(var(--ink-rgb), .3); }
   #sheet-05 .s5-tb__name { font-size: 1.05rem; }
-  #sheet-05 .s5-read { left: 1.25rem; right: 1.25rem; width: auto; top: auto; bottom: 4.5rem; }
+  #sheet-05 .s5-read { left: 2.25rem; right: 1.75rem; width: auto; top: auto; bottom: 4.5rem; }   /* clear of the frame's zone letters */
   #sheet-05 .s5-read__title { font-size: 2.3rem; margin-bottom: .6rem; }
   #sheet-05 .s5-read[data-id]:not([data-id="intro"]):not([data-id="yours"]) .s5-read__title { font-size: 2.1rem; }
   #sheet-05 .s5-read .read__eyebrow { margin-bottom: .5rem; }

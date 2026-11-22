@@ -15,7 +15,7 @@ const el = (name, attrs = {}, parent) => {
   if (parent) parent.appendChild(e);
   return e;
 };
-const NOW = 2026;
+const NOW = new Date().getFullYear();
 let uid = 0;
 
 /** the timeline of a scene (p in viewport heights; entry 0 -> 1, scene 1 -> units, the next entry units -> units + 1) */

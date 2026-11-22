@@ -131,3 +131,23 @@ Builders follow `tools/AGENT_BRIEF.md`, write `tools/notes/sheet-NN.md`, never c
 - **C, 07 Studio + 08 Contact + `site/js/settings.js` (slice 10).** Entry moves: the previous sheet folds away along fold lines (07); the title block grows out of its corner into the work order (08).
 - **Then W, 05 Work (slice 8), after P.** Entry move: the line closes and the black shows the next sheet as a cyanotype negative developing in.
 - **Then the lead: 09 Spec + loop + rotation wiring (slice 11), dark version (12), sweep.**
+
+## Final sweep: done (`studio: final - full site, bug sweep clean`)
+- **Truth sweep** (`tools/notes/sweep-truth.md`):
+  - CREDITS.md rebuilt from the files on disk and every entry verified; the Lenis MIT licence file was added.
+  - Five copy fixes: Bell's *second* patent, the Yale and Plan 25 titles made strictly true, the CC BY attribution with licence link, and an accurate colophon.
+  - All patent, date and era facts checked; Lovelace checked word for word (Note G, p. 722, 1843); the fabricated-proof audit is clean.
+- **Functional sweep** (`tools/notes/sweep-functional.md`):
+  - About 1,600 freeze-frames at 1920, 1440 and 390, plus dark and reduced motion; every chapter change at fine steps.
+  - Fixes: text cut by entries; hidden elements reachable by keyboard; a reload mid-page now starts at the opening, and `#sheet-NN` links travel there afterwards; the sheet 09 set; mobile overlaps; contrast on blue; the Print switch label; a focusable hero phone.
+  - Results: 0 console errors, all 108 local links 200, no requests off 127.0.0.1, axe 0 violations in 8 combinations, about 59 fps at all sizes.
+- **Lead:** the strip and title block settle by position on scroll end (robust after big jumps). The loop and product rotation were re-verified.
+
+## Waiting on Wajih (final review)
+- **Founder card's last line:** "Seven years as cabin crew taught him that a process has to hold up when everyone is tired." The facts are true but the lesson is a paraphrase; he should confirm the wording.
+- **"Specialists at every desk… drawn by one, checked by another":** his approved Part 2c line; he should confirm he still wants it while the studio is small.
+- **Contact placeholders in `site/js/settings.js`:** email, WhatsApp, location.
+- **Known limits:**
+  - one-time first-paint hitches of 100–200 ms at three entries (06→07, the first 03 plate, the 02 film);
+  - a return visit is about 2.2 s on the plain local server (file reloads), under a second with normal hosting caches;
+  - the page is long, about 136 viewports at 1440×900.
