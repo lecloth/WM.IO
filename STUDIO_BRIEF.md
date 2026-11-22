@@ -2,6 +2,7 @@
 
 21 Nov 2026. Parts 1–2 are Wajih's. Part 3 is the chief-engineer Claude chat's creative direction (Wajih handed it
 the taste call this time). Part 4 is the hard rules.
+**Part 5 (22 Nov) is Take 2 and overrides everything above it where they differ.**
 
 ---
 
@@ -386,3 +387,84 @@ At the very end the line closes back into the point and the page loops to the si
    - Show 2–3 options side by side for visual calls; he points.
    - One instruction per message.
    - Anything he must do goes in one block at the very bottom.
+
+---
+
+## Part 5: Take 2 (22 Nov 2026). Overrides everything above it where they differ.
+
+### What Take 2 is
+- **Take 1** is `C:\wajih-mansouri-studio`, git tag `take-1` (= `0c404ed`). It is frozen: never write to it again.
+- **Take 2** works in `C:\wajih-mansouri-studio - Take 2` and serves on **port 8109**, so both takes can run side by
+  side (Take 1 keeps 8108). Each take's final commit gets a tag `take-N`. Commits: "studio take 2: <short title>".
+- **The goal:** the same soul, rebuilt for impatient people on their phones. Wajih loves Take 1 ("insane work"); Take 2
+  refines it, it doesn't throw it away.
+- **Visitor:** Gulf business owners first (older decision-makers, not Gen Z). **English only.** Phones first, desktop
+  adapts. Body text at least 18 px on phones too; big tap targets.
+
+### Wajih's decisions (22 Nov)
+- **Keep:** every historical artifact tied to something today, with real names (Bell, Edison, Yale, Babbage,
+  Lovelace, Leonardo). The gears and the lock are his favourites. The phone opening into named pieces is "genius":
+  it becomes the signature of the whole site, and 3D objects start apart with named pieces and come together as you
+  scroll.
+- **Too slow, too long, "the page isn't moving unless you watch the top strip".** Take 1 is about 136 viewports
+  long; Take 2 aims for about 34 (see the running order).
+- **The feel: a mind trip, not a presentation for nerds.** Keep the nerdy depth, but the moves are mind-blowing,
+  almost psychedelic: the feeling of Interstellar's tesseract, or santalarch's door that takes you into another
+  space. **We go inside the artifacts** (for example, through the lock's keyhole, past the pins, out into security
+  today). These are feeling references only: never copy a film frame, or another site's code, assets, models, text
+  or fonts (this replaces Part 4's "never any santalarch scene").
+- **Modern motion, plain words.** The moves feel fresh and fast; words and buttons stay short, big and clear.
+- **Voice:** "we", confident, clean, poised. A lot of Take 1's copy reads as AI-written, so **every line of wording
+  goes past Wajih**, page by page, in small batches, each line with its context (who sees it, what it's trying to
+  say). Drafts go in flagged until he signs them off.
+- **Real before drawn.** The thin code-drawn lines feel cheap. Every picture is human-made and from a free source:
+  real scans shown with their paper, ink and wear (patents, Leonardo, engravings), and real or human-made 3D models
+  (for example Smithsonian Open Access 3D, Sketchfab models marked CC0 or CC BY). Code only does the motion, the
+  labels and the drawing frame. The three.js hero phone stays. The code-drawn phone eras, lock, gears and Babbage
+  redraw get replaced by real material.
+  - **Licences must allow commercial use** (public domain, CC0, CC BY, MIT). Never "non-commercial" (NC). Every asset
+    goes in `CREDITS.md` with source and licence.
+- **No brand names.** The made-up products become concept apps named by what they are. Real historical names stay:
+  they're real, and the point is to show we understand the connection and make the visitor see it too.
+- **Vibration on the phone.** The first screen asks for one tap: **tap the breathing point to enter** (it becomes the
+  line, and it unlocks vibration).
+- **The call to action doesn't grab.** It becomes a **checklist**: less typing, more ticks, plus one optional box to
+  type in, then Send to the visitor's own WhatsApp or email (no outside service). It appears **early and again at the
+  end**.
+
+### The running order (the Claude chat's draft; Wajih agreed it, 22 Nov)
+
+| # | Page | What happens | Leads to | Viewports |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | Enter + hook | Tap the point. Bell's 1877 telephone (US 186,787) floats in named pieces and reassembles into today's phone, which opens into its layers. | For you | ~4 |
+| 2 | For you | The visitor taps what fits them (a website, an app, "my systems are a mess", AI working for me, keep it secure). The page answers with what they get. Their taps pre-tick the checklist. The animation: the Claude chat designs options, Wajih picks. | Checklist 1 | ~3 |
+| 3 | Checklist 1 | Their ticks, an optional box, Send. Underneath: "or see how we think". | The trips | ~1 |
+| 4 | Four trips | Inside the Yale lock → security; Babbage's engine + Lovelace → AI; the printing press → websites; Bell's switchboard → apps. Dumbed down for older visitors, the idea dead obvious: one plain line going in, one coming out (draft example: "1865: a lock kept strangers out. Today: we keep them out of your systems."). Infrastructure, consulting and monthly care become one-line connections. | Work | ~14 |
+| 5 | Work | Four concept apps: Booking app, Watch, Delivery tracker, Property app. Each assembles from named pieces, labelled "Concept sheet". Short and sweet. | How we work | ~4 |
+| 6 | How we work | The gears. The four principles (Exact, Felt, Proven, Locked) are four gears; the Break stress test. Principles and Method fold in here. | The ending | ~4 |
+| 7 | The ending | A door into the final room, the full checklist, the founder line, contact. | Spec sheet | ~3 |
+| 8 | Spec sheet | One screen of the page measuring itself live, then the loop back to the point. | The start | ~1 |
+
+### Technical calls (the Claude chat's)
+- **Every swipe visibly changes something in the middle of the screen**, not just in the top strip. Lighter smooth
+  scroll on desktop; the phone's own scrolling on touch screens.
+- **Vibration:** `navigator.vibrate` on Android (Chrome and Samsung Internet) after the first tap: short ticks
+  (10–20 ms) only when a piece snaps into place, never continuous. iPhone Safari has no vibration API, so on iPhone
+  only taps buzz (the hidden-switch workaround). None with reduced motion.
+- **Testing on Wajih's Galaxy S23**: the site goes to the phone from the laptop over wireless debugging
+  (`adb reverse tcp:8109 tcp:8109`), so it never leaves 127.0.0.1.
+- **New geometry check** (Take 1's missed complaints: truncated pictures, things covered up). At every frozen stop,
+  at the S23's real viewport, 390×844, 1280×720, 1366×768, 1440×900, 1920×1080 and Wajih's real laptop window
+  (measure it first), light and dark:
+  - every picture fully inside its frame and the screen, and not cropped by its box;
+  - no element covering another unless it's tagged as designed;
+  - reported as a list with screenshots; fix and re-run until clean.
+- **Keep from Take 1:** freeze-frame test (pause anywhere, every text readable), nothing moves under text, reduced
+  motion, axe, no console errors, frame rate.
+
+### How Take 2 runs
+1. **Style lab first:** side-by-side previews on the phone of the 3D assembly look, the trip into the lock, the
+   "For you" animation and the door. Wajih points.
+2. **Then one page at a time, in the running order.** For each page: build → wording batch to Wajih → he tests it on
+   his S23 → geometry check → commit → `STATE.md` updated.
+3. Stop for Wajih only at style picks, each page's wording, and each page's phone review.
