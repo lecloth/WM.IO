@@ -513,3 +513,30 @@ The lab (`site/dev/lab.html`) stays as the reference for every look above.
   (~1 viewport)** → 8 The final room → 9 Spec sheet. Total about 35 viewports.
   - **Three cards** (the company is three people): each an image placeholder and a short bio placeholder, clearly
     marked as placeholders. No made-up names, faces or bios. Real people go in before anything goes public.
+
+### Page 1 refinements and the process (22 Nov, 15:30). Overrides the above where they differ.
+**Page 1, top to bottom (Wajih's wording, signed off; only the phone-screen preview of page 2 stays a draft):**
+1. **Opening:** a beacon dot, pulsing with fading rings of light (calm, not flashy). Above it: "Glad you're finally
+   here." Under it: "Tap to start" (replaces "Tap the point").
+2. **Bell's plate:** "A. G. Bell · US 186,787 · 1877" / "It began on paper." / the credit line. Then the drawing
+   dissolves into its own lines (the traced vectors, exactly on the scan), and the lines slide and bend into today's
+   phone's outline. That outline lands exactly where the 3D X-ray phone sits on screen, so the handover has no jump.
+   (Take 1's cut from plate to phone was "lazy".)
+3. **X-ray:** "Today's phone · six pieces" / "Every piece, named." The pieces spread **much further apart**, named
+   (Glass · Screen · Frame · Board · Battery · Back).
+4. **The pieces move together** while a kinetic line plays: "Every piece, built meticulously, until it serves the
+   grand design…" The blue fades softly across the **whole** sheet as the phone dresses from X-ray to matte: no hard
+   wipe, and the phone is never cut in half.
+5. **Assembled and real:** "…to serve you.", with **you** highlighted.
+6. **YOU**, alone and highlighted, then "YOU gave us the task." then seven **stamps** landing fast, one beat each, like
+   approval stamps on an engineering drawing: Understood ✓ Imagined ✓ Drawn ✓ Tested ✓ Felt ✓ Refined ✓ Delivered ✓.
+7. "Now, what do you need?" / "For you ↓".
+- Dropped: "Drawn · built · real", "Made for real.", "Then we build it."
+- **Kinetic type:** professional and poised, not playful. Short, clean moves; no bounce, no spin. Every word lands
+  crisp, and a paused frame shows only whole, readable words.
+- Page 1 budget is now about 5 viewports (total about 36).
+
+**The process (page 5, How we work), Wajih's seven steps:** Understood, Imagined, Drawn, Tested, Felt, Refined,
+Delivered. They become the seven gears, each with its title, one short line explaining the step, and a supporting
+real image (a scan or engraving, never drawn in code). The Break stress test lives inside "Tested". Take 1's four
+principles (Exact, Felt, Proven, Locked) are dropped: the seven steps replace them.
