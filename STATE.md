@@ -14,15 +14,15 @@ Take 1's history below.
 - **How it runs:** style lab first (Wajih points) → one page at a time: build → wording batch → his S23 test →
   geometry check → commit → this file. Stop for Wajih only at style picks, each page's wording, each page's phone review.
 
-### Running order (Part 5 "Lab picks" + "Copy and the team page" + "Page 1 refinements", ~36 viewports in total)
+### Running order (Part 5 "Lab picks" + "Copy and the team page" + "Page 1 refinements" + "Page 1, round 3", ~36 viewports in total)
 
 | # | Page | What happens | Viewports | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | Enter + hook | Beacon → Bell's sheet dissolves into its lines → lines bend into the X-ray phone → pieces named → kinetic line, pieces join, blue fades → real → "…to serve you." → YOU → the task, seven stamps → "Now, what do you need?" | ~5 | **rebuilt (Part 5 "Page 1 refinements"), waiting for Wajih's phone review** |
+| 1 | Enter + hook | Beacon → Bell's sheet: eight clean outlines draw on, morph into the X-ray phone → pieces named on leader lines → kinetic line, pieces join, ground back to paper → real → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum → "Now, what do you need?" → detail callout grows into page 2 | ~6 | **round 3 built (Part 5 "Page 1, round 3" + "Motion devices"), waiting for Wajih's phone review and his material pick** |
 | 2 | For you | Visitor taps what fits them; the page answers; taps pre-tick the checklist | ~3 | stub |
 | 3 | Checklist 1 | The C3 work slip, short version; "or see how we think" | ~1 | stub |
 | 4 | Four trips | Security showpiece (~5: lock's A journey → failed pick → B3 → today); AI, websites, apps lighter (~3 each) | ~14 | stub |
-| 5 | How we work | The gears: Wajih's seven steps (Understood, Imagined, Drawn, Tested, Felt, Refined, Delivered), each a gear with a title, one short line and a real image; the Break stress test inside "Tested"; Take 1's four principles dropped | ~4 | stub |
+| 5 | How we work | The sideways gear train: Wajih's seven steps, each a real gear (model or engraved plate) with its title and real image, the centre one lit; the Break stress test inside "Tested" | ~3 | stub |
 | 6 | Work: the corridor | Four apps + one website, each a doorway with a meaningful entry (our own designs) | ~5 | stub |
 | 7 | Team | Three placeholder cards (image + bio), clearly marked | ~1 | stub |
 | 8 | The final room | Full C3 work slip, founder line, every way to reach us (switches in settings.js) | ~2 | stub |
@@ -31,24 +31,43 @@ Take 1's history below.
 ### Page structure (Take 2)
 - `src/index.template.html` + `src/parts/page-01.html` + `src/parts/stubs.html` → `python -I tools/build.py` → `site/index.html`.
   Build links `site/css/page-*.css` only. Entry: `site/js/main.js` (Take 1's is kept as `site/js/main.take1.js`, not bundled).
-- Page 1: `site/js/page01/page.js` (scroll story over 4 screens of scroll, stops, labels, the travelling "you", stamps,
-  reduced motion), `site/js/page01/phone.js` (six-part phone, three looks as soft whole-phone cross-fades over a depth
-  pre-pass, projected-box camera fit, its X-ray edge loops for the handover), `site/js/page01/lines.js` (Bell's traced
-  outlines: ink twin as a cached bitmap, the journey in WebGL), `site/css/page-01.css` (also the strip, beacon gate, stubs).
-  Data: `site/media/plates/bell-us186787-lines.bin` (`tools/trace_plate.py`), `site/media/paper/stamp-grain.webp`
-  (`tools/stamp_grain.py`).
+- Page 1 (round 3): `site/js/page01/page.js` (the scroll story over 5 screens of scroll in a 6-screen section; texts, the timed ground
+  and dress beats, the flies you→YOU and us→WE, the verb drum, the detail callout into page 2, reduced motion), `site/js/page01/phone.js`
+  (six-part phone: X-ray hairlines / built / real; tagged X-ray loops for the morph targets; the ethos screen), `site/js/page01/morph.js`
+  (Bell's eight outlines: DrawSVG on the scan, MorphSVG into the phone's outlines), `site/js/page01/materials.js` (the three CC0 material
+  options; `PICK` = the one on the page), `site/css/page-01.css` (also the strip, beacon gate, stubs, page 2's callout state).
+  Data: `site/media/plates/bell-us186787-paths.json` (`tools/bell_paths.py`), `site/media/materials/*` (`tools/materials.py`).
+  Page 2 overlaps page 1's last screen (`margin-top: -100lvh`); during that screen its stage is fixed and clipped to the callout window.
+- Asset sheet: `site/dev/assets.html` + `assets.js` (the finished phone in each material option, phone size, side by side, one Turn control).
 - Enter: `site/js/enter.js` (beacon gate; tap/click/Enter/Space/wheel/swipe all enter; only a pointer tap/click unlocks
   vibration; reduced motion: the same gate, still, enters at once).
   Vibration: `site/js/engine/haptics.js`.
 - Kept on disk for reuse, not loaded: Take 1 sheets (`site/js/sheets`, `sheet01..08`, `src/parts/sheet-*.html`,
   `site/css/sheet-*.css`), `opening.js` (its loop replay), `products/`, `settings.js`, the lab.
-- Tests: `tools/t2shot.py` (stops), `tools/geom.py` (geometry check, 6 sizes × light/dark × stops), `tools/axe2.py`
-  (axe + lengths), `tools/fps2.py` (emulated fps), `tools/fps_seg.py` (emulated fps per story segment), `tools/phonep1.py`
-  (real phone: real tap, fps, shots, geometry), `tools/vibcheck.py` (vibration rules). Positions in tests are scroll
-  progress in screens (`__p1.yAt(p)`, 0..4); page 1's named stops are `__p1.stops` (S0 0.12, morph 0.66, S1 1.5,
-  fade 2.08, S2 2.78, YOU 3.08, TASK 3.24, STAMPS 3.45, END 3.8).
+- Tests: `tools/p1stops.py` (every named stop + mid-morph, mid-drum, mid-callout), `tools/t2shot.py` (any positions, reduced motion),
+  `tools/geom.py` (geometry check, 6 sizes × light/dark × every stop), `tools/axe2.py` (axe + page-1 length), `tools/fps_seg.py` (emulated fps
+  per story segment), `tools/phonep1.py` (real phone; its stop list still needs the round-3 stops), `tools/vibcheck.py` (vibration rules),
+  `tools/assetshot.py` (asset sheet). Positions are scroll progress in screens (`__p1.yAt(p)`, 0..5); the named stops are `__p1.stops`
+  (S0 .1, draw .24, morph .6, S1 1.3, kin 1.72, paper 2.2, S2 2.5, YOU 2.72, TASK 2.92, WE 3.12, DRUM 3.6, END 4.2, CALLOUT 4.62).
 
 ### Take 2 log
+- **Page 1, round 3 (23 Nov).** Brief committed (design ethos, round 3, motion devices, asset quality). GSAP SplitText, MorphSVG, DrawSVG
+  vendored (3.15.0, same as the core). Page 1 is 6.0 viewports at 384×734 and 1440×900 (until page 2 has fully arrived; whole page 36.0;
+  reduced motion 4.9 / 4.1). Emulated (headless Chrome, real GPU): 60 fps in all 8 story segments at both sizes (p95 16.7–16.8 ms) after
+  moving four one-time first-paint costs to load (dashed-stroke pipeline, MorphSVG precompute, texture upload, page 2's first paint).
+  Geometry: 0 problems (6 sizes × light/dark × 13 stops). axe: 0. No console errors. Vibration: tap + 6 snaps (14 ms) + 6 drum clicks (10 ms);
+  none after a key or with reduced motion. **Real-phone run pending:** the S23 wasn't on adb (the two wireless-debugging devices on the LAN
+  were TVs; disconnected without running anything). Screenshots: `tools/shots/r3/` (stops, geom, reduced-motion).
+  - Removed: the stamps, the For-you button, YOU's blue, boxed labels, the glow, the potrace cloud (`bell-us186787-lines.bin`, stamp grain).
+  - **Pending Wajih:** his phone review; his pick on the asset sheet (page 1 uses A, satin aluminium + frosted white).
+  - Decisions I made alone: "us" in "YOU gave us the task." travels and becomes WE (the mirror of you→YOU); the drum sits under WE on phones
+    and beside it on desktop, so it reads "WE Understood"; the verb list uses "Drew" (the round-3 meanings list), as the drum reads as a
+    sentence after WE; the ground changes and the matte→real dress are short timed beats (0.42 s, 0.55 s), so no paused frame is a mix; the
+    built look is a white model with ink hairlines (a dark matte screen made a grey mix); the morph pairs Bell's plinth → the glass outline,
+    left face → display, right face → battery, lid → board, tube → the band's back edge, screws → two lenses and the punch-hole, linear
+    MorphSVG (the rotational type made blobs); X-ray names sit on a shelf hairline with a leader to a dot on the piece; the callout window
+    frames page 2's stub content below "Now, what do you need?" (the text leaves before the window reaches it); "Now, what do you need?" is
+    set as a headline now that the button is gone; the phone screen's page-2 preview is rows on hairlines with mono indices (still DRAFT).
 - **Page 1 rebuilt to Part 5 "Page 1 refinements" (22 Nov, evening).** Wording signed off by Wajih; Draft flags removed
   (only the phone screen's page-2 preview stays a draft, flagged on the screen). 5.0 screens long at 384×734 and
   1440×900 (whole page 36.0); reduced motion 4.0. Emulated (headless Chrome, real GPU): 60 fps in every segment after

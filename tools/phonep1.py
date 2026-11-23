@@ -53,6 +53,20 @@ async def main(a):
             state = await c.eval("JSON.stringify({ phase: document.documentElement.dataset.phase, activated: navigator.userActivation.hasBeenActive, vibrate: typeof navigator.vibrate })")
             print("after tap", state, flush=True)
             await asyncio.sleep(1.2)
+            stops = {v: k for k, v in json.loads(await c.eval("JSON.stringify(window.__p1.stops)")).items()}
+            for p in sorted(set(stops) | {0.5, 0.7, 4.82}):   # every named stop + mid-morph, late morph, late callout
+                await c.eval(f"{GOTO}({p})"); await asyncio.sleep(1.4); await shot(f"p1_{int(p * 1000):04d}_{stops.get(p, 'mid')}")
+                if p in stops:
+                    m = json.loads(await c.eval(f"JSON.stringify(({MEASURE_JS})('{stops[p]}'))"))
+                    probs = check(m, stops[p]); print(f"geometry on the phone {stops[p]} ({m['W']}x{m['H']}):", probs or 'clean', flush=True)
+                if stops.get(p) == 'DRUM':   # mid-drum: step one verb on, catch it 150 ms into the turn
+                    await c.eval(f"{GOTO}({p + 0.1314})"); await asyncio.sleep(0.15); await shot(f"p1_{int(p * 1000):04d}_mid-drum")
+            adb("shell", "input", "tap", str(x), str(y))
+            t = 0
+            while t < 40 and await c.eval("document.documentElement.dataset.phase") != "ready": await asyncio.sleep(0.1); t += 1
+            state = await c.eval("JSON.stringify({ phase: document.documentElement.dataset.phase, activated: navigator.userActivation.hasBeenActive, vibrate: typeof navigator.vibrate })")
+            print("after tap", state, flush=True)
+            await asyncio.sleep(1.2)
             stops = {0.12: 'S0', 0.66: 'morph', 1.5: 'S1', 2.08: 'fade', 2.78: 'S2', 3.08: 'YOU', 3.24: 'TASK', 3.45: 'STAMPS', 3.8: 'END'}
             for p in [0.12, 0.3, 0.38, 0.5, 0.66, 0.8, 0.95, 1.15, 1.5, 1.8, 2.08, 2.2, 2.45, 2.78, 3.08, 3.24, 3.45, 3.8]:
                 await c.eval(f"{GOTO}({p})"); await asyncio.sleep(1.8 if p >= 3.4 else 1.0); await shot(f"p1_{int(p * 1000):04d}")

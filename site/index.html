@@ -43,6 +43,9 @@
   <link rel="stylesheet" href="css/page-01.css">
   <script defer src="vendor/gsap.min.js" onload="__wm.done('gsap')"></script>
   <script defer src="vendor/ScrollTrigger.min.js" onload="__wm.done('st')"></script>
+  <script defer src="vendor/SplitText.min.js"></script>
+  <script defer src="vendor/MorphSVGPlugin.min.js"></script>
+  <script defer src="vendor/DrawSVGPlugin.min.js"></script>
   <script defer src="vendor/lenis.min.js" onload="__wm.done('lenis')"></script>
   <script type="importmap">{ "imports": {
     "three": "./vendor/three/three.module.min.js",
@@ -99,10 +102,12 @@
 <div id="board" class="board">
   <div class="board__grid" aria-hidden="true"></div>
   <main id="sheets">
-    <!-- PAGE 01: ENTER + HOOK. Bell's 1877 sheet dissolves into its own lines, which bend into today's phone as an X-ray;
-         the pieces spread, are named, come together while the blue fades; "…to serve you." -> YOU -> the task, seven
-         stamps -> "Now, what do you need?". Scroll-driven (site/js/page01/page.js). Wording signed off by Wajih (22 Nov),
-         except the phone screen's preview of page 2 (a draft, flagged on the screen itself). -->
+    <!-- PAGE 01: ENTER + HOOK (round 3). Bell's 1877 sheet gives up a few clean outlines, which morph into today's phone
+         as a hairline X-ray; the pieces spread, are named on leader lines, come together; the ground turns to paper; the
+         phone dresses in real materials; "…to serve you." -> YOU -> "YOU gave us the task." -> WE, pinned, with the
+         verb drum -> "Now, what do you need?" -> a detail callout that grows into page 2. Scroll-driven
+         (site/js/page01/page.js). Wording signed off by Wajih (22-23 Nov), except the phone screen's preview of
+         page 2 (a draft, flagged on the screen itself). -->
     <section id="page-01" class="p1" data-sheet="01" data-title="Enter" data-drawn="Design" data-checked="Engineering" data-approved="Strategy" aria-label="Page 1: from Bell's 1877 telephone to today's phone">
       <div class="p1__stage">
         <div class="p1__bg p1__bg--blue" aria-hidden="true"></div>
@@ -112,10 +117,9 @@
           <img class="p1__plate-img" src="media/plates/bell-us186787-sheet1.webp" width="1600" height="1740"
                alt="Patent drawing from A. G. Bell's US Patent 186,787 (1877): Fig. 1, a box telephone with a speaking tube, and Fig. 2, its section.">
         </figure>
-        <canvas class="p1__lines" aria-hidden="true"></canvas>
-        <canvas class="p1__linesgl" aria-hidden="true"></canvas>
+        <svg class="p1__morph" aria-hidden="true"></svg>
 
-        <canvas class="p1__canvas" role="img" aria-label="Today's phone in six pieces: glass, screen, frame, board, battery and back. The pieces come together as it turns from a blue X-ray drawing into a matte model, then into real materials."></canvas>
+        <canvas class="p1__canvas" role="img" aria-label="Today's phone in six pieces: glass, screen, frame, board, battery and back. The pieces come together as it turns from a blue X-ray drawing into a model on paper, then into real materials."></canvas>
         <canvas class="p1__leaders" aria-hidden="true"></canvas>
         <div class="p1__labels" aria-hidden="true"></div>
 
@@ -131,26 +135,37 @@
           <p class="p1-kin display">Every piece, built meticulously, until it serves the grand design…</p>
         </div>
         <div class="p1-txt" data-k="s2">
-          <h2 class="p1-txt__h display">…to serve <span class="p1-slot p1-slot--a hl">you</span>.</h2>
+          <h2 class="p1-txt__h display">…to serve <span class="p1-slot p1-slot--a">you</span>.</h2>
         </div>
         <div class="p1-txt p1-txt--task" data-k="task">
-          <h2 class="p1-txt__h display"><span class="p1-slot p1-slot--c hl">YOU</span> gave us the task.</h2>
+          <h2 class="p1-txt__h display"><span class="p1-slot p1-slot--c">YOU</span> gave <span class="p1-slot p1-slot--u">us</span> the task.</h2>
         </div>
-        <ul class="p1-stamps">
-          <li class="p1-stamp" style="--r:-3deg"><b>Understood</b><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8"/></svg></li>
-          <li class="p1-stamp" style="--r:2deg"><b>Imagined</b><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8"/></svg></li>
-          <li class="p1-stamp" style="--r:1.5deg"><b>Drawn</b><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8"/></svg></li>
-          <li class="p1-stamp" style="--r:-2deg"><b>Tested</b><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8"/></svg></li>
-          <li class="p1-stamp" style="--r:-1deg"><b>Felt</b><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8"/></svg></li>
-          <li class="p1-stamp" style="--r:2.5deg"><b>Refined</b><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8"/></svg></li>
-          <li class="p1-stamp" style="--r:-2.5deg"><b>Delivered</b><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8"/></svg></li>
-        </ul>
+        <!-- WE, pinned, and the verb drum: the seven steps, each with its meaning (signed off by Wajih, 23 Nov) -->
+        <div class="p1-we" data-k="we">
+          <h2 class="p1-we__word display"><span class="p1-slot p1-slot--w">WE</span><span class="sr-only">, step by step:</span></h2>
+          <div class="p1-drum" aria-hidden="true"><div class="p1-drum__wheel"></div></div>
+          <div class="p1-mean" aria-hidden="true"></div>
+          <ol class="p1-steps">
+            <li><b class="p1-steps__verb">Understood</b> <span class="p1-steps__mean">the real problem behind your request, and what perfect looks like to you.</span></li>
+            <li><b class="p1-steps__verb">Imagined</b> <span class="p1-steps__mean">every way it could work, how it should feel, how it should look. Kept the best.</span></li>
+            <li><b class="p1-steps__verb">Drew</b> <span class="p1-steps__mean">every screen, every part, every colour, before any code.</span></li>
+            <li><b class="p1-steps__verb">Tested</b> <span class="p1-steps__mean">made the code more elegant, more efficient, then stress-tested it to the absolute limit, so it won't break on you.</span></li>
+            <li><b class="p1-steps__verb">Felt</b> <span class="p1-steps__mean">every vibration, every motion, every word, until it feels right in your customers' hands.</span></li>
+            <li><b class="p1-steps__verb">Refined</b> <span class="p1-steps__mean">until nothing is extra.</span></li>
+            <li><b class="p1-steps__verb">Delivered</b> <span class="p1-steps__mean">working, finished, yours.</span></li>
+          </ol>
+        </div>
         <div class="p1-txt p1-txt--end" data-k="end">
-          <p class="p1-txt__line">Now, what do you need?</p>
-          <a class="p1-next" href="#page-02"><span>For you</span><i aria-hidden="true">↓</i></a>
+          <h2 class="p1-txt__h display">Now, what do you need?</h2>
         </div>
-        <div class="p1-fly display hl" aria-hidden="true"><span class="lo">you</span><span class="up">YOU</span></div>
+        <div class="p1-fly display" data-w="you" aria-hidden="true"><span class="lo">you</span><span class="up">YOU</span></div>
+        <div class="p1-fly display" data-w="we" aria-hidden="true"><span class="lo">us</span><span class="up">WE</span></div>
         <p class="p1__credit mono" aria-hidden="true">Plate: US Patent 186,787 · public domain</p>
+      </div>
+      <!-- the detail callout: a hairline window onto page 2, which is already there behind it; it grows into page 2's stage -->
+      <div class="p1-callout" aria-hidden="true">
+        <svg class="p1-callout__svg"><rect class="p1-callout__rect"></rect></svg>
+        <span class="p1-callout__tag mono">Detail A · 02 For you</span>
       </div>
     </section>
     <!-- PAGES 02-09: stubs at their planned length (Part 5 running order), so the order and the scroll length show. -->

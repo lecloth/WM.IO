@@ -10,8 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browserlock import BrowserLock
 
 SIZES = "384x734,390x844,1280x720,1366x768,1440x900,1920x1080"
-STOP_P = {"S0": 0.12, "morph": 0.66, "S1": 1.5, "fade": 2.08, "S2": 2.78, "YOU": 3.08, "TASK": 3.24, "STAMPS": 3.45, "END": 3.8}
-SETTLE = {"STAMPS": 1600, "END": 1600}
+SETTLE = {"WE": 1100, "DRUM": 1100, "END": 1100, "kin": 1000, "paper": 900, "TASK": 900}
 GOTO_JS = """async (p) => { const e = window.__t2.engine; const y = window.__p1.yAt(p); if (e.lenis) e.lenis.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y);
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); e.ScrollTrigger.update(); return scrollY; }"""
 MEASURE_JS = r"""(stop) => {
@@ -25,20 +24,35 @@ MEASURE_JS = r"""(stop) => {
     // a text block's real ink: its children, not the full-width box
     [...t.children].forEach((c, i) => add(`text ${t.dataset.k}.${i} (${c.className.split(' ')[0]})`, c, 'text'));
   });
-  // the travelling word belongs to the line it stands in (its slot there is see-through by design)
-  const fly = document.querySelector('.p1-fly'), fs = fly && fly.dataset.state;
-  if (fs && fs !== 'off') add(`text ${fs === 'a' ? 's2' : fs === 'c' ? 'task' : 'you'}.fly`, fly.querySelector(fs === 'a' ? '.lo' : '.up'), 'text');
-  document.querySelectorAll('.p1-stamp.is-in').forEach((s, i) => add(`stamp ${s.textContent.trim()}`, s, 'stamp'));
+  const we = document.querySelector('.p1-we.on');
+  if (we) {
+    add('text we.word', we.querySelector('.p1-we__word'), 'text');
+    const lit = [...we.querySelectorAll('.p1-verb')].find((v) => +v.style.opacity > 0.9); if (lit) add('text we.verb', lit, 'text');
+    add('text we.drum', we.querySelector('.p1-drum'), 'text');
+    const m = we.querySelector('.p1-mean p.on'); if (m) { const ws = [...m.querySelectorAll('.w')]; if (ws.length) { const a = ws[0].getBoundingClientRect(); let r = { l: 1e9, t: 1e9, r: -1e9, b: -1e9 }; ws.forEach((w) => { const q = w.getBoundingClientRect(); r = { l: Math.min(r.l, q.left), t: Math.min(r.t, q.top), r: Math.max(r.r, q.right), b: Math.max(r.b, q.bottom) }; }); items.push({ name: 'text we.mean', kind: 'text', ...r }); } }
+  }
+  // the travelling words belong to the line they stand in (their slots there are see-through by design)
+  document.querySelectorAll('.p1-fly').forEach((fly) => {
+    const fs = fly.dataset.state; if (!fs || fs === 'off') return;
+    const blk = fly.dataset.w === 'you' ? (fs === 'a' ? 's2' : fs === 'c' ? 'task' : 'you') : (fs === 'a' ? 'task' : 'we');
+    add(`text ${blk}.fly-${fly.dataset.w}`, fly.querySelector(fs === 'a' ? '.lo' : '.up'), 'text');
+  });
   document.querySelectorAll('.p1-lbl.on').forEach((l) => add('label ' + l.textContent, l, 'label'));
   add('credit', document.querySelector('.p1__credit'), 'text');
   const pf = document.querySelector('.p1__plate'); if (vis(pf)) items.push({ name: 'plate', kind: 'picture', ...R(pf) });
   const p1 = window.__p1, band = p1 ? p1.band() : null;
-  if (p1 && p1.lines.drawn) {   // Bell's lines on their way: between the plate and the phone they're landing on
-    const a = p1.plate(), b = p1.box();
+  if (p1 && p1.morphOn()) {   // Bell's lines on their way: between the plate and the phone they're landing on
+    const a = p1.plate(), b = p1.morphT() > 0 ? p1.box() : { left: a.left, top: a.top, right: a.left + a.width, bottom: a.top + a.height };
     items.push({ name: 'lines', kind: 'picture', l: Math.min(a.left, b.left), t: Math.min(a.top, b.top), r: Math.max(a.left + a.width, b.right), b: Math.max(a.top + a.height, b.bottom) });
   }
-  if (p1 && +getComputedStyle(document.querySelector('.p1__canvas')).opacity > 0.05) {
+  const cv = document.querySelector('.p1__canvas');
+  if (p1 && +getComputedStyle(cv).opacity > 0.05 && !cv.classList.contains('is-off')) {
     const b = p1.box(); items.push({ name: 'phone', kind: 'picture', l: b.left, t: b.top, r: b.right, b: b.bottom });
+  }
+  const c = p1 && p1.callout();
+  if (c && c.g <= 0) {   // the detail window before it grows (growing over everything is the design)
+    items.push({ name: 'callout window', kind: 'window', l: c.left, t: c.top, r: c.right, b: c.bottom });
+    add('callout tag', document.querySelector('.p1-callout__tag'), 'text');
   }
   return { W, H, items, band };
 }"""
@@ -49,7 +63,7 @@ def check(m, stop):
     for it in items:
         if it["kind"] == "picture" and band and (it["l"] < band["left"] - 1 or it["t"] < band["top"] - 1 or it["r"] > W - band["right"] + 1 or it["b"] > H - band["bottom"] + 1):
             problems.append(f"{it['name']} leaves its band ({it['l']:.0f},{it['t']:.0f})-({it['r']:.0f},{it['b']:.0f}); band ({band['left']:.0f},{band['top']:.0f})-({W - band['right']:.0f},{H - band['bottom']:.0f})")
-        if it["kind"] in ("picture", "text", "label", "stamp") and (it["l"] < -0.5 or it["t"] < -0.5 or it["r"] > W + 0.5 or it["b"] > H + 0.5):
+        if it["kind"] in ("picture", "text", "label", "window") and (it["l"] < -0.5 or it["t"] < -0.5 or it["r"] > W + 0.5 or it["b"] > H + 0.5):
             problems.append(f"{it['name']} leaves the screen ({it['l']:.0f},{it['t']:.0f})-({it['r']:.0f},{it['b']:.0f}) in {W}x{H}")
     def hit(a, b, pad=0):
         return a["l"] < b["r"] - pad and b["l"] < a["r"] - pad and a["t"] < b["b"] - pad and b["t"] < a["b"] - pad
@@ -59,6 +73,8 @@ def check(m, stop):
             if kinds == {"chrome"}: continue
             if kinds == {"text"} and a["name"].split(".")[0] == b["name"].split(".")[0]: continue   # lines of one block
             if "picture" in kinds and "label" in kinds: continue   # labels sit beside pieces by design (leader lines)
+            if {a["name"], b["name"]} == {"plate", "lines"}: continue   # Bell's clean outlines are drawn exactly on the scan
+            if {"window", "text"} == kinds and "callout tag" in (a["name"], b["name"]): continue   # the tag sits on the window's edge
             if hit(a, b, 1):
                 problems.append(f"{a['name']} overlaps {b['name']}")
     return problems
@@ -85,7 +101,8 @@ async def main(a):
                 await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
                 await page.wait_for_timeout(500)
                 top = await page.evaluate("document.getElementById('page-01').offsetTop"); vh = await page.evaluate("innerHeight")
-                for stop, p in STOP_P.items():
+                stops = await page.evaluate("window.__p1.stops", isolated_context=False)
+                for stop, p in stops.items():
                     await page.evaluate(GOTO_JS, p, isolated_context=False)
                     await page.wait_for_timeout(SETTLE.get(stop, 700))
                     m = await page.evaluate(MEASURE_JS, stop, isolated_context=False)

@@ -29,10 +29,12 @@ async def main(a):
         length = await ev("document.getElementById('page-01').offsetHeight / innerHeight")
         total = await ev("document.documentElement.scrollHeight / innerHeight")
         out = {"size": a.size, "dark": a.dark, "reduced": a.reduced, "page1_screens": round(length, 2), "whole_page_screens": round(total, 2), "stops": {}}
-        stops = {"S0": 0.12, "morph": 0.66, "S1": 1.5, "fade": 2.08, "S2": 2.78, "YOU": 3.08, "TASK": 3.24, "STAMPS": 3.45, "END": 3.8} if not a.reduced else {"all": None}
+        stops = (await ev("window.__p1.stops")) if not a.reduced else {"all": None}
+        if not a.reduced:   # page 1's real length: scroll from its top until page 2 has fully arrived (the callout done), plus the first screen
+            out["page1_viewports_until_page2"] = round(await ev("(window.__p1.yAt(window.__p1.scroll) - window.__p1.top()) / innerHeight + 1"), 2)
         top = await ev("document.getElementById('page-01').offsetTop")
         for k, p in stops.items():
-            if p is not None: await ev(GOTO_JS, p); await page.wait_for_timeout(1600 if k in ("STAMPS", "END") else 700)
+            if p is not None: await ev(GOTO_JS, p); await page.wait_for_timeout(1200)
             out["stops"][k] = await ev(AXE)
         await b.close()
     print(json.dumps(out, indent=1))

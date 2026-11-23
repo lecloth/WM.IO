@@ -3,7 +3,8 @@
 // gsap, ScrollTrigger and Lenis are loaded as classic scripts (vendor/), so they are globals here.
 
 const { gsap, ScrollTrigger, Lenis } = window;
-gsap.registerPlugin(ScrollTrigger);
+// SplitText (word reveals), MorphSVG (Bell's lines into the phone) and DrawSVG (hairline draws): GSAP 3.15 plugins
+gsap.registerPlugin(ScrollTrigger, ...[window.SplitText, window.MorphSVGPlugin, window.DrawSVGPlugin].filter(Boolean));
 
 const listeners = new Map();
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;

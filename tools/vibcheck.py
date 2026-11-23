@@ -1,5 +1,5 @@
 """Count navigator.vibrate calls on page 1: after a tap on the point, after a key press, and with reduced motion.
-  python -I tools/vibcheck.py   (expect: tap = 1 tap buzz + 6 snaps + 7 stamps; key = none; reduced = none)"""
+  python -I tools/vibcheck.py   (expect: tap = 1 tap buzz + 6 snaps + 6 drum clicks; key = none; reduced = none)"""
 import asyncio, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -17,10 +17,10 @@ async def run(mode):
         else: await page.keyboard.press("Enter")
         await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000); await page.wait_for_timeout(800)
         if mode != "reduced":
-            for k in range(0, 81):
+            for k in range(0, 101):
                 await page.evaluate(f"(() => {{ const e = window.__t2.engine; e.lenis.scrollTo(window.__p1.yAt({k * 0.05}), {{ immediate: true, force: true }}); e.ScrollTrigger.update(); }})()", isolated_context=False)
-                await page.wait_for_timeout(80)
-            await page.wait_for_timeout(1600)   # the stamps land on a timed beat
+                await page.wait_for_timeout(120)
+            await page.wait_for_timeout(800)
         print(mode, "vibrate calls:", await page.evaluate("window.__vib", isolated_context=False))
         await b.close()
 with BrowserLock():
