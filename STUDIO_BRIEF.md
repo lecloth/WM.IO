@@ -651,3 +651,28 @@ three.js; Lenis with light settings.
 - Page 1's camera lenses are plain black discs.
 - The real-phone test of page 1 hasn't run (the S23 Ultra wasn't on wireless debugging).
 - Wajih's laptop window size is still unmeasured.
+
+### Fixes after pages 2–3 (23 Nov, from Wajih's laptop screenshot). Overrides the above where they differ.
+- **Page 1 → page 2 handover: the "?" dot (Wajih's idea).** The detail-callout box is gone from this handover: in
+  Wajih's window page 2 spilled out below the box and the frame read as a bug. Now the dot of "Now, what do you need?"
+  (measured on the real glyph at every size) grows into a circular window, and we dive through it: a short pass
+  through a corridor of real drawing sheets (a first taste of the mind-bending trips), then land on page 2. About 1
+  viewport. The site opens on a dot, and its first handover goes through one.
+- **Cursor:** the CAD crosshair becomes a small hairline cross at the pointer: no full-screen lines, no X/Y readout.
+- **The title block** was cut off at the right edge of Wajih's real laptop window. Fix it, and add his window size to
+  every geometry check from now on.
+- **Next after these fixes:** page 4, the lock trip.
+- **Wajih's laptop window (measured 23 Nov):** 2160 × 1147 CSS px at devicePixelRatio 1.333: his screen is 1440 × 900
+  at 200% Windows scaling, and his Chrome is zoomed out to 67%. Every geometry check from now on adds **2160×1147
+  @1.333** (his window), **1440×765 @2** (the same laptop at normal 100% zoom) and **2560×1440 @1** (a common desktop).
+- **The finished phone looks cheap** (Wajih). The end of page 1's drawn → built → real journey must look like a real
+  product shot: realistic, glossy, live. Glossy realism comes from real reflections (a CC0 studio HDRI from Poly
+  Haven), physical materials (glass with a clear glossy coat, brushed titanium catching light along its edges) and
+  proper detail (bevelled edges, buttons, a camera bump, a soft contact shadow), with filmic tone mapping. **Live:** it
+  turns slowly with scroll, follows the pointer on desktop, and on Android tilts with the visitor's phone (gyroscope;
+  none with reduced motion).
+  - **Wajih chose to see both before deciding (option C):** (A) our own exploded-ready phone upgraded to
+    product-shot quality, so the six named pieces keep assembling exactly; (B) the best free human-made phone models
+    (generic, no brand shape, so no iPhone or Galaxy copies; CC0 or CC BY; commercial use allowed; credited). Both go
+    on the asset sheet at phone size, and Wajih picks on his phone. If a B model is used, the hand-over from our
+    pieces to it must show no jump.
