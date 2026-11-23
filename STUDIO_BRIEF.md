@@ -618,3 +618,36 @@ three.js; Lenis with light settings.
 - No stock icons, no UI kits, no generic illustrations, no AI-generated images.
 - **Asset sheet before use:** every new asset, material or treatment goes on an asset sheet in the lab first, with
   2–3 candidates side by side at phone size, and Wajih picks before it goes on a page.
+
+### Pages 2 and 3 (23 Nov). Overrides the above where they differ.
+- **One move.** Page 2 (For you) and page 3 (the work slip) flow as one scene: the visitor taps what fits, each tap
+  prints onto the slip, and the slip ends with Send.
+- **Page 2, For you:** "What do you need?" (arrived at through page 1's detail callout). Five choices as hairline
+  rows: A website · An app · My systems are a mess · AI working for me · Keep it secure. Tapping a row marks its box
+  with a hairline stroke (no checkmark icon), prints the line onto the slip, shows its answer beneath, and gives a
+  vibration tick on Android. Answers (drafts, flagged until Wajih signs them off):
+  - A website: fast, clean, and built to turn visitors into calls.
+  - An app: an app your customers keep, because every tap does what they expect.
+  - My systems are a mess: one system where your tools, data and numbers finally talk to each other.
+  - AI working for me: AI that answers, sorts and reports, while you run the business.
+  - Keep it secure: locks on every door: your data, your accounts, your customers.
+- **Page 3, the work slip** (the lab's C3): an engineering work order with a live number and date, the printed needs,
+  "When do you need it?" (As soon as possible · In 1–3 months · Just exploring), "Your name" (one short field), one
+  optional box ("Anything else?"), then Send.
+  - **Send:** big and unmissable, in the drawing language: no chunky filled button. 2–3 Send designs go on the lab
+    sheet for Wajih's pick; the best one sits on the page meanwhile, flagged.
+  - **Ways to reach us:** WhatsApp first (Gulf), then email, phone call, send from the page, book a call slot. WhatsApp
+    and email open in the visitor's own app with the slip filled in. Sending from the page and booking are built
+    fully but switched off in `site/js/settings.js` (locally they hand over to the email app); when switched on they
+    need a honeypot field and a rate limit. All typed text is length-capped and safely encoded into the links.
+    Contact details stay the placeholders in `settings.js`.
+- **After the slip:** "or see how we think ↓", then a detail callout in a different form from page 1's box (for
+  example a circle) into page 4's stage (still a stub).
+- **Phone material:** Wajih picked **B (titanium + black glass)** on the asset sheet; page 1 uses it from now on.
+- **Wording:** every line on pages 2–3 is a flagged draft until Wajih signs it off at the phone review.
+- **Budget:** pages 2 and 3 together about 4 viewports. The total stays about 36.
+
+### Edges for the polish pass (logged 23 Nov; not now)
+- Page 1's camera lenses are plain black discs.
+- The real-phone test of page 1 hasn't run (the S23 Ultra wasn't on wireless debugging).
+- Wajih's laptop window size is still unmeasured.
