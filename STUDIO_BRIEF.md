@@ -540,3 +540,81 @@ The lab (`site/dev/lab.html`) stays as the reference for every look above.
 Delivered. They become the seven gears, each with its title, one short line explaining the step, and a supporting
 real image (a scan or engraving, never drawn in code). The Break stress test lives inside "Tested". Take 1's four
 principles (Exact, Felt, Proven, Locked) are dropped: the seven steps replace them.
+
+### Design ethos (Wajih, 23 Nov). Applies to every page; overrides anything above that clashes.
+"Engineering, clean, thin lines, straight to the point, accurate. Every line counts, and every pixel too."
+- **Engineering drawing, nothing else.** Every line is a hairline: straight, exact, on the grid. No scribbles, no
+  soft glows, no fake ink, rubber-stamp or distressed textures.
+- **No generic web furniture** (it "looks very Claude and cheap"): no pill buttons, no chunky filled buttons, no
+  checkmark icons, no bubbly rounded device mockups, no boxed labels, nothing that looks like a premade UI kit. A
+  label is a mono word on a hairline leader line, the way a real drawing does it.
+- **Colour only when it means something.** Blue is the drawing stage (the X-ray). Type and everything else: ink on
+  paper.
+- **Every line and every pixel earns its place.** No decoration without information, no big dead areas.
+- **Real material only** (patent scans, real models), shown crisp.
+- Nothing looks clickable unless it is, and nothing clickable stops the scroll.
+
+### Page 1, round 3 (23 Nov). Overrides "Page 1 refinements" where they differ.
+**Fix what breaks the ethos (found in round 2's screenshots):**
+- The morph is a scribble cloud → precise lines only: clean, thin vector paths, few and exact, never noise.
+- The blue fade turns murky grey-blue → a clean change, no mush; lines stay crisp while the ground changes.
+- The finished phone is chunky and rounded, with a pill-button app mockup on its screen → a precise, hairline-edged
+  phone (Take 1's hero quality or better); anything on its screen follows the ethos.
+- Boxed X-ray labels → mono words on hairline leader lines.
+- YOU in blue → ink, standing out by size, weight and empty space.
+- The stamps → gone. The "For you" box button → gone; the scroll just carries on into page 2.
+
+**The new end of page 1:** "…to serve you." → **YOU** alone (ink) → "YOU gave us the task." → **WE**, pinned, with the
+same treatment as YOU (they mirror each other) → the seven verbs roll past one at a time, the one at the centre fully
+lit and the others faint, each with its meaning → "Now, what do you need?" → page 2. The rolling list is our own build
+of the pattern (a pinned word with a list lighting up at the centre), never santalarch's code.
+
+**The meanings (signed off by Wajih):**
+- **Understood:** the real problem behind your request, and what perfect looks like to you.
+- **Imagined:** every way it could work, how it should feel, how it should look. Kept the best.
+- **Drew:** every screen, every part, every colour, before any code.
+- **Tested:** made the code more elegant, more efficient, then stress-tested it to the absolute limit, so it won't
+  break on you.
+- **Felt:** every vibration, every motion, every word, until it feels right in your customers' hands.
+- **Refined:** until nothing is extra.
+- **Delivered:** working, finished, yours.
+
+**Page 5 (How we work):** the seven gears, each with its step's real image and its title only. No repeated
+meanings. The Break stress test sits inside "Tested". About 3 viewports.
+**Budget:** page 1 about 6 viewports, page 5 about 3; the total stays about 36.
+
+### Motion devices and asset quality (23 Nov). Overrides the above where they differ.
+Wajih: "do your recommendations, just careful choice of assets please, the idea is good but the assets might look
+cheap and bad."
+
+**Three motion devices** (the Claude chat's ideas, from studying santalarch's patterns; Wajih approved; built our own
+way, never their scenes or code):
+1. **The detail callout is how pages hand over.** As on real drawings ("SEE DETAIL A"), a hairline box or circle on
+   the current page, with its mono label, grows as you scroll until it becomes the next page's stage. The next page
+   is already there behind it, at full scale, seen through the window before you arrive. Every handover uses it once,
+   each in its own form (box, circle, section line), so no two look alike.
+2. **The verb drum is page 1's WE moment** (it replaces the rolling list): WE pinned in ink, and the seven verbs
+   turning past on a drum like a combination-lock dial. The verb facing you is lit, the others turn away, and its
+   meaning shows beneath. Type only: Newsreader on hairlines.
+3. **The sideways gear train is page 5:** the seven gears slide sideways as you scroll down. The gear in the centre
+   window is lit, with its title and its real image; the rest fade. The gears are real (a human-made model or real
+   engraved plates), never code-drawn polygons.
+- **Text reveals:** a calm, short rise-and-straighten word reveal. Scenes are scrubbed by scroll; text lands on the
+  beats.
+- **Not taken from santalarch:** its scenes and code, its 5.6 s loading screen, its 1.8 s scroll glide, its length.
+
+**Libraries** (free, made by others): GSAP with ScrollTrigger, SplitText (word reveals), MorphSVG (Bell's lines into
+the phone outline) and DrawSVG (hairline draws), all under GSAP's standard licence, which now covers commercial use;
+three.js; Lenis with light settings.
+
+**Asset quality:**
+- Only high-resolution originals: full-resolution patent scans, HAER sheets (the Library of Congress's real measured
+  engineering drawings, public domain; these are the "old-school and historical engineering sheets" that appear here
+  and there), museum open-access scans. Never thumbnails, never upscaled; crisp at the phone's 2.8× density.
+- One consistent treatment: the same paper tone and the same ink black everywhere; scans cleaned but keeping their
+  paper.
+- 3D: clean models with real proportions; real materials from CC0 scans (Poly Haven, ambientCG); restrained, even
+  light; hairline edges where the ethos asks for them.
+- No stock icons, no UI kits, no generic illustrations, no AI-generated images.
+- **Asset sheet before use:** every new asset, material or treatment goes on an asset sheet in the lab first, with
+  2–3 candidates side by side at phone size, and Wajih picks before it goes on a page.
