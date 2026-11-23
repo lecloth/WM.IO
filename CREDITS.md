@@ -24,6 +24,7 @@ No other font files are shipped. Pairings A and C were removed in slice 3 with `
 | `lenis.min.js` | Lenis 1.3.17 (darkroom.engineering) | npm `lenis` (file identical to `lenis/dist/lenis.min.js`) | MIT. The minified file carries no notice, so the licence text is shipped beside it as `site/vendor/lenis-LICENSE.txt` (added by the truth sweep) | Heavy smooth scroll |
 | `three/three.module.min.js`, `three/three.core.min.js`, `three/addons/lines/{LineSegments2,LineSegmentsGeometry,LineMaterial}.js`, `three/addons/geometries/RoundedBoxGeometry.js` | three.js r183 (0.183.0) core + four addons | npm `three` (identical to `three/build/three.module.min.js`) | MIT; full text shipped as `site/vendor/three/LICENSE.txt` | The 3D hero phone on sheet 01 (loaded through the import map; not bundled into `site/dist/`) |
 | `three/addons/loaders/{GLTFLoader,STLLoader}.js`, `three/addons/utils/{BufferGeometryUtils,SkeletonUtils}.js`, `three/addons/environments/RoomEnvironment.js` (Take 2) | three.js r183 addons, unmodified | npm `three` 0.183.0 (`examples/jsm/`) | MIT (same `site/vendor/three/LICENSE.txt`) | Take 2 style lab (`site/dev/lab/`): loading the real 3D models, the studio-light environment for A2; **page 1**: RoomEnvironment lights the phone's real materials |
+| `three/addons/loaders/HDRLoader.js`, `three/addons/libs/meshopt_decoder.module.js` (Take 2, fixes after pages 2–3) | three.js r183 addons, unmodified | npm `three` 0.183.0 (`examples/jsm/`) | MIT (same `site/vendor/three/LICENSE.txt`; the meshopt decoder carries its own MIT header, Arseny Kapoulkine) | **Page 1**: HDRLoader reads the studio HDRI for the finished phone's reflections; the meshopt decoder is for a picked version-B phone model (asset sheet) |
 | `axe.min.js` | axe-core 4.14.1 (Deque Systems), unmodified | npm `axe-core` (identical file) | Mozilla Public License 2.0; full text shipped as `site/vendor/axe-LICENSE.txt`, MPL header kept in the file | Sheet 09: the live accessibility check (WCAG 2.1 A/AA rules), loaded on demand |
 
 `site/dist/` holds only this site's own code bundled by esbuild (three, gsap and lenis stay external), so it adds
@@ -91,6 +92,63 @@ All from ambientCG (https://ambientcg.com), whose assets are all released under 
 | `Plastic010/` | Plastic 010: smooth plastic (its fine grain) | https://ambientcg.com/view?id=Plastic010 | CC0 1.0 | Option A back (frosted white); option B back (black glass: the same grain, dark and glossy): **page 1**, Wajih's pick (23 Nov) |
 | `Leather027/` | Leather 027: black leather | https://ambientcg.com/view?id=Leather027 | CC0 1.0 | Option C back |
 
+## Take 2 studio light (`site/media/hdri/`)
+
+| File | What it is | Source | Licence | Where used |
+|---|---|---|---|---|
+| `studio_small_09_1k.hdr` (1024 × 512, Radiance HDR, 1.6 MB, unmodified) | "Studio Small 09" by **Sergej Majboroda**: a small photo studio, large octaboxes, soft directional light on a white infinity cyc (16K original; the 1K file) | Poly Haven, https://polyhaven.com/a/studio_small_09 (file `https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr`, downloaded 23 Nov 2026) | **CC0 1.0** (every Poly Haven asset; https://polyhaven.com/license): commercial use, no credit required | **Page 1**: the finished phone's real reflections (version A); the asset sheet (A and the B slots). Two other CC0 studios were downloaded and looked at, not shipped: Studio Small 08, Photo Studio 01 |
+
+## Take 2 corridor sheets (`site/media/corridor/`), page 1's "?" dot dive
+
+Three candidate sets of five, side by side on the asset sheet for Wajih's pick; page 1 uses **C** until he picks.
+Web files (`<set>/01–05.webp`, long side 2400 px, ink mapped to #121212 on paper #F2F0EB, fine lines thickened
+slightly before the reduction so they stay ink) made by `tools/corridor_webp.py` from the originals in
+`tools/sources/corridor/` (not shipped).
+
+**HAER sheets (sets C and A).** Historic American Engineering Record measured drawings, Library of Congress Prints &
+Photographs; masters are 1-bit TIFFs at 400 dpi from `tile.loc.gov/storage-services/master/pnp/habshaer/…/sheet/000NNa.tif`.
+Rights (LoC, word for word on each item page, checked 23 Nov 2026): "No known restrictions on images made by the U.S.
+Government; images copied from other sources may be restricted." Made by the U.S. Government (National Park Service):
+**public domain**.
+
+| Set / file | Sheet | Call number | Item |
+|---|---|---|---|
+| c/01 | Hacienda La Esperanza, beam engine and flywheel elevation (sheet 1 of 4) | HAER PR,55-MANA,1A- (HAER PR-1-A) | https://www.loc.gov/pictures/item/pr0016.sheet.00001a |
+| c/02 | La Esperanza, engine end elevations (sheet 2 of 4) | same | https://www.loc.gov/pictures/item/pr0016.sheet.00002a |
+| c/03 | La Esperanza, reduction gears and cane mill (sheet 3 of 4) | same | https://www.loc.gov/pictures/item/pr0016.sheet.00003a |
+| c/04 | Hacienda La Igualdad, north elevation of machinery (sheet 3 of 6) | HAER PR,35-GUAN.V,1A- (HAER PR-7) | https://www.loc.gov/pictures/item/pr0031.sheet.00003a |
+| c/05 | La Igualdad, sections, cane mill, reduction gears, flywheel (sheet 5 of 6) | same | https://www.loc.gov/pictures/item/pr0031.sheet.00005a |
+| a/01 | Steam schooner Wapama, axonometric views of the engine (sheet 21 of 22) | HAER CAL,21-SAUS,1- (HAER CA-67) | https://www.loc.gov/pictures/item/ca1521.sheet.00021a |
+| a/02 | Windmill at Water Mill, NY, wood gear construction (sheet 5 of 6) | HAER NY,52-WATMI,1- | https://www.loc.gov/pictures/item/ny1142.sheet.00005a |
+| a/03 | San Francisco cable railway powerhouse, winding machinery elevation (sheet 5 of 5) | HAER CAL,38-SANFRA,137-A- (HAER CA-12-A) | https://www.loc.gov/pictures/item/ca1270.sheet.00005a |
+| a/04 | Wyman Bridge, Arkansas, truss elevation and plan (sheet 2 of 3) | HAER ARK,72-FAYVI,2- (HAER AR-38) | https://www.loc.gov/pictures/item/ar0096.sheet.00002a |
+| a/05 | Georgetown Steam Plant, Seattle, turbine isometric (sheet 8 of 8) | HAER WASH,17-SEAT,2- (HAER WA-1) | https://www.loc.gov/pictures/item/wa0169.sheet.00008a |
+
+**US patent sheets (set B).** Public domain (US patents issued 1847–1888; see the patent note above). Scans: the USPTO
+page images in the PDFs served by Google Patents (2320 × 3408 px, 1-bit); small scanner marks removed at the edges.
+
+| File | Patent | Source |
+|---|---|---|
+| b/01 | F. S. Baldwin, Calculating-Machine, US 159,244 (1875), sheet 1 | https://patents.google.com/patent/US159244A/en |
+| b/02 | W. S. Burroughs, Calculating Machine, US 388,116 (1888), sheet 1 | https://patents.google.com/patent/US388116A/en |
+| b/03 | R. M. Hoe, Printing Press, US 5,199 (1847), sheet 1 | https://patents.google.com/patent/US5199A/en |
+| b/04 | G. H. Corliss, Steam Engine, US 6,162 (1849), sheet 1 | https://patents.google.com/patent/US6162A/en |
+| b/05 | W. Odhner, Calculating-Machine, US 209,416 (1878), sheet 2 | https://patents.google.com/patent/US209416A/en |
+
+## Take 2 phone, version B candidates (not shipped yet)
+
+Listed on the asset sheet (`site/js/page01/phoneb.js`); none is on the site until Wajih downloads it (Sketchfab needs a
+login) and picks. Licences read 23 Nov 2026 from each model's Sketchfab data (`api.sketchfab.com/v3/models/<uid>`,
+what the model page shows): "CC Attribution · Author must be credited. Commercial use is allowed." (CC BY 4.0,
+http://creativecommons.org/licenses/by/4.0/). A picked model gets its credit line on the site and its changes listed
+here (branding removed, compressed, our screen).
+
+| Slot | Model | Author | Page |
+|---|---|---|---|
+| B1 | Generic Modern Phone Model | ToMar_ | https://sketchfab.com/3d-models/generic-modern-phone-model-3eea9dd94d554e95b143b7b090b89f1f |
+| B2 | Generic Smartphone - Game Ready PBR Asset | devOMAR | https://sketchfab.com/3d-models/generic-smartphone-game-ready-pbr-asset-21afd26fd39944adaeb31ec43bb87e11 |
+| B3 | Smartphone | Xyber | https://sketchfab.com/3d-models/smartphone-8c5f6079a7be48819f8d1dfca271bae3 |
+
 ## Take 2 3D model (`site/media/models/lock/`)
 
 | Files | What it is | Source | Licence | Where used |
@@ -104,7 +162,8 @@ All from ambientCG (https://ambientcg.com), whose assets are all released under 
 - The phone history drawings (c. 1900 to 2007): generic forms drawn in code (`site/js/sheet01/eras.js`); no logos, no
   brand names, no copy of any one maker's design. Facts: STATE.md "Phone history: sources" and `tools/notes/sweep-truth.md`.
 - The hero phone (six layers, edges, materials), the cyanotype shader, labels and dimensions: three.js and GLSL.
-- **Take 2 page 1 (round 3):** today's phone in six parts (glass, screen, frame, board, battery, back) with tight corners and a thin flat band, its X-ray (hairlines only) / built (white model, ink hairlines) / real looks, and its screen (the next page's question as rows on hairlines, flagged DRAFT) are drawn in code (`site/js/page01/phone.js`); only the real look's band and back use the CC0 scans above. No logos, no brand shapes. The beacon, the X-ray names on leader lines, the verb drum (CSS 3D type), the detail callout and the blue ground's grid are CSS/SVG/canvas.
+- **Take 2 page 1 (fixes after pages 2–3):** the finished phone's product-shot detail: bevelled real-look geometry, keys, the camera bump, the turned lens parts (ring, throat, rim, coated glass), the cover glass's reflection layer, the soft shadow, the live turn (`site/js/page01/phone.js`, `live.js`); the "?" dot dive (the glyph measured on a canvas, the corridor in WebGL with three.js, its rails and ring in SVG: `site/js/page01/dive.js`); the small hairline cross cursor (`site/js/engine/cursor.js`). The asset sheet's version-B framing (`phoneb.js`).
+- **Take 2 page 1 (round 3):** today's phone in six parts (glass, screen, frame, board, battery, back) with tight corners and a thin flat band, its X-ray (hairlines only) / built (white model, ink hairlines) / real looks, and its screen (the next page's question as rows on hairlines, flagged DRAFT) are drawn in code (`site/js/page01/phone.js`); only the real look's band and back use the CC0 scans above. No logos, no brand shapes. The beacon, the X-ray names on leader lines, the verb drum (CSS 3D type) and the blue ground's grid are CSS/SVG/canvas. (Round 3's detail callout into page 2 was replaced by the dot dive.)
 - The nine concept products (LOFTHAUL, QUAYCALL, STRINGWALK, OVERWING, NIGHTWELL, HALVANE, WARDCAST, QUILLFIELD,
   FERNPAY) and the AI sheet's quote for "Hollin & Pike Joinery": made-up names (web-checked, `tools/notes/products.md`,
   `tools/notes/sheet-03b.md`), screens drawn on canvas in code, always labelled "Concept sheet".
@@ -118,5 +177,5 @@ All from ambientCG (https://ambientcg.com), whose assets are all released under 
 - Patchright / Playwright Chromium for screenshots and frame-rate checks; Pillow for contact sheets; esbuild for the
   bundle (`tools/node_modules`).
 - PyMuPDF (AGPL, dev only) to read and extract the patent PDFs; potracer (GPL port of potrace, dev only) to trace the
-- `tools/bell_paths.py` (numpy + Pillow) fits Bell's eight outlines; `tools/materials.py` (Pillow) converts the ambientCG maps. Only their output ships.
+- `tools/bell_paths.py` (numpy + Pillow) fits Bell's eight outlines; `tools/materials.py` (Pillow) converts the ambientCG maps; `tools/corridor_webp.py` (Pillow) makes the corridor sheets. Only their output ships.
   plate figures into vectors. Only their output paths ship, not the tools.

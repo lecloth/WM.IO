@@ -1,7 +1,9 @@
 """Pages 1, 2 and 3 on Wajih's real phone (adb + CDP, ONE tab of our own; never lists or reads other tabs).
   python -I tools/phonep23.py --serial 192.168.1.32:39371 --out tools/shots/phone-p23 [--send]
 - the gate, a REAL tap on the point (adb input: the vibration unlock is real)
-- page 1: every named stop + mid-morph + mid-callout, screenshots and the geometry check (geom.py)
+- page 1: every named stop (mid-morph, the finished phone, the dot dive), screenshots and the geometry check (geom.py);
+  the gyroscope: real deviceorientation events reaching the page, and the phone answering a tilt
+- the asset sheet on the phone: version A and the B slots, the three corridors
 - pages 2-3: real taps on two rows (vibrate calls counted), every stop of tools/p23.py with its geometry check,
   a slip with every field filled
 - frame times while scrolling page 1 and pages 2-3 (scripted scroll, the phone's own compositor)
@@ -79,6 +81,17 @@ async def main(a):
                 if p in names:
                     m = json.loads(await c.eval(f"JSON.stringify(({G1['MEASURE_JS']})('{nm}'))")); pr = G1['check'](m, nm)
                     report["geometry"][f"p1 {nm}"] = pr; print(f"geometry p1 {nm} ({m['W']}x{m['H']}):", pr or "clean", flush=True)
+            # ---------- the finished phone is live: the gyroscope ----------
+            y = await c.eval("window.__p1.yAt(2.45)"); await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.2)
+            e0 = await c.eval("window.__p1.live.events"); await asyncio.sleep(3.0); e1 = await c.eval("window.__p1.live.events")
+            src = await c.eval("window.__p1.live.source")
+            # then a synthetic tilt (10 degrees of roll) through the same listener: the phone must turn, clamped and eased
+            tilt = json.loads(await c.eval("""(async () => { const L = window.__p1.live, r0 = window.__p1.phone.root.rotation.y;
+              for (let i = 0; i < 40; i++) { dispatchEvent(Object.assign(new Event('deviceorientation'), { alpha: 0, beta: 40, gamma: i < 2 ? 0 : 10 })); await new Promise(r => setTimeout(r, 16)); }
+              await new Promise(r => setTimeout(r, 900)); const r1 = window.__p1.phone.root.rotation.y;
+              return JSON.stringify({ yaw_before: +r0.toFixed(4), yaw_after: +r1.toFixed(4), live_now: { yaw: +L.now.yaw.toFixed(4), pitch: +L.now.pitch.toFixed(4) } }); })()"""))
+            report["gyro"] = {"source": src, "real_events_in_3s": e1 - e0, **tilt}
+            await shot("p1_2450_REAL_tilted"); print("gyro:", report["gyro"], flush=True)
             # ---------- pages 2-3: real taps on two rows ----------
             y = await c.eval(f"({G23['Y_JS']})('P2')"); await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.6)
             await shot("p2_P2"); m = json.loads(await c.eval(f"JSON.stringify(({G23['MEASURE_JS']})(['P2', {json.dumps(G23['FOCUS']['P2'])}]))")); pr = G23['check'](m, 'P2')
@@ -112,9 +125,12 @@ async def main(a):
             a2 = await c.eval("document.getElementById('page-02').offsetTop"); b2 = await c.eval("document.getElementById('page-04').offsetTop")
             report["fps"]["pages 2-3"] = json.loads(await c.eval(f"(async () => JSON.stringify(await {SCROLL_RUN}([{a2}, {b2}, {a.secs}])))()", timeout=a.secs + 40))
             print("fps pages 2-3:", report["fps"]["pages 2-3"], flush=True)
-            a3 = await c.eval("window.__p1.yAt(4.0)")
-            report["fps"]["callout A into page 2"] = json.loads(await c.eval(f"(async () => JSON.stringify(await {SCROLL_RUN}([{a3}, {a2 + 200}, 4])))()", timeout=60))
-            print("fps callout A:", report["fps"]["callout A into page 2"], flush=True)
+            a3 = await c.eval("window.__p1.yAt(4.3)")
+            report["fps"]["dot dive into page 2"] = json.loads(await c.eval(f"(async () => JSON.stringify(await {SCROLL_RUN}([{a3}, {a2 + 200}, 4])))()", timeout=60))
+            print("fps dot dive:", report["fps"]["dot dive into page 2"], flush=True)
+            a4 = await c.eval("window.__p1.yAt(2.0)"); b4 = await c.eval("window.__p1.yAt(2.6)")
+            report["fps"]["finished phone (real look, turning)"] = json.loads(await c.eval(f"(async () => JSON.stringify(await {SCROLL_RUN}([{a4}, {b4}, 4])))()", timeout=60))
+            print("fps finished phone:", report["fps"]["finished phone (real look, turning)"], flush=True)
             # ---------- Send ----------
             y = await c.eval(f"({G23['Y_JS']})('SEND')"); await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.2)
             link = await c.eval("document.querySelector('.send').href")
@@ -135,6 +151,12 @@ async def main(a):
                 report["back_in_chrome"] = "com.android.chrome" in adb(S, "shell", "dumpsys", "window").split("mCurrentFocus=")[-1].split("\n")[0]
                 print("back in Chrome:", report["back_in_chrome"], flush=True)
             report["errors"] = json.loads(await c.eval("JSON.stringify(window.__errs || [])"))
+            # ---------- the asset sheet, on the phone ----------
+            await c.call("Page.navigate", {"url": "http://127.0.0.1:8109/dev/assets.html"}); await asyncio.sleep(4)
+            await c.eval("window.__assets.ready().then(() => true)"); await asyncio.sleep(1)
+            for i, sel in enumerate(["#sheet .card:nth-child(1)", "#sheet .card:nth-child(2)", "#dives .divecard:nth-child(1)", "#dives .divecard:nth-child(2)", "#dives .divecard:nth-child(3)"]):
+                await c.eval(f"document.querySelector('{sel}').scrollIntoView({{ block: 'start' }}), true"); await asyncio.sleep(1.2)
+                await shot(f"assets_{i}")
     finally:
         async with websockets.connect("ws://127.0.0.1:9222/devtools/browser") as bws:
             await CDP(bws).call("Target.closeTarget", {"targetId": tid})

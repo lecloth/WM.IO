@@ -8,6 +8,7 @@
 <script type="importmap">
 { "imports": { "three": "../vendor/three/three.module.min.js", "three/addons/": "../vendor/three/addons/" } }
 </script>
+<link rel="stylesheet" href="../css/page-01-dive.css">
 <link rel="preload" href="../fonts/newsreader-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../fonts/dm-mono-500.woff2" as="font" type="font/woff2" crossorigin>
 <style>
@@ -30,6 +31,7 @@
   .card canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
   .card__tag { position: absolute; left: 16px; top: 14px; }
   .card__pend { position: absolute; right: 16px; top: 14px; color: var(--graphite); }
+  .card__wait { position: absolute; left: 16px; right: 16px; top: 45%; text-align: center; color: var(--graphite); }
   .card h2 { font-weight: 420; font-size: 26px; line-height: 1.15; padding: 12px 16px 0; }
   .card p { padding: 4px 16px 0; }
   .card dl { padding: 10px 16px 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px 12px; }
@@ -47,17 +49,37 @@
   .sendcard h3 { font-weight: 420; font-size: 24px; line-height: 1.15; margin-top: 12px; }
   .sendcard p { margin-top: 4px; }
   .sendcard .mono { color: var(--graphite); margin-top: 6px; }
+  :root { --ink-rgb: 18, 18, 18; --grid-major: rgba(18,18,18,.085); --grid-minor: rgba(18,18,18,.045); }
+  .divecard { width: 384px; max-width: calc(100vw - 32px); }
+  .divecard__stage { position: relative; height: 734px; max-height: 92vh; overflow: hidden; isolation: isolate; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair);
+    background-color: var(--paper); background-image: linear-gradient(var(--grid-major) 1px, transparent 1px), linear-gradient(90deg, var(--grid-major) 1px, transparent 1px); background-size: 100px 100px; }
+  .divecard__h { position: absolute; left: 16px; right: 16px; top: 64px; font-weight: 420; font-size: 44px; line-height: 1.04; letter-spacing: -.02em; }
+  .divecard .p1-dive, .divecard .p1-dive-top { position: absolute; inset: 0; pointer-events: none; }
+  .divecard .p1-dive { z-index: 2; } .divecard .p1-dive-top { z-index: 4; color: var(--ink); }
+  .divecard__end { position: absolute; inset: 0; z-index: 3; padding: 64px 16px 0; transform-origin: 0 0; background-color: var(--paper);
+    background-image: linear-gradient(var(--grid-major) 1px, transparent 1px), linear-gradient(90deg, var(--grid-major) 1px, transparent 1px); background-size: 100px 100px; }
+  .divecard__end b { display: block; font-weight: 420; font-size: 44px; line-height: 1.04; letter-spacing: -.02em; }
+  .divecard__end i { display: block; font-style: normal; font-size: 23px; padding: 18px 0; border-bottom: 1px solid rgba(18,18,18,.55); }
+  .divecard h3 { font-weight: 420; font-size: 24px; line-height: 1.15; margin-top: 12px; }
+  .divecard ol { margin: 6px 0 0 18px; font-size: 15px; } .divecard ol a { color: inherit; }
   @media (max-width: 420px) { .sends__row { grid-template-columns: 1fr; } .sendcard { width: 100%; max-width: none; } .sendcard iframe { width: 100%; } }
 </style>
 </head>
 <body>
   <header>
-    <p class="mono">Asset sheet · Take 2 · page 1 · the phone, real stage</p>
-    <h1>Three materials for the finished phone</h1>
-    <p>Every map is a CC0 scan from ambientCG. The band and the back change; the screen, glass and lenses stay. Wajih picked B; page 1 uses it.</p>
+    <p class="mono">Asset sheet · Take 2 · page 1 · the finished phone</p>
+    <h1>The finished phone: ours (A) or a free model (B)</h1>
+    <p>Same paper, same studio light, phone size. Move the pointer, or tilt your phone: they follow. Page 1 uses A until you pick. If a B is picked, our six pieces hand over to it in the same place and size.</p>
     <label class="turn mono">Turn <input id="turn" type="range" min="-100" max="100" value="11" aria-label="Turn the phones"></label>
   </header>
   <main class="sheet" id="sheet"></main>
+  <section class="sends dives" aria-labelledby="dives-h">
+    <p class="mono" style="margin-top:18px">Asset sheet · page 1 → 2 · the “?” dot dive</p>
+    <h2 id="dives-h">Three corridors of real drawing sheets</h2>
+    <p>The dot of “Now, what do you need?” opens into a window, and we pass down a corridor of five real sheets to page 2. Phone size, the real dive. Drag Dive to travel. Page 1 uses C until you pick.</p>
+    <label class="turn mono">Dive <input id="dive" type="range" min="0" max="1000" value="420" aria-label="Travel through the dive"></label>
+    <div class="sends__row" id="dives"></div>
+  </section>
   <section class="sends" aria-labelledby="sends-h">
     <p class="mono" style="margin-top:18px">Asset sheet · page 3 · the Send</p>
     <h2 id="sends-h">Three Sends, in the drawing language</h2>
@@ -68,7 +90,7 @@
       <article class="sendcard"><iframe src="send.html?d=C" title="Send option C, Bubble" loading="lazy"></iframe><h3>C · Bubble</h3><p>A drawing’s section bubble: the word above the cut line, the arrowhead below it.</p></article>
     </div>
   </section>
-  <footer class="mono">Sources and licences: CREDITS.md · converted by tools/materials.py</footer>
+  <footer class="mono">Sources and licences: CREDITS.md</footer>
 <script type="module" src="assets.js"></script>
 </body>
 </html>

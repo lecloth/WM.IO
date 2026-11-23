@@ -1,7 +1,7 @@
 """Pages 2 and 3 (Take 2): named stops, screenshots, geometry, length, console errors.
   python -I tools/p23.py --sizes 384x734,1440x900 [--themes light,dark] [--out tools/shots/p23] [--geom] [--reduced] [--only P2,SLIP]
 Stops (scroll positions, each a frozen frame):
-  P2      page 2 has arrived (page 1's callout done)          TAP2   two rows ticked (answers, the head's feed)
+  P2      page 2 has arrived (page 1's dive done)              TAP2   two rows ticked (answers, the head's feed)
   ROWS    all five ticked, the last rows in view             SLIP   the slip's head docked under the strip
   WHEN    "When do you need it?" at the top                  SEND   the Send in the middle of the screen
   FULL    every field filled, the Send in view               TAIL   "or see how we think" + Detail B rising
@@ -100,10 +100,11 @@ def check(m, stop):
     return probs
 
 async def run(pw, a, size, theme, out):
+    size, dpr = (size.split("@") + ["1"])[:2]; dpr = float(dpr)
     w, h = map(int, size.split("x")); mobile = w < 1024
-    b = await pw.chromium.launch(headless=True, args=["--use-gl=angle", "--use-angle=d3d11"])
-    opts = dict(viewport={"width": w, "height": h}, reduced_motion="reduce" if a.reduced else "no-preference")
-    if mobile: opts.update(is_mobile=True, has_touch=True, device_scale_factor=2)
+    b = await pw.chromium.launch(headless=True, args=["--use-gl=angle", "--use-angle=d3d11"], ignore_default_args=["--hide-scrollbars"])
+    opts = dict(viewport={"width": w, "height": h}, device_scale_factor=dpr, reduced_motion="reduce" if a.reduced else "no-preference")
+    if mobile: opts.update(is_mobile=True, has_touch=True)
     ctx = await b.new_context(**opts)
     if theme == "dark": await ctx.add_init_script("try { localStorage.setItem('wm:theme', 'dark'); } catch (e) {}")
     page = await ctx.new_page(); errs = []
@@ -151,7 +152,7 @@ async def main(a):
     print("TOTAL PROBLEMS:", total)
 
 ap = argparse.ArgumentParser()
-ap.add_argument("--sizes", default="384x734,390x844,1280x720,1366x768,1440x900,1920x1080"); ap.add_argument("--themes", default="light")
+ap.add_argument("--sizes", default="384x734@2.8125,390x844@3,1280x720@1,1366x768@1,1440x900@1,1920x1080@1,2160x1147@1.333,1440x765@2,2560x1440@1"); ap.add_argument("--themes", default="light")
 ap.add_argument("--out", default="tools/shots/p23"); ap.add_argument("--geom", action="store_true"); ap.add_argument("--reduced", action="store_true"); ap.add_argument("--only", default="")
 with BrowserLock():
     asyncio.run(main(ap.parse_args()))

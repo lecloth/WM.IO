@@ -7,7 +7,7 @@ export const OPTIONS = {
     frame: { set: 'Metal009', color: 0xE6E8EB, metalness: 0.9, env: 1.7, roughness: 0.36, rough: 1.0, normal: 0.35, repeat: 1 / 36 },
     back: { set: 'Plastic010', color: 0xEDEDEA, metalness: 0, roughness: 0.62, rough: 1.0, normal: 0.25, repeat: 1 / 60 } },
   B: { name: 'Titanium · black glass', note: 'Bead-blasted titanium band, a deep black glass back.',
-    frame: { set: 'Metal059A', color: 0xBDB9B2, metalness: 0.9, env: 1.6, roughness: 0.46, rough: 1.0, normal: 0.3, repeat: 1 / 40 },
+    frame: { set: 'Metal059A', color: 0xC4C0B8, metalness: 0.95, env: 2.3, roughness: 0.36, rough: 1.0, normal: 0.3, repeat: 1 / 40 },
     back: { set: 'Plastic010', color: 0x151619, metalness: 0, roughness: 0.18, rough: 0.6, normal: 0.12, repeat: 1 / 60 } },
   C: { name: 'Graphite · black leather', note: 'Dark brushed steel band, a black leather back.',
     frame: { set: 'Metal009', color: 0x76787D, metalness: 0.9, env: 1.5, roughness: 0.38, rough: 1.0, normal: 0.35, repeat: 1 / 36 },

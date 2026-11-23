@@ -1,5 +1,5 @@
-// Page 1 (Enter + hook), round 3. Scroll-driven, 6 screens tall: the stage stays put while 5 screens of scroll play the
-// story; the last screen is the detail callout that grows into page 2. Positions p are in screens of scroll (0..5):
+// Page 1 (Enter + hook), round 3 + fixes. Scroll-driven, 6.3 screens tall: the stage stays put while 5.3 screens of
+// scroll play the story; the last screen is the "?" dot dive into page 2. Positions p are in screens of scroll (0..5.3):
 //   S0     Bell's 1877 sheet (the real scan), headline and credit                                      0.00 – 0.22
 //          eight clean outlines draw on exactly over the scan (DrawSVG); the scan fades and leaves them 0.12 – 0.36
 //          the ground turns blue (one timed beat); the outlines morph into the phone's (MorphSVG)       0.36 – 0.80
@@ -13,13 +13,15 @@
 //   YOU    alone                                                                                       2.62 – 2.80
 //   TASK   "YOU gave us the task."                                                                     2.82 – 3.00
 //   WE     "us" becomes WE, pinned; the verb drum turns through the seven steps, each meaning beneath   3.02 – 3.98
-//   END    "Now, what do you need?" with the detail callout (page 2 seen through it)                  4.00 – 4.40
-//          the callout grows into page 2's stage                                                       4.30 – 4.97
+//   END    "Now, what do you need?"                                                                    4.00 – 4.30
+//   DIVE   its "?" dot grows into a window; down a corridor of real drawing sheets; page 2 at its end   4.30 – 5.30
 // Words land on beats as short timed reveals (SplitText words rise and straighten), so a paused frame always settles
 // on whole, readable words. The ground changes and the drum's turns are timed too; only the pictures scrub.
 // Reduced motion: still frames with the full text, no vibration.
 import { Phone } from './phone.js';
 import { BellMorph } from './morph.js';
+import { createLive } from './live.js';
+import { createDive, measureDot } from './dive.js';
 import { haptics } from '../engine/haptics.js';
 
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -33,15 +35,15 @@ function keys(p, k) {
 }
 const inR = (p, [a, b]) => p >= a - 1e-4 && p <= b + 1e-4;
 
-export const SCROLL = 5;
+export const SCROLL = 5.3;
 const R = {
   s0: [0, 0.22], draw: [0.12, 0.28], scanOut: [0.26, 0.36], blueOn: 0.36, morph: [0.4, 0.8], xray: [0.8, 0.88], linesOut: [0.86, 0.9],
   spread: [0.9, 1.12], s1: [1.12, 1.42], kin: [1.44, 2.32], kinWords: [1.44, 1.86], seat: 1.5, paperOn: 1.98, built: [2.0, 2.14], real: [2.16, 2.3],
-  s2: [2.34, 2.6], you: [2.62, 2.8], task: [2.82, 3.0], we: [3.02, 3.98], verbs: [3.06, 3.98], end: [4.0, 5], endText: [4.0, 4.4], frame: [4.0, 4.12], grow: [4.3, 4.97],
+  s2: [2.34, 2.6], you: [2.62, 2.8], task: [2.82, 3.0], we: [3.02, 3.98], verbs: [3.06, 3.98], end: [4.0, 5.3], endText: [4.0, 4.62], dive: [4.3, 5.3],
 };
 const HAND = 0.9;          // the handover: Bell's outlines -> X-ray, pose held until here
-// named stops for tests (a paused frame at each must be clean), including mid-morph, mid-drum and mid-callout
-export const STOPS = { S0: 0.1, draw: 0.24, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.6, END: 4.2, CALLOUT: 4.62 };
+// named stops for tests (a paused frame at each must be clean), including mid-morph, mid-drum and mid-dive
+export const STOPS = { S0: 0.1, draw: 0.24, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.6, END: 4.2, DOT: 4.4, DIVE: 4.72, LAND: 5.12 };
 const NAMES = ['Back', 'Battery', 'Board', 'Frame', 'Screen', 'Glass'];   // back to front
 const BLUE = [23, 63, 115];
 
@@ -83,8 +85,10 @@ export function initPage01(engine) {
 
   const flyYou = $('.p1-fly[data-w="you"]'), flyWe = $('.p1-fly[data-w="we"]');
   const slot = { a: $('.p1-slot--a'), c: $('.p1-slot--c'), u: $('.p1-slot--u'), w: $('.p1-slot--w') };
-  const callout = $('.p1-callout'), cRect = $('.p1-callout__rect'), cTag = $('.p1-callout__tag');
+  const diveEl = $('.p1-dive'), diveTop = $('.p1-dive-top');
   const page2 = document.getElementById('page-02'), page2In = page2?.querySelector('.p2__stage') || page2?.querySelector('.stub__in');
+  const dive = createDive(diveEl, diveTop);
+  const endH = T.end.querySelector('.p1-txt__h');
 
   const phone = new Phone(canvas);
   const morph = new BellMorph(morphSvg, gsap);
@@ -97,7 +101,8 @@ export function initPage01(engine) {
   function pose(p) {
     const E = portrait ? { yaw: -0.42, pitch: 1.02 } : { yaw: -1.0, pitch: 0.32 };
     const Hd = { yaw: -0.22, pitch: 0.1 }, F = { yaw: 0.34, pitch: 0.1 };
-    const K = [[HAND, Hd], [R.spread[1], E], [R.seat, E], [R.real[1], F]];
+    const F2 = { yaw: F.yaw + 0.34, pitch: F.pitch };   // the finished phone keeps turning, slowly, as you scroll
+    const K = [[HAND, Hd], [R.spread[1], E], [R.seat, E], [R.real[1], F], [R.s2[1], F2]];
     const spread = ease(span(p, HAND, R.spread[1]));
     const explodeEach = phone.parts.map((_, i) => (p < R.seat ? spread : 1 - ease(span(p, R.seat + i * 0.06, R.seat + 0.14 + i * 0.06))));   // back seats first
     return { explodeEach, yaw: keys(p, K.map(([q, o]) => [q, o.yaw])), pitch: keys(p, K.map(([q, o]) => [q, o.pitch])), fit: band };
@@ -141,7 +146,7 @@ export function initPage01(engine) {
     phone.set(pose(HAND));
     morph.place(plateRect, W, H, (...s) => phone.loop2D(...s), dpr);
     layoutDrum();
-    layoutCallout(desktop);
+    layoutDive();
     placeFlies();
     P = -1;
   }
@@ -173,23 +178,13 @@ export function initPage01(engine) {
     haptics.tick(10);
   }
 
-  // ---------- the detail callout: its starting window frames page 2's content, below the closing line ----------
-  function layoutCallout(desktop) {
-    if (!page2In) return;
-    const pr = page2In.getBoundingClientRect(); let l = 1e9, t = 1e9, r = -1e9, b = -1e9;
-    const framed = page2In.querySelectorAll('[data-callout]');   // page 2's rows (or the whole stub)
-    [...(framed.length ? framed : page2In.children)].forEach((c) => { const q = c.getBoundingClientRect(); l = Math.min(l, q.left); r = Math.max(r, q.right); t = Math.min(t, q.top - pr.top); b = Math.max(b, q.bottom - pr.top); });
-    const pad = desktop ? 32 : 20;
-    const endR = T.end.getBoundingClientRect(), sr = stage.getBoundingClientRect();
-    const endBottom = endR.top - sr.top + T.end.offsetHeight;
-    const tb = document.querySelector('.titleblock')?.getBoundingClientRect();
-    let top = Math.max(t - pad, endBottom + (desktop ? 56 : 40));
-    let bottom = Math.min(b + pad, H - bottomInset - (desktop ? 40 : 24));
-    let left = Math.max(desktop ? 16 : 6, l - pad), right = Math.min(W - (desktop ? 16 : 6), desktop ? Math.max(r + pad, W * 0.56) : W - 6);
-    if (tb && desktop && right > tb.left - 24) right = Math.max(left + 200, tb.left - 24);
-    if (bottom - top < 120) bottom = Math.min(H - bottomInset - 16, top + 120);
-    box0 = { left, top, right, bottom };
-    if (!cDraw && window.DrawSVGPlugin) { cRect.setAttribute('width', right - left); cRect.setAttribute('height', bottom - top); cDraw = gsap.fromTo(cRect, { drawSVG: '0%' }, { drawSVG: '100%', duration: 1, ease: 'none', paused: true, immediateRender: false }); cDraw.progress(1).progress(0); }
+  // ---------- the dive: the "?" dot, measured on the rendered glyph (after fonts load, on every resize) ----------
+  let dotNow = null;
+  function layoutDive() {
+    const sr = stage.getBoundingClientRect(), d = measureDot(endH);
+    if (!d) return;
+    dotNow = { x: d.x - sr.left, y: d.y - sr.top, r: d.r };
+    dive.layout(diveEl.clientWidth || W, diveEl.clientHeight || innerHeight, dotNow);
   }
 
   // ---------- "you" -> "YOU" and "us" -> "WE": one word each, travelling between its places ----------
@@ -283,36 +278,40 @@ export function initPage01(engine) {
     const step = (R.verbs[1] - R.verbs[0]) / steps.length;
     setVerb(inR(p, R.we) ? clamp(Math.floor((p - R.verbs[0]) / step), 0, steps.length - 1) : -1);
 
+    live?.gain(p >= R.real[0] && p < R.s2[1] ? 1 : 0);   // live only while the finished phone is on screen
     drawLabels(inR(p, R.s1));
-    renderCallout(p);
+    renderDive(p);
     // the 3D phone only renders while it can be seen (and one more frame as it goes)
     if (shown || phoneSeen) phone.render();
     phoneSeen = shown;
   }
   let phoneSeen = true;
 
-  // the callout: a hairline window drawn on, page 2 seen through it at full scale, then the window grows to the screen
-  let cDraw = null, cOn = null, cRectNow = null;
-  function renderCallout(p) {
-    if (!box0 || !page2) return;
-    const on = p >= R.end[0] && p < R.end[1] - 1.5 / Math.max(1, H);   // within 1.5 px of the end, page 2 is home (phones scroll in whole pixels)
-    if (on !== cOn) {
-      cOn = on; callout.classList.toggle('on', on); page2.classList.toggle('is-callout', on);
-      if (!on && page2In) page2In.style.clipPath = '';
+  // the dive: page 2's stage waits at the corridor's end (fixed, scaled by the corridor's perspective, clipped to the
+  // window) and is home, 1:1, when the travel ends (within 1.5 px of the end: phones scroll in whole pixels)
+  let diveOn = null, diveNow = null;
+  function renderDive(p) {
+    if (!page2) return;
+    const on = p >= R.end[0] && p < R.end[1] - 1.5 / Math.max(1, H);
+    if (on !== diveOn) {
+      diveOn = on; page2.classList.toggle('is-dive', on);
+      if (!on && page2In) { page2In.style.clipPath = ''; page2In.style.transform = ''; page2In.style.transformOrigin = ''; }
     }
-    if (!on) { cRectNow = null; return; }
-    const g = ease(span(p, ...R.grow));
-    const r = { left: lerp(box0.left, 0, g), top: lerp(box0.top, 0, g), right: lerp(box0.right, W, g), bottom: lerp(box0.bottom, H, g) };
-    cRectNow = { ...r, g };
-    page2In.style.clipPath = `inset(${r.top.toFixed(1)}px ${(W - r.right).toFixed(1)}px ${(H - r.bottom).toFixed(1)}px ${r.left.toFixed(1)}px)`;
-    cRect.setAttribute('x', (r.left + 0.5).toFixed(1)); cRect.setAttribute('y', (r.top + 0.5).toFixed(1));
-    cRect.setAttribute('width', Math.max(0, r.right - r.left - 1).toFixed(1)); cRect.setAttribute('height', Math.max(0, r.bottom - r.top - 1).toFixed(1));
-    const d = span(p, ...R.frame);
-    if (!cDraw && window.DrawSVGPlugin) cDraw = gsap.fromTo(cRect, { drawSVG: '0%' }, { drawSVG: '100%', duration: 1, ease: 'none', paused: true, immediateRender: false });
-    if (cDraw && d < 1 && g <= 0) cDraw.progress(d); else { cRect.style.strokeDasharray = 'none'; cRect.style.strokeDashoffset = '0'; }
-    cRect.style.opacity = String(1 - span(g, 0.75, 1));
-    cTag.style.transform = `translate(${r.left.toFixed(1)}px, ${(r.top - 20).toFixed(1)}px)`;
-    cTag.style.opacity = String(d * (1 - span(g, 0, 0.25)));
+    const q = span(p, ...R.dive), going = on && q > 0;
+    diveEl.classList.toggle('on', going); diveTop.classList.toggle('on', going);
+    if (!on) { diveNow = null; return; }
+    // page 2 stays in the flow (no switch to position: fixed, which re-lays out the page): a compositor transform holds
+    // its stage at the screen's top while it scrolls up under the dive (its own top is 0 when the dive ends)
+    const pin = -page2.getBoundingClientRect().top;
+    if (!going) { page2In.style.clipPath = 'circle(0px at 50% 50%)'; page2In.style.transform = `translateY(${pin.toFixed(2)}px)`; diveNow = null; return; }
+    const d = dive.render(q); if (!d) return;
+    diveNow = { ...d, q };
+    // clip-path is in page 2's own (unscaled) space: the window's radius divided by the scale, about the same centre
+    page2In.style.transformOrigin = d.origin;
+    const still = d.scale > 0.99995 && Math.abs(d.ox) < 0.01 && Math.abs(d.oy) < 0.01 && Math.abs(pin) < 0.01;
+    page2In.style.transform = still ? '' : `translateY(${pin.toFixed(2)}px) scale(${d.scale.toFixed(5)}) translate(${d.ox.toFixed(2)}px, ${d.oy.toFixed(2)}px)`;
+    // the window in page 2's own space: centre v - o, radius r / scale
+    page2In.style.clipPath = d.clip ? `circle(${(d.r / d.scale).toFixed(2)}px at ${(d.vx - d.ox).toFixed(2)}px ${(d.vy - d.oy).toFixed(2)}px)` : '';
   }
 
   // names beside each piece: a mono word on a hairline leader with a short shelf under it, alternating sides
@@ -368,9 +367,13 @@ export function initPage01(engine) {
     stage.append(T.s0, plateFig, credit, f1, T.kin, f2, T.s2, T.task, weEl, T.end);   // reading order
     Object.values(T).forEach((t) => t.classList.add('on'));
     [canvas, morphSvg, leaders, labelsEl, blue, real].forEach((el) => { el.hidden = true; });
-    callout.hidden = true;
+    diveEl.hidden = true; diveTop.hidden = true;
     return { length: () => sec.offsetHeight / innerHeight };
   }
+
+  // ---------- live: the finished phone follows the pointer (desktop) or the visitor's phone's tilt (Android) ----------
+  const live = createLive();
+  live.onChange((t) => { phone.tilt(t.yaw, t.pitch); if (phoneSeen) phone.render(); });
 
   // ---------- scroll ----------
   layout();
@@ -382,15 +385,21 @@ export function initPage01(engine) {
     onRefresh: (s) => { layout(); P = s.progress * SCROLL; render(P); },
   });
   render(0);
-  if (page2In) { page2In.style.opacity = '0.01'; page2.classList.add('is-callout'); requestAnimationFrame(() => requestAnimationFrame(() => { page2In.style.opacity = ''; if (!cOn) page2.classList.remove('is-callout'); })); }   // page 2 painted once now, not on the callout's first frame
+  if (page2In) { page2In.style.opacity = '0.01'; page2.classList.add('is-dive'); requestAnimationFrame(() => requestAnimationFrame(() => { page2In.style.opacity = ''; if (!diveOn) page2.classList.remove('is-dive'); })); }   // page 2 painted once now, not on the dive's first frame
   const again = () => { layout(); render(st.progress * SCROLL); };
-  // first paints of the dashed hairlines (Bell's outlines, the callout's frame) cost ~120 ms once on the GPU: they
-  // happen right after the page opens, at 1% opacity on top of the scan's own lines, not mid-scroll
+  // first paints of the dashed hairlines (Bell's outlines) and the corridor's sheets cost ~120 ms once on the GPU: they
+  // happen right after the page opens, at 1% opacity, not mid-scroll
   let warmed = false;
   const warm = () => {
     if (warmed || !morph.ready || document.documentElement.dataset.phase !== 'ready' || P >= R.draw[0]) return; warmed = true;
-    morph.warm(); cDraw?.progress(0.5); callout.style.opacity = '0.01'; callout.classList.add('on');
-    requestAnimationFrame(() => requestAnimationFrame(() => { callout.style.opacity = ''; cOn = null; render(st.progress * SCROLL); }));
+    morph.warm();
+    dive.load().then(() => {
+      if (P >= R.end[0]) return;
+      // three depths over three frames, so every sheet reaches the GPU now, not mid-dive
+      diveEl.style.opacity = '0.01'; diveEl.classList.add('on'); dive.render(0.35);
+      requestAnimationFrame(() => { dive.render(0.55); requestAnimationFrame(() => { dive.render(0.75); requestAnimationFrame(() => requestAnimationFrame(() => {
+        diveEl.style.opacity = ''; diveEl.classList.remove('on'); render(st.progress * SCROLL); })); }); });
+    });
   };
   morph.load('media/plates/bell-us186787-paths.json').then(() => { again(); warm(); }).catch((e) => console.warn('[page 01] paths', e));
   engine.on('opening:done', () => requestAnimationFrame(warm));
@@ -402,6 +411,6 @@ export function initPage01(engine) {
   // for tests
   window.__p1 = { phone, morph, stops: STOPS, scroll: SCROLL, R, yAt: (p) => st.start + (st.end - st.start) * p / SCROLL,
     box: () => phone.screenBox(), band: () => band, plate: () => plateRect, P: () => P, top: () => sec.offsetTop,
-    drum: () => drum.i, ground: () => G.b, callout: () => cRectNow, morphOn: () => morphState.alpha > 0.001, morphT: () => morphState.t };
+    drum: () => drum.i, ground: () => G.b, live, dive: () => diveNow, dot: () => dotNow, diveApi: dive, morphOn: () => morphState.alpha > 0.001, morphT: () => morphState.t };
   return { length: () => sec.offsetHeight / innerHeight };
 }

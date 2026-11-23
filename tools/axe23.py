@@ -32,7 +32,7 @@ async def main(a):
         if a.fps:
             yA = await ev("window.__p1.yAt(4.0)"); segs = {}
             for k in ["P2", "SLIP", "TAIL", "PIN", "P4"]: segs[k] = await ev(NS["Y_JS"], k)
-            for name, (y0, y1) in {"callout A into page 2": (yA, segs["P2"]), "page 2 rows -> slip": (segs["P2"], segs["SLIP"]), "the slip": (segs["SLIP"], segs["TAIL"]), "detail B into page 4": (segs["TAIL"], segs["P4"])}.items():
+            for name, (y0, y1) in {"the dot dive into page 2": (yA, segs["P2"]), "page 2 rows -> slip": (segs["P2"], segs["SLIP"]), "the slip": (segs["SLIP"], segs["TAIL"]), "detail B into page 4": (segs["TAIL"], segs["P4"])}.items():
                 print(a.size, name, json.dumps(await ev(RUN, [y0, y1, 4])), flush=True)
             await ev("() => ['web','app','mess'].forEach((id) => window.__p23.tick(id))"); await page.wait_for_timeout(800)
             y0 = await ev(NS["Y_JS"], "P2"); y1 = await ev(NS["Y_JS"], "SLIP")

@@ -4,7 +4,7 @@
 //     the screen (sticky) and types each new line in; when page 3 arrives, it docks as the top of the slip.
 //   page 3 (the work slip): live number and date, the printed needs, when, your name, anything else, how to send,
 //     Send (send.js). Then "or see how we think", and Detail B, a circle that grows into page 4 (callout.js).
-// Page 1's detail callout (Detail A, a box) frames page 2's rows ([data-callout]) and grows into page 2.
+// Page 1's "?" dot dive lands on page 2: page 2's stage waits at the end of its corridor (page 1 fixes and scales it).
 // Reduced motion: every word shown, no stroke draws, no rise, no pin, no vibration.
 import { slip, NEEDS } from './slip.js';
 import { initSend } from './send.js';
@@ -37,10 +37,12 @@ export function initPages23(engine) {
   const show = (el) => el.classList.add('on');
   if (reduced) rvs.forEach(show);
   else {
-    // page 2's lines rise when page 1's callout window first frames them (page 2 is fixed behind it), not before
+    // page 2's lines rise as the dive's window first shows them at the corridor's end (page 2 is fixed there), not before
     const io = new IntersectionObserver((es) => es.forEach((e) => {
       if (!e.isIntersecting) return;
-      if (e.target.closest('#page-02') && p2.classList.contains('is-callout') && !((window.__p1?.P?.() ?? 5) >= 3.99)) return;
+      // during the dive page 2 is a small, scaled sheet at the corridor's end: its words stand settled (no rise inside a
+      // scaled layer, which would re-raster it every frame)
+      if (e.target.closest('#page-02') && p2.classList.contains('is-dive')) { if ((window.__p1?.P?.() ?? 9) >= 4.3) { e.target.classList.add('on', 'is-still'); io.unobserve(e.target); } return; }
       show(e.target); io.unobserve(e.target);
     }), { rootMargin: '0px 0px -8% 0px' });
     rvs.forEach((el) => io.observe(el));
@@ -136,7 +138,7 @@ export function initPages23(engine) {
     raf = 0;
     const sr = stage.getBoundingClientRect();
     const fb = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--feed-bottom')) || 0;
-    const s = !p2.classList.contains('is-callout') && sr.top < innerHeight && sr.bottom > innerHeight - fb + 0.5;
+    const s = !p2.classList.contains('is-dive') && sr.top < innerHeight && sr.bottom > innerHeight - fb + 0.5;
     if (s !== stuck) { stuck = s; head.classList.toggle('is-stuck', s); }
   }
   const schedule = () => { if (!raf) raf = requestAnimationFrame(frame); };
@@ -146,7 +148,7 @@ export function initPages23(engine) {
   // page 3's grid continues page 2's; while page 1 fixes page 2's stage, page 2 keeps its height
   let refreshT = 0;
   const ro = new ResizeObserver(() => {
-    if (p2.classList.contains('is-callout')) return;
+    if (p2.classList.contains('is-dive')) return;
     const h = p2.offsetHeight;
     if (Math.abs(h - p2h) < 0.5) return;
     const first = !p2h; p2h = h;
@@ -170,17 +172,7 @@ export function initPages23(engine) {
 
   const calloutB = initCalloutB(engine);
 
-  // Detail A (page 1's window) frames page 2's [data-callout] block and must stay below page 1's closing line: give
-  // the block the room it needs (page 1's own rule: 40 px under the line + 20 px framing on phones, 56 + 32 on desktop)
-  const pick = p2.querySelector('.p2__pick'), h2 = p2.querySelector('.p2__h'), endTxt = document.querySelector('#page-01 .p1-txt--end');
-  function alignToCallout() {
-    if (!endTxt || reduced) return;
-    const desktop = innerWidth >= 1024, rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-    const endBottom = endTxt.offsetTop + endTxt.offsetHeight, h2Bottom = h2.offsetTop + h2.offsetHeight;
-    const need = endBottom + (desktop ? 56 + 32 : 40 + 20) + 2 - h2Bottom;
-    p2.style.setProperty('--p2-gap', `${Math.max(desktop ? 0.75 * rem : 10, Math.ceil(need))}px`);
-  }
-  const relayout = () => { alignToCallout(); layoutHead(); stuck = null; schedule(); };
+  const relayout = () => { layoutHead(); stuck = null; schedule(); };
   addEventListener('resize', relayout);
   engine.on('theme', relayout);
   engine.on('opening:done', relayout);

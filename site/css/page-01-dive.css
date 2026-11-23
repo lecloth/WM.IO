@@ -1,0 +1,17 @@
+/* Take 2 · page 1's "?" dot dive: the corridor of real drawing sheets (site/js/page01/dive.js). Shared by page 1 and
+   the asset sheet. Needs the tokens --paper, --ink, --ink-rgb, --grid-major. */
+.dive__win { position: absolute; inset: 0; overflow: hidden; background-color: var(--paper); }
+/* the corridor itself is WebGL (dive.js): the sheets are textures, so passing them costs no re-raster */
+.dive__gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.dive__rails { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.dive__rails path { fill: none; stroke: var(--ink); stroke-width: 1px; vector-effect: non-scaling-stroke; opacity: .7; }
+.dive__ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.dive__ring circle { fill: none; stroke: currentColor; stroke-width: 1px; vector-effect: non-scaling-stroke; }
+.dive__dot { position: absolute; left: -10px; top: -10px; width: 20px; height: 20px; border-radius: 50%; background: currentColor; transform-origin: 50% 50%; }
+/* the ink dot opens in one short timed beat; the ring is there while the window is a window, gone once it fills the screen */
+.dive__dot { transition: opacity .24s linear; }
+.is-open .dive__dot { opacity: 0; }
+.dive__ring { opacity: 0; transition: opacity .2s linear; }
+.is-open .dive__ring { opacity: 1; }
+.is-open.is-full .dive__ring { opacity: 0; }
+html[data-motion="reduce"] .dive__dot, html[data-motion="reduce"] .dive__ring { transition: none; }

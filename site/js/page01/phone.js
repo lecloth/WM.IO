@@ -2,14 +2,19 @@
 // design ethos: tight corners (no bubbly slabs), a thin flat band, every edge a hairline. Three looks:
 //   X-ray (the drawing: hairlines only, no glow; white on the blue ground, ink once the ground is paper)
 //   -> built (matte faces under ink hairlines; hidden lines removed by a depth pre-pass)
-//   -> real (CC0 material scans on the band and the back, see materials.js; a faint hairline stays on the edges).
+//   -> real: a product shot. Physical materials lit by a real studio HDRI (Poly Haven "Studio Small 09", CC0): brushed
+//      titanium band (anisotropic, CC0 scan maps, see materials.js) catching light on its bevelled edges, a black glass
+//      back under a clear glossy coat, a reflective cover glass, buttons, a camera bump with layered lenses (an
+//      iridescent coating), a soft shadow on the paper; ACES filmic tone mapping. The real look has its own bevelled
+//      geometry (inside the X-ray's crisp outline), so the pieces still assemble exactly and the drawing stays exact.
 // The X-ray's edge loops are tagged (part, piece, face), so Bell's few clean paths can land exactly on chosen ones.
-// No logos, no brand shapes (two plain round lenses, a round punch-hole).
+// No logos, no brand shapes (two plain round lenses in a plain bump, a round punch-hole).
 import * as THREE from 'three';
 import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
 import { OPTIONS, PICK, dress } from './materials.js';
 
 export const PHONE = { w: 74, h: 156, r: 6 };
@@ -33,6 +38,36 @@ function ring(w, h, d, r, t) {          // the band: the outline with the middle
   g.translate(0, 0, -d / 2); return g;
 }
 function disc(r, d) { const g = new THREE.CylinderGeometry(r, r, d, 48); g.rotateX(Math.PI / 2); return g; }
+// the real look's geometry: the same outlines with rounded (bevelled) edges, kept inside the X-ray's crisp box
+function bslab(w, h, d, r, b, seg = 4) {
+  const g = new THREE.ExtrudeGeometry(roundedRect(w - 2 * b, h - 2 * b, Math.max(0.3, r - b)), { depth: d - 2 * b, bevelEnabled: true, bevelThickness: b, bevelSize: b, bevelSegments: seg, curveSegments: 16 });
+  g.translate(0, 0, -(d - 2 * b) / 2); return g;
+}
+function bring(w, h, d, r, t, b, seg = 5) {
+  const s = roundedRect(w - 2 * b, h - 2 * b, Math.max(0.3, r - b));
+  s.holes.push(roundedRect(w - 2 * t, h - 2 * t, Math.max(0.5, r - t)));
+  const g = new THREE.ExtrudeGeometry(s, { depth: d - 2 * b, bevelEnabled: true, bevelThickness: b, bevelSize: b, bevelSegments: seg, curveSegments: 16 });
+  g.translate(0, 0, -(d - 2 * b) / 2); return g;
+}
+// a turned part (lens ring, glass): profile of [radius, height] pairs; height runs outwards from the back (-z)
+function lathe(profile, z0 = 0) {
+  const g = new THREE.LatheGeometry(profile.map(([r, h]) => new THREE.Vector2(r, h)), 64);
+  g.rotateX(-Math.PI / 2); g.translate(0, 0, z0); return g;
+}
+// a button key with rounded ends and edges (real look); the drawing keeps a crisp box
+function roundedKey(len) {
+  const g = new THREE.ExtrudeGeometry(roundedRect(2.4 - 0.6, len - 0.6, 0.9), { depth: 0.6, bevelEnabled: true, bevelThickness: 0.3, bevelSize: 0.3, bevelSegments: 4, curveSegments: 10 });
+  g.translate(0, 0, -0.3); g.rotateY(Math.PI / 2); return g;   // long side along y, its thickness along x
+}
+// a soft shadow: a blurred rounded rectangle (alpha), for the paper behind the finished phone
+function shadowTex() {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 512; const x = c.getContext('2d');
+  x.fillStyle = '#000'; x.fillRect(0, 0, 256, 512);   // opaque: the alpha map reads the colour, so the fade must be in it
+  x.filter = 'blur(22px)'; x.fillStyle = '#fff';
+  const r = 26, X = 60, Y = 60, w = 136, h = 392;
+  x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.fill();
+  return new THREE.CanvasTexture(c);
+}
 function faceUV(geo, w, h) {
   const p = geo.attributes.position, uv = geo.attributes.uv;
   for (let i = 0; i < p.count; i++) uv.setXY(i, (p.getX(i) + w / 2) / w, (p.getY(i) + h / 2) / h);
@@ -99,15 +134,28 @@ export class Phone {
     this.scene = new THREE.Scene();
     const pm = new THREE.PMREMGenerator(this.renderer);
     this.envTex = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose();
+    this.envRot = new THREE.Euler(0, 0, 0);   // as shot: the front three-quarter turn sweeps the first octabox across the glass and band
     this.camera = new THREE.PerspectiveCamera(26, 1, 20, 4000);
     this.scene.add(new THREE.HemisphereLight(0xffffff, 0xb9b6ae, 1.4));
     const key = new THREE.DirectionalLight(0xffffff, 1.2); key.position.set(-0.6, 1, 1.4); this.scene.add(key);
     this.root = new THREE.Group(); this.scene.add(this.root);
-    this.lineMats = []; this.parts = [];
+    this.lineMats = []; this.parts = []; this.tiltNow = { yaw: 0, pitch: 0 };
     this.L = { xl: [], pre: [], matte: [], ink: [], real: [] };   // materials per look
     this.option = option;
     this.build();
-    this.ready = dress(THREE, this.renderer, OPTIONS[option], this.dressMats, mediaBase).then(() => { this._looks = ''; this.dirty = true; });
+    // the studio HDRI (1k, CC0) replaces the room light in every real material once it's in
+    const url = `${mediaBase.replace(/materials\/$/, '')}hdri/studio_small_09_1k.hdr`;
+    const hdri = new Promise((res) => {
+      const go = (n) => new HDRLoader().load(n ? `${url}?r=${n}` : url, (t) => {
+        const g = new THREE.PMREMGenerator(this.renderer);
+        t.mapping = THREE.EquirectangularReflectionMapping;
+        const env = g.fromEquirectangular(t).texture; g.dispose(); t.dispose();
+        this.L.real.forEach((m) => { if (m.envMap) { m.envMap = env; m.needsUpdate = true; } });
+        this.envTex = env; res(env);
+      }, undefined, () => (n < 4 ? setTimeout(() => go(n + 1), 200 * (n + 1)) : res(null)));   // a refused request is retried
+      go(0);
+    });
+    this.ready = Promise.all([dress(THREE, this.renderer, OPTIONS[option], this.dressMats, mediaBase), hdri]).then(() => { this._looks = ''; this.dirty = true; });
   }
 
   lineMat(color, opacity, depthTest) {
@@ -120,24 +168,33 @@ export class Phone {
     const preMat = new THREE.MeshBasicMaterial({ colorWrite: false, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 2 }); L.pre.push(preMat);
     const look = (m, list, base = 1) => { m.transparent = true; m.depthWrite = false; m.userData.base = base; list.push(m); return m; };
     const matte = (hex, base = 1) => look(new THREE.MeshStandardMaterial({ color: hex, roughness: 0.95, metalness: 0, envMapIntensity: 0 }), L.matte, base);
-    const real = (o) => look(o.isMaterial ? o : new THREE.MeshStandardMaterial({ envMap: this.envTex, ...o }), L.real, o.isMaterial ? 1 : (o.opacity ?? 1));
+    const phys = (o) => new THREE.MeshPhysicalMaterial({ envMap: this.envTex, envMapRotation: this.envRot, ...o });
+    const real = (o) => look(o.isMaterial ? o : phys(o), L.real, o.isMaterial ? 1 : (o.opacity ?? 1));
     this.screenCanvas = document.createElement('canvas'); this.screenCanvas.width = 780; this.screenCanvas.height = 1640;
     drawScreen(this.screenCanvas);
     this.screenTex = new THREE.CanvasTexture(this.screenCanvas); this.screenTex.colorSpace = THREE.SRGBColorSpace; this.screenTex.anisotropy = 8;
-    // the two dressed materials (frame band, back panel), shared by their pieces; maps arrive from materials.js
-    const frameReal = new THREE.MeshStandardMaterial({ envMap: this.envTex, color: 0xCCCCCC, metalness: 1, roughness: 0.4 });
-    const backReal = new THREE.MeshStandardMaterial({ envMap: this.envTex, color: 0xEEEEEE, metalness: 0, roughness: 0.6 });
+    // the two dressed materials (frame band, back panel), shared by their pieces; maps arrive from materials.js.
+    // The band: brushed titanium (anisotropic: light runs along the brushing and catches the bevels); the back: black
+    // glass under a clear glossy coat.
+    const frameReal = phys({ color: 0xCCCCCC, metalness: 1, roughness: 0.4, anisotropy: 0.55, anisotropyRotation: Math.PI / 2 });
+    const backReal = phys({ color: 0xEEEEEE, metalness: 0, roughness: 0.6, clearcoat: 1, clearcoatRoughness: 0.035 });
     this.dressMats = { frame: [frameReal], back: [backReal] };
+    // the cover glass: reflections only, added on top of the screen (so the screen's own colours stay exact)
+    const glassReal = phys({ color: 0x000000, metalness: 0, roughness: 0.03, specularIntensity: 1, ior: 1.52, envMapIntensity: 0.5, blending: THREE.AdditiveBlending });
+    glassReal.userData.glass = true;
+    const lensGlass = { color: 0x07080A, roughness: 0.04, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.02, iridescence: 1, iridescenceIOR: 1.8, iridescenceThicknessRange: [260, 520], envMapIntensity: 1.3, side: THREE.DoubleSide };
+    const lensRing = { color: 0xC9C5BE, metalness: 1, roughness: 0.22, envMapIntensity: 1.5, side: THREE.DoubleSide };
 
     const P = (name, z, pieces) => {
       const g = new THREE.Group(); g.userData = { name, z }; this.root.add(g);
       const part = { name, group: g, z, loops: [], corners: [] };
-      pieces.forEach(({ geo, pos = [0, 0, 0], matte: mh, real: ro, edges = true, edgeOpacity = 1, glass = false, matteBase = 1 }, k) => {
+      pieces.forEach(({ geo, realGeo = geo, pos = [0, 0, 0], matte: mh, real: ro, edges = true, edgeOpacity = 1, glass = false, matteBase = 1, realOnly = false }, k) => {
         const holder = new THREE.Group(); holder.position.set(...pos); g.add(holder);
-        const add = (mat, ro_) => { const m = new THREE.Mesh(geo, mat); m.renderOrder = ro_; holder.add(m); return m; };
-        if (!glass) add(preMat, RO.pre);
+        const add = (mat, ro_, gg = geo) => { const m = new THREE.Mesh(gg, mat); m.renderOrder = ro_; holder.add(m); return m; };
+        if (realOnly) { add(real(ro), RO.real, realGeo); return; }   // a detail only the product shot has (lens elements)
+        if (!glass) add(preMat, RO.pre, realGeo);   // the depth pre-pass takes the bevelled shape, so the bevels show
         add(matte(mh, matteBase), glass ? RO.glass : RO.matte);
-        add(real(ro), glass ? RO.glass : RO.real);
+        add(real(ro), glass ? RO.glass : RO.real, realGeo);
         geo.computeBoundingBox(); const b = geo.boundingBox;
         for (const x of [b.min.x, b.max.x]) for (const y of [b.min.y, b.max.y]) for (const zz of [b.min.z, b.max.z]) part.corners.push({ holder, v: new THREE.Vector3(x, y, zz) });
         if (edges) {
@@ -158,12 +215,23 @@ export class Phone {
     };
     const { w: W, h: H, r: R } = PHONE;
     const screenReal = new THREE.MeshBasicMaterial({ map: this.screenTex, toneMapped: false });
-    const lensReal = { color: 0x0B0B0C, roughness: 0.08, metalness: 0.2 };
-    // back to front; z = assembled depth (mm)
+    // back to front; z = assembled depth (mm). The back faces -z. Pieces 1 and 2 (the lenses) are Bell's screw targets.
+    // A lens, real: a titanium ring with a chamfer (piece 1/2), the barrel's black throat, a bright inner rim, coated glass.
+    const ringGeo = () => lathe([[3.25, 1.2], [3.3, 1.5], [3.9, 1.6], [4.4, 1.25], [4.4, 0.0]], 0.6);
+    const lensParts = (x, y) => [
+      { realOnly: true, realGeo: lathe([[2.6, 1.05], [3.3, 1.05], [3.3, 1.15]], 0.6), pos: [x, y, -0.9], real: { color: 0x0A0A0B, roughness: 0.6, metalness: 0.2 , side: THREE.DoubleSide } },
+      { realOnly: true, realGeo: lathe([[1.5, 1.16], [1.85, 1.19], [2.15, 1.16]], 0.6), pos: [x, y, -0.9], real: { color: 0x8E8A84, roughness: 0.25, metalness: 1, envMapIntensity: 1.3 , side: THREE.DoubleSide } },
+      { realOnly: true, realGeo: lathe([[0, 1.4], [1.4, 1.38], [2.6, 1.31], [3.3, 1.24]], 0.6), pos: [x, y, -0.9], real: lensGlass },
+    ];
     P('Back', -3.4, [
-      { geo: slab(W, H, 0.8, R), matte: 0xE8E6E1, real: backReal },
-      { geo: disc(4.4, 1.2), pos: [-24, 63, -0.9], matte: 0x3A3936, real: lensReal },
-      { geo: disc(4.4, 1.2), pos: [-24, 50, -0.9], matte: 0x3A3936, real: lensReal },
+      { geo: slab(W, H, 0.8, R), realGeo: bslab(W, H, 0.8, R, 0.3), matte: 0xE8E6E1, real: backReal },
+      { geo: disc(4.4, 1.2), realGeo: ringGeo(), pos: [-24, 63, -0.9], matte: 0x3A3936, real: lensRing },
+      { geo: disc(4.4, 1.2), realGeo: ringGeo(), pos: [-24, 50, -0.9], matte: 0x3A3936, real: lensRing },
+      // the camera bump: a plain raised plate in the back's own glass (two lenses, a flash, a microphone hole)
+      { geo: slab(25, 36, 0.9, 7.5), realGeo: bslab(25, 36, 0.9, 7.5, 0.3), pos: [-22.5, 56.5, -0.85], matte: 0xDCDAD4, real: backReal },
+      { geo: disc(1.5, 0.3), pos: [-14.6, 63, -1.4], matte: 0xF1EFEA, real: { color: 0xEDE6D2, roughness: 0.45, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.05 }, edgeOpacity: 0.8 },
+      { realOnly: true, realGeo: disc(0.45, 0.3), pos: [-14.6, 50, -1.32], real: { color: 0x050505, roughness: 0.7, metalness: 0 } },
+      ...lensParts(-24, 63), ...lensParts(-24, 50),
     ]);
     P('Battery', -1.4, [{ geo: slab(54, 80, 3.2, 2), pos: [0, -28, 0], matte: 0xDCDAD4, real: { color: 0x2A2C2F, roughness: 0.55, metalness: 0.3 } }]);
     P('Board', 0.4, [
@@ -171,16 +239,21 @@ export class Phone {
       ...[[-12, 52, 16, 14], [10, 54, 12, 12], [12, 38, 16, 8], [-18, 34, 9, 9]].map(([x, y, w, h]) =>
         ({ geo: slab(w, h, 1.2, 0.6), pos: [x, y, 1.0], matte: 0xEDEBE6, real: { color: 0x141414, roughness: 0.35, metalness: 0.4 } })),
     ]);
-    P('Frame', 0, [{ geo: ring(W, H, 7.6, R, 1.1), matte: 0xD9D7D1, real: frameReal }]);
+    // the band and its keys (a volume rocker and the power key, on the right side)
+    const key = (len, y) => ({ geo: new THREE.BoxGeometry(1.2, len, 2.4), realGeo: roundedKey(len), pos: [W / 2 + 0.2, y, 0], matte: 0xD2D0CA, real: frameReal, edgeOpacity: 0.85 });
+    P('Frame', 0, [{ geo: ring(W, H, 7.6, R, 1.1), realGeo: bring(W, H, 7.6, R, 1.1, 0.85), matte: 0xD9D7D1, real: frameReal }, key(22, 46), key(11, 26)]);
     P('Screen', 2.6, [
       { geo: slab(W - 1.4, H - 1.4, 0.6, R - 0.7), matte: 0xE2E0DA, real: { color: 0x050505, roughness: 0.3, metalness: 0 }, edges: false },
       { geo: faceUV(new THREE.ShapeGeometry(roundedRect(W - 2.8, H - 2.8, R - 1.4), 12), W - 2.8, H - 2.8), pos: [0, 0, 0.32], matte: 0xEEECE7, real: screenReal, edgeOpacity: 0.8 },
     ]);
     P('Glass', 3.6, [
       // the glass is see-through: no depth pre-pass, faint in both solid looks, drawn after the faces
-      { geo: slab(W, H, 0.7, R), matte: 0xF7F6F2, matteBase: 0.22, real: { color: 0xffffff, roughness: 0.02, metalness: 0, opacity: 0.1 }, edgeOpacity: 0.85, glass: true },
-      { geo: disc(1.6, 0.8), pos: [0, 72.5, 0.1], matte: 0x0A0A0A, real: { color: 0x050505, roughness: 0.1, metalness: 0 } },
+      { geo: slab(W, H, 0.7, R), realGeo: bslab(W, H, 0.7, R, 0.3), matte: 0xF7F6F2, matteBase: 0.22, real: glassReal, edgeOpacity: 0.85, glass: true },
+      { geo: disc(1.6, 0.8), pos: [0, 72.5, 0.1], matte: 0x0A0A0A, real: { color: 0x050505, roughness: 0.1, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.03 } },
     ]);
+    // the soft shadow on the paper behind the finished phone (not in the fit; follows the phone's turn)
+    this.shadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: 0x000000, alphaMap: shadowTex(), transparent: true, depthTest: false, depthWrite: false, opacity: 0 }));
+    this.shadow.renderOrder = -1; this.scene.add(this.shadow);
     this.looks({ xray: 1, ground: 0, built: 0, real: 0 });
   }
   /** compile every look's shaders up front (each look's first appearance would otherwise stall a frame) */
@@ -208,8 +281,9 @@ export class Phone {
     L.xl.forEach((m) => { m.color.setHex(col); m.opacity = m.userData.base * x; m.visible = x > 0.001; });
     L.pre.forEach((m) => { m.visible = built > 0.001; });
     L.matte.forEach((m) => { m.opacity = m.userData.base * built * (1 - real); m.visible = built > 0.001 && real < 0.999; });
-    L.ink.forEach((m) => { m.opacity = m.userData.base * built * (1 - 0.72 * real); m.visible = built > 0.001; });
-    L.real.forEach((m) => { m.opacity = m.userData.base * built * real; m.visible = built * real > 0.001; });
+    L.ink.forEach((m) => { m.opacity = m.userData.base * built * (1 - real); m.visible = built > 0.001 && real < 0.999; });
+    L.real.forEach((m) => { m.opacity = m.userData.base * built * real; m.visible = built * real > 0.001; m.depthWrite = !m.userData.glass && built * real > 0.999; });
+    this.shadow.material.opacity = 0.34 * built * real; this.shadow.visible = built * real > 0.001;
   }
 
   /** pose: explodeEach[i] 0..1 per part (back to front), gap in mm, yaw/pitch in radians, fit = the band in CSS px */
@@ -240,6 +314,19 @@ export class Phone {
     this.camera.position.set(ctr.x + ox, ctr.y + oy, ctr.z + d); this.camera.lookAt(ctr.x + ox, ctr.y + oy, ctr.z);
     this.camera.updateMatrixWorld();
     this.pts = pts;
+    this.base = { yaw, pitch, ctr, d };
+    this.tilt(this.tiltNow.yaw, this.tiltNow.pitch);
+  }
+  /** live: a small extra turn on top of the fitted pose (pointer, gyroscope), without refitting; places the shadow */
+  tilt(yaw = 0, pitch = 0) {
+    this.tiltNow = { yaw, pitch };
+    const b = this.base; if (!b) return;
+    this.root.rotation.set(b.pitch + pitch, b.yaw + yaw, 0); this.root.updateMatrixWorld(true);
+    // the shadow: the phone's turned silhouette, soft, on the paper 40 mm behind it, offset away from the key light
+    const Y = b.yaw + yaw, Pt = b.pitch + pitch, depth = 7.6, back = 40, k = (b.d + back) / b.d;
+    const w = PHONE.w * Math.abs(Math.cos(Y)) + depth * Math.abs(Math.sin(Y)), h = PHONE.h * Math.abs(Math.cos(Pt)) + depth * Math.abs(Math.sin(Pt));
+    this.shadow.position.set(b.ctr.x + 4 * k, b.ctr.y - 7 * k, b.ctr.z - back);
+    this.shadow.scale.set(w * 256 / 136 * k, h * 512 / 392 * k, 1);
   }
 
   /** a part's projected box (CSS px) */

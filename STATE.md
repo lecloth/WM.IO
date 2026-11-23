@@ -10,7 +10,10 @@ Take 1's history below.
 - **Serve:** `python -m http.server 8109 --bind 127.0.0.1 --directory "C:\wajih-mansouri-studio - Take 2\site"`.
   Port 8109 only (Take 1 keeps 8108; never 8000, 8100–8102, 8105–8108).
 - **Commits:** "studio take 2: <short title>"; the final commit gets tag `take-2`.
-- **Phone:** Galaxy S23 over wireless debugging, `adb reverse tcp:8109 tcp:8109` (the site never leaves 127.0.0.1).
+- **Phone:** Galaxy S23 Ultra (SM-S918N) over wireless debugging, `adb reverse tcp:8109 tcp:8109` (the site never leaves 127.0.0.1).
+- **Every geometry check runs at 9 sizes** (Part 5 "Fixes after pages 2–3"): 384×734 @2.8125, 390×844 @3, 1280×720, 1366×768, 1440×900,
+  1920×1080, **2160×1147 @1.333 (Wajih's laptop window: 1440×900 at 200% Windows scaling, Chrome at 67%)**, 1440×765 @2, 2560×1440;
+  light and dark; desktop windows with their scrollbar (as real Chrome on Windows).
 - **How it runs:** style lab first (Wajih points) → one page at a time: build → wording batch → his S23 test →
   geometry check → commit → this file. Stop for Wajih only at style picks, each page's wording, each page's phone review.
 
@@ -18,8 +21,8 @@ Take 1's history below.
 
 | # | Page | What happens | Viewports | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | Enter + hook | Beacon → Bell's sheet: eight clean outlines draw on, morph into the X-ray phone → pieces named on leader lines → kinetic line, pieces join, ground back to paper → real → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum → "Now, what do you need?" → detail callout grows into page 2 | ~6 | **approved ("the core is solid"); material B (titanium + black glass) on the page; edges wait for the polish pass** |
-| 2 | For you | Detail A grows into it. Five hairline rows; a tap strokes the box, shows the answer, prints onto the slip (its head waits at the bottom and docks), ticks on Android | ~4 with page 3 | **built, waiting for Wajih's phone review, his Send pick and the wording** |
+| 1 | Enter + hook | Beacon → Bell's sheet: eight clean outlines draw on, morph into the X-ray phone → pieces named on leader lines → kinetic line, pieces join, ground back to paper → real (a glossy, live product shot) → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum → "Now, what do you need?" → its "?" dot opens; a corridor of real drawing sheets; page 2 at its end | ~6.3 | **approved ("the core is solid"); fixes done (23 Nov): waiting for Wajih's picks: phone A or a B, corridor set** |
+| 2 | For you | The dot dive lands on it. Five hairline rows; a tap strokes the box, shows the answer, prints onto the slip (its head waits at the bottom and docks), ticks on Android | ~4 with page 3 | **built, waiting for Wajih's phone review, his Send pick and the wording** |
 | 3 | Work slip | Number + date, printed needs, when, name, anything else, send by (5 ways), Send; "or see how we think ↓"; Detail B (a circle) grows into page 4 | (with page 2) | **built, as above** |
 | 4 | Four trips | Security showpiece (~5: lock's A journey → failed pick → B3 → today); AI, websites, apps lighter (~3 each) | ~14 | stub |
 | 5 | How we work | The sideways gear train: Wajih's seven steps, each a real gear (model or engraved plate) with its title and real image, the centre one lit; the Break stress test inside "Tested" | ~3 | stub |
@@ -37,14 +40,22 @@ Take 1's history below.
   (the three Send designs). Contact details + switches: `site/js/settings.js`. Page 4 overlaps page 3's tail (`margin-top: -100lvh`).
 - Send options: `site/dev/send.html?d=A|B|C` (one design at the foot of a filled slip), shown side by side on `site/dev/assets.html`.
   Build links `site/css/page-*.css` only. Entry: `site/js/main.js` (Take 1's is kept as `site/js/main.take1.js`, not bundled).
-- Page 1 (round 3): `site/js/page01/page.js` (the scroll story over 5 screens of scroll in a 6-screen section; texts, the timed ground
+- Page 1 (fixes, 23 Nov): the story is 5.3 screens of scroll in a 6.3-screen section. `site/js/page01/dive.js` (the "?" dot: measured on the
+  rendered glyph on a canvas after fonts load and on every resize; the window, the corridor in WebGL (three.js), its SVG rails and ring; page 2's stage at the end,
+  held by a transform, scaled and clipped by page.js), `dive-sets.js` (the three corridor sets; `PICK` = C, pending), `site/css/page-01-dive.css`;
+  `live.js` (the finished phone follows the pointer on desktop, tilts with deviceorientation on phones, clamped, re-centred over ~4 s; none
+  with reduced motion), `phoneb.js` (version B: a picked model fitted into exactly our box and framing, same light; `MODELS` = B1–B3, files
+  pending Wajih's download). `phone.js`'s real look: physical materials, the studio HDRI (`site/media/hdri/`), bevelled real-look geometry,
+  keys, camera bump, layered lenses, the cover glass's reflection layer, a soft shadow, `tilt()`.
+- Page 1 (round 3): `site/js/page01/page.js` (the scroll story; texts, the timed ground
   and dress beats, the flies you→YOU and us→WE, the verb drum, the detail callout into page 2, reduced motion), `site/js/page01/phone.js`
   (six-part phone: X-ray hairlines / built / real; tagged X-ray loops for the morph targets; the ethos screen), `site/js/page01/morph.js`
   (Bell's eight outlines: DrawSVG on the scan, MorphSVG into the phone's outlines), `site/js/page01/materials.js` (the three CC0 material
   options; `PICK` = the one on the page), `site/css/page-01.css` (also the strip, beacon gate, stubs, page 2's callout state).
   Data: `site/media/plates/bell-us186787-paths.json` (`tools/bell_paths.py`), `site/media/materials/*` (`tools/materials.py`).
   Page 2 overlaps page 1's last screen (`margin-top: -100lvh`); during that screen its stage is fixed and clipped to the callout window.
-- Asset sheet: `site/dev/assets.html` + `assets.js` (the finished phone in each material option, phone size, side by side, one Turn control).
+- Asset sheet: `site/dev/assets.html` + `assets.js`: the finished phone, A (ours) beside the B slots, live, one Turn control; the three corridors
+  (the real dive at phone size, one Dive control); the three Send designs.
 - Enter: `site/js/enter.js` (beacon gate; tap/click/Enter/Space/wheel/swipe all enter; only a pointer tap/click unlocks
   vibration; reduced motion: the same gate, still, enters at once).
   Vibration: `site/js/engine/haptics.js`.
@@ -54,9 +65,46 @@ Take 1's history below.
   `tools/geom.py` (geometry check, 6 sizes × light/dark × every stop), `tools/axe2.py` (axe + page-1 length), `tools/fps_seg.py` (emulated fps
   per story segment), `tools/phonep1.py` (real phone; its stop list still needs the round-3 stops), `tools/vibcheck.py` (vibration rules),
   `tools/assetshot.py` (asset sheet). Positions are scroll progress in screens (`__p1.yAt(p)`, 0..5); the named stops are `__p1.stops`
-  (S0 .1, draw .24, morph .6, S1 1.3, kin 1.72, paper 2.2, S2 2.5, YOU 2.72, TASK 2.92, WE 3.12, DRUM 3.6, END 4.2, CALLOUT 4.62).
+  (S0 .1, draw .24, morph .6, S1 1.3, kin 1.72, paper 2.2, REAL 2.45, S2 2.5, YOU 2.72, TASK 2.92, WE 3.12, DRUM 3.6, END 4.2, DOT 4.4, DIVE 4.72,
+  LAND 5.12). New (23 Nov, fixes): `tools/dotcheck.py` (the dive starts on the glyph's real dot), `tools/tbcheck.py` (title block at real sizes),
+  `tools/phoneshot.py` (asset-sheet phones at several turns), `tools/phoneseg.py` (real phone: fps per page-1 segment, gyroscope events),
+  `tools/slowwhere.py` (where slow frames happen), `tools/corridor_webp.py` (the corridor sheets). `tools/phonep23.py` now also checks the
+  gyroscope, the dive and the finished phone's fps, and shoots the asset sheet on the phone.
 
 ### Take 2 log
+- **Fixes after pages 2–3 (23 Nov).** Brief committed (fixes after pages 2–3, glossy live phone). Built to Part 5 "Fixes after pages 2–3".
+  - **Dot dive** replaces Detail A: the "?" dot (measured on the glyph; the dive's dot lands within 0.9 CSS px of the glyph's own ink at every
+    size, `tools/dotcheck.py`) opens into a window onto a corridor of five real drawing sheets on its walls, hairline rails to page 2's frame;
+    page 2 lands 1:1. About 1 viewport (p 4.3–5.3). Page 1 is now 6.3 screens (whole page about 36.3).
+  - **Cursor:** a small hairline cross (15 px), no full-screen lines, no readout; steps aside for text fields.
+  - **Title block:** it was drawn with only its left and top edges (made to sit in Take 1's sheet frame, which Take 2 doesn't have), so at Wajih's
+    window its open right side read as cut off; now a closed hairline box, 4 × 2 cells on desktop. **Desktop rem** is now min(width / 90,
+    height / 50), so wide, short windows (his: 1.88:1) keep the proportions the pages were laid out in.
+  - **Glossy live phone, version A:** see the page-structure note. Live: scroll turns it 0.34 rad more between "real" and the end of "…to serve
+    you."; pointer (desktop) and tilt (Android) add up to ±0.2 rad yaw, ±0.13 rad pitch.
+  - **Version B:** five licence-clean candidates found (all Sketchfab, CC BY 4.0, commercial use allowed, human-made, no brand shape), all need
+    a login; the top three are on the asset sheet as slots (B1 ToMar_, B2 devOMAR, B3 Xyber) with Wajih's download instructions.
+  - **Corridor sets:** three sets of five found and converted (C: one HAER sugar-mill survey, recommended and on the page; A: five HAER machines;
+    B: five 1847–1888 patents). LoC masters are 1-bit 400 dpi TIFFs.
+  - **Tests.** Real phone (SM-S918N, Chrome, 384x719, `tools/phonep23.py`, `tools/phoneseg.py`): geometry 0 problems at every page-1 stop and every
+    pages 2-3 stop; fps while scrolling: page 1 58 (first pass; 7 frames over 20 ms, one-time first appearances), pages 2-3 60, the dot dive 59.8,
+    the finished phone turning 60; page 1 per segment 58.3-60 first pass, 59.3-60 second; 2 real row taps = 2 vibrations; gyroscope: 432 real
+    deviceorientation events reached the page (phone lying still: Chrome only sends on change), a 10-degree roll turned the phone 0.145 rad,
+    eased and clamped. (These real-phone numbers are from before the corridor moved to WebGL and page 2 stopped switching to fixed; the phone was
+    then in use by Wajih, so it wasn't driven again.) Emulated: geometry 0 problems, page 1 at 9 sizes x light/dark x 16 stops and pages 2-3 at
+    9 sizes x light/dark x 11 stops; axe 0 (page 1 every stop, pages 2-3, light/dark, reduced motion); no console errors (one refused local
+    request seen once, now retried); length: page 1 6.3 viewports at every size, whole page 34.8-35.5 (reduced motion 4.1-4.9 / 11.9-13.4).
+    Screenshots: `tools/shots/fix/` (geom, p23, dot), `tools/shots/dive/`, `tools/shots/phoneA/`, `tools/shots/phone-fix/` (real phone).
+  - **Watch:** the first pass through the dive drops about 3 frames (~100 ms each, emulated) when page 2's live stage is first scaled and
+    circle-clipped at the corridor's end (with page 2 hidden they vanish; second passes are clean). Polish pass: clip page 2 another way.
+  - **Pending Wajih:** phone A or B (and B's downloads), corridor set, Send design (from last round), and his phone review of all of it.
+  - Decisions I made alone: the corridor is WebGL (textures, no re-raster; CSS 3D re-rastered the scans at every change of scale); its walls carry the sheets (left, right, alternating), floor and ceiling only the faint grid; page 2 is
+    the corridor's end frame (its own stage, scaled by the same perspective), so it is "already there" and lands without a cut; the ink dot opens
+    in one timed beat (never a grey disc on a paused frame); page 2 is held at the top by a transform during the dive (no switch to position: fixed, no re-layout); during the dive page 2's words
+    stand settled (no rise inside a scaled layer); the cover glass is a reflections-only layer added over the screen (so the screen's paper stays
+    exact); the hairlines fade fully in the real look (product shot); ACES filmic tone mapping kept (as before) with the HDRI as shot; the
+    gyroscope's level follows how the visitor holds the phone (~4 s), so only movement tilts; iPhone gets no tilt (it would need a permission
+    prompt); the 8109 server running this session was Wajih's own (started from his PowerShell before the session), so it was left running.
 - **Pages 2 and 3 (23 Nov).** Brief committed (pages 2 and 3, edges list). Phone material switched to B (Wajih's pick); CREDITS updated.
   Built to Part 5 "Pages 2 and 3". Length pages 2-3 (page 2 arrived → page 4 arrived): 3.19 viewports at 384×734 with nothing ticked,
   3.78 with every row ticked and the slip filled; 2.51 / 2.67 at 1440×900; real phone (384×719) 3.93 filled. Real phone (SM-S918N, Chrome,

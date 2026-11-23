@@ -12,6 +12,8 @@
 /* words: the calm rise-and-straighten (as page 1), played once when the line first comes into view */
 .p23 .w { display: inline-block; opacity: 0; transform: translateY(.34em) rotate(3deg); transform-origin: 0 100%; }
 .p23 .rv.on .w, .p23 .on > .w { opacity: 1; transform: none; transition: opacity .26s linear calc(var(--i, 0) * 45ms), transform .62s var(--ease-out) calc(var(--i, 0) * 45ms); }
+/* seen first at the end of page 1's corridor: the words stand settled (no rise inside the scaled stage) */
+.p23 .rv.on.is-still .w { transition: none; }
 
 /* the draft flag: one mono line per page; every line on pages 2-3 carries data-draft */
 .p23-flag { position: absolute; right: 16px; top: calc(var(--strip-h) + 6px); color: var(--graphite); font-size: 10px; }
@@ -31,7 +33,7 @@ input:checked + .mark path, input:checked ~ .mark path { stroke-dashoffset: 0; t
 .p2__stage { position: relative; display: flex; flex-direction: column; min-height: 100vh; min-height: 100lvh; padding: calc(var(--strip-h) + 24px) 16px 0; }
 /* the question sits where page 1's closing line stood, so the callout's handover lands on it */
 .p2__h { font-size: 44px; line-height: 1.04; letter-spacing: -.02em; max-width: 12ch; }
-.p2__pick { margin-top: var(--p2-gap, 10px); }   /* page.js: clears page 1's closing line, so Detail A frames all of it */
+.p2__pick { margin-top: 10px; }
 .p2__sub { font-size: 19px; line-height: 1.35; color: var(--ink); }
 .p2-rows { border: 0; margin: 22px 0 28px; min-inline-size: 0; }
 .p2-row { border-top: 1px solid rgba(var(--ink-rgb), .55); }
@@ -73,13 +75,15 @@ input:checked + .mark path, input:checked ~ .mark path { stroke-dashoffset: 0; t
 .slip-head:not(.is-stuck) .slip-head__go { display: none; }
 .slip-head:not(.is-stuck) { pointer-events: none; }
 .slip-head:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
-/* while page 1's callout frames page 2, the head stays out of it */
-#page-02.is-callout .slip-head { opacity: 0; transition: none; }
+/* while page 2 waits at the end of page 1's dive, the head stays out of it */
+#page-02.is-dive .slip-head { opacity: 0; transition: none; }
 
-/* ---------- page 1's detail callout grows into page 2 (page 1 fixes and clips .p2__stage meanwhile) ---------- */
+/* ---------- page 1's dive lands here: page 2's stage waits at the corridor's end (page 1 fixes, scales and clips it) ---------- */
 html[data-motion="full"] #page-02 { margin-top: -100vh; margin-top: -100lvh; }
-#page-02.is-callout { z-index: 3; background: transparent; min-height: var(--p2-h, 100lvh); }
-#page-02.is-callout .p2__stage { position: fixed; left: 0; right: 0; top: 0; background-color: var(--paper); background-size: 6.25rem 6.25rem, 6.25rem 6.25rem, 1.25rem 1.25rem, 1.25rem 1.25rem;
+#page-02.is-dive { z-index: 3; background: transparent; }
+/* page 1 holds the stage at the screen's top with a transform (no position change, so no re-layout) */
+.p2__stage { will-change: transform; }
+#page-02.is-dive .p2__stage { background-color: var(--paper); background-size: 6.25rem 6.25rem, 6.25rem 6.25rem, 1.25rem 1.25rem, 1.25rem 1.25rem;
   background-image: linear-gradient(var(--grid-major) 1px, transparent 1px), linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
     linear-gradient(var(--grid-minor) 1px, transparent 1px), linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px); }
 

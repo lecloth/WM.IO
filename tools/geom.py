@@ -9,8 +9,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browserlock import BrowserLock
 
-SIZES = "384x734,390x844,1280x720,1366x768,1440x900,1920x1080"
-SETTLE = {"WE": 1100, "DRUM": 1100, "END": 1100, "kin": 1000, "paper": 900, "TASK": 900}
+SIZES = "384x734@2.8125,390x844@3,1280x720@1,1366x768@1,1440x900@1,1920x1080@1,2160x1147@1.333,1440x765@2,2560x1440@1"   # WxH@devicePixelRatio; under 1024 wide = a phone
+SETTLE = {"WE": 1100, "DRUM": 1100, "END": 1100, "kin": 1000, "paper": 900, "TASK": 900, "REAL": 1000, "DOT": 700, "DIVE": 700, "LAND": 900}
 GOTO_JS = """async (p) => { const e = window.__t2.engine; const y = window.__p1.yAt(p); if (e.lenis) e.lenis.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y);
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); e.ScrollTrigger.update(); return scrollY; }"""
 MEASURE_JS = r"""(stop) => {
@@ -49,10 +49,10 @@ MEASURE_JS = r"""(stop) => {
   if (p1 && +getComputedStyle(cv).opacity > 0.05 && !cv.classList.contains('is-off')) {
     const b = p1.box(); items.push({ name: 'phone', kind: 'picture', l: b.left, t: b.top, r: b.right, b: b.bottom });
   }
-  const c = p1 && p1.callout();
-  if (c && c.g <= 0) {   // the detail window before it grows (growing over everything is the design)
-    items.push({ name: 'callout window', kind: 'window', l: c.left, t: c.top, r: c.right, b: c.bottom });
-    add('callout tag', document.querySelector('.p1-callout__tag'), 'text');
+  const dv = p1 && p1.dive();
+  if (dv) {   // the dive's window grows from the "?" dot over everything (the design); page 2 waits at the corridor's end
+    items.forEach((it) => { if (it.kind === 'text' || it.kind === 'picture') it.kind = 'under-dive'; });
+    const st = document.querySelector('#page-02 .p2__stage'); if (st) { const r = st.getBoundingClientRect(); items.push({ name: 'page 2 at the end', kind: 'end', l: r.left, t: r.top, r: r.right, b: Math.min(r.bottom, r.top + innerHeight * dv.scale) }); }
   }
   // page 1's band is in stage coordinates (the stage is 100lvh; on a real phone that is taller than the visible screen)
   const SH = document.querySelector('.p1__stage')?.clientHeight || H;
@@ -66,6 +66,8 @@ def check(m, stop):
     for it in items:
         if it["kind"] == "picture" and band and (it["l"] < band["left"] - 1 or it["t"] < band["top"] - 1 or it["r"] > W - band["right"] + 1 or it["b"] > BH - band["bottom"] + 1):
             problems.append(f"{it['name']} leaves its band ({it['l']:.0f},{it['t']:.0f})-({it['r']:.0f},{it['b']:.0f}); band ({band['left']:.0f},{band['top']:.0f})-({W - band['right']:.0f},{BH - band['bottom']:.0f})")
+        if it["kind"] == "end" and (it["l"] < -0.5 or it["t"] < -0.5 or it["r"] > W + 0.5):
+            problems.append(f"page 2's frame leaves the screen ({it['l']:.0f},{it['t']:.0f})-({it['r']:.0f},{it['b']:.0f})")
         if it["kind"] in ("picture", "text", "label", "window") and (it["l"] < -0.5 or it["t"] < -0.5 or it["r"] > W + 0.5 or it["b"] > H + 0.5):
             problems.append(f"{it['name']} leaves the screen ({it['l']:.0f},{it['t']:.0f})-({it['r']:.0f},{it['b']:.0f}) in {W}x{H}")
     def hit(a, b, pad=0):
@@ -73,7 +75,7 @@ def check(m, stop):
     for i, a in enumerate(items):
         for b in items[i + 1:]:
             kinds = {a["kind"], b["kind"]}
-            if kinds == {"chrome"}: continue
+            if kinds == {"chrome"} or "under-dive" in kinds or "end" in kinds: continue
             if kinds == {"text"} and a["name"].split(".")[0] == b["name"].split(".")[0]: continue   # lines of one block
             if "picture" in kinds and "label" in kinds: continue   # labels sit beside pieces by design (leader lines)
             if {a["name"], b["name"]} == {"plate", "lines"}: continue   # Bell's clean outlines are drawn exactly on the scan
@@ -87,13 +89,15 @@ async def main(a):
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     report, total = [], 0
     async with async_playwright() as pw:
-        b = await pw.chromium.launch(headless=True, args=["--use-gl=angle", "--use-angle=d3d11"])
-        for size in a.sizes.split(","):
+        # desktop windows keep their scrollbar (real Chrome on Windows has one; headless hides it by default)
+        b = await pw.chromium.launch(headless=True, args=["--use-gl=angle", "--use-angle=d3d11"], ignore_default_args=["--hide-scrollbars"])
+        for sz in a.sizes.split(","):
+            size, dpr = (sz.split("@") + ["1"])[:2]; dpr = float(dpr)
             w, h = map(int, size.split("x"))
             mobile = w < 1024
             for theme in ("light", "dark"):
-                opts = dict(viewport={"width": w, "height": h})
-                if mobile: opts.update(is_mobile=True, has_touch=True, device_scale_factor=2)
+                opts = dict(viewport={"width": w, "height": h}, device_scale_factor=dpr)
+                if mobile: opts.update(is_mobile=True, has_touch=True)
                 ctx = await b.new_context(**opts)
                 if theme == "dark": await ctx.add_init_script("try { localStorage.setItem('wm:theme', 'dark'); } catch (e) {}")
                 page = await ctx.new_page(); errs = []

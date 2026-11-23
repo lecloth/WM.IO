@@ -30,7 +30,7 @@ async def main(a):
         total = await ev("document.documentElement.scrollHeight / innerHeight")
         out = {"size": a.size, "dark": a.dark, "reduced": a.reduced, "page1_screens": round(length, 2), "whole_page_screens": round(total, 2), "stops": {}}
         stops = (await ev("window.__p1.stops")) if not a.reduced else {"all": None}
-        if not a.reduced:   # page 1's real length: scroll from its top until page 2 has fully arrived (the callout done), plus the first screen
+        if not a.reduced:   # page 1's real length: scroll from its top until page 2 has fully arrived (the dive done), plus the first screen
             out["page1_viewports_until_page2"] = round(await ev("(window.__p1.yAt(window.__p1.scroll) - window.__p1.top()) / innerHeight + 1"), 2)
         top = await ev("document.getElementById('page-01').offsetTop")
         for k, p in stops.items():

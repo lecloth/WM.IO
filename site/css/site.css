@@ -187,11 +187,6 @@ html[data-phase="loading"] .titleblock, html[data-phase="line"] .titleblock { op
 /* ---------- CAD crosshair cursor ---------- */
 .xhair { position: fixed; inset: 0; z-index: 60; pointer-events: none; mix-blend-mode: difference; color: var(--diff); opacity: 0; transition: opacity .3s; }
 .xhair.is-on { opacity: 1; }
-.xhair__h, .xhair__v { position: absolute; background: currentColor; opacity: .55; }
-.xhair__h { left: 0; right: 0; top: 0; height: 1px; transform: translateY(var(--y, -10px)); }
-.xhair__v { top: 0; bottom: 0; left: 0; width: 1px; transform: translateX(var(--x, -10px)); }
-.xhair__box { position: absolute; left: 0; top: 0; width: .75rem; height: .75rem; margin: -.375rem 0 0 -.375rem; border: 1px solid currentColor; transform: translate(var(--x, -10px), var(--y, -10px)) scale(var(--s, 1)); transition: transform .25s var(--ease-out); }
-.xhair__read { position: absolute; left: 0; top: 0; font-size: .5625rem; transform: translate(calc(var(--x, -10px) + .9rem), calc(var(--y, -10px) + .7rem)); white-space: nowrap; }
 @media (hover: hover) and (pointer: fine) and (min-width: 1024px) { html.has-xhair, html.has-xhair * { cursor: none !important; } }
 
 /* ---------- reduced motion: finished state, nothing moves ---------- */
