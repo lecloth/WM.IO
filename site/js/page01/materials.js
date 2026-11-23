@@ -1,6 +1,6 @@
 // The phone's real stage: three material options, every map a CC0 scan from ambientCG (ambientcg.com, CC0 1.0),
 // converted by tools/materials.py into site/media/materials/<AssetId>/. Shown side by side on the asset sheet
-// (site/dev/assets.html) for Wajih's pick; page 1 uses PICK until he chooses.
+// (site/dev/assets.html) for Wajih's pick; page 1 uses PICK (B, Wajih's pick).
 // Each option dresses the frame (the band you see from the front, turned) and the back panel. Restrained, even light.
 export const OPTIONS = {
   A: { name: 'Satin aluminium · frosted white', note: 'Brushed aluminium band, a fine-grain white back.',
@@ -13,7 +13,7 @@ export const OPTIONS = {
     frame: { set: 'Metal009', color: 0x76787D, metalness: 0.9, env: 1.5, roughness: 0.38, rough: 1.0, normal: 0.35, repeat: 1 / 36 },
     back: { set: 'Leather027', color: 0xFFFFFF, metalness: 0, roughness: 0.75, rough: 1.0, normal: 0.6, repeat: 1 / 45 } },
 };
-export const PICK = 'A';   // pending Wajih's pick on the asset sheet
+export const PICK = 'B';   // Wajih's pick on the asset sheet (23 Nov): titanium + black glass
 export const SOURCES = {
   Metal009: 'ambientCG Metal 009 (brushed metal), CC0',
   Metal059A: 'ambientCG Metal 059 A (titanium), CC0',

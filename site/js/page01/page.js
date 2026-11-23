@@ -84,7 +84,7 @@ export function initPage01(engine) {
   const flyYou = $('.p1-fly[data-w="you"]'), flyWe = $('.p1-fly[data-w="we"]');
   const slot = { a: $('.p1-slot--a'), c: $('.p1-slot--c'), u: $('.p1-slot--u'), w: $('.p1-slot--w') };
   const callout = $('.p1-callout'), cRect = $('.p1-callout__rect'), cTag = $('.p1-callout__tag');
-  const page2 = document.getElementById('page-02'), page2In = page2?.querySelector('.stub__in');
+  const page2 = document.getElementById('page-02'), page2In = page2?.querySelector('.p2__stage') || page2?.querySelector('.stub__in');
 
   const phone = new Phone(canvas);
   const morph = new BellMorph(morphSvg, gsap);
@@ -177,14 +177,15 @@ export function initPage01(engine) {
   function layoutCallout(desktop) {
     if (!page2In) return;
     const pr = page2In.getBoundingClientRect(); let l = 1e9, t = 1e9, r = -1e9, b = -1e9;
-    [...page2In.children].forEach((c) => { const q = c.getBoundingClientRect(); l = Math.min(l, q.left); r = Math.max(r, q.right); t = Math.min(t, q.top - pr.top); b = Math.max(b, q.bottom - pr.top); });
+    const framed = page2In.querySelectorAll('[data-callout]');   // page 2's rows (or the whole stub)
+    [...(framed.length ? framed : page2In.children)].forEach((c) => { const q = c.getBoundingClientRect(); l = Math.min(l, q.left); r = Math.max(r, q.right); t = Math.min(t, q.top - pr.top); b = Math.max(b, q.bottom - pr.top); });
     const pad = desktop ? 32 : 20;
     const endR = T.end.getBoundingClientRect(), sr = stage.getBoundingClientRect();
     const endBottom = endR.top - sr.top + T.end.offsetHeight;
     const tb = document.querySelector('.titleblock')?.getBoundingClientRect();
     let top = Math.max(t - pad, endBottom + (desktop ? 56 : 40));
     let bottom = Math.min(b + pad, H - bottomInset - (desktop ? 40 : 24));
-    let left = Math.max(16, l - pad), right = Math.min(W - 16, desktop ? Math.max(r + pad, W * 0.56) : W - 16);
+    let left = Math.max(desktop ? 16 : 6, l - pad), right = Math.min(W - (desktop ? 16 : 6), desktop ? Math.max(r + pad, W * 0.56) : W - 6);
     if (tb && desktop && right > tb.left - 24) right = Math.max(left + 200, tb.left - 24);
     if (bottom - top < 120) bottom = Math.min(H - bottomInset - 16, top + 120);
     box0 = { left, top, right, bottom };
@@ -294,7 +295,7 @@ export function initPage01(engine) {
   let cDraw = null, cOn = null, cRectNow = null;
   function renderCallout(p) {
     if (!box0 || !page2) return;
-    const on = p >= R.end[0] && p < R.end[1] - 1e-4;
+    const on = p >= R.end[0] && p < R.end[1] - 1.5 / Math.max(1, H);   // within 1.5 px of the end, page 2 is home (phones scroll in whole pixels)
     if (on !== cOn) {
       cOn = on; callout.classList.toggle('on', on); page2.classList.toggle('is-callout', on);
       if (!on && page2In) page2In.style.clipPath = '';

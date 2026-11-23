@@ -1,0 +1,119 @@
+/* Take 2 · pages 2 and 3, one move (Part 5 "Pages 2 and 3"). Shared bits + page 2 (For you) + the work slip's head.
+   The design ethos: hairlines, ink on paper, mono words for labels, no pills, no fills, no checkmark icons.
+   Phones first: px on phones (body text >= 18 px), rem on desktop (1rem = width / 90). */
+
+/* ---------- the ground: paper with the drawing grid; page 3's grid continues page 2's (page.js sets --p2-h) ---------- */
+.p23 { position: relative; background-color: var(--paper);
+  background-image: linear-gradient(var(--grid-major) 1px, transparent 1px), linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-minor) 1px, transparent 1px), linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+  background-size: 6.25rem 6.25rem, 6.25rem 6.25rem, 1.25rem 1.25rem, 1.25rem 1.25rem; }
+.p3 { background-position: 0 calc(-1 * var(--p2-h, 0px)); }
+
+/* words: the calm rise-and-straighten (as page 1), played once when the line first comes into view */
+.p23 .w { display: inline-block; opacity: 0; transform: translateY(.34em) rotate(3deg); transform-origin: 0 100%; }
+.p23 .rv.on .w, .p23 .on > .w { opacity: 1; transform: none; transition: opacity .26s linear calc(var(--i, 0) * 45ms), transform .62s var(--ease-out) calc(var(--i, 0) * 45ms); }
+
+/* the draft flag: one mono line per page; every line on pages 2-3 carries data-draft */
+.p23-flag { position: absolute; right: 16px; top: calc(var(--strip-h) + 6px); color: var(--graphite); font-size: 10px; }
+.p2 .p23-flag { z-index: 1; }
+
+/* the mark: a hairline box; ticking it draws ONE hairline stroke corner to corner (no checkmark icon) */
+.mark { flex: none; width: 24px; height: 24px; overflow: visible; color: var(--ink); }
+.mark rect { fill: none; stroke: currentColor; stroke-width: 1px; vector-effect: non-scaling-stroke; shape-rendering: crispEdges; }
+.mark path { fill: none; stroke: currentColor; stroke-width: 1.25px; vector-effect: non-scaling-stroke; stroke-linecap: square; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .22s cubic-bezier(.4, 0, .2, 1); }
+input:checked + .mark path, input:checked ~ .mark path { stroke-dashoffset: 0; transition-duration: .26s; }
+/* the native inputs stay (keyboard, screen readers); only their look is replaced */
+.p2-row__in, .tick input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
+.p2-row__in:focus-visible ~ .mark rect, .tick input:focus-visible ~ .mark rect { stroke-width: 2px; }
+.p2-row__in:focus-visible ~ .p2-row__t, .tick input:focus-visible ~ span { text-decoration: underline; text-underline-offset: .18em; text-decoration-thickness: 1px; }
+
+/* ---------- page 2 ---------- */
+.p2__stage { position: relative; display: flex; flex-direction: column; min-height: 100vh; min-height: 100lvh; padding: calc(var(--strip-h) + 24px) 16px 0; }
+/* the question sits where page 1's closing line stood, so the callout's handover lands on it */
+.p2__h { font-size: 44px; line-height: 1.04; letter-spacing: -.02em; max-width: 12ch; }
+.p2__pick { margin-top: var(--p2-gap, 10px); }   /* page.js: clears page 1's closing line, so Detail A frames all of it */
+.p2__sub { font-size: 19px; line-height: 1.35; color: var(--ink); }
+.p2-rows { border: 0; margin: 22px 0 28px; min-inline-size: 0; }
+.p2-row { border-top: 1px solid rgba(var(--ink-rgb), .55); }
+.p2-row:last-child { border-bottom: 1px solid rgba(var(--ink-rgb), .55); }
+.p2-row__hit { position: relative; display: grid; grid-template-columns: 28px 24px 1fr; align-items: center; column-gap: 14px; min-height: 64px; padding: 8px 0; cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; }
+.p2-row__no { color: var(--graphite); font-size: 11px; }
+.p2-row__t { font-family: var(--f-display); font-weight: 420; font-size: 23px; line-height: 1.12; letter-spacing: -.01em; }
+/* the answer, beneath its row: the space opens (rows grid 0fr -> 1fr), then the words rise */
+.p2-ans { display: grid; grid-template-rows: 0fr; visibility: hidden; transition: grid-template-rows .34s var(--ease-out), visibility 0s .34s; }
+.p2-ans > p { overflow: hidden; min-height: 0; }
+.p2-ans__t { font-size: 19px; line-height: 1.34; padding: 0 0 14px 66px; color: var(--ink); }
+.p2-row.is-on .p2-ans { grid-template-rows: 1fr; visibility: visible; transition: grid-template-rows .34s var(--ease-out), visibility 0s; }
+
+/* ---------- the work slip's head: waits at the bottom while page 2 is on screen, docks as the slip's top ---------- */
+.slip-head { position: sticky; z-index: 6; bottom: var(--feed-bottom, 92px); display: block; margin-top: auto; background: var(--paper);
+  border: 1px solid var(--ink); border-bottom-color: rgba(var(--ink-rgb), .35); color: var(--ink); -webkit-tap-highlight-color: transparent;
+  transition: transform .34s var(--ease-out), opacity .22s linear; }
+.slip-head__cells { display: grid; grid-template-columns: auto auto 1fr; }
+.slip-cell { display: flex; flex-direction: column; gap: 3px; padding: 7px 10px 8px; border-left: 1px solid rgba(var(--ink-rgb), .35); min-width: 0; }
+.slip-cell:first-child { border-left: 0; }
+.slip-cell__k { font-size: 9px; color: var(--graphite); }
+.slip-cell__v { font-size: 12px; white-space: nowrap; }
+.slip-cell__v b { font-weight: 500; }
+.slip-cell--n { text-align: right; align-items: flex-end; }
+.slip-head__go { display: inline; font-style: normal; }
+/* the paper coming out of the head: the needs printed so far, the newest typed in by the print head */
+.slip-head__feed { display: none; padding: 7px 10px 8px; border-top: 1px solid rgba(var(--ink-rgb), .35); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.slip-head__feed .new { display: inline-block; vertical-align: bottom; clip-path: inset(0 100% 0 0); animation: print var(--print-ms, .5s) steps(var(--print-n, 10), end) forwards; }
+@keyframes print { to { clip-path: inset(0 0 0 0); } }
+/* stuck (page 2 on screen, page 3 not yet): it rises with the first tap (before that it would only cover the last row) */
+.slip-head.is-stuck:not(.is-live) { transform: translateY(calc(100% + var(--feed-bottom, 92px))); opacity: 0; pointer-events: none; }
+/* stuck, it slims to one line: the printed needs, then the count with its arrow down to the slip */
+.slip-head.is-stuck { display: flex; flex-direction: row-reverse; border-bottom-color: var(--ink); }
+.slip-head.is-stuck .slip-head__cells { flex: none; display: block; }
+.slip-head.is-stuck .slip-cell:not(.slip-cell--n) { display: none; }
+.slip-head.is-stuck .slip-cell--n { height: 100%; border-left: 1px solid rgba(var(--ink-rgb), .35); }
+.slip-head.is-stuck .slip-head__feed { display: block; flex: 1; min-width: 0; border-top: 0; align-self: center; }
+.slip-head__lbl { color: var(--graphite); }
+.slip-head:not(.is-stuck) .slip-head__go { display: none; }
+.slip-head:not(.is-stuck) { pointer-events: none; }
+.slip-head:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+/* while page 1's callout frames page 2, the head stays out of it */
+#page-02.is-callout .slip-head { opacity: 0; transition: none; }
+
+/* ---------- page 1's detail callout grows into page 2 (page 1 fixes and clips .p2__stage meanwhile) ---------- */
+html[data-motion="full"] #page-02 { margin-top: -100vh; margin-top: -100lvh; }
+#page-02.is-callout { z-index: 3; background: transparent; min-height: var(--p2-h, 100lvh); }
+#page-02.is-callout .p2__stage { position: fixed; left: 0; right: 0; top: 0; background-color: var(--paper); background-size: 6.25rem 6.25rem, 6.25rem 6.25rem, 1.25rem 1.25rem, 1.25rem 1.25rem;
+  background-image: linear-gradient(var(--grid-major) 1px, transparent 1px), linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-minor) 1px, transparent 1px), linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px); }
+
+@media (hover: hover) and (pointer: fine) {
+  .p2-row__hit:hover .p2-row__t { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .16em; }
+  .p2-row__hit:hover .mark rect { stroke-width: 1.5px; }
+}
+
+@media (min-width: 1024px) {
+  .p23-flag { right: 6rem; font-size: .625rem; top: calc(var(--strip-h) + .75rem); }
+  .p2__stage { padding: calc(var(--strip-h) + 7rem) 6rem 0; }
+  .p2__h { font-size: 5rem; max-width: none; }
+  .p2__sub { font-size: 1.375rem; }
+  .p2-rows { margin: 2.25rem 0 2.5rem; }
+  /* desktop: the answer sits on its row's right, joined by a hairline leader drawn on as you tick */
+  .p2-row { display: grid; grid-template-columns: 31rem 1fr; align-items: center; }
+  .p2-row__hit { grid-template-columns: 2rem 1.5rem 1fr; column-gap: 1.25rem; min-height: 4rem; padding: .4rem 0; }
+  .p2-row__hit::after { content: ""; position: absolute; right: 1.25rem; top: 50%; width: 3.5rem; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: 0 50%; transition: transform .26s cubic-bezier(.4, 0, .2, 1); }
+  .p2-row.is-on .p2-row__hit::after { transform: none; transition-delay: .1s; }
+  .mark { width: 1.5rem; height: 1.5rem; }
+  .p2-row__no { font-size: .75rem; }
+  .p2-row__t { font-size: 2.125rem; }
+  .p2-ans { grid-template-rows: none; display: block; visibility: hidden; transition: visibility 0s .3s; }
+  .p2-row.is-on .p2-ans { visibility: visible; transition: none; }
+  .p2-ans__t { font-size: 1.375rem; padding: 0; max-width: 34ch; }
+  .slip-head { max-width: 78rem; bottom: var(--feed-bottom, 2.25rem); }
+  .slip-head.is-stuck { max-width: min(78rem, var(--feed-max, 78rem)); }
+  .slip-cell { padding: .5rem .875rem .55rem; gap: .2rem; }
+  .slip-cell__k { font-size: .5625rem; }
+  .slip-cell__v { font-size: .8125rem; }
+  .slip-head__feed { padding: .5rem .875rem .55rem; font-size: .8125rem; }
+}
+
+/* reduced motion: still, every word shown, no stroke draw, no rise */
+html[data-motion="reduce"] .p23 .w { opacity: 1; transform: none; transition: none; }
+html[data-motion="reduce"] .mark path, html[data-motion="reduce"] .p2-ans, html[data-motion="reduce"] .slip-head, html[data-motion="reduce"] .p2-row__hit::after { transition: none !important; }
+html[data-motion="reduce"] .slip-head__feed .new { animation: none; clip-path: none; }

@@ -38,16 +38,36 @@
   a { color: inherit; text-underline-offset: 3px; }
   footer { max-width: 1240px; margin: 0 auto; padding: 0 16px 48px; color: var(--graphite); }
   @media (max-width: 420px) { .sheet { grid-template-columns: 1fr; gap: 32px; } .card { width: 100%; } }
+  .sends { max-width: 1240px; margin: 0 auto; padding: 8px 16px 48px; border-top: 1px solid var(--hair); }
+  .sends h2 { font-weight: 420; font-size: 30px; line-height: 1.1; margin-top: 18px; }
+  .sends > p { max-width: 62ch; margin-top: 8px; }
+  .sends__row { display: grid; grid-template-columns: repeat(auto-fit, 384px); justify-content: center; gap: 24px; padding-top: 20px; }
+  .sendcard { width: 384px; max-width: calc(100vw - 32px); }
+  .sendcard iframe { display: block; width: 384px; max-width: 100%; height: 734px; max-height: 92vh; border: 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); background: var(--paper); }
+  .sendcard h3 { font-weight: 420; font-size: 24px; line-height: 1.15; margin-top: 12px; }
+  .sendcard p { margin-top: 4px; }
+  .sendcard .mono { color: var(--graphite); margin-top: 6px; }
+  @media (max-width: 420px) { .sends__row { grid-template-columns: 1fr; } .sendcard { width: 100%; max-width: none; } .sendcard iframe { width: 100%; } }
 </style>
 </head>
 <body>
   <header>
     <p class="mono">Asset sheet · Take 2 · page 1 · the phone, real stage</p>
     <h1>Three materials for the finished phone</h1>
-    <p>Every map is a CC0 scan from ambientCG. The band and the back change; the screen, glass and lenses stay. Page 1 uses A until you pick.</p>
+    <p>Every map is a CC0 scan from ambientCG. The band and the back change; the screen, glass and lenses stay. Wajih picked B; page 1 uses it.</p>
     <label class="turn mono">Turn <input id="turn" type="range" min="-100" max="100" value="11" aria-label="Turn the phones"></label>
   </header>
   <main class="sheet" id="sheet"></main>
+  <section class="sends" aria-labelledby="sends-h">
+    <p class="mono" style="margin-top:18px">Asset sheet · page 3 · the Send</p>
+    <h2 id="sends-h">Three Sends, in the drawing language</h2>
+    <p>The foot of a filled work slip, at phone size, live: tap a way to send, then the Send (here it only shows the link it would open). Page 3 uses A until you pick.</p>
+    <div class="sends__row">
+      <article class="sendcard"><iframe src="send.html?d=A" title="Send option A, Leader" loading="lazy"></iframe><h3>A · Leader</h3><p>“Send” with a drafting arrow run out to the slip’s edge, like a leader line.</p><p class="mono">On page 3 · pending pick</p></article>
+      <article class="sendcard"><iframe src="send.html?d=B" title="Send option B, Cell" loading="lazy"></iframe><h3>B · Cell</h3><p>The slip’s last cell, framed by its own hairlines and corner marks, like a title block.</p></article>
+      <article class="sendcard"><iframe src="send.html?d=C" title="Send option C, Bubble" loading="lazy"></iframe><h3>C · Bubble</h3><p>A drawing’s section bubble: the word above the cut line, the arrowhead below it.</p></article>
+    </div>
+  </section>
   <footer class="mono">Sources and licences: CREDITS.md · converted by tools/materials.py</footer>
 <script type="module" src="assets.js"></script>
 </body>

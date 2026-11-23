@@ -1,10 +1,11 @@
-// Take 2 entry point: the 9-page running order (STUDIO_BRIEF.md Part 5). Page 1 is built; pages 2-9 are stubs.
+// Take 2 entry point: the 9-page running order (STUDIO_BRIEF.md Part 5). Pages 1-3 are built; pages 4-9 are stubs.
 // Take 1's sheets (site/js/sheets/*, sheet01..08/*, opening.js's loop, products, settings) stay on disk for reuse.
 import { engine, initScroll } from './engine/core.js';
 import { initCursor } from './engine/cursor.js';
 import { initTheme } from './engine/theme.js';
 import { runEnter } from './enter.js';
 import { initPage01 } from './page01/page.js';
+import { initPages23 } from './page02/page.js';
 
 window.__wm.done('app');
 Promise.all(['420 1em Newsreader', '400 1em Newsreader', '400 1em "DM Mono"', '500 1em "DM Mono"'].map((f) => document.fonts.load(f)))
@@ -16,8 +17,9 @@ initScroll();
 engine.lockScroll(!engine.reduced);
 initTheme(engine);
 
-let p1 = null;
+let p1 = null, p23 = null;
 try { p1 = initPage01(engine); } catch (e) { console.error('[page 01]', e); }
+try { p23 = initPages23(engine); } catch (e) { console.error('[pages 02-03]', e); }
 
 // ---------- timeline strip + title block: one segment per page ----------
 const segs = [...document.querySelectorAll('.strip__seg')];
@@ -59,4 +61,4 @@ runEnter(engine, () => {
   if (jump && document.querySelector(jump)) { window.__wm.jumpTo = ''; go(jump); }
 });
 
-window.__t2 = { engine, p1 };
+window.__t2 = { engine, p1, p23 };

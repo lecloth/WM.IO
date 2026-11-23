@@ -119,16 +119,13 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
 .p1-steps { list-style: none; }
 .p1-we:not(.is-static) .p1-steps { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-/* the detail callout: a hairline window with its mono label; page 2 shows through it, then it grows into page 2 */
+/* the detail callout: a hairline window with its mono label; page 2 shows through it, then it grows into page 2
+   (page 2's side of the handover: site/css/page-02.css) */
 .p1-callout { position: fixed; inset: 0; z-index: 4; pointer-events: none; visibility: hidden; color: var(--ink); }
 .p1-callout.on { visibility: visible; }
 .p1-callout__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .p1-callout__rect { fill: none; stroke: currentColor; stroke-width: 1px; vector-effect: non-scaling-stroke; shape-rendering: crispEdges; }
 .p1-callout__tag { position: absolute; left: 0; top: 0; white-space: nowrap; font-size: 11px; }
-#page-02.is-callout { z-index: 3; background: transparent; }
-#page-02.is-callout .stub__in { position: fixed; left: 0; right: 0; top: 0; }
-#page-02 .stub__in { background: var(--paper); }
-html[data-motion="full"] #page-02 { margin-top: -100vh; margin-top: -100lvh; border-top: 0; }
 
 @media (min-width: 1024px) {
   .p1-txt { left: 6rem; right: auto; width: 30rem; top: calc(var(--strip-h) + 7rem); }

@@ -82,13 +82,13 @@ The stamp-grain mask (`paper/stamp-grain.webp`, derived from the Miller 1905 sca
 
 ## Take 2 materials (`site/media/materials/`), page 1's real phone and the asset sheet
 
-All from ambientCG (https://ambientcg.com), whose assets are all released under **CC0 1.0** (public-domain dedication; commercial use, no credit required). Downloaded 23 Nov 2026 as the 1K-JPG sets (`https://ambientcg.com/get?file=<Id>_1K-JPG.zip`), converted by `tools/materials.py` to `color.webp`, `rough.webp`, `normal.webp` (1024 px, the NormalGL map). Every option is shown side by side on `site/dev/assets.html` for Wajih's pick.
+All from ambientCG (https://ambientcg.com), whose assets are all released under **CC0 1.0** (public-domain dedication; commercial use, no credit required). Downloaded 23 Nov 2026 as the 1K-JPG sets (`https://ambientcg.com/get?file=<Id>_1K-JPG.zip`), converted by `tools/materials.py` to `color.webp`, `rough.webp`, `normal.webp` (1024 px, the NormalGL map). Every option is shown side by side on `site/dev/assets.html`; Wajih picked **B (titanium + black glass)** on 23 Nov, and page 1 uses it.
 
 | Folder | What it is | Source | Licence | Where used |
 |---|---|---|---|---|
-| `Metal009/` | Metal 009: brushed metal (colour, roughness, normal) | https://ambientcg.com/view?id=Metal009 | CC0 1.0 | Option A band (satin aluminium, **on page 1 pending Wajih's pick**); option C band (graphite, tinted dark) |
-| `Metal059A/` | Metal 059 A: titanium | https://ambientcg.com/view?id=Metal059A | CC0 1.0 | Option B band (bead-blasted titanium) |
-| `Plastic010/` | Plastic 010: smooth plastic (its fine grain) | https://ambientcg.com/view?id=Plastic010 | CC0 1.0 | Option A back (frosted white, **on page 1**); option B back (black glass: the same grain, dark and glossy) |
+| `Metal009/` | Metal 009: brushed metal (colour, roughness, normal) | https://ambientcg.com/view?id=Metal009 | CC0 1.0 | Option A band (satin aluminium); option C band (graphite, tinted dark). Asset sheet only |
+| `Metal059A/` | Metal 059 A: titanium | https://ambientcg.com/view?id=Metal059A | CC0 1.0 | Option B band (bead-blasted titanium): **page 1**, Wajih's pick (23 Nov) |
+| `Plastic010/` | Plastic 010: smooth plastic (its fine grain) | https://ambientcg.com/view?id=Plastic010 | CC0 1.0 | Option A back (frosted white); option B back (black glass: the same grain, dark and glossy): **page 1**, Wajih's pick (23 Nov) |
 | `Leather027/` | Leather 027: black leather | https://ambientcg.com/view?id=Leather027 | CC0 1.0 | Option C back |
 
 ## Take 2 3D model (`site/media/models/lock/`)

@@ -18,9 +18,9 @@ Take 1's history below.
 
 | # | Page | What happens | Viewports | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | Enter + hook | Beacon → Bell's sheet: eight clean outlines draw on, morph into the X-ray phone → pieces named on leader lines → kinetic line, pieces join, ground back to paper → real → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum → "Now, what do you need?" → detail callout grows into page 2 | ~6 | **round 3 built (Part 5 "Page 1, round 3" + "Motion devices"), waiting for Wajih's phone review and his material pick** |
-| 2 | For you | Visitor taps what fits them; the page answers; taps pre-tick the checklist | ~3 | stub |
-| 3 | Checklist 1 | The C3 work slip, short version; "or see how we think" | ~1 | stub |
+| 1 | Enter + hook | Beacon → Bell's sheet: eight clean outlines draw on, morph into the X-ray phone → pieces named on leader lines → kinetic line, pieces join, ground back to paper → real → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum → "Now, what do you need?" → detail callout grows into page 2 | ~6 | **approved ("the core is solid"); material B (titanium + black glass) on the page; edges wait for the polish pass** |
+| 2 | For you | Detail A grows into it. Five hairline rows; a tap strokes the box, shows the answer, prints onto the slip (its head waits at the bottom and docks), ticks on Android | ~4 with page 3 | **built, waiting for Wajih's phone review, his Send pick and the wording** |
+| 3 | Work slip | Number + date, printed needs, when, name, anything else, send by (5 ways), Send; "or see how we think ↓"; Detail B (a circle) grows into page 4 | (with page 2) | **built, as above** |
 | 4 | Four trips | Security showpiece (~5: lock's A journey → failed pick → B3 → today); AI, websites, apps lighter (~3 each) | ~14 | stub |
 | 5 | How we work | The sideways gear train: Wajih's seven steps, each a real gear (model or engraved plate) with its title and real image, the centre one lit; the Break stress test inside "Tested" | ~3 | stub |
 | 6 | Work: the corridor | Four apps + one website, each a doorway with a meaningful entry (our own designs) | ~5 | stub |
@@ -29,7 +29,13 @@ Take 1's history below.
 | 9 | Spec sheet | One screen of live numbers, then the loop back to the point | ~1 | stub |
 
 ### Page structure (Take 2)
-- `src/index.template.html` + `src/parts/page-01.html` + `src/parts/stubs.html` → `python -I tools/build.py` → `site/index.html`.
+- `src/index.template.html` + `src/parts/page-01.html` + `page-02.html` + `page-03.html` + `src/parts/stubs.html` (pages 4-9) → `python -I tools/build.py` → `site/index.html`.
+- Pages 2-3 (one move): `site/js/page02/page.js` (rows, the slip head stuck/docked, word reveals, --p2-gap so Detail A frames the rows,
+  --p2-h so page 3's grid continues page 2's), `slip.js` (state, cleaning + caps, the slip as text), `send.js` (the five ways, link building
+  with a 2000-char cap, honeypot + time trap + rate limit for the switched-on sends, booking slots; `SEND_DESIGN` = the Send on the page),
+  `callout.js` (Detail B: the circle; page 4 fixed + clipped behind it). CSS: `site/css/page-02.css`, `page-03.css`, `page-03-send.css`
+  (the three Send designs). Contact details + switches: `site/js/settings.js`. Page 4 overlaps page 3's tail (`margin-top: -100lvh`).
+- Send options: `site/dev/send.html?d=A|B|C` (one design at the foot of a filled slip), shown side by side on `site/dev/assets.html`.
   Build links `site/css/page-*.css` only. Entry: `site/js/main.js` (Take 1's is kept as `site/js/main.take1.js`, not bundled).
 - Page 1 (round 3): `site/js/page01/page.js` (the scroll story over 5 screens of scroll in a 6-screen section; texts, the timed ground
   and dress beats, the flies you→YOU and us→WE, the verb drum, the detail callout into page 2, reduced motion), `site/js/page01/phone.js`
@@ -51,6 +57,26 @@ Take 1's history below.
   (S0 .1, draw .24, morph .6, S1 1.3, kin 1.72, paper 2.2, S2 2.5, YOU 2.72, TASK 2.92, WE 3.12, DRUM 3.6, END 4.2, CALLOUT 4.62).
 
 ### Take 2 log
+- **Pages 2 and 3 (23 Nov).** Brief committed (pages 2 and 3, edges list). Phone material switched to B (Wajih's pick); CREDITS updated.
+  Built to Part 5 "Pages 2 and 3". Length pages 2-3 (page 2 arrived → page 4 arrived): 3.19 viewports at 384×734 with nothing ticked,
+  3.78 with every row ticked and the slip filled; 2.51 / 2.67 at 1440×900; real phone (384×719) 3.93 filled. Real phone (SM-S918N, Chrome,
+  `tools/phonep23.py`): 59 fps page 1, 60 fps pages 2-3 and Detail A (p95 16.8 ms); 0 geometry problems on pages 1-3; two real row taps =
+  two 12 ms vibrations; a real tap on Send opened WhatsApp (com.whatsapp.w4b, the business app on his phone) with the whole slip in the link;
+  backed out, nothing sent. Emulated: pages 1-3 geometry clean at 6 sizes × light/dark (`tools/p23.py --geom`, `tools/geom.py`); axe 0
+  (`tools/axe23.py`, `tools/axe2.py`); no console errors; reduced motion clean; guards (`tools/guards23.py`): caps, bidi/control stripping,
+  Arabic kept, link ≤ 2000 chars, honeypot, rate limit, booking needs a slot. Screenshots: `tools/shots/p23/`, `p23-rm/`, `phone-p23/`, `send/`.
+  - Fixed a test bug: `tools/geom.py` measured page 1's band against the visible height; the band is in stage (100lvh) coordinates, which on
+    a real phone is taller. Page 1 itself was right.
+  - Page 1 touched only where page 2 plugs in: Detail A frames page 2's `[data-callout]` block; the window may come within 6 px of a phone's
+    edge; page 2 counts as home within 1.5 px of the end (phones scroll in whole pixels).
+  - **Pending Wajih:** phone review; his Send pick (A Leader on the page, B Cell, C Bubble on the asset sheet); the wording (all flagged).
+  - Watch: emulated desktop shows one 130-200 ms frame the first time Detail A starts (p 4.02), not on later passes, not on the real phone.
+  - Decisions I made alone: the slip's head is page 2's last line, sticky at the bottom (it rises with the first tap and slims to one line:
+    the printed needs + the count), docking as the slip's top; the mark is one hairline stroke corner to corner; the slip number is the moment
+    it was made (yymmdd-hhmm, live), never a count; the needs print in the order ticked; desktop answers sit on their row's right with a
+    hairline leader; "Send" becomes "Call" for a phone call and "Book" when booking is on; switched-off ways still show and hand over to email
+    as the brief says; Detail B aims at page 4's content and its label tries six leader angles until it fits; page 2's question block is pushed
+    down just enough that Detail A frames it whole.
 - **Page 1, round 3 (23 Nov).** Brief committed (design ethos, round 3, motion devices, asset quality). GSAP SplitText, MorphSVG, DrawSVG
   vendored (3.15.0, same as the core). Page 1 is 6.0 viewports at 384×734 and 1440×900 (until page 2 has fully arrived; whole page 36.0;
   reduced motion 4.9 / 4.1). Emulated (headless Chrome, real GPU): 60 fps in all 8 story segments at both sizes (p95 16.7–16.8 ms) after

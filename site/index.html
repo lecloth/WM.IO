@@ -41,6 +41,9 @@
   <link rel="preload" href="fonts/dm-mono-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/site.css" onload="__wm.done('css')">
   <link rel="stylesheet" href="css/page-01.css">
+  <link rel="stylesheet" href="css/page-02.css">
+  <link rel="stylesheet" href="css/page-03-send.css">
+  <link rel="stylesheet" href="css/page-03.css">
   <script defer src="vendor/gsap.min.js" onload="__wm.done('gsap')"></script>
   <script defer src="vendor/ScrollTrigger.min.js" onload="__wm.done('st')"></script>
   <script defer src="vendor/SplitText.min.js"></script>
@@ -70,7 +73,7 @@
   <ol class="strip__list">
     <li class="strip__seg" style="--i:0"><a href="#page-01"><span class="strip__no">01</span><span class="strip__name">Enter</span></a><i class="strip__fill"></i></li>
     <li class="strip__seg" style="--i:1"><a href="#page-02"><span class="strip__no">02</span><span class="strip__name">For you</span></a><i class="strip__fill"></i></li>
-    <li class="strip__seg" style="--i:2"><a href="#page-03"><span class="strip__no">03</span><span class="strip__name">Checklist</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:2"><a href="#page-03"><span class="strip__no">03</span><span class="strip__name">Work slip</span></a><i class="strip__fill"></i></li>
     <li class="strip__seg" style="--i:3"><a href="#page-04"><span class="strip__no">04</span><span class="strip__name">Trips</span></a><i class="strip__fill"></i></li>
     <li class="strip__seg" style="--i:4"><a href="#page-05"><span class="strip__no">05</span><span class="strip__name">How we work</span></a><i class="strip__fill"></i></li>
     <li class="strip__seg" style="--i:5"><a href="#page-06"><span class="strip__no">06</span><span class="strip__name">Work</span></a><i class="strip__fill"></i></li>
@@ -98,7 +101,7 @@
   })();
 </script>
 
-<!-- THE BOARD: Take 2's running order. Page 1 is built; pages 2-9 are stubs at their planned length. -->
+<!-- THE BOARD: Take 2's running order. Pages 1-3 are built; pages 4-9 are stubs at their planned length. -->
 <div id="board" class="board">
   <div class="board__grid" aria-hidden="true"></div>
   <main id="sheets">
@@ -168,13 +171,131 @@
         <span class="p1-callout__tag mono">Detail A · 02 For you</span>
       </div>
     </section>
-    <!-- PAGES 02-09: stubs at their planned length (Part 5 running order), so the order and the scroll length show. -->
-    <section id="page-02" class="stub" data-sheet="02" data-title="For you" data-drawn="Design" data-checked="Strategy" data-approved="Engineering" style="--vh: 3">
-      <div class="stub__in"><p class="stub__no display" aria-hidden="true">02</p><h2 class="stub__name display">For you</h2><p class="stub__line">Coming next: you tap what fits, we show what you get.</p><p class="stub__tag mono">Stub · about 3 screens</p></div>
+    <!-- PAGE 02: FOR YOU (Part 5 "Pages 2 and 3"). Arrived at through page 1's detail callout (Detail A, a box). Five
+         hairline rows; a tap marks the row's box with one hairline stroke, shows its answer beneath and prints the line
+         onto the work slip, whose head waits at the bottom of the screen and docks as page 3 arrives. Every line is a
+         DRAFT until Wajih signs it off (data-draft). Script: site/js/page02/page.js -->
+    <section id="page-02" class="p2 p23" data-sheet="02" data-title="For you" data-drawn="Design" data-checked="Strategy" data-approved="Engineering" aria-labelledby="p2-h">
+      <div class="p2__stage">
+        <p class="p23-flag mono" data-draft>Draft wording · pending Wajih</p>
+        <h2 id="p2-h" class="p2__h display rv" data-draft>What do you need?</h2>
+        <div class="p2__pick" data-callout>
+        <p class="p2__sub rv" data-draft>Tap everything that fits.</p>
+        <fieldset class="p2-rows">
+          <legend class="sr-only">What do you need? Tap everything that fits.</legend>
+          <div class="p2-row" data-id="web">
+            <label class="p2-row__hit"><input class="p2-row__in" type="checkbox" name="need" value="web" aria-describedby="p2-a-web">
+              <span class="p2-row__no mono" aria-hidden="true">01</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg>
+              <span class="p2-row__t" data-draft>A website</span></label>
+            <div class="p2-ans" id="p2-a-web"><p class="p2-ans__t" data-draft>Fast, clean, and built to turn visitors into calls.</p></div>
+          </div>
+          <div class="p2-row" data-id="app">
+            <label class="p2-row__hit"><input class="p2-row__in" type="checkbox" name="need" value="app" aria-describedby="p2-a-app">
+              <span class="p2-row__no mono" aria-hidden="true">02</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg>
+              <span class="p2-row__t" data-draft>An app</span></label>
+            <div class="p2-ans" id="p2-a-app"><p class="p2-ans__t" data-draft>An app your customers keep, because every tap does what they expect.</p></div>
+          </div>
+          <div class="p2-row" data-id="mess">
+            <label class="p2-row__hit"><input class="p2-row__in" type="checkbox" name="need" value="mess" aria-describedby="p2-a-mess">
+              <span class="p2-row__no mono" aria-hidden="true">03</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg>
+              <span class="p2-row__t" data-draft>My systems are a mess</span></label>
+            <div class="p2-ans" id="p2-a-mess"><p class="p2-ans__t" data-draft>One system where your tools, data and numbers finally talk to each other.</p></div>
+          </div>
+          <div class="p2-row" data-id="ai">
+            <label class="p2-row__hit"><input class="p2-row__in" type="checkbox" name="need" value="ai" aria-describedby="p2-a-ai">
+              <span class="p2-row__no mono" aria-hidden="true">04</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg>
+              <span class="p2-row__t" data-draft>AI working for me</span></label>
+            <div class="p2-ans" id="p2-a-ai"><p class="p2-ans__t" data-draft>AI that answers, sorts and reports, while you run the business.</p></div>
+          </div>
+          <div class="p2-row" data-id="sec">
+            <label class="p2-row__hit"><input class="p2-row__in" type="checkbox" name="need" value="sec" aria-describedby="p2-a-sec">
+              <span class="p2-row__no mono" aria-hidden="true">05</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg>
+              <span class="p2-row__t" data-draft>Keep it secure</span></label>
+            <div class="p2-ans" id="p2-a-sec"><p class="p2-ans__t" data-draft>Locks on every door: your data, your accounts, your customers.</p></div>
+          </div>
+        </fieldset>
+        </div>
+        <p class="sr-only" aria-live="polite" id="p2-said"></p>
+        <!-- the work slip's head: it waits at the bottom of the screen while you tap (each tap prints into it), and docks
+             as the top of the slip when page 3 arrives (sticky, so the dock is the browser's own layout) -->
+        <a class="slip-head" href="#page-03"><span class="sr-only">Go down to </span>
+          <span class="slip-head__cells">
+            <span class="slip-cell"><span class="slip-cell__k mono" data-draft>Work slip</span><span class="slip-cell__v mono">No. <b class="js-slip-no">000000-0000</b></span></span>
+            <span class="slip-cell"><span class="slip-cell__k mono" data-draft>Date</span><span class="slip-cell__v mono js-slip-date">—</span></span>
+            <span class="slip-cell slip-cell--n"><span class="slip-cell__k mono" data-draft>Needs</span><span class="slip-cell__v mono"><b class="js-slip-count">0</b> <i class="slip-head__go" aria-hidden="true">↓</i></span></span>
+          </span>
+          <span class="slip-head__feed mono" aria-hidden="true"><span class="slip-head__lbl" data-draft>Work slip ·</span> <span class="js-feed"></span></span>
+        </a>
+      </div>
     </section>
-    <section id="page-03" class="stub" data-sheet="03" data-title="Checklist" data-drawn="Design" data-checked="Engineering" data-approved="Strategy" style="--vh: 1">
-      <div class="stub__in"><p class="stub__no display" aria-hidden="true">03</p><h2 class="stub__name display">Checklist</h2><p class="stub__line">Coming: your ticks print on a work slip, then Send.</p><p class="stub__tag mono">Stub · about 1 screen</p></div>
+    <!-- PAGE 03: THE WORK SLIP (the lab's C3). Its head is page 2's last line (docked); then the printed needs, when,
+         your name, anything else, how to send, and Send. WhatsApp and email open in the visitor's own app with the slip
+         filled in; sending from the page and booking are built but switched off in site/js/settings.js (off: they hand
+         over to the email app). Then "or see how we think", and Detail B, a circle that grows into page 4.
+         Every line is a DRAFT until Wajih signs it off. Script: site/js/page02/slip.js, send.js, callout.js -->
+    <section id="page-03" class="p3 p23" data-sheet="03" data-title="Work slip" data-drawn="Engineering" data-checked="Design" data-approved="Strategy" aria-label="Page 3: your work slip">
+      <form class="slip" id="slip" novalidate autocomplete="on" aria-label="Work slip">
+        <div class="slip__sec slip__sec--needs">
+          <h3 class="slip__q"><span class="slip__no mono" aria-hidden="true">A</span><span data-draft>What you need</span></h3>
+          <ol class="slip__needs"></ol>
+          <p class="slip__empty" data-draft><a href="#page-02">Nothing yet. Tap what fits, above ↑</a></p>
+        </div>
+        <fieldset class="slip__sec slip__sec--when">
+          <legend class="slip__q"><span class="slip__no mono" aria-hidden="true">B</span><span data-draft>When do you need it?</span></legend>
+          <div class="slip__ticks">
+            <label class="tick"><input type="radio" name="when" value="As soon as possible"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg><span data-draft>As soon as possible</span></label>
+            <label class="tick"><input type="radio" name="when" value="In 1–3 months"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg><span data-draft>In 1–3 months</span></label>
+            <label class="tick"><input type="radio" name="when" value="Just exploring"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg><span data-draft>Just exploring</span></label>
+          </div>
+        </fieldset>
+        <div class="slip__sec slip__sec--name">
+          <label class="slip__q" for="slip-name"><span class="slip__no mono" aria-hidden="true">C</span><span data-draft>Your name</span></label>
+          <input class="slip__field" id="slip-name" name="name" type="text" maxlength="60" autocomplete="name" autocapitalize="words" spellcheck="false" enterkeyhint="next">
+        </div>
+        <div class="slip__sec slip__sec--note">
+          <label class="slip__q" for="slip-note"><span class="slip__no mono" aria-hidden="true">D</span><span data-draft>Anything else?</span> <span class="slip__opt mono" data-draft>Optional</span></label>
+          <textarea class="slip__field slip__field--box" id="slip-note" name="note" rows="3" maxlength="500" aria-describedby="slip-note-n"></textarea>
+          <span class="slip__count mono" id="slip-note-n" aria-live="off"><b class="js-note-n">0</b> / 500</span>
+        </div>
+        <fieldset class="slip__sec slip__sec--by">
+          <legend class="slip__q"><span class="slip__no mono" aria-hidden="true">E</span><span data-draft>Send it by</span></legend>
+          <div class="slip__ticks slip__ticks--by">
+            <label class="tick"><input type="radio" name="by" value="whatsapp" checked><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg><span data-draft>WhatsApp</span></label>
+            <label class="tick"><input type="radio" name="by" value="email"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg><span data-draft>Email</span></label>
+            <label class="tick"><input type="radio" name="by" value="call"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg><span data-draft>Phone call</span></label>
+            <label class="tick"><input type="radio" name="by" value="page"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg><span data-draft>From this page</span></label>
+            <label class="tick"><input type="radio" name="by" value="book"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg><span data-draft>Book a call</span></label>
+          </div>
+          <!-- booking (only when settings.booking.on): the next working days' slots, in the visitor's own time -->
+          <div class="slip__slots" hidden>
+            <p class="slip__slots-k mono" data-draft>Pick a slot · your time</p>
+            <div class="slip__slots-grid" role="radiogroup" aria-label="Call slots"></div>
+          </div>
+        </fieldset>
+        <!-- honeypot: people never see or reach it; a bot that fills it is quietly dropped (from-page and booking only) -->
+        <div class="slip__hp" aria-hidden="true"><label>Leave this empty <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+        <div class="slip__send">
+          <p class="slip__pend mono">Send · design <b class="js-send-d">A</b> of 3 · pending Wajih's pick</p>
+          <a class="send send--a" href="#" data-by="whatsapp">
+            <span class="send__k mono"><span class="js-send-k" data-draft>By WhatsApp</span></span>
+            <span class="send__row"><span class="send__w display js-send-w" data-draft>Send</span><svg class="send__arrow" aria-hidden="true" preserveAspectRatio="none"><line class="send__shaft" x1="0" y1="50%" x2="100%" y2="50%"/></svg><svg class="send__head" viewBox="0 0 22 12" aria-hidden="true"><path d="M0 2 22 6 0 10Z"/></svg></span>
+            <span class="send__say js-send-say" data-draft>Opens WhatsApp with this slip filled in.</span>
+          </a>
+          <p class="slip__said" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+      <!-- the way on: a line, then Detail B (a circle) with page 4 already behind it; it grows into page 4's stage -->
+      <div class="p3__tail">
+        <div class="p3__pin">
+          <p class="p3__more rv"><a href="#page-04" data-draft>or see how we think ↓</a></p>
+        </div>
+      </div>
+      <div class="p3-callout" aria-hidden="true">
+        <svg class="p3-callout__svg"><circle class="p3-callout__c" cx="0" cy="0" r="1" pathLength="1"/><path class="p3-callout__lead"/></svg>
+        <span class="p3-callout__tag mono" data-draft>Detail B · 04 Trips</span>
+      </div>
     </section>
+    <!-- PAGES 04-09: stubs at their planned length (Part 5 running order), so the order and the scroll length show. -->
     <section id="page-04" class="stub" data-sheet="04" data-title="Four trips" data-drawn="Security" data-checked="AI" data-approved="Engineering" style="--vh: 14">
       <div class="stub__in"><p class="stub__no display" aria-hidden="true">04</p><h2 class="stub__name display">Four trips</h2><p class="stub__line">Coming: inside the lock, the engine, the press and the switchboard.</p><p class="stub__tag mono">Stub · about 14 screens</p></div>
     </section>

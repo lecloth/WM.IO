@@ -8,7 +8,7 @@ const link = (id) => `<a href="https://ambientcg.com/view?id=${id}" rel="noopene
 const cards = Object.entries(OPTIONS).map(([k, o]) => {
   const el = document.createElement('section'); el.className = 'card'; el.setAttribute('aria-label', `Option ${k}: ${o.name}`);
   el.innerHTML = `<div class="card__stage"><canvas role="img" aria-label="Today's phone in ${o.name.toLowerCase()}"></canvas>
-    <span class="card__tag mono">Option ${k}</span>${k === PICK ? '<span class="card__pend mono">On page 1 · pending pick</span>' : ''}</div>
+    <span class="card__tag mono">Option ${k}</span>${k === PICK ? '<span class="card__pend mono">On page 1 · picked</span>' : ''}</div>
     <h2>${k} · ${o.name}</h2><p>${o.note}</p>
     <dl class="mono"><dt>Band</dt><dd>${link(o.frame.set)}</dd><dt>Back</dt><dd>${link(o.back.set)}</dd></dl>`;
   sheet.append(el);

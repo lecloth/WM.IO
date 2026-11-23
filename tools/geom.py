@@ -54,15 +54,18 @@ MEASURE_JS = r"""(stop) => {
     items.push({ name: 'callout window', kind: 'window', l: c.left, t: c.top, r: c.right, b: c.bottom });
     add('callout tag', document.querySelector('.p1-callout__tag'), 'text');
   }
-  return { W, H, items, band };
+  // page 1's band is in stage coordinates (the stage is 100lvh; on a real phone that is taller than the visible screen)
+  const SH = document.querySelector('.p1__stage')?.clientHeight || H;
+  return { W, H, SH, items, band };
 }"""
 
 def check(m, stop):
     W, H, items, problems = m["W"], m["H"], m["items"], []
+    BH = m.get("SH", H)
     band = m.get("band")
     for it in items:
-        if it["kind"] == "picture" and band and (it["l"] < band["left"] - 1 or it["t"] < band["top"] - 1 or it["r"] > W - band["right"] + 1 or it["b"] > H - band["bottom"] + 1):
-            problems.append(f"{it['name']} leaves its band ({it['l']:.0f},{it['t']:.0f})-({it['r']:.0f},{it['b']:.0f}); band ({band['left']:.0f},{band['top']:.0f})-({W - band['right']:.0f},{H - band['bottom']:.0f})")
+        if it["kind"] == "picture" and band and (it["l"] < band["left"] - 1 or it["t"] < band["top"] - 1 or it["r"] > W - band["right"] + 1 or it["b"] > BH - band["bottom"] + 1):
+            problems.append(f"{it['name']} leaves its band ({it['l']:.0f},{it['t']:.0f})-({it['r']:.0f},{it['b']:.0f}); band ({band['left']:.0f},{band['top']:.0f})-({W - band['right']:.0f},{BH - band['bottom']:.0f})")
         if it["kind"] in ("picture", "text", "label", "window") and (it["l"] < -0.5 or it["t"] < -0.5 or it["r"] > W + 0.5 or it["b"] > H + 0.5):
             problems.append(f"{it['name']} leaves the screen ({it['l']:.0f},{it['t']:.0f})-({it['r']:.0f},{it['b']:.0f}) in {W}x{H}")
     def hit(a, b, pad=0):
