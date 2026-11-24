@@ -676,3 +676,75 @@ three.js; Lenis with light settings.
     (generic, no brand shape, so no iPhone or Galaxy copies; CC0 or CC BY; commercial use allowed; credited). Both go
     on the asset sheet at phone size, and Wajih picks on his phone. If a B model is used, the hand-over from our
     pieces to it must show no jump.
+
+### Round 4 notes (23 Nov, 15:06, Wajih after the fixes run). Overrides the above where they differ.
+- **The corridor is "really good"; improve it:**
+  - **Blueprints in blue:** the sheets become real cyanotype blueprints (white lines on Prussian blue #173F73), so they
+    stand out from the wall instead of blending into the paper.
+  - **What hangs in it:** not only machines. Websites, apps, diagrams and algorithms too. Website and app sheets are
+    our own blueprints of screens and flows (the designs are ours); algorithm and diagram sheets use real public-domain
+    originals where they exist (for example Lovelace's 1843 Note G table), each credited. Same asset rules: high
+    resolution, one treatment, candidates on the asset sheet first.
+  - **Make it obviously a corridor:** clear perspective (floor and ceiling lines meeting at a vanishing point, frames
+    receding in depth, sheets mounted on the two walls), so nobody reads it as a glitch.
+- **The "?" dot entry was "just a suggestion"** (Wajih): it isn't fixed. Keep it only if it reads well at his review;
+  the corridor is what matters.
+- **The verb drum (WE + the seven verbs):**
+  - **Vibrate as they roll:** a clearly felt haptic click on every turn (stronger than the current 10 ms, about
+    15–20 ms), for the verb and its definition, plus a precise mechanical detent: each word clicks into place like a
+    dial, with no wobble. Confirm with Wajih on his phone which he meant (feel, look, or both).
+  - **A precise grid behind them:** symmetrical and in proportion, aligned to the type (baseline, cap height, the
+    verb window), with small dimension marks: "a strong hint of attention to detail".
+- **Still pending Wajih's picks** on the asset sheet: phone A or B (B needs his Sketchfab downloads), corridor sheets,
+  Send design. The page-2–3 wording is still a flagged draft.
+
+### Round 4 picks (24 Nov, Wajih). Overrides the above where they differ.
+- **Send:** design **A, Leader** ("Send" with a drafting arrow run out to the slip's edge). `SEND_DESIGN = 'A'`; B and
+  C come off the asset sheet.
+- **Verb drum: both.** The haptic click on every turn (about 15–20 ms per buzz; Android only, iPhones can't vibrate
+  from a web page) **and** the precise mechanical detent every visitor sees: each verb snaps into place and settles,
+  no wobble.
+- **Phones: the no-brands rule is dropped for phones** (Wajih: "those are the market leaders"). Older owners must see
+  at a glance that we build for both iPhone and Android, so we use real models of the **iPhone 18** and the **Galaxy
+  S26** (Wajih downloaded both from Sketchfab; the chat moves them into `tools/sources/phones/`). Still kept: no Apple
+  or Samsung logo on the backs (nothing that implies a partnership); each model's licence checked (CC0 or CC BY only,
+  never NC or ND) and credited in `CREDITS.md`; our app screens stay our own made-up products; "no fabricated proof"
+  stands. **B1–B3 are dropped.**
+  - **Licences unverified (24 Nov): local only, a blocker before anything is hosted.** Wajih: build now, check the
+    licences later; the site is not hosted. The iPhone file's own metadata says "Binkies MDM 3.3 conversion" (Binkies
+    3D makes phone models for retailers' shop pages), so it was most likely re-uploaded by someone who doesn't own
+    it; the S26 file carries no maker or licence info (its Sketchfab page is still to be checked). Sources:
+    `tools/sources/phones/iphone18/model.glb` and `tools/sources/phones/s26/model.glb` (the original zips beside
+    them; `tools/sources/` is git-ignored). Their processed web copies live in a **git-ignored** folder,
+    `site/media/phones-unverified/`, so they never enter git history; `CREDITS.md` lists both as "licence
+    unverified, local only". **Before any hosting: clear both licences or replace both models.**
+  - **Where they go:** corridor frame 4 (still images rendered from the two models, light on phones), then **live in
+    3D on page 4's apps trip**, where people slow down. **Page 1 keeps our own six-piece phone (A)**, raised to the
+    premium bar (the chat's call): a precisely machined frame with a polished chamfer that catches one clean highlight
+    line, tight even bezels, a layered camera plateau (cover glass, ring, inner lenses), real cover glass with a clear
+    coat, crisp reflections from the studio HDRI, filmic tone mapping.
+  - **Tech names and logos** (Linux, macOS, Windows, frameworks): not in the corridor; decided when we reach page 4
+    or page 9.
+- **The corridor (the hallway after the "?" dot): four frames, a longer walk.** Replaces the old sheet sets (A/B/C):
+  the historical sheets come off the page (their files can stay).
+  - **Length:** about 2 viewports instead of 1 (each frame gets about half a screen of scroll); the site goes from
+    about 36 to about 37 viewports.
+  - **The four frames** (left, right, left, right), each our own schematic as a cyanotype blueprint (white lines on
+    #173F73) that draws itself on as you approach, with one plain line under it (lines are drafts for Wajih):
+    1. **Optimizing:** a page-load timeline where long bars running one after another are redrawn as short ones
+       running side by side.
+    2. **The right algorithm, written for you:** a precise decision flowchart (for example "which driver gets this
+       delivery").
+    3. **Understanding your customers:** a customer's path through an app, the point where they give up marked, the
+       fix drawn in.
+    4. **Apps for iPhone and Android:** the blueprint of an app screen turns into our app running on the iPhone 18
+       and the S26 (drawn → real, the site's thread).
+    They show how we work, never results: no numbers, no claims.
+  - **Walls: Mounted** (Wajih's pick from the chat's sketch): paper walls with a fine drafting grid in perspective;
+    each sheet in a thin ink frame with a mount margin; floor and ceiling lines meeting at a vanishing point.
+  - **No stretching** (Wajih): drawings keep their true proportions (never scaled unevenly to fit a frame; each frame
+    is sized to its drawing). A moderate lens: about 50° field of view (how wide the camera sees), never wide-angle,
+    set by the narrower side of the screen and capped horizontally, so phones and wide laptop windows look the same
+    and frames don't smear at the edges. Each frame finishes its moment and leaves before it nears the screen edge.
+    Check at all 9 sizes, above all 2160×1147 @1.333 and 2560×1440.
+- **Still open:** the "?" dot entry (keep only if it reads well at his review); the page 2–3 wording (flagged draft).
