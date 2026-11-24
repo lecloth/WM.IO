@@ -35,6 +35,9 @@ function setActive(i) {
   segs.forEach((s, k) => s.classList.toggle('is-active', k === i));
 }
 setActive(0);
+// round 6: the strip's nine segments on whole columns of the grid (the head script's unit)
+function stripCols() { const n = window.__grid?.n || 20; segs.forEach((s, i) => { s.style.setProperty('--c0', Math.round(i * n / 9) + 1); s.style.setProperty('--c1', Math.round((i + 1) * n / 9) + 1); }); }
+stripCols(); document.addEventListener('wm:grid', stripCols);
 pages.forEach((el, i) => {
   ScrollTrigger.create({
     trigger: el, start: 'top 50%', end: 'bottom 50%',

@@ -1,6 +1,6 @@
 // The corridor's four drawings (Part 5 "Round 4 picks"): our own schematics, drawn as cyanotype blueprints (white
 // lines on Prussian blue #173F73) in the corridor after the "?" dot. They show METHOD, never results: no numbers, no
-// claims. Left, right, left, right. Each caption is one plain line (the brief's wording, a draft for Wajih).
+// claims. Left, right, left, right. Each has a museum label under it (round 6; the wording is a draft for Wajih).
 // A drawing is data: { w, h } (its own units, y down), segs (short straight segments in draw order, so the corridor
 // can draw it on by count), labels (mono words, each appearing when the segments before it are drawn).
 // Used by the corridor (dive.js, WebGL), the reduced-motion figures (SVG) and the stretch check (true ratio = w / h).
@@ -178,11 +178,23 @@ function phones() {
   return d;
 }
 
+// Round 6: each frame has a museum label under it (Part 5 "Round 6"): the title (big, serif), a small mono line with
+// the drawing's name, and one line of story. The four story lines are the chat's drafts, flagged for Wajih.
+// cells: the frame's outer shape in whole grid cells (width : height); its mat takes up the difference, so the frame
+// sits on the grid while the drawing inside keeps its true proportions.
 export const FRAMES = [
-  { key: 'optimizing', side: 'l', caption: 'Optimizing.', alt: 'Blueprint: a page-load timeline. Five loads running one after another are redrawn as short loads running side by side.', draw: optimizing() },
-  { key: 'algorithm', side: 'r', caption: 'The right algorithm, written for you.', alt: 'Blueprint: a decision flowchart for which driver gets a delivery: find free drivers near the pickup, rank them by time to the pickup, check the time slot, assign and notify.', draw: algorithm() },
-  { key: 'customers', side: 'l', caption: 'Understanding your customers.', alt: 'Blueprint: a customer’s path through an app, from open to done. The path breaks off at sign-up, where they leave; the fix is drawn in: pay as a guest.', draw: customers() },
-  { key: 'apps', side: 'r', caption: 'Apps for iPhone and Android.', alt: 'Blueprint of our booking app’s screen on an iPhone and an Android phone, which turns into the app running on the real phones.', draw: phones(), real: 'media/phones-unverified/corridor-phones.webp' },
+  { key: 'optimizing', side: 'l', cells: [5, 4], caption: 'Optimizing.', fig: 'Fig. 01 · Page load',
+    story: 'Your page loads one thing after another. We make them load side by side, so your customers wait less.',
+    alt: 'Blueprint: a page-load timeline. Five loads running one after another are redrawn as short loads running side by side.', draw: optimizing() },
+  { key: 'algorithm', side: 'r', cells: [5, 6], caption: 'The right algorithm, written for you.', fig: 'Fig. 02 · Which driver?',
+    story: 'The rules you follow in your head, turned into steps a machine follows the same way every time.',
+    alt: 'Blueprint: a decision flowchart for which driver gets a delivery: find free drivers near the pickup, rank them by time to the pickup, check the time slot, assign and notify.', draw: algorithm() },
+  { key: 'customers', side: 'l', cells: [6, 5], caption: 'Understanding your customers.', fig: 'Fig. 03 · A customer’s path',
+    story: 'We follow your customers through your app, find where they give up, and fix that step.',
+    alt: 'Blueprint: a customer’s path through an app, from open to done. The path breaks off at sign-up, where they leave; the fix is drawn in: pay as a guest.', draw: customers() },
+  { key: 'apps', side: 'r', cells: [1, 1], caption: 'Apps for iPhone and Android.', fig: 'Fig. 04 · Booking app',
+    story: 'One app, built for both phones your customers carry.',
+    alt: 'Blueprint of our booking app’s screen on an iPhone and an Android phone, which turns into the app running on the real phones.', draw: phones(), real: 'media/phones-unverified/corridor-phones.webp' },
 ];
 
 /** a drawing as an SVG string (reduced motion: the still figures; the asset sheet) */

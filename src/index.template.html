@@ -36,6 +36,26 @@
       };
       addEventListener('load', function () { __wm.done('load'); });
     })();
+    /* Round 6: the grid is the layout system. One unit per screen, so the width holds a whole number of cells: 20 on
+       phones, and on wider screens a multiple of 5 that keeps a cell about 22 px (a darker line every 5 cells). The
+       width is the page's own (a desktop scrollbar taken off, also while the gate holds the page still). 1rem = 1 cell,
+       so every size in the stylesheets is in grid units. Origin: the screen's top left. */
+    (function () {
+      var d = document.documentElement, sb = -1;
+      function bar() {
+        if (sb >= 0) return sb;
+        var p = document.createElement('div'); p.style.cssText = 'position:absolute;top:-999px;left:0;width:100px;height:100px;overflow:scroll;visibility:hidden';
+        d.appendChild(p); sb = Math.max(0, p.offsetWidth - p.clientWidth); p.remove(); return sb;
+      }
+      function grid() {
+        var W = innerWidth - bar(), n = W < 640 ? 20 : 5 * Math.round(W / 110), u = W / n, old = window.__grid;
+        if (old && old.u === u && old.n === n) { old.H = innerHeight; return; }   /* a height change (a phone's address bar) keeps the grid */
+        d.style.setProperty('--u', u + 'px'); d.style.setProperty('--n', n);
+        window.__grid = { u: u, n: n, W: W, H: innerHeight, sb: sb };
+        if (old) try { document.dispatchEvent(new CustomEvent('wm:grid', { detail: window.__grid })); } catch (e) {}
+      }
+      grid(); addEventListener('resize', grid);
+    })();
   </script>
   <link rel="preload" href="fonts/newsreader-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/dm-mono-400.woff2" as="font" type="font/woff2" crossorigin>

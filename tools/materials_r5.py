@@ -1,9 +1,9 @@
-"""Round 5: the hallway looks' and page 1's ground materials (all CC0), into site/media/materials/<Id>/.
+"""Round 5: the hallway's card (CC0), into site/media/materials/<Id>/.
   python -I tools/materials_r5.py
+Round 6: looks B and C and grounds B and C were removed, so only Paper001 ships (hallway A's card; dive.js prints it in
+grey). Plaster002, Concrete034 and laminate_floor_03 are no longer converted (their entries are kept below, commented).
 Sources (downloaded 24 Nov 2026 into tools/sources/materials-r5/, git-ignored; logged in CREDITS.md):
-  ambientCG (https://ambientcg.com, CC0 1.0), 1K-JPG sets: Paper001 (white paper: hallway A's card, page 1's ground C),
-    Plaster002 (hallway B's walls and ceiling), Concrete034 (hallway C's walls, floor and ceiling).
-  Poly Haven (https://polyhaven.com, CC0 1.0), 1k JPG: laminate_floor_03 (hallway B's floor, levels lifted to pale oak).
+  ambientCG (https://ambientcg.com, CC0 1.0), 1K-JPG sets: Paper001 (white paper: hallway A's card).
 Colour maps at 1024 px (WebP q 86), normal maps at 512 px (q 90): the hallway is seen at phone size, and the normals
 only carry the fine relief (paper fibre, plaster trowel marks, the wood's grain)."""
 from pathlib import Path
@@ -16,9 +16,9 @@ OUT = ROOT / "site" / "media" / "materials"
 SETS = {
     # id: (colour file, normal file, out folder, colour treatment)
     "Paper001": ("Paper001/Paper001_1K-JPG_Color.jpg", "Paper001/Paper001_1K-JPG_NormalGL.jpg", "Paper001", None),
-    "Plaster002": ("Plaster002/Plaster002_1K-JPG_Color.jpg", "Plaster002/Plaster002_1K-JPG_NormalGL.jpg", "Plaster002", None),
-    "Concrete034": ("Concrete034/Concrete034_1K-JPG_Color.jpg", "Concrete034/Concrete034_1K-JPG_NormalGL.jpg", "Concrete034", None),
-    "laminate_floor_03": ("ph_laminate_floor_03/Diffuse.jpg", "ph_laminate_floor_03/nor_gl.jpg", "ph-laminate_floor_03", "pale-oak"),
+    # "Plaster002": ("Plaster002/Plaster002_1K-JPG_Color.jpg", "Plaster002/Plaster002_1K-JPG_NormalGL.jpg", "Plaster002", None),
+    # "Concrete034": ("Concrete034/Concrete034_1K-JPG_Color.jpg", "Concrete034/Concrete034_1K-JPG_NormalGL.jpg", "Concrete034", None),
+    # "laminate_floor_03": ("ph_laminate_floor_03/Diffuse.jpg", "ph_laminate_floor_03/nor_gl.jpg", "ph-laminate_floor_03", "pale-oak"),
 }
 
 def pale_oak(im):

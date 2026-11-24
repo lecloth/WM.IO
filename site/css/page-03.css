@@ -1,62 +1,68 @@
 /* Take 2 · page 3: the work slip (its head is page 2's last line), then "or see how we think" and Detail B, a circle
-   that grows into page 4. A form drawn as an engineering work order: hairline cells, mono letters, ink on paper. */
+   that grows into page 4. A form drawn as an engineering work order: hairline cells, mono letters, ink on paper.
+   Round 6: on the grid (1rem = one cell); page 3 starts on a line (page 2 is whole cells tall), every cell of the slip
+   is whole cells, every baseline on a line or half line. The text typed into the fields is placed by the browser (its
+   writing line is on the grid). */
 
 /* ---------- the slip: continues the head above it (same inset, same width), a sheet on the board ---------- */
-.slip { position: relative; margin: 0 16px; background: var(--paper); border: 1px solid var(--ink); border-top: 0; color: var(--ink); }
-.slip__sec { position: relative; border: 0; border-top: 1px solid rgba(var(--ink-rgb), .35); padding: 14px 14px 16px; min-inline-size: 0; }
-.slip__sec:first-child { border-top: 0; }
-.slip__q { display: flex; align-items: baseline; gap: 12px; padding: 0; font-family: var(--f-display); font-weight: 420; font-size: 21px; line-height: 1.2; letter-spacing: -.005em; }
-legend.slip__q { float: left; width: 100%; }
+.slip { position: relative; margin: 0 var(--gut); background: var(--paper); color: var(--ink);
+  box-shadow: inset 1px 0 0 var(--ink), inset -1px 0 0 var(--ink), inset 0 -1px 0 var(--ink); }
+.slip__sec { position: relative; border: 0; margin: 0; padding: 1rem 1rem calc(1rem + var(--snap, 0px)); min-inline-size: 0; box-shadow: inset 0 1px 0 rgba(var(--ink-rgb), .35); }
+.slip__sec:first-child { box-shadow: none; }
+/* the question: its letter in a two-cell column, its words after it; baseline one cell down */
+.slip__q { display: block; float: none; width: 100%; padding: 0; font-family: var(--f-display); font-weight: 420; font-size: 1.25rem; line-height: 1.5rem; letter-spacing: -.005em; }
+legend.slip__q { float: left; }
 legend.slip__q + * { clear: both; }
-.slip__no { flex: none; width: 14px; color: var(--graphite); font-size: 11px; }
-.slip__opt { color: var(--graphite); font-size: 10px; margin-left: auto; }
+.slip__no { display: inline-block; width: 2rem; color: var(--graphite); font-size: .5rem; letter-spacing: var(--mono-track); vertical-align: baseline; }
+.slip__opt { position: absolute; right: 1rem; top: 1.5rem; color: var(--graphite); font-size: .5rem; line-height: .5rem; text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-mono)), .5rem) !important; }
 
-/* A · the printed needs: mono index + the need, typed in by the print head when the slip is on screen */
-.slip__needs { margin: 8px 0 0 26px; }
-.slip__needs li { display: grid; grid-template-columns: 30px 1fr; align-items: baseline; padding: 7px 0; border-bottom: 1px dashed rgba(var(--ink-rgb), .3); }
-.slip__needs li:last-child { border-bottom: 0; }
-.slip__needs .n { color: var(--graphite); font-size: 11px; }
-.slip__needs .t { font-family: var(--f-mono); font-size: 15px; text-transform: uppercase; letter-spacing: .03em; }
+/* A · the printed needs: mono index + the need, two cells a line, typed in by the print head when the slip is on screen */
+.slip__needs { margin: 1rem 0 0 2rem; }
+.slip__needs li { display: grid; grid-template-columns: 2rem 1fr; align-items: start; height: 2rem; box-shadow: inset 0 -1px 0 rgba(var(--ink-rgb), .2); }
+.slip__needs li:last-child { box-shadow: none; }
+.slip__needs .n { color: var(--graphite); font-size: .5rem; line-height: .5rem; margin-top: 1rem; text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-mono)), .5rem); }
+.slip__needs .t { font-family: var(--f-mono); font-size: .75rem; line-height: .5rem; text-transform: uppercase; letter-spacing: .03em; margin-top: .5rem;
+  text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-mono)), .5rem); }
 .slip__needs li.is-new .t { clip-path: inset(0 100% 0 0); animation: print var(--print-ms, .5s) steps(var(--print-n, 12), end) forwards; }
-.slip__empty { margin: 8px 0 0 26px; font-size: 18px; line-height: 1.35; color: var(--graphite); }
+.slip__empty { margin: 1rem 0 0 2rem; font-size: 1rem; line-height: 1.5rem; color: var(--graphite); }
 .slip__empty a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; }
 
-/* B, E · ticks: the same box and single stroke as page 2's rows */
-.slip__ticks { display: grid; gap: 0; margin: 6px 0 0 26px; }
-.tick { position: relative; display: flex; align-items: center; gap: 14px; min-height: 48px; font-size: 19px; line-height: 1.2; cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; }
-.slip__ticks--by { grid-auto-flow: column; grid-template-rows: repeat(3, auto); grid-template-columns: auto 1fr; column-gap: 14px; }
-.slip__ticks--by .tick { font-size: 18px; gap: 12px; }
+/* B, E · ticks: a one-cell box, a cell down in a three-cell row; the words' baseline two cells down */
+.slip__ticks { display: grid; gap: 0; margin: 0 0 0 2rem; }
+.tick { position: relative; display: grid; grid-template-columns: 1rem 1fr; column-gap: 1rem; align-items: start; min-height: 3rem; padding-bottom: var(--snap, 0px); font-size: 1rem; line-height: 1.5rem; cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; }
+.tick .mark { width: 1rem; height: 1rem; margin-top: 1rem; }
+.tick > span { margin-top: 1rem; text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-serif)), .5rem); }
+.slip__ticks--by { grid-auto-flow: column; grid-template-rows: repeat(3, auto); grid-template-columns: 8rem 1fr; column-gap: 0; }
 
-/* C, D · typed fields: a hairline to write on; the box for the longer note */
-.slip__field { display: block; width: calc(100% - 26px); margin: 8px 0 0 26px; padding: 8px 0; border: 0; border-bottom: 1px solid var(--ink); border-radius: 0; background: transparent; color: var(--ink);
-  font-family: var(--f-display); font-size: 20px; line-height: 1.3; outline: none; -webkit-appearance: none; appearance: none; }
-.slip__field:focus { border-bottom-width: 2px; padding-bottom: 7px; }
-.slip__field--box { min-height: 100px; padding: 8px 10px; border: 1px solid rgba(var(--ink-rgb), .55); resize: vertical; }
-.slip__field--box:focus { border: 1px solid var(--ink); box-shadow: inset 0 0 0 1px var(--ink); padding: 8px 10px; }
-.slip__count { display: block; text-align: right; color: var(--graphite); font-size: 10px; margin-top: 6px; }
+/* C, D · typed fields: a hairline to write on (a line of the grid); the box for the longer note */
+.slip__field { display: block; width: calc(100% - 2rem); height: 2rem; margin: 1rem 0 0 2rem; padding: calc(1.5rem - .7292em) 0 0; border: 0; border-radius: 0; background: transparent; color: var(--ink);
+  box-shadow: inset 0 -1px 0 var(--ink); font-family: var(--f-display); font-size: 1rem; line-height: 1rem; outline: none; -webkit-appearance: none; appearance: none; }
+.slip__field:focus { box-shadow: inset 0 -2px 0 var(--ink); }
+.slip__field--box { height: 5rem; min-height: 5rem; padding: .5rem; line-height: 1.5rem; box-shadow: inset 0 0 0 1px rgba(var(--ink-rgb), .55); resize: vertical; }
+.slip__field--box:focus { box-shadow: inset 0 0 0 2px var(--ink); }
+.slip__count { display: block; text-align: right; color: var(--graphite); font-size: .5rem; line-height: .5rem; margin-top: .5rem; }
 .slip__count b { font-weight: 400; }
 
 /* booking slots (only when settings.booking.on): days across, times down, the same marks */
-.slip__slots { margin: 12px 0 0 26px; }
-.slip__slots-k { color: var(--graphite); font-size: 10px; margin-bottom: 6px; }
-.slip__slots-grid { display: grid; gap: 6px 0; }
-.slip__day { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 8px; }
-.slip__day-k { grid-column: 1 / -1; font-size: 10px; color: var(--graphite); padding: 4px 0; border-bottom: 1px solid rgba(var(--ink-rgb), .35); }
-.slip__day .tick { font-family: var(--f-mono); font-size: 13px; min-height: 44px; gap: 10px; }
-.slip__day .mark { width: 18px; height: 18px; }
+.slip__slots { margin: 1rem 0 0 2rem; }
+.slip__slots-k { color: var(--graphite); font-size: .5rem; line-height: .5rem; margin-bottom: .5rem; }
+.slip__slots-grid { display: grid; gap: 0; }
+.slip__day { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 0; }
+.slip__day-k { grid-column: 1 / -1; font-size: .5rem; line-height: 1rem; height: 1rem; color: var(--graphite); box-shadow: inset 0 -1px 0 rgba(var(--ink-rgb), .35); }
+.slip__day .tick { font-family: var(--f-mono); font-size: .625rem; min-height: 3rem; }
 
 /* the honeypot: out of sight and out of reach for people (not display:none, which some bots skip) */
 .slip__hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
 
 /* the Send area: the slip's last cell */
-.slip__send { position: relative; border-top: 1px solid var(--ink); padding: 10px 14px 16px; }
-.slip__said { font-size: 18px; line-height: 1.35; margin-top: 8px; }
+.slip__send { position: relative; box-shadow: inset 0 1px 0 var(--ink); padding: 1rem 1rem calc(1rem + var(--snap, 0px)); }
+.slip__said { font-size: 1rem; line-height: 1.5rem; margin-top: .5rem; }
 .slip__said:empty { display: none; }
 
 /* ---------- the way on: "or see how we think", then Detail B (a circle) with page 4 already behind it ---------- */
 .p3__tail { position: relative; height: 190vh; height: 190lvh; }
 .p3__pin { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; }
-.p3__more { position: absolute; left: 16px; right: 16px; top: calc(var(--strip-h) + 28px); font-family: var(--f-display); font-weight: 420; font-size: 30px; line-height: 1.12; letter-spacing: -.01em; }
+.p3__more { position: absolute; left: var(--gut); right: var(--gut); top: 3rem; font-family: var(--f-display); font-weight: 420; font-size: 1.5rem; line-height: 2rem; letter-spacing: -.01em; }
 .p3__more a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .16em; }
 .p3__more a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .p3-callout { position: fixed; inset: 0; z-index: 4; pointer-events: none; visibility: hidden; color: var(--ink); }
@@ -67,11 +73,11 @@ legend.slip__q + * { clear: both; }
 .p3-callout.is-drawn .p3-callout__c { stroke-dashoffset: 0; }
 .p3-callout__lead { opacity: 0; transition: opacity .3s linear .6s; }
 .p3-callout.is-drawn .p3-callout__lead { opacity: 1; }
-.p3-callout__tag { position: absolute; left: 0; top: 0; white-space: nowrap; font-size: 11px; opacity: 0; transition: opacity .3s linear .7s; }
+.p3-callout__tag { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; transition: opacity .3s linear .7s; }
 .p3-callout.is-drawn .p3-callout__tag { opacity: 1; }
 /* page 4 is already there, at full scale, seen through the circle (callout.js fixes and clips it) */
 html[data-motion="full"] #page-04 { margin-top: -100vh; margin-top: -100lvh; }   /* the tail is 100lvh + 90lvh of growing */
-#page-04.is-callout { z-index: 3; background: transparent; border-top-color: transparent; }
+#page-04.is-callout { z-index: 3; background: transparent; box-shadow: none; }
 #page-04.is-callout .stub__in { position: fixed; left: 0; right: 0; top: 0; background: var(--paper); }
 
 @media (hover: hover) and (pointer: fine) {
@@ -80,36 +86,30 @@ html[data-motion="full"] #page-04 { margin-top: -100vh; margin-top: -100lvh; }  
 }
 
 @media (min-width: 1024px) {
-  /* desktop: three columns of cells under the head, the Send across the bottom */
-  .slip { margin: 0 6rem; max-width: 78rem; display: grid; grid-template-columns: 1fr 1fr 1fr; }
-  .slip__sec { padding: 1rem 1.25rem 1.25rem; border-top: 0; border-left: 1px solid rgba(var(--ink-rgb), .35); }
-  .slip__sec--needs { grid-column: 1; grid-row: 1; border-left: 0; }
-  .slip__sec--when { grid-column: 1; grid-row: 2; border-left: 0; border-top: 1px solid rgba(var(--ink-rgb), .35); }
+  /* desktop: three columns of whole cells under the head, the Send across the bottom */
+  .slip { margin: 0 var(--gut); max-width: 50rem; display: grid; grid-template-columns: round(down, 33.34%, 1rem) round(down, 33.34%, 1rem) 1fr; }
+  .slip__sec { box-shadow: inset 1px 0 0 rgba(var(--ink-rgb), .35); }
+  .slip__sec--needs { grid-column: 1; grid-row: 1; box-shadow: none; }
+  .slip__sec--when { grid-column: 1; grid-row: 2; box-shadow: inset 0 1px 0 rgba(var(--ink-rgb), .35); }
   .slip__sec--name { grid-column: 2; grid-row: 1; }
-  .slip__sec--note { grid-column: 2; grid-row: 2; border-top: 1px solid rgba(var(--ink-rgb), .35); }
+  .slip__sec--note { grid-column: 2; grid-row: 2; box-shadow: inset 1px 0 0 rgba(var(--ink-rgb), .35), inset 0 1px 0 rgba(var(--ink-rgb), .35); }
   .slip__sec--by { grid-column: 3; grid-row: 1 / span 2; }
-  .slip__send { grid-column: 1 / -1; padding: .75rem 1.25rem 1.25rem; }
-  .slip__q { font-size: 1.5rem; gap: .875rem; }
-  .slip__no { width: 1rem; font-size: .6875rem; }
-  .slip__opt { font-size: .625rem; }
-  .slip__needs, .slip__ticks, .slip__empty, .slip__slots { margin-left: 1.875rem; }
-  .slip__needs li { grid-template-columns: 2rem 1fr; padding: .5rem 0; }
-  .slip__needs .t { font-size: 1rem; }
-  .slip__empty { font-size: 1.1875rem; }
-  .tick { font-size: 1.1875rem; min-height: 3rem; gap: 1rem; }
+  .slip__send { grid-column: 1 / -1; }
+  .slip__q { font-size: 1.25rem; }
+  .slip__no, .slip__opt { font-size: .4375rem; }
+  .slip__needs .t { font-size: .625rem; }
   .slip__ticks--by { grid-auto-flow: row; grid-template-rows: none; grid-template-columns: 1fr; }
-  .slip__ticks--by .tick { font-size: 1.1875rem; gap: 1rem; }
-  .slip__field { width: calc(100% - 1.875rem); margin-left: 1.875rem; font-size: 1.375rem; }
-  .slip__field--box { min-height: 8.5rem; }
-  .slip__count { font-size: .625rem; }
-  .p3__more { left: 6rem; right: auto; width: 30rem; top: calc(var(--strip-h) + 7rem); font-size: 3rem; }
-  .p3-callout__tag { font-size: .6875rem; }
+  .slip__field { font-size: 1rem; }
+  .slip__field--box { height: 6rem; min-height: 6rem; }
+  .p3__more { right: auto; width: 22rem; top: 7rem; font-size: 2rem; line-height: 3rem; }
+}
+@media (min-width: 1800px) and (min-height: 1000px) {
+  .p3__more { top: 8rem; font-size: 2.5rem; }
 }
 
 /* reduced motion: no pin, no growing; the circle stands drawn, and page 4 follows in normal flow */
 html[data-motion="reduce"] .p3__tail { height: auto; }
-html[data-motion="reduce"] .p3__pin { position: relative; height: auto; padding: 48px 0 64px; }
-html[data-motion="reduce"] .p3__more { position: relative; left: auto; right: auto; top: auto; margin: 0 16px; }
+html[data-motion="reduce"] .p3__pin { position: relative; height: auto; padding: 2rem 0 3rem; }
+html[data-motion="reduce"] .p3__more { position: relative; left: auto; right: auto; top: auto; margin: 0 var(--gut); }
 html[data-motion="reduce"] .p3-callout { display: none; }
 html[data-motion="reduce"] .slip__needs li.is-new .t { animation: none; clip-path: none; }
-@media (min-width: 1024px) { html[data-motion="reduce"] .p3__more { margin: 0 6rem; } }

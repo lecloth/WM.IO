@@ -1,22 +1,27 @@
-// Page 1 -> page 2: the "?" dot dive and the hallway (Part 5 "Round 4 picks" + "Round 5"). The dot of "Now, what do
-// you need?" (measured on the real rendered glyph, after fonts load and on every resize) grows into a circular window;
-// through it, a hallway about two screens long with four framed blueprints, left, right, left, right. Each is our own
-// schematic as a cyanotype blueprint (white lines on #173F73, site/js/page01/corridor-drawings.js).
-// Round 5: the hallway is lit, not drawn. Real CC0 surfaces under real light with soft shadows, in one of three looks
-// (site/js/page01/hall-looks.js: A architect's model on the page, B gallery, C engineering lab), and every frame is a
-// real object: a moulding with depth, a mat with a bevelled window, the blueprint set back behind it, glass in front
-// that catches the light as the frame turns, a hinge. As you reach a frame it swings out from its wall to face you
-// square-on while its drawing draws itself on; you stop; one plain line under it; then it swings back and fades
-// before it nears the screen edge. Frame 4: the blueprint of our app's screen turns into the real iPhone 18 and
+// Page 1 -> page 2: the "?" dot dive and the hallway (Part 5 "Round 4 picks", "Round 5", "Round 6"). The dot of "Now,
+// what do you need?" (measured on the real rendered glyph, after fonts load and on every resize) grows into a circular
+// window; through it, a hallway with four framed blueprints, left, right, left, right. Each is our own schematic as a
+// cyanotype blueprint (white lines on #173F73, site/js/page01/corridor-drawings.js).
+// The hallway is lit, not drawn (look A, the architect's model: white card under real light with soft shadows; round 6
+// removed looks B and C), and every frame is a real object: a moulding with depth, a mat with a bevelled window, the
+// blueprint set back behind it, glass in front that catches the light as the frame turns, a hinge. As you reach a frame
+// it swings out from its wall to face you square-on while its drawing draws itself on; you stop and read its museum
+// label (round 6: the title, the drawing's name, one line of story, under a hairline, no box); then it swings back and
+// fades before it nears the screen edge. Frame 4: the blueprint of our app's screen turns into the real iPhone 18 and
 // Galaxy S26 (live 3D, loaded as the dive begins, lit by the same studio as phone A), which turn to show their backs
 // and settle front-on on our booking app. The still image stands in while they load, with reduced motion, and when
 // the git-ignored files are missing. Page 2 waits at the hallway's end and lands 1:1.
+// Round 6, the grid: the card carries the screen's own grid, continued into depth from the hallway's mouth (the same
+// cells, a darker line every 5), so at the mouth its lines meet the page's. Each frame is whole cells wide and tall
+// (its mat takes up the difference: the drawing keeps its true proportions); facing you at rest, its front face lands
+// on screen lines, and on the wall it hangs on the card's lines (its top edge on a horizontal line, its hinge on a
+// vertical one). Its label sits under it, on its left edge and the grid.
 // No stretching: the camera is a true perspective (no uneven scale anywhere); its field of view is 50 degrees across
 // the narrower side of the screen, capped at 66 degrees across, so phones and wide windows see the same hallway; a
 // facing frame is parallel to the screen, so it shows its drawing's exact proportions.
-// WebGL (three.js): drawings are line geometry (drawn on by count), labels small textures, so nothing re-rasters.
-// Scroll-scrubbed (q = 0..1 over the dive), freeze-safe; frame 4's drawn -> real is one short timed beat, and the
-// phones' turn follows the scroll through a critically damped spring (it always settles where the scroll says).
+// WebGL (three.js): drawings are line geometry (drawn on by count), drawing labels small textures, so nothing
+// re-rasters. Scroll-scrubbed (q = 0..1 over the dive), freeze-safe; frame 4's drawn -> real is one short timed beat,
+// and the phones' turn follows the scroll through a critically damped spring (it always settles where the scroll says).
 import * as THREE from 'three';
 import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
@@ -24,7 +29,8 @@ import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { FRAMES, PHONE_PAIR } from './corridor-drawings.js';
-import { LOOKS, hallPick } from './hall-looks.js';
+import { LOOKS, HALL } from './hall-looks.js';
+import { grid } from '../engine/grid.js';
 import { studio } from '../phones/studio.js';
 
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -39,15 +45,19 @@ export function lensP(W, H) {
   const t = (deg) => Math.tan(deg * Math.PI / 360);
   return Math.max(Math.min(W, H) / 2 / t(LENS.narrow), W / 2 / t(LENS.across));
 }
-// the timeline (q): the window opens, then four stops [s, e] (the camera rests, the caption shows), then page 2.
-// Round 5: frame 4 rests longer (the real phones turn there); the first three come a little sooner.
-export const STOPS = [[0.25, 0.305], [0.42, 0.475], [0.59, 0.645], [0.77, 0.92]];
-const OPEN = { grow: [0, 0.06], ink: [0.04, 0.09], open: [0.06, 0.18], travel0: 0.07 };
+// the timeline (q): the window opens, then four stops [s, e] (the camera rests, the label shows), then page 2.
+// Round 6: the dive is 3.1 screens long (it was 2), so each frame rests long enough to read its label: about 0.3 of a
+// screen of scroll for frames 1-3 and 0.4 for frame 4 (its phones turn first). Every other beat keeps its length in
+// screens (the values below are in q = screens / DIVE).
+export const DIVE = 3.1;
+const S_ = (screens) => screens / DIVE;
+export const STOPS = [[S_(0.66), S_(0.96)], [S_(1.26), S_(1.56)], [S_(1.86), S_(2.16)], [S_(2.46), S_(2.86)]];
+const OPEN = { grow: [0, S_(0.12)], ink: [S_(0.08), S_(0.18)], open: [S_(0.12), S_(0.36)], travel0: S_(0.14) };
 // a frame leaves while the camera still rests (HOLD after its stop): it swings back to its wall and fades, so it is
 // gone before the walk on could carry it towards the screen edge
-const SWING = 0.1, DRAW = 0.09, HOLD = 0.032, LEAVE = [0.002, 0.03];
+const SWING = S_(0.2), DRAW = S_(0.18), HOLD = S_(0.064), LEAVE = [S_(0.004), S_(0.06)];
 // frame 4: the real phones appear (timed beat) just after the stop begins, then turn over [TURN] of the stop
-const REAL_AT = 0.012, TURN = [0.03, 0.135];
+const REAL_AT = S_(0.024), TURN = [S_(0.06), S_(0.3)];
 
 /** where the dot of the last "?" in `el` is, on screen: draw that "?" in the same font on a canvas and take its
  *  lowest ink blob (the dot). Word reveal transforms are switched off while measuring (the settled position). */
@@ -150,15 +160,19 @@ async function loadImage(url) {
  *  the hallway itself (WebGL, a transparent canvas), the ring, the ink dot and the captions. Page 2 stands at the
  *  hallway's end, so walls and frames never cover it on screen and every frame is in front of it: drawing the hallway
  *  above page 2 is exact, with no clip on page 2 (a clip that changes every frame made page 2 repaint). */
-export function createDive(root, top, { base = '', look } = {}) {
-  const LOOK = LOOKS[look || hallPick()] || LOOKS.A;
+/** the museum label under a frame (round 6): a hairline above it (no box), the title (big, serif), a small mono line
+ *  with the drawing's name, one line of story (a draft, flagged) */
+export const labelHTML = (f) => `<div class="dive__lab"><p class="dive__lab-t display gt">${f.caption}</p><p class="dive__lab-k mono gt gt-h">${f.fig}</p>` +
+  `<p class="dive__lab-s gt gt-h"><span class="ph" data-draft>Draft</span>${f.story}</p></div>`;
+
+export function createDive(root, top, { base = '' } = {}) {
+  const LOOK = LOOKS[HALL];
   root.innerHTML = `<div class="dive__win"></div>`;
-  top.innerHTML = `<canvas class="dive__gl"></canvas><svg class="dive__ring"><circle></circle></svg><i class="dive__dot"></i><div class="dive__caps">${
-    FRAMES.map((f) => `<p class="dive__cap"><span class="ph" data-draft>Draft</span><span class="dive__cap-t">${f.caption}</span></p>`).join('')}</div>`;
+  top.innerHTML = `<canvas class="dive__gl"></canvas><svg class="dive__ring"><circle></circle></svg><i class="dive__dot"></i><div class="dive__labs">${FRAMES.map(labelHTML).join('')}</div>`;
   root.dataset.look = top.dataset.look = LOOK.id;
   const win = root.querySelector('.dive__win'), canvas = top.querySelector('.dive__gl');
   const ring = top.querySelector('.dive__ring circle'), dotEl = top.querySelector('.dive__dot');
-  const capEls = [...top.querySelectorAll('.dive__cap')];
+  const labEls = [...top.querySelectorAll('.dive__lab')];
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, premultipliedAlpha: true, powerPreference: 'high-performance' });
   const dpr = Math.min(devicePixelRatio || 1, 2);
@@ -202,21 +216,24 @@ export function createDive(root, top, { base = '', look } = {}) {
     }));
     paintSurfaces();
   }
-  /** A: the card with the drafting grid printed on it (a canvas: the paper scan, then the grid in ink); B, C: the scans.
-   *  Painted once per theme and once when the scans arrive (never per frame). */
+  /** the card with the site's grid printed on it (a canvas: the paper scan in grey, then the grid in ink). One tile is
+   *  5 x 5 cells (a darker line on its first row and column, the cells' lines every fifth); the walls and floor repeat
+   *  it in world units of the screen's cell, from the hallway's mouth (layout sets the repeat and offset). Painted once
+   *  per theme and once when the scans arrive (never per frame). */
   let painted = '';
   function paintSurfaces() {
-    const tag = `${dark}|${Object.keys(surfImgs).join()}`; if (tag === painted) return; painted = tag;
+    const tag = `${dark}|${Object.keys(surfImgs).join()}|${gu}`; if (tag === painted) return; painted = tag;
     Object.values(S).filter(Boolean).forEach((s) => {
       const img = surfImgs[s.spec.tex];
       if (s.spec.grid) {
-        const c = s.m.map.image, x = c.getContext('2d'), w = c.width, T = s.spec.tile, px = w / T;
-        x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1; x.fillStyle = s.spec.base[dark ? 1 : 0]; x.fillRect(0, 0, w, w);
-        if (img?.c) { x.globalCompositeOperation = dark ? 'overlay' : 'multiply'; x.globalAlpha = dark ? 0.12 : 1; x.drawImage(img.c, 0, 0, w, w); }
-          x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1;
-          const ln = dark ? '242,240,235' : '18,18,18';
-          // minors every 20 px, majors every 100 px (as page 2's grid), as fine lines on the card
-          for (let v = 0; v < T; v += 20) { const major = v % 100 === 0; x.fillStyle = `rgba(${ln},${major ? (dark ? 0.16 : 0.13) : (dark ? 0.07 : 0.055)})`; const t = Math.max(1, px * (major ? 1.1 : 0.8)); x.fillRect(0, v * px, w, t); x.fillRect(v * px, 0, t, w); }
+        const c = s.m.map.image, x = c.getContext('2d'), w = c.width, cell = w / 5, px = cell / (gu || 20);   // texels per world unit
+        x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1; x.filter = 'none'; x.fillStyle = s.spec.base[dark ? 1 : 0]; x.fillRect(0, 0, w, w);
+        // the scan's fibres, printed in grey (no warm tint)
+        if (img?.c) { x.filter = 'grayscale(1)'; x.globalCompositeOperation = dark ? 'overlay' : 'multiply'; x.globalAlpha = dark ? 0.12 : 1; x.drawImage(img.c, 0, 0, w, w); x.filter = 'none'; }
+        x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1;
+        const ln = dark ? '237,238,240' : '18,18,18';
+        // the cells' lines and the darker line every 5 cells, about one world unit (one CSS px at the mouth) wide
+        for (let k = 0; k < 5; k++) { const major = k === 0; x.fillStyle = `rgba(${ln},${major ? (dark ? 0.16 : 0.13) : (dark ? 0.07 : 0.055)})`; const t = Math.max(1, px * (major ? 1.1 : 0.8)); x.fillRect(0, k * cell, w, t); x.fillRect(k * cell, 0, t, w); }
       }
       s.maps.forEach((m) => {
         if (s.spec.grid) m.map.needsUpdate = true;
@@ -229,27 +246,28 @@ export function createDive(root, top, { base = '', look } = {}) {
   // the edges (look A: the corridor's edges stay ink hairlines)
   const edgeMat = lmat({ opacity: LOOK.edges });
   const edges = new LineSegments2(segGeo([0, 0, 0, 0, 0, 1]), edgeMat); edges.renderOrder = 1; edges.visible = LOOK.edges > 0; scene.add(edges);
-  // look C: the ceiling's light strips (light fixtures: plain bright planes, no glow)
-  const stripMat = new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false, side: THREE.DoubleSide });
-  const strips = new THREE.Mesh(new THREE.BufferGeometry(), stripMat); strips.visible = !!LOOK.strips; scene.add(strips);
 
   // ---------- light ----------
   const hemi = new THREE.HemisphereLight(0xffffff, 0xffffff, 1); scene.add(hemi);
   const key = new THREE.DirectionalLight(0xffffff, 1); key.castShadow = true; scene.add(key); scene.add(key.target);
   key.shadow.camera.up.set(0, 0, -1); key.shadow.bias = -0.0004; key.shadow.normalBias = 0.6; key.shadow.radius = LOOK.key.radius;
   const keyDir = new THREE.Vector3(...LOOK.key.dir).normalize();
-  const spots = LOOK.spots ? FRAMES.map(() => { const s = new THREE.SpotLight(0xffffff, 1, 0, LOOK.spots.angle, LOOK.spots.penumbra, 0); scene.add(s); scene.add(s.target); return s; }) : [];
   let envTex = null;
 
   // ---------- the frames: real objects ----------
   const glassMat = () => new THREE.MeshPhysicalMaterial({ color: 0x000000, metalness: 0, roughness: 0.035, ior: 1.52, specularIntensity: 1, envMapIntensity: LOOK.glass, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
   const insetMap = insetTex(), blobMap = blobTex();
   const frames = FRAMES.map((F, i) => {
-    const d = F.draw, mg = d.w * MOUNT, MW = d.w + 2 * mg, MH = d.h + 2 * mg;
+    // round 6: the frame's outer shape is whole cells (F.cells, width : height); the mat takes up the difference, so the
+    // drawing keeps its true proportions (never scaled unevenly) and its mount is at least MOUNT all round
+    const d = F.draw, mg0 = d.w * MOUNT, [ca, cb] = F.cells;
+    let MW = d.w + 2 * mg0, MH = d.h + 2 * mg0;
+    if (MW / MH > ca / cb) MH = MW * cb / ca; else MW = MH * ca / cb;
+    const mgx = (MW - d.w) / 2, mgy = (MH - d.h) / 2;
     const pivot = new THREE.Group(), panel = new THREE.Group(); pivot.add(panel); scene.add(pivot);
     const left = F.side === 'l';
     // panel coordinates: drawing units, x from the hinge edge (0) into the hallway, y up, centred vertically; z out of the wall
-    const ox = left ? 0 : -MW, U = (u) => ox + mg + u, V = (v) => MH / 2 - mg - v;
+    const ox = left ? 0 : -MW, U = (u) => ox + mgx + u, V = (v) => MH / 2 - mgy - v;
     const FW = LOOK.frame.w * d.w, FD = LOOK.frame.d * d.w, tm = d.w * 0.006;
     const zMat = FD * 0.42, zSheet = zMat - tm, zGlass = FD * 0.82;
     const mats = [];
@@ -298,7 +316,7 @@ export function createDive(root, top, { base = '', look } = {}) {
       still = new THREE.Mesh(new THREE.PlaneGeometry(rg.w, rg.h), sm); still.position.set(U(rg.u + rg.w / 2), V(rg.v + rg.h / 2), zSheet + 0.3); still.visible = false; panel.add(still);
       blobs = PHONE_PAIR.phones.map(() => { const m = own(new THREE.MeshBasicMaterial({ color: 0x000000, alphaMap: blobMap, depthWrite: false, toneMapped: false }), 0.26); const b = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), m); b.position.z = zGlass + 0.3; b.renderOrder = 4; b.visible = false; panel.add(b); return b; });
     }
-    return { F, d, i, left, MW, MH, mg, FW, FD, zSheet, zGlass, U, V, pivot, panel, mould, hinge, mat, bevel, sheet, drawing, labels, glass, still, blobs, stillOK: false, real: 0, realTarget: 0, drawMat, mats, mouldMat, matMat, bevMat };
+    return { F, d, i, left, MW, MH, mgx, mgy, FW, FD, zSheet, zGlass, U, V, pivot, panel, mould, hinge, mat, bevel, sheet, drawing, labels, glass, still, blobs, stillOK: false, real: 0, realTarget: 0, drawMat, mats, mouldMat, matMat, bevMat };
   });
   const f4 = frames.find((f) => f.still);
 
@@ -365,7 +383,7 @@ export function createDive(root, top, { base = '', look } = {}) {
   let lastScrollRender = 0, warmT = 0;
   // the warm-up draw happens when the visitor pauses, or while the camera rests at frame 1, 2 or 3 (the picture is still
   // then: nothing on screen moves, so one long frame can't be seen)
-  const resting = (q) => STOPS.slice(0, 3).some(([s, e]) => q >= s + 0.015 && q <= e - 0.004);
+  const resting = (q) => STOPS.slice(0, 3).some(([s, e]) => q >= s + S_(0.03) && q <= e - S_(0.008));
   function idleWarm(force) {
     clearTimeout(warmT);
     if (!phones.warm) return;
@@ -422,7 +440,7 @@ export function createDive(root, top, { base = '', look } = {}) {
     colours();
   }
 
-  let W = 1, H = 1, P = 1, L = 1, dot = null, ink = '#121212', paper = '#F2F0EB', dark = false;
+  let W = 1, H = 1, P = 1, L = 1, dot = null, ink = '#121212', paper = '#F6F7F9', dark = false, gu = 20;
   const col = (s) => { const c = new THREE.Color(); try { c.setStyle(s); } catch (e) { c.setStyle('#888'); } return c; };
   const th = (pair) => (Array.isArray(pair) ? pair[dark ? 1 : 0] : pair);
   function colours() {
@@ -431,15 +449,13 @@ export function createDive(root, top, { base = '', look } = {}) {
     edgeMat.color.copy(inkC);
     hemi.color.copy(col(th(LOOK.hemi.sky))); hemi.groundColor.copy(col(th(LOOK.hemi.ground))); hemi.intensity = th(LOOK.hemi.i);
     key.color.copy(col(LOOK.key.color)); key.intensity = th(LOOK.key.i);
-    spots.forEach((s) => { s.color.copy(col(LOOK.spots.color)); s.intensity = th(LOOK.spots.i); });
-    stripMat.color.copy(col(LOOK.strips ? th(LOOK.strips.color) : '#FFFFFF'));
     scene.environmentIntensity = th(LOOK.env);
     frames.forEach((f) => {
       f.mouldMat.color.copy(col(th(LOOK.frame.color))); f.mouldMat.metalness = th(LOOK.frame.metal); f.mouldMat.roughness = th(LOOK.frame.rough);
-      f.matMat.color.copy(matC); f.bevMat.color.copy(matC).lerp(col('#FFFFFF'), dark && LOOK.id === 'A' ? 0.25 : 0.6);
+      f.matMat.color.copy(matC); f.bevMat.color.copy(matC).lerp(col('#FFFFFF'), dark ? 0.25 : 0.6);
       f.sheet.material.color.copy(col(BLUE)).lerp(matC, f.real);
       f.drawMat.color.copy(col(WHITE));
-      const labInk = LOOK.id === 'A' && dark ? col('#F2F0EB') : col('#121212');
+      const labInk = dark ? col('#EDEEF0') : col('#121212');
       f.labels.forEach((m) => { m.material.color.copy(f.real >= 0.5 ? labInk : col(WHITE)); });
     });
     paintSurfaces();
@@ -447,91 +463,122 @@ export function createDive(root, top, { base = '', look } = {}) {
   function theme() {
     const cs = getComputedStyle(document.documentElement);
     dark = document.documentElement.dataset.theme === 'dark';
-    ink = cs.getPropertyValue('--ink').trim() || '#121212'; paper = cs.getPropertyValue('--paper').trim() || '#F2F0EB';
+    ink = cs.getPropertyValue('--ink').trim() || '#121212'; paper = cs.getPropertyValue('--paper').trim() || '#F6F7F9';
     colours();
   }
 
-  // ---------- layout: the lens, where each frame faces you, the hallway's length ----------
+  // ---------- layout: the lens, where each frame faces you (on the grid), the hallway's length ----------
+  // Round 6. Facing you at rest, a frame's front face is a rectangle on screen: x0, yTop on lines, cw x ch whole cells
+  // (in its F.cells shape). The same frame flat on its wall hangs on the card's grid: its hinge on a vertical line
+  // (z = -i cells from the mouth) and its top edge on a horizontal one (y = H/2 - j cells, the screen's rows continued).
+  // With the lens fixed, the frame's distance at rest (rho = P / distance) ties the two together:
+  //   yTop = H/2 - (H/2 - j u) rho, so rho = (H/2 - r0 u) / (H/2 - j u);
+  //   the hinge's screen edge W/2 - (W/2 - g) rho must be the frame's grid edge, which fixes the gap g to the wall.
+  // We look for rows r0 (screen) and j (wall) that give a small gap (0 .. half a cell); the camera's rest T then puts
+  // the hinge on a whole cell. If no pair fits (a very short window), the frame keeps the screen grid and a 2 px gap.
   let lay = null;
-  function layout(w, h, d) {
+  function layout(w, h, d, opts = {}) {
     W = w; H = h; dot = d;
+    const u = opts.u || grid.u; gu = u;
     P = lensP(W, H);
     renderer.setSize(W, H, false);
     lineMats.forEach((m) => m.resolution.set(W * dpr, H * dpr));
     camera.fov = 2 * Math.atan(H / 2 / P) * 180 / Math.PI; camera.aspect = W / H; camera.near = Math.max(1, P * 0.02);
-    const desktop = W >= 1024;
-    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-    const strip = document.getElementById('strip')?.offsetHeight || 40;
-    const tb = document.querySelector(".titleblock"), tbr = tb?.getClientRects().length ? tb.getBoundingClientRect() : null, tbTop = tbr && tbr.height ? Math.min(H, tbr.top) : H;   // (fixed: offsetParent is null)
-    const bandT = strip + (desktop ? 2.5 * rem : 20), bandB = Math.min(H - 16, tbTop - (desktop ? 1.5 * rem : 14));
-    const capH = desktop ? 4.8 * rem : 64, g = 2;   // room for a two-line caption and its gap
+    const desktop = W >= 1024, N = Math.round(W / u);
+    const strip = opts.strip ?? (document.getElementById('strip')?.offsetHeight || 2 * u);
+    const tb = document.querySelector('.titleblock'), tbr = !opts.noTitleblock && tb?.getClientRects().length ? tb.getBoundingClientRect() : null;
+    const tbTop = tbr && tbr.height ? Math.min(H, tbr.top) : Math.floor(H / u) * u;
+    // the band frames and labels share: from under the strip to above the title block, on lines
+    const rT = Math.ceil((strip + (desktop ? 2 : 1) * u) / u - 1e-6), rB = Math.floor((tbTop - (desktop ? 1 : 1) * u) / u + 1e-6);
     const T0 = 0.6, SP = 1.1;
+    let Tprev = -Infinity;
     lay = frames.map((f, i) => {
-      const a = f.MW / f.MH, bandH = bandB - bandT;
-      let tw, th_;
-      if (desktop) { th_ = Math.min(0.52 * H, bandH - capH); tw = th_ * a; if (tw > 0.44 * W) { tw = 0.44 * W; th_ = tw / a; } }
-      else { tw = W - 32 - 30; th_ = tw / a; if (th_ > bandH - capH) { th_ = bandH - capH; tw = th_ * a; } }
-      const yTop = bandT + Math.max(0, (bandH - th_ - capH) / 2), yC = yTop + th_ / 2;
-      // the frame's outer margin from its own screen edge; desktop: centred about 27% in from that edge
-      let m = desktop ? Math.max(0.06 * W, 0.27 * W - tw / 2) : 16;
-      // round 5: the frame is an object; its moulding's front face stands proud of the wall, nearer the camera, so it
-      // looks larger than the outline at the wall by 1 / (1 - depth * width / P). The margin is kept by the front face.
-      const front = 1 / (1 - LOOK.frame.d * f.d.w / f.MW * tw / P);
-      m = W / 2 - (W / 2 - m) / front;
-      let dd = P * (W / 2 - g) / (W / 2 - m);
-      // keep it inside the hallway's height at that distance (the ceiling and floor)
-      const dMax = P * Math.min((H / 2) / Math.max(1, H / 2 - yTop), (H / 2) / Math.max(1, yTop + th_ - H / 2)) * 0.98;
-      if (dd > dMax) { dd = dMax; m = W / 2 - (W / 2 - g) * P / dd; }
-      const k = (tw * dd / P) / f.MW;                       // world units per drawing unit
-      const Ti = P * (T0 + SP * i), Z = dd - P + Ti;
-      const x0 = f.left ? m : W - m - tw;
-      return { tw, th: th_, m, d: dd, k, T: Ti, Z, yC, yTop, x0, g, rect: { left: x0, top: yTop, width: tw, height: th_ } };
+      const [ca, cb] = f.F.cells, el = labEls[i];
+      // the label's height at a width (it wraps): measured, in whole cells, plus one cell of gap above it
+      // (desktop: 26 cells wide whatever the frame, about 57 characters a line: a tall frame's label still reads as lines,
+      // and takes few rows on a short window)
+      const labW = (cw) => (desktop ? Math.min(Math.max(cw, 26), N - 4) : cw);
+      const labRows = (cw) => { el.style.width = `${labW(cw) * u}px`; return Math.ceil(el.getBoundingClientRect().height / u - 1e-3) + 1; };
+      // the biggest whole-cell frame of its shape that fits with its label (desktop: the frame itself at most 56% of
+      // the screen's height and 44% of its width)
+      const cwMax = desktop ? Math.floor(0.44 * N) : N - 2, rowsMax = rB - rT;
+      let m = Math.max(1, Math.floor(cwMax / ca));
+      while (m > 1 && (cb * m > rowsMax - labRows(ca * m) || (desktop && cb * m > Math.floor(0.56 * H / u)) || ca * m > cwMax)) m--;
+      const cw = ca * m, ch = cb * m, lr = labRows(cw);
+      // where it sits across: phones one cell in from its own edge; desktop about 27% in from it
+      let c0 = desktop ? Math.max(Math.round(0.06 * N), Math.round(0.27 * N - cw / 2)) : 1;
+      if (!f.left) c0 = Math.min(N - c0 - cw, N - 2 - labW(cw));   // a right frame moves in just enough for its label
+      const x0 = c0 * u, xHinge = f.left ? x0 : x0 + cw * u;            // the hinge's edge on screen
+      // and down: the frame + its label centred in the band (whole rows), then the wall row that hangs it best
+      const r0want = rT + Math.max(0, Math.floor((rowsMax - ch - lr) / 2));
+      let best = null;
+      for (let r0 = Math.max(rT, r0want - 3); r0 <= Math.min(rB - ch - lr, r0want + 3); r0++) {
+        for (let j = 0; j * u < H / 2 - 1; j++) {
+          const rho = (H / 2 - r0 * u) / (H / 2 - j * u);
+          if (!(rho > 0.2 && rho < 3)) continue;
+          const g = W / 2 - Math.abs(xHinge - W / 2) / rho;             // the frame's back to its wall
+          const bottomY = (H / 2 - j * u) - ch * u / rho;                // the frame's bottom on the wall (world y)
+          if (g < 0 || g > 0.5 * u || bottomY < -H / 2 + 1) continue;
+          const score = Math.abs(r0 - r0want) * 10 + g / u;
+          if (!best || score < best.score) best = { r0, j, rho, g, score };
+        }
+      }
+      if (!best) {   // no wall row fits: keep the screen grid (the frame's top then sits between two of the card's lines)
+        const r0 = Math.max(rT, Math.min(rB - ch - lr, r0want)), g = 2, rho = Math.abs(W / 2 - xHinge) / (W / 2 - g);
+        best = { r0, j: null, rho, g, score: 1e9 };
+      }
+      const { r0, rho, g } = best;
+      const yTop = r0 * u, th = ch * u, tw = cw * u, yC = yTop + th / 2;
+      const Df = P / rho;                                               // the camera to the frame's front face, at rest
+      const k = tw / rho / f.MW;                                        // world units per drawing unit
+      // the camera's rest T, so the hinge sits on a whole cell of the wall: Z = i u (Df = P - T + Z - FD k)
+      const Tw = P * (T0 + SP * i);
+      let iz = Math.round((Tw - P + Df + f.FD * k) / u);
+      let T = P + iz * u - f.FD * k - Df;
+      while (T <= Tprev + 0.5 * P) { iz++; T += u; }
+      Tprev = T;
+      const Z = iz * u;
+      return { tw, th, cw, ch, c0, r0, j: best.j, g, rho, d: Df + f.FD * k, Df, k, T, Z, yC, yTop, x0, lr, lw: labW(cw) * u,
+        rect: { left: x0, top: yTop, width: tw, height: th } };
     });
     const last = lay[lay.length - 1];
     L = Math.max(last.T + 1.6 * P, ...lay.map((l, i) => l.Z + frames[i].MW * l.k + 0.1 * P));
     camera.far = L + P * 2; camera.updateProjectionMatrix();
-    // walls (left, right), floor, ceiling, each from the mouth (z = 0) to the end (z = -L)
+    // walls (left, right) and floor, each from the mouth (z = 0) to the end (z = -L); the grid tile (5 cells) repeats in
+    // world units of the cell, its lines on the mouth's own lines (offsets: see the texture coordinates of each plane)
+    const tile = 5 * u;
     planes.forEach((mesh) => {
-      const { k: kind, side } = mesh.userData, s = S[kind].spec;
+      const { side } = mesh.userData;
       const [w, h_, pos, rot] = side === 0 ? [L, H, [-W / 2, 0, -L / 2], [0, Math.PI / 2, 0]] : side === 1 ? [L, H, [W / 2, 0, -L / 2], [0, -Math.PI / 2, 0]]
         : side === 2 ? [W, L, [0, -H / 2, -L / 2], [-Math.PI / 2, 0, 0]] : [W, L, [0, H / 2, -L / 2], [Math.PI / 2, 0, 0]];
       mesh.scale.set(w, h_, 1); mesh.position.set(...pos); mesh.rotation.set(...rot);
-      const tile = Array.isArray(s.tile) ? H * s.tile[1] : s.tile, asp = s.aspect || 1;
-      mesh.material.map.repeat.set(w / (tile * asp), h_ / tile); mesh.material.normalMap.repeat.copy(mesh.material.map.repeat);
-      // the AO runs across the strip: walls along their height, the floor and ceiling across their width
+      const ru = w / tile, rv = h_ / tile, map = mesh.material.map;
+      map.repeat.set(ru, rv);
+      // walls: u runs into the hallway on the left wall (from the mouth), out of it on the right; v runs up (rows from the top)
+      // floor: u across from the left edge, v into the hallway from the mouth
+      if (side === 0) map.offset.set(0, -rv);
+      else if (side === 1) map.offset.set(-ru, -rv);
+      else map.offset.set(0, 0);
+      mesh.material.normalMap.repeat.copy(map.repeat); mesh.material.normalMap.offset.copy(map.offset);
+      // the AO runs across the strip: walls along their height, the floor across its width
       mesh.material.aoMap = side >= 2 ? aoRot : ao;
     });
-    // the edges: the walls' top and bottom edges and the end frame (look A)
+    // the edges: the walls' top and bottom edges and the end frame
     const e = [-W / 2, -H / 2, W / 2, -H / 2, W / 2, H / 2, -W / 2, H / 2], E = [];
     for (let c = 0; c < 4; c++) E.push(e[c * 2], e[c * 2 + 1], 0, e[c * 2], e[c * 2 + 1], -L);
     for (let c = 0; c < 4; c++) { const n = (c + 1) % 4; E.push(e[c * 2], e[c * 2 + 1], -L, e[n * 2], e[n * 2 + 1], -L); }
     edges.geometry.dispose(); edges.geometry = segGeo(E);
     frames.forEach((f, i) => {
       const l = lay[i];
-      f.pivot.position.set((f.left ? -1 : 1) * (W / 2 - l.g), (H / 2 - l.yC) * l.d / P, -l.Z);
+      f.pivot.position.set((f.left ? -1 : 1) * (W / 2 - l.g), (H / 2 - l.yC) / l.rho, -l.Z);
       f.panel.scale.setScalar(l.k);
     });
-    // look B: a picture light over each frame, its pool between where the frame hangs and where it faces you
-    spots.forEach((s, i) => {
-      const f = frames[i], l = lay[i], sx = f.left ? -1 : 1, fw = f.MW * l.k, y = f.pivot.position.y;
-      // mounted out over the hallway (as gallery track lights are), aimed at the frame, so the pool lands squarely
-      s.position.set(sx * (W / 2 - W * 0.62), H / 2 - 1, -l.Z - fw * 0.1);
-      s.target.position.set(sx * (W / 2 - fw * 0.3), y, -l.Z - fw * 0.4);
-      s.angle = Math.min(1.1, Math.atan2(fw * 0.7, s.position.distanceTo(s.target.position)) + 0.1);
-    });
-    // look C: the light strips' grid on the ceiling
-    if (LOOK.strips) {
-      const st = LOOK.strips, sw = W * st.width, y = H / 2 - 0.5, pts = [];
-      const rect = (x0, z0, x1, z1) => pts.push(x0, y, z0, x1, y, z0, x1, y, z1, x0, y, z0, x1, y, z1, x0, y, z1);
-      st.along.forEach((a) => rect(a * W - sw / 2, -0.5, a * W + sw / 2, -L));
-      for (let z = -H * st.every * 0.5; z > -L; z -= H * st.every) rect(st.along[0] * W, z + sw / 2, st.along[1] * W, z - sw / 2);
-      strips.geometry.dispose(); strips.geometry = new THREE.BufferGeometry(); strips.geometry.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
-    }
     // the key light's shadow map: sized to the screen (finer on phones, where the hallway is smaller)
     const sm = W < 1024 ? 1024 : 2048;
     if (key.shadow.mapSize.x !== sm) { key.shadow.mapSize.set(sm, sm); key.shadow.map?.dispose(); key.shadow.map = null; }
-    // captions: under the frame where it faces you, as wide as the frame
-    capEls.forEach((c, i) => { const r = lay[i].rect; c.style.left = `${Math.round(r.left + frames[i].mg / frames[i].MW * r.width)}px`; c.style.top = `${Math.round(r.top + r.height + (desktop ? 0.9 * rem : 12))}px`; c.style.width = `${Math.round(r.width * (1 - 2 * frames[i].mg / frames[i].MW))}px`; });
+    // the labels: under the frame where it faces you, on its left edge, as wide as it, one cell below it
+    labEls.forEach((el, i) => { const l = lay[i]; el.style.left = `${l.x0}px`; el.style.top = `${l.yTop + l.th + u}px`; el.style.width = `${l.lw}px`; });
+    paintSurfaces();   // repaints only if the cell changed (its tag holds the unit)
     placePhones();
     theme();
   }
@@ -593,10 +640,10 @@ export function createDive(root, top, { base = '', look } = {}) {
     fitShadow(camZ);
     frames.forEach((f, i) => {
       const [s, e] = STOPS[i], l = lay[i];
-      const a0 = Math.max(s - SWING - 0.02, OPEN.open[1]);                // no frame turns before the window is open
-      const out_ = span(q, a0, s - 0.02), back = span(q, e + LEAVE[0], e + LEAVE[1]);
+      const a0 = Math.max(s - SWING - S_(0.04), OPEN.open[1]);                // no frame turns before the window is open
+      const out_ = span(q, a0, s - S_(0.04)), back = span(q, e + LEAVE[0], e + LEAVE[1]);
       const swing = ease(out_) * (1 - ease(back));                         // 0 flat on the wall .. 1 facing you
-      const fade = 1 - span(q, e + LEAVE[0] + 0.008, e + LEAVE[1]);
+      const fade = 1 - span(q, e + LEAVE[0] + S_(0.016), e + LEAVE[1]);
       const ahead = -l.Z < camZ - camera.near * 2;                          // still in front of the camera
       f.pivot.rotation.y = (f.left ? 1 : -1) * (1 - swing) * Math.PI / 2;
       f.pivot.visible = ahead && fade > 0.002;
@@ -610,7 +657,7 @@ export function createDive(root, top, { base = '', look } = {}) {
       f.mould.castShadow = f.mat.castShadow = f.hinge.castShadow = op > 0.5;
       f.drawMat.opacity = (1 - f.real) * op;
       // the drawing draws itself on as the frame turns to face you
-      const dp = ease(span(q, Math.max(s - DRAW - 0.01, a0 + 0.01), s - 0.005));
+      const dp = ease(span(q, Math.max(s - DRAW - S_(0.02), a0 + S_(0.02)), s - S_(0.01)));
       const n = Math.round(dp * f.d.segs.length); f.drawing.geometry.instanceCount = n; f.drawing.visible = n > 0;
       f.labels.forEach((m) => { m.visible = f.pivot.visible && n >= m.userData.at && n > 0; m.material.opacity = op; });
       // line weight: a hairline when it faces you, thinner while it is far
@@ -639,14 +686,14 @@ export function createDive(root, top, { base = '', look } = {}) {
         }
         f.blobs.forEach((b) => { if (!live) b.visible = false; });
       }
-      capEls[i].classList.toggle('on', q >= s - 0.002 && q <= e && open >= 1);
+      labEls[i].classList.toggle('on', q >= s - S_(0.004) && q <= e && open >= 1);
       // the frame's outline on screen (its front face), and the blueprint itself (for the stretch check)
       if (f.pivot.visible) {
         f.pivot.updateMatrixWorld(true);
         const ox = f.left ? 0 : -f.MW, cs = [[ox, -f.MH / 2], [ox + f.MW, -f.MH / 2], [ox + f.MW, f.MH / 2], [ox, f.MH / 2]]
           .map(([x, y]) => project(new THREE.Vector3(x, y, f.FD).applyMatrix4(f.panel.matrixWorld)));
         if (swing > 0.01 && op > 0.5) holes.push(cs);
-        const sx0 = ox + f.mg, sy0 = -f.MH / 2 + f.mg, ss = [[sx0, sy0], [sx0 + f.d.w, sy0], [sx0 + f.d.w, sy0 + f.d.h], [sx0, sy0 + f.d.h]]
+        const sx0 = ox + f.mgx, sy0 = -f.MH / 2 + f.mgy, ss = [[sx0, sy0], [sx0 + f.d.w, sy0], [sx0 + f.d.w, sy0 + f.d.h], [sx0, sy0 + f.d.h]]
           .map(([x, y]) => project(new THREE.Vector3(x, y, f.zSheet).applyMatrix4(f.panel.matrixWorld)));
         info.push({ i, swing, op, drawn: dp, quad: cs, sheet: ss, ratio: f.d.w / f.d.h, real: f.real });
       } else info.push({ i, swing, op: 0, drawn: dp, quad: null, sheet: null, ratio: f.d.w / f.d.h, real: f.real });

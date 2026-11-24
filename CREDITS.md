@@ -77,7 +77,7 @@ Search log and every candidate: `tools/notes/take2-sources.md`. Crops keep the o
 | `take2/columbian-press-1852.webp` | "Clymer and Dixon's patent Columbian printing press", lithograph, London, 31 Jan 1852 (C. F. Light del., Martin & Hood lith.), whole plate | Wellcome Collection 46115i, https://wellcomecollection.org/works/gzv6egr4 | Public Domain Mark (Wellcome catalogue API) | Lab C1–C3 ("A website") |
 | `take2/miller-1905-fig215.webp` | Kempster B. Miller, *American Telephone Practice* (1905), p. 242, Fig. 215 "Front view of Paris switch-board section" | Internet Archive `americantelepho00mill` (Library of Congress copy), https://archive.org/details/americantelepho00mill | Public domain (US, 1905; LoC: no known restrictions) | Lab C1–C3 ("My systems are a mess") |
 | `take2/hughes-cards-fig6-7.webp` | "Mr. J. Hughes improved Cards for weaving figured Silks", Plate 5, Figs. 6–7 (drawn by C. Varley, engraved by G. Gladwin) | Wellcome Collection V0024104, https://wellcomecollection.org/works/v7gbu44b | Public Domain Mark (Wellcome catalogue API) | Lab C1–C3 ("AI working for me"). No date shown: Wellcome's "1753" can't be right (Varley b. 1781) |
-| `paper/miller-1905-paper.webp` | A blank margin of Miller 1905, IA scan page n262 (the page after p. 242), desaturated and mirrored into a seamless tile | Same IA item as above | Public domain | Lab A2. **Off page 1 since round 5** (Wajih: "brownish yellowish"; the grounds below replace it); file kept |
+| `paper/miller-1905-paper.webp` | A blank margin of Miller 1905, IA scan page n262 (the page after p. 242), desaturated and mirrored into a seamless tile | Same IA item as above | Public domain | Lab A2. **Off page 1 since round 5** (Wajih: "brownish yellowish"); round 6: the page has two grounds only (white drafting paper, the blue blueprint); file kept |
 
 The stamp-grain mask (`paper/stamp-grain.webp`, derived from the Miller 1905 scan) was removed in page 1 round 3 together with the stamps.
 
@@ -92,31 +92,30 @@ All from ambientCG (https://ambientcg.com), whose assets are all released under 
 | `Plastic010/` | Plastic 010: smooth plastic (its fine grain) | https://ambientcg.com/view?id=Plastic010 | CC0 1.0 | Option A back (frosted white); option B back (black glass: the same grain, dark and glossy): **page 1**, Wajih's pick (23 Nov) |
 | `Leather027/` | Leather 027: black leather | https://ambientcg.com/view?id=Leather027 | CC0 1.0 | Option C back |
 
-## Take 2, round 5: the hallway's looks and page 1's grounds (`site/media/materials/`)
+## Take 2, round 5: the hallway's card (`site/media/materials/`)
 
-All **CC0 1.0** (public-domain dedication; commercial use, no credit required; credited anyway). Downloaded 24 Nov 2026
+**CC0 1.0** (public-domain dedication; commercial use, no credit required; credited anyway). Downloaded 24 Nov 2026
 into `tools/sources/materials-r5/` (git-ignored); converted by `tools/materials_r5.py` to `color.webp` (1024 px) and
-`normal.webp` (512 px, the OpenGL normal map). Non-square sources (Paper001 1024 × 600, Concrete034 1024 × 512) are
-resampled to a square, never cropped (a crop would break the seamless tile), and repeat at their own aspect. All three
-looks and all three grounds are live side by side on `site/dev/assets.html`; A of each is on the page until Wajih picks.
+`normal.webp` (512 px, the OpenGL normal map). The non-square source (Paper001, 1024 × 600) is resampled to a square,
+never cropped (a crop would break the seamless tile).
+**Round 6 (24 Nov):** two grounds only and one hallway look, so hallway looks B and C and page 1's grounds B and C are
+gone, with the three materials only they used (Plaster002, Poly Haven Laminate Floor 03, Concrete034: deleted from
+`site/media/materials/`, no longer shipped). Paper001 stays, printed in grey (no warm tint).
 
 | Folder | What it is | Source | Licence | Changes | Where used |
 |---|---|---|---|---|---|
-| `Paper001/` | Paper 001: white paper | ambientCG, https://ambientcg.com/view?id=Paper001 (`Paper001_1K-JPG.zip`) | CC0 1.0 | Resampled to square | **Hallway A (on the page)**: the white card of the walls and floor, the drafting grid printed on it at run time; **page 1, ground C** (candidate): the fresh real paper |
-| `Plaster002/` | Plaster 002: clean white plaster | ambientCG, https://ambientcg.com/view?id=Plaster002 | CC0 1.0 | — | Hallway B (candidate): walls and ceiling |
-| `ph-laminate_floor_03/` | Laminate Floor 03: oak-grain planks | Poly Haven, https://polyhaven.com/a/laminate_floor_03 (1k JPG diffuse + GL normal) | CC0 1.0 (https://polyhaven.com/license) | Colour: levels lifted and mapped to a pale oak (the grain kept) | Hallway B (candidate): the floor |
-| `Concrete034/` | Concrete 034: smooth light grey concrete | ambientCG, https://ambientcg.com/view?id=Concrete034 | CC0 1.0 | Resampled to square | Hallway C (candidate): walls, floor (darkened), ceiling |
+| `Paper001/` | Paper 001: white paper | ambientCG, https://ambientcg.com/view?id=Paper001 (`Paper001_1K-JPG.zip`) | CC0 1.0 | Resampled to square; printed in grey at run time | **The hallway (look A, the only look)**: the white card of the walls and floor, the site's grid printed on it at run time |
 
-Hallway C's steel frames are plain physical material settings (no scan). The studio HDRI below lights all three
-looks' reflections and the real phones in frame 4. Candidates downloaded and looked at, not shipped: ambientCG Paper003,
-Plaster003, Plaster005, WoodFloor051, WoodFloor066A, WoodFloor067A, Concrete016, Concrete046, Concrete048; Poly Haven
-plank_flooring_04, wooden_floor_02.
+The studio HDRI below lights the hallway's reflections and the real phones in frame 4. Candidates downloaded and looked
+at, not shipped: ambientCG Paper003, Plaster002 (round 5's look B, removed in round 6), Plaster003, Plaster005,
+WoodFloor051, WoodFloor066A, WoodFloor067A, Concrete016, Concrete034 (round 5's look C, removed in round 6), Concrete046,
+Concrete048; Poly Haven laminate_floor_03 (round 5's look B, removed in round 6), plank_flooring_04, wooden_floor_02.
 
 ## Take 2 studio light (`site/media/hdri/`)
 
 | File | What it is | Source | Licence | Where used |
 |---|---|---|---|---|
-| `studio_small_09_1k.hdr` (1024 × 512, Radiance HDR, 1.6 MB, unmodified) | "Studio Small 09" by **Sergej Majboroda**: a small photo studio, large octaboxes, soft directional light on a white infinity cyc (16K original; the 1K file) | Poly Haven, https://polyhaven.com/a/studio_small_09 (file `https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr`, downloaded 23 Nov 2026) | **CC0 1.0** (every Poly Haven asset; https://polyhaven.com/license): commercial use, no credit required | **Page 1**: the finished phone's real reflections (phone A); round 5: the hallway's reflections (frames' metal and glass, all three looks) and the two real phones, live in frame 4; the asset sheet (phone A and the two real phones); the corridor's frame-4 still of the real phones. Two other CC0 studios were downloaded and looked at, not shipped: Studio Small 08, Photo Studio 01 |
+| `studio_small_09_1k.hdr` (1024 × 512, Radiance HDR, 1.6 MB, unmodified) | "Studio Small 09" by **Sergej Majboroda**: a small photo studio, large octaboxes, soft directional light on a white infinity cyc (16K original; the 1K file) | Poly Haven, https://polyhaven.com/a/studio_small_09 (file `https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr`, downloaded 23 Nov 2026) | **CC0 1.0** (every Poly Haven asset; https://polyhaven.com/license): commercial use, no credit required | **Page 1**: the finished phone's real reflections (phone A); round 5: the hallway's reflections (frames' metal and glass) and the two real phones, live in frame 4; the asset sheet (phone A and the two real phones); the corridor's frame-4 still of the real phones. Two other CC0 studios were downloaded and looked at, not shipped: Studio Small 08, Photo Studio 01 |
 
 ## Take 2 corridor sheets (`site/media/corridor/`): off the page since round 4, files kept
 
@@ -186,10 +185,13 @@ both models, and credit them here and on the site.
 - The phone history drawings (c. 1900 to 2007): generic forms drawn in code (`site/js/sheet01/eras.js`); no logos, no
   brand names, no copy of any one maker's design. Facts: STATE.md "Phone history: sources" and `tools/notes/sweep-truth.md`.
 - The hero phone (six layers, edges, materials), the cyanotype shader, labels and dimensions: three.js and GLSL.
+- **Take 2, round 6:** the grid as the layout system (the unit per screen in the head script, `site/css/page-00-grid.css`,
+  `site/js/engine/grid.js`), the two grounds (CSS colours), the hallway's grid continued in perspective from its mouth,
+  the frames sized in whole cells and hung on the card's lines, the museum labels under the frames (`dive.js`,
+  `page-01-dive.css`), the on-grid check (`tools/gridcheck.py`, dev only).
 - **Take 2, round 5:** the hallway's frames as objects (moulding, hinge, mat with its bevelled window, glass, the mat's
-  shadow on the blueprint), the lights and shadows of the three looks, look C's light strips, look A's drafting grid
-  printed on the card (`site/js/page01/dive.js`, `hall-looks.js`); page 2's beacon (the opening's own, in CSS) and
-  "Next: your slip" (`site/js/page02/cta.js`); page 1's grounds A and B (CSS colours and the paper grid).
+  shadow on the blueprint), its light and shadows, the grid printed on the card (`site/js/page01/dive.js`,
+  `hall-looks.js`); page 2's beacon (the opening's own, in CSS) and "Next: your slip" (`site/js/page02/cta.js`).
 - **Take 2, round 4:** the corridor's four blueprint schematics (page-load timeline, the which-driver flowchart, a
   customer's path with the fix drawn in, our booking app's screen on the two phones' true outlines), their mounts,
   frames, hinges, walls and grid, drawn in WebGL from data (`site/js/page01/corridor-drawings.js`, `dive.js`); our

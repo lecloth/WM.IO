@@ -21,7 +21,7 @@ Take 1's history below.
 
 | # | Page | What happens | Viewports | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | Enter + hook | Beacon → Bell's sheet (a sheet on the page): eight clean outlines draw on, morph into the X-ray phone → pieces named on leader lines → kinetic line, pieces join, ground back to paper → real (phone A, premium: a glossy, live product shot) → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum (detent, 18 ms click, type grid) → "Now, what do you need?" → its "?" dot opens; the hallway, lit (look A: architect's model): four framed blueprints (left, right, left, right), frame 4 turns into the real iPhone and Galaxy, live, turning to show their backs; page 2 at its end. Ground: A, clean paper | ~7.3 | **round 5 built (24 Nov): waiting for Wajih's picks** (hallway look, ground) and his phone review (the "?" dot entry and the four captions still open) |
+| 1 | Enter + hook | Beacon → Bell's sheet (a sheet on the page): eight clean outlines draw on, morph into the X-ray phone → pieces named on leader lines → kinetic line, pieces join, ground back to paper → real (phone A, premium: a glossy, live product shot) → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum (detent, 18 ms click, type grid) → "Now, what do you need?" → its "?" dot opens; the hallway (look A, architect's model, the site's grid on its card): four framed blueprints (left, right, left, right), each resting with its museum label; frame 4 turns into the real iPhone and Galaxy, live; page 2 at its end. Two grounds: white paper and the blue blueprint | ~8.4 | **round 6 built (24 Nov): waiting for Wajih's phone review** (the four story lines are drafts; the "?" dot entry and page 2's CTA pick still open) |
 | 2 | For you | The hallway lands on it. The big line "Tap everything that fits."; the beacon on the first box, then on "Next: your slip" (CTA A). Five hairline rows; a tap strokes the box, shows the answer, prints onto the slip (its head waits at the bottom and docks), ticks on Android | ~4 with page 3 | **built, waiting for Wajih's CTA pick, phone review and the wording** (Send: A, picked) |
 | 3 | Work slip | Number + date, printed needs, when, name, anything else, send by (5 ways), Send (design A, Leader); "or see how we think ↓"; Detail B (a circle) grows into page 4 | (with page 2) | **built, as above** |
 | 4 | Four trips | Security showpiece (~5: lock's A journey → failed pick → B3 → today); AI, websites, apps lighter (~3 each); the apps trip uses the real iPhone and Galaxy live in 3D | ~14 | stub (next; not started) |
@@ -68,7 +68,30 @@ Take 1's history below.
   options; `PICK` = the one on the page), `site/css/page-01.css` (also the strip, beacon gate, stubs, page 2's callout state).
   Data: `site/media/plates/bell-us186787-paths.json` (`tools/bell_paths.py`), `site/media/materials/*` (`tools/materials.py`).
   Page 2 overlaps page 1's last screen (`margin-top: -100lvh`); during that screen its stage is fixed and clipped to the callout window.
-- **Round 5 switches** (one constant each; `?hall=`, `?cta=`, `?ground=` preview another on the real page, nothing stored):
+- **Round 6: the grid is the layout system.** The head script (`src/index.template.html`) sets `--u` before first paint:
+  the page's width (a desktop scrollbar taken off) holds a whole number of cells, 20 on phones (19.2 px on the S23), on
+  wider screens a multiple of 5 keeping a cell about 22 px (`5 * round(W / 110)`); `1rem = 1 cell`, so every size in the
+  Take 2 stylesheets is in grid units. `wm:grid` fires only when the unit changes (not for a phone's address bar).
+  `site/css/page-00-grid.css` (loaded first): the two grounds' tokens (paper `#F6F7F9`, ink `#121212`, graphite
+  `#66696E`; dark `#0E0E0E` / `#EDEEF0` / `#8C8F94`; the blue `#173F73`), the grid image (`--grid-img`, a darker line
+  every 5 cells), the strip (2 cells; nine segments on whole columns, main.js), the title block (cells 2 cells tall: key
+  on the half line, value on the line and a half; its top on a line above the screen's bottom), the gate (the beacon on
+  the intersection nearest the centre), and `.gt`: the text box trimmed to cap and baseline (`text-box`) and padded to a
+  whole step (`--q` 1 or .5 cell), so a box whose top is on a line has every baseline on one. `site/js/engine/grid.js`:
+  the unit, snapping, `baselineOf` (a zero-size probe), `snapHeights` (`.g-snap` blocks padded to whole cells; a
+  border-box observer, applied next frame), `seatText` (texts split into words and switched on/off are not trimmed:
+  Chrome re-lays a trimmed text of inline-block words a sixth of a cell low; their first baseline is seated by
+  measurement). `site/js/engine/tokens.js`: the light paper's colours for canvases (phone A's screen, the booking app).
+  Page 1: the band, Bell's sheet (whole cells; the scan contained in it), phone A (fills its band exactly, `fit.snap`),
+  the X-ray names (baseline on a half line, shelf on the line below, whole cells long), the travelling words (rest on
+  measured baselines), the drum (seated so the lit verb's baseline is a line; desktop WE column whole cells). The
+  hallway (`dive.js`): the card's grid is the screen's, continued from the mouth in world units of the cell; frames are
+  whole cells (`F.cells` shape, the mat takes the difference), at rest their front face lands on screen lines and on the
+  wall they hang on the card's lines (top edge on a row, hinge on a column; a search over screen row / wall row keeps the
+  wall gap under half a cell); museum labels (DOM) under each frame on its left edge. Pages 2-3: rows 4 cells, tick boxes
+  2 x 2 (the beacon on their centre = an intersection), page 2 whole cells tall so page 3 continues its grid, the slip's
+  cells whole cells, hairlines drawn inside boxes (inset shadows). The check: `tools/gridcheck.py` (below).
+- **Round 5 switches** (round 6: only `CTA_DESIGN` is left; looks B/C and grounds B/C are removed; one constant each; `?hall=`, `?cta=`, `?ground=` preview another on the real page, nothing stored):
   `site/js/page01/hall-looks.js` `HALL = 'A'` (A architect's model, B gallery, C engineering lab: surfaces, frame, mat,
   glass, lights per look, light/dark pairs); `site/js/page02/cta.js` `CTA_DESIGN = 'A'` (A beacon on the rows, B beacon
   as a gate, C no beacon); `site/js/page01/grounds.js` `GROUND = 'A'` (A clean paper, B museum white, C fresh real paper;
@@ -90,7 +113,7 @@ Take 1's history below.
 - Tests: `tools/p1stops.py` (every named stop + mid-morph, mid-drum, mid-callout), `tools/t2shot.py` (any positions, reduced motion),
   `tools/geom.py` (geometry check, 6 sizes × light/dark × every stop), `tools/axe2.py` (axe + page-1 length), `tools/fps_seg.py` (emulated fps
   per story segment), `tools/phonep1.py` (real phone; its stop list still needs the round-3 stops), `tools/vibcheck.py` (vibration rules),
-  `tools/assetshot.py` (asset sheet, also the corridor card at Dive values). Positions are scroll progress in screens (`__p1.yAt(p)`, 0..6.3);
+  `tools/assetshot.py` (asset sheet, also the corridor card at Dive values). Positions are scroll progress in screens (`__p1.yAt(p)`, 0..7.4 since round 6; the stops below are round 4's, see the round 6 log for the hallway's);
   the named stops are `__p1.stops` (S0 .1, draw .24, morph .6, S1 1.3, kin 1.72, paper 2.2, REAL 2.45, S2 2.5, YOU 2.72, TASK 2.92, WE 3.12,
   DRUM 3.6, END 4.2, DOT 4.4, F1 4.88, F2 5.26, F3 5.64, F4 6.06, LAND 6.22). Round 4: `tools/stretch.py` (each frame's on-screen ratio vs its
   drawing's true ratio, keystone, closest approach to the screen edge, the lens, at 9 sizes); `tools/geom.py` now also checks the facing
@@ -100,6 +123,37 @@ Take 1's history below.
   gyroscope, the dive and the finished phone's fps, and shoots the asset sheet on the phone.
 
 ### Take 2 log
+- **Round 6 (24 Nov).** Brief committed (round 6). Built to Part 5 "Round 6" (rounds 4-5 where not changed).
+  - **Two grounds only:** white drafting paper, now `#F6F7F9` (neutral, a hint of cool; it was the warm `#F2F0EB`), and the
+    blue blueprint; dark: near-black and the blue. Every warm tone went: the tokens, the dark ink and graphite, phone A's
+    matte model and metals and its fill light, the hallway's card (the Paper001 scan printed in grey), mat, frame and
+    light, phone A's screen, the booking app, the frame-4 still (re-rendered), the gate's text. On the S23 the paper reads
+    (246, 247, 249).
+  - **Removed:** hallway looks B and C (code, picture lights, ceiling strips, asset-sheet cards) and grounds B and C
+    (`grounds.js`, CSS, the asset-sheet section); materials Plaster002, Laminate Floor 03, Concrete034 (deleted, CREDITS
+    updated); `tools/r5shots.py` (its candidates no longer exist).
+  - **The grid as the layout system:** see the page-structure note. Desktop type has two steps (from 1024 px; from 1800 x
+    1000 px), all sizes in quarter cells and line heights in half or whole cells.
+  - **Museum labels** under the four frames: hairline above (no box), the title (serif, 1.5 cells on phones = 28.8 px),
+    the drawing's mono name, one line of story (1 cell = 19.2 px on the S23; the four story lines flagged Draft). Desktop
+    labels are at least 16 cells wide. **Longer rests:** the dive is 3.1 screens (was 2); frames 1-3 rest 0.3 screen
+    each, frame 4 0.4. Page 1 is 8.4 screens (was 7.3). Test stops: F1 5.16, F2 5.76, F3 6.36, F4B 6.94, F4 7.12, LAND 7.32.
+  - **Tests.** On-grid (`tools/gridcheck.py`, 9 sizes x 26 stops, light): 6,445 edges, 7,502 baselines, 3,730 text edges and
+    477 picture edges (phone A's box, the frames at rest, the X-ray shelves, the beacon) measured; 0 off by more than half
+    a pixel, worst 0.146 px; dark at 3 sizes: 0 off, worst 0.12 px. Exceptions, each listed with its reason by the tool
+    (the type's construction lines, the drum's turned-away verbs, Bell's scan inside its sheet and his traced outlines,
+    the dot's circle, Detail B, the cursor, the gate's rings, the strip's progress bar, typed text, phone A's fourth side).
+    Real S23 (SM-S918N, Chrome, 384 x 719, `tools/phone_r6.py`): 0 errors; 60 fps in every page-1 segment, the hallway
+    and its labels (both passes), frame 4's turn and page 2; the dot's opening 57 / 58 fps (four 33 ms frames while the
+    real phones load, one ~100 ms warm-up draw by design); paper on the phone (246, 247, 249); every landmark on the grid.
+    Geometry (`tools/geom.py`, 9 sizes x light/dark): 0 problems. Stretch: 0.000% and keystone 0% at 9 sizes; closest to
+    an edge 19.2 px (phones), 84+ px (desktops). axe 0 (page 1 every stop at 384 light/dark, 1440, 2160 dark; reduced at
+    384, 1440; pages 2-3 in all six). Length: page 1 8.4 screens; whole page 37.8 (384 x 734), 37.1 (1440 x 900), 36.8
+    (2160 x 1147); reduced motion 17.3. New tools:
+    `tools/gridcheck.py` (the on-grid check), `tools/phone_r6.py` (the S23 run), `tools/evalp.py` (dev probe),
+    `tools/r6final.sh` (the emulated pass). Screenshots: `tools/shots/r6/` (phone/, grid/, geom/, dev/).
+  - **Pending Wajih:** his phone review of round 6; the four story lines (drafts); page 2's CTA pick; the "?" dot entry;
+    the page 2-3 wording; the two phone licences.
 - **Round 5 (24 Nov).** Brief committed (round 5). Built to Part 5 "Round 5" ("Round 4 picks" where not changed). WE and the verb drum untouched.
   - **Frame 4:** the iPhone 18 and the S26 live in 3D (git-ignored files), loaded as the dive begins (code, meshes decoded in a worker,
     textures one per frame, shaders compiled in parallel), lit by the studio alone (a second pass, as phone A). After the drawn → real

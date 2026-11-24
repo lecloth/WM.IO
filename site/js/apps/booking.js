@@ -4,6 +4,7 @@
 //   drawBooking(canvas): the real screen (on the real phones' displays, the corridor's frame 4 stills, the asset sheet)
 //   bookingPlan(): the same layout as plain geometry, for the blueprint of the screen (corridor frame 4)
 // Units: a 360 x 780 screen (portrait), y down.
+import { LIGHT } from '../engine/tokens.js';
 export const SCREEN = { w: 360, h: 780 };
 const DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'], DATES = ['24', '25', '26', '27', '28', '29', '30'];
 const TIMES = ['18:00', '18:30', '19:00', '19:30', '20:00'];
@@ -45,7 +46,7 @@ export function bookingPlan() {
 }
 
 /** the real screen, on a canvas (any size with the screen's proportions) */
-export function drawBooking(c, { ink = '#121212', paper = '#F2F0EB', graphite = '#6B6A66' } = {}) {
+export function drawBooking(c, { ink = LIGHT.ink, paper = LIGHT.paper, graphite = LIGHT.graphite } = {}) {
   const x = c.getContext('2d'), k = c.width / SCREEN.w, p = bookingPlan();
   x.setTransform(1, 0, 0, 1, 0, 0);
   x.fillStyle = paper; x.fillRect(0, 0, c.width, c.height);

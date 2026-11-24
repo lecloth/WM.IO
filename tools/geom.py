@@ -56,7 +56,7 @@ MEASURE_JS = r"""(stop) => {
     // round 4: the corridor's frames facing you (each must stay on the screen, clear of the strip, the title block and its
     // own caption) and the captions (text)
     (dv.info || []).forEach((f) => { if (f.quad && f.op > 0.9 && f.swing > 0.98) { const xs = f.quad.map((c) => c[0]), ys = f.quad.map((c) => c[1]); items.push({ name: `frame ${f.i + 1}`, kind: 'frame', l: Math.min(...xs), t: Math.min(...ys), r: Math.max(...xs), b: Math.max(...ys) }); } });
-    document.querySelectorAll('.dive__cap.on').forEach((c, k) => add(`caption ${[...c.parentNode.children].indexOf(c) + 1}`, c, 'text'));
+    document.querySelectorAll('.dive__lab.on').forEach((c, k) => add(`label ${[...c.parentNode.children].indexOf(c) + 1}`, c, 'text'));
   }
   // page 1's band is in stage coordinates (the stage is 100lvh; on a real phone that is taller than the visible screen)
   const SH = document.querySelector('.p1__stage')?.clientHeight || H;

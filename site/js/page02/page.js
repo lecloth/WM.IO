@@ -12,6 +12,7 @@ import { initCalloutB } from './callout.js';
 import { initCta } from './cta.js';
 import { haptics } from '../engine/haptics.js';
 import { settings } from '../settings.js';
+import { grid, snapHeights, seatText } from '../engine/grid.js';
 
 export function initPages23(engine) {
   const p2 = document.getElementById('page-02'), p3 = document.getElementById('page-03');
@@ -123,17 +124,18 @@ export function initPages23(engine) {
 
   // ---------- the head: stuck at the bottom while page 2 is on screen, docked as the slip's top after ----------
   let stuck = null, raf = 0, p2h = 0;
+  // round 6: stuck, the head's bottom edge is a grid line of the screen (one cell above the title block on phones; level
+  // with its bottom on desktop, where the stuck head fits beside it, whole cells wide)
   function layoutHead() {
-    const tb = document.querySelector('.titleblock')?.getBoundingClientRect();
+    const u = grid.u, tb = document.querySelector('.titleblock')?.getBoundingClientRect();
     const hr = head.getBoundingClientRect();
-    let bottom = 16;
+    let line = grid.floor(innerHeight) - u;
     const desktop = innerWidth >= 1024, sl = stage.getBoundingClientRect().left + parseFloat(getComputedStyle(stage).paddingLeft);
     if (tb && tb.width) {
-      // desktop: stuck, the head is one line, so it fits beside the title block, level with it; phones: above it
-      if (desktop) { document.documentElement.style.setProperty('--feed-max', `${Math.max(320, Math.floor(tb.left - sl - 24))}px`); bottom = Math.max(16, innerHeight - tb.bottom); }
-      else bottom = hr.right > tb.left - 8 ? innerHeight - tb.top + 10 : Math.max(16, innerHeight - tb.bottom);
+      if (desktop) { document.documentElement.style.setProperty('--feed-max', `${Math.max(14 * u, grid.floor(tb.left - sl - u))}px`); line = tb.bottom; }
+      else line = hr.right > tb.left - 8 ? tb.top - u : tb.bottom;
     }
-    document.documentElement.style.setProperty('--feed-bottom', `${Math.round(bottom)}px`);
+    document.documentElement.style.setProperty('--feed-bottom', `${(innerHeight - line).toFixed(3)}px`);
   }
   function frame() {
     raf = 0;
@@ -148,9 +150,9 @@ export function initPages23(engine) {
 
   // page 3's grid continues page 2's; while page 1 fixes page 2's stage, page 2 keeps its height
   let refreshT = 0;
-  const ro = new ResizeObserver(() => {
+  const ro = new ResizeObserver((es) => {
     if (p2.classList.contains('is-dive')) return;
-    const h = p2.offsetHeight;
+    const h = es[0]?.borderBoxSize?.[0]?.blockSize ?? p2.getBoundingClientRect().height;   // whole cells (page 2's stage is snapped)
     if (Math.abs(h - p2h) < 0.5) return;
     const first = !p2h; p2h = h;
     p2.style.setProperty('--p2-h', `${h}px`); p3.style.setProperty('--p2-h', `${h}px`);
@@ -176,9 +178,13 @@ export function initPages23(engine) {
     onNext: () => { const strip = document.getElementById('strip')?.offsetHeight || 40; glide(p3, -head.offsetHeight - strip - 12); } });
 
   const calloutB = initCalloutB(engine);
+  snapHeights(document);   // page 2's stage, the answers and the slip's cells stay whole cells tall
 
-  const relayout = () => { layoutHead(); stuck = null; schedule(); };
+  // the answers: their first baseline seated on the grid by measurement (split words: no trim, grid.js seatText)
+  const seatAnswers = () => [...document.querySelectorAll('.p2-ans__t')].forEach((x) => seatText(x, 0.5));
+  const relayout = () => { seatAnswers(); layoutHead(); stuck = null; schedule(); };
   addEventListener('resize', relayout);
+  grid.onChange(() => requestAnimationFrame(relayout));
   engine.on('theme', relayout);
   engine.on('opening:done', relayout);
   document.fonts?.ready.then(relayout);

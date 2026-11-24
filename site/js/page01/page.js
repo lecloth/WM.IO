@@ -1,6 +1,6 @@
-// Page 1 (Enter + hook), round 3 + fixes + round 4. Scroll-driven, 7.3 screens tall: the stage stays put while 6.3 screens
-// of scroll play the story; the last two screens are the "?" dot dive and the corridor into page 2. Positions p are in
-// screens of scroll (0..6.3):
+// Page 1 (Enter + hook), round 3 + fixes + rounds 4-6. Scroll-driven, 8.4 screens tall: the stage stays put while 7.4
+// screens of scroll play the story; the last 3.1 are the "?" dot dive and the hallway into page 2 (round 6: longer, so
+// each frame rests long enough to read its museum label). Positions p are in screens of scroll (0..7.4):
 //   S0     Bell's 1877 sheet (the real scan), headline and credit                                      0.00 – 0.22
 //          eight clean outlines draw on exactly over the scan (DrawSVG); the scan fades and leaves them 0.12 – 0.36
 //          the ground turns blue (one timed beat); the outlines morph into the phone's (MorphSVG)       0.36 – 0.80
@@ -15,17 +15,21 @@
 //   TASK   "YOU gave us the task."                                                                     2.82 – 3.00
 //   WE     "us" becomes WE, pinned; the verb drum turns through the seven steps, each meaning beneath   3.02 – 3.98
 //   END    "Now, what do you need?"                                                                    4.00 – 4.30
-//   DIVE   its "?" dot grows into a window; down a corridor of four blueprint frames; page 2 at its end 4.30 – 6.30
+//   DIVE   its "?" dot grows into a window; down a hallway of four framed blueprints; page 2 at its end  4.30 – 7.40
 // Words land on beats as short timed reveals (SplitText words rise and straighten), so a paused frame always settles
 // on whole, readable words. The ground changes and the drum's turns are timed too; only the pictures scrub.
 // Reduced motion: still frames with the full text, no vibration.
+// Round 6: the grid is the layout system. The band the pictures sit in, Bell's sheet, the phone, the X-ray names and
+// their shelves, the travelling words and the drum all land on grid lines (site/js/engine/grid.js; the texts' own
+// baselines are set in CSS, page-00-grid.css .gt).
 import { Phone } from './phone.js';
 import { BellMorph } from './morph.js';
 import { createLive } from './live.js';
-import { createDive, measureDot } from './dive.js';
+import { createDive, measureDot, labelHTML } from './dive.js';
 import { FRAMES } from './corridor-drawings.js';
 import { haptics } from '../engine/haptics.js';
-import { groundPick, PHONE_SHADOW } from './grounds.js';
+import { grid, baselineOf, seatText } from '../engine/grid.js';
+import { LIGHT } from '../engine/tokens.js';
 
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const span = (p, a, b) => clamp((p - a) / (b - a));
@@ -38,15 +42,15 @@ function keys(p, k) {
 }
 const inR = (p, [a, b]) => p >= a - 1e-4 && p <= b + 1e-4;
 
-export const SCROLL = 6.3;
+export const SCROLL = 7.4;
 const R = {
   s0: [0, 0.22], draw: [0.12, 0.28], scanOut: [0.26, 0.36], blueOn: 0.36, morph: [0.4, 0.8], xray: [0.8, 0.88], linesOut: [0.86, 0.9],
   spread: [0.9, 1.12], s1: [1.12, 1.42], kin: [1.44, 2.32], kinWords: [1.44, 1.86], seat: 1.5, paperOn: 1.98, built: [2.0, 2.14], real: [2.16, 2.3],
-  s2: [2.34, 2.6], you: [2.62, 2.8], task: [2.82, 3.0], we: [3.02, 3.98], verbs: [3.06, 3.98], end: [4.0, 6.3], endText: [4.0, 4.62], dive: [4.3, 6.3],
+  s2: [2.34, 2.6], you: [2.62, 2.8], task: [2.82, 3.0], we: [3.02, 3.98], verbs: [3.06, 3.98], end: [4.0, 7.4], endText: [4.0, 4.62], dive: [4.3, 7.4],
 };
 const HAND = 0.9;          // the handover: Bell's outlines -> X-ray, pose held until here
 // named stops for tests (a paused frame at each must be clean), including mid-morph, mid-drum and mid-dive
-export const STOPS = { S0: 0.1, draw: 0.24, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.6, END: 4.2, DOT: 4.4, F1: 4.86, F2: 5.2, F3: 5.54, F4B: 6.0, F4: 6.12, LAND: 6.22 };
+export const STOPS = { S0: 0.1, draw: 0.24, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.6, END: 4.2, DOT: 4.4, F1: 5.16, F2: 5.76, F3: 6.36, F4B: 6.94, F4: 7.12, LAND: 7.32 };
 const NAMES = ['Back', 'Battery', 'Board', 'Frame', 'Screen', 'Glass'];   // back to front
 const BLUE = [23, 63, 115];
 
@@ -63,7 +67,6 @@ export function initPage01(engine) {
   const leaders = $('.p1__leaders'), lctx = leaders.getContext('2d');
   const labelsEl = $('.p1__labels');
   const blue = $('.p1__bg--blue');
-  const ground = groundPick(); sec.dataset.ground = ground;   // round 5: the ground (A on the page)
   const plateFig = $('.p1__plate');
   const credit = $('.p1__credit');
   const T = Object.fromEntries([...sec.querySelectorAll('.p1-txt, .p1-we')].map((t) => [t.dataset.k, t]));
@@ -85,7 +88,7 @@ export function initPage01(engine) {
   const steps = [...weEl.querySelectorAll('.p1-steps li')].map((li) => ({ verb: li.querySelector('.p1-steps__verb').textContent.trim(), mean: li.querySelector('.p1-steps__mean').textContent.trim() }));
   const wheel = $('.p1-drum__wheel'), meanEl = $('.p1-mean');
   const verbs = steps.map((s) => { const v = document.createElement('span'); v.className = 'p1-verb display'; v.textContent = s.verb; wheel.append(v); return v; });
-  const means = steps.map((s) => { const p = document.createElement('p'); p.textContent = s.mean; meanEl.append(p); split(p, 'w'); return p; });
+  const means = steps.map((s) => { const p = document.createElement('p'); p.className = 'gt-js'; p.textContent = s.mean; meanEl.append(p); split(p, 'w'); return p; });
 
   const flyYou = $('.p1-fly[data-w="you"]'), flyWe = $('.p1-fly[data-w="we"]');
   const slot = { a: $('.p1-slot--a'), c: $('.p1-slot--c'), u: $('.p1-slot--u'), w: $('.p1-slot--w') };
@@ -95,7 +98,7 @@ export function initPage01(engine) {
   const endH = T.end.querySelector('.p1-txt__h');
 
   const phone = new Phone(canvas);
-  phone.shadowK = PHONE_SHADOW[ground] || 1;
+  phone.shadowK = 1;
   const morph = new BellMorph(morphSvg, gsap);
   const labels = phone.parts.map((p) => { const d = document.createElement('div'); d.className = 'p1-lbl'; d.textContent = p.name; labelsEl.append(d); return d; });
   let W = 1, H = 1, band = null, plateRect = null, P = -1, portrait = true, dpr = 1, ink = [18, 18, 18], paper = [242, 240, 235], dark = false;
@@ -114,9 +117,12 @@ export function initPage01(engine) {
   }
 
   // ---------- layout: where the picture may sit (never under the text, the strip or the title block) ----------
+  // Round 6: the band is whole cells, its edges on lines; Bell's sheet is the biggest whole-cell sheet of its shape in it
+  // (the scan keeps its true proportions inside its own white sheet); the phone fills the band exactly (fit.snap).
+  let imgRect = null;
   function layout() {
     W = stage.clientWidth; H = stage.clientHeight;
-    const desktop = W >= 1024; portrait = !desktop;
+    const u = grid.u, desktop = W >= 1024; portrait = !desktop;
     dpr = Math.min(devicePixelRatio || 1, 2);
     phone.resize(W, H);
     leaders.width = Math.round(W * dpr); leaders.height = Math.round(H * dpr);
@@ -124,33 +130,42 @@ export function initPage01(engine) {
     ink = rgb(cs.getPropertyValue('--ink')); paper = rgb(cs.getPropertyValue('--paper'));
     dark = document.documentElement.dataset.theme === 'dark';
     phone.setInk(parseInt(hex(ink).slice(1), 16));
-    phone.refreshScreen('#121212', '#F2F0EB', '#6B6A66');
-    stripH = document.getElementById('strip')?.offsetHeight || 40;
+    phone.refreshScreen(LIGHT.ink, LIGHT.paper, LIGHT.graphite);
+    stripH = document.getElementById('strip')?.offsetHeight || 2 * u;
     const tb = document.querySelector('.titleblock');
-    const tbH = tb ? Math.max(0, innerHeight - tb.getBoundingClientRect().top) : 0;
+    const tbTop = tb && tb.getClientRects().length ? tb.getBoundingClientRect().top : grid.floor(innerHeight);
+    const tbH = Math.max(0, innerHeight - tbTop);
     // the stage is 100lvh, but while the phone's address bar shows, its bottom is off screen: use what's visible
     const hidden = Math.max(0, H - innerHeight);
     bottomInset = hidden + tbH;
     const pictureTexts = [T.s0, T.s1, T.kin, T.s2];
+    let bT, bB, bL, bR;   // the band's edges (stage px, on lines)
     if (desktop) {
       const sl = stage.getBoundingClientRect().left;
       const textRight = Math.max(...pictureTexts.map((t) => t.getBoundingClientRect().right - sl));
-      band = { top: stripH + 40, bottom: bottomInset + 48, left: Math.min(W * 0.5, textRight + 40), right: 48 };
+      bT = 4 * u; bB = grid.floor(tbTop) - 2 * u; bL = grid.ceil(Math.min(W * 0.5, textRight + 2 * u)); bR = W - 2 * u;
     } else {
-      const tallest = Math.max(...pictureTexts.map((t) => t.offsetHeight));
-      band = { top: stripH + 24 + tallest + 18, bottom: bottomInset + 20 + 22, left: 16, right: 16 };   // + the plate credit line
+      const tallest = Math.max(...pictureTexts.map((t) => t.getBoundingClientRect().height));
+      bT = 3 * u + grid.ceil(tallest) + u; bB = grid.floor(tbTop) - 2 * u; bL = u; bR = W - u;   // the last cell: the plate's credit line
     }
-    // the plate: contain-fit in the band
-    const bw = W - band.left - band.right, bh = H - band.top - band.bottom, a = 1600 / 1740;
-    let pw = bw, ph = pw / a; if (ph > bh) { ph = bh; pw = ph * a; }
-    plateRect = { left: band.left + (bw - pw) / 2, top: band.top + (bh - ph) / 2, width: pw, height: ph };
-    Object.assign(plateFig.style, { left: `${plateRect.left}px`, top: `${plateRect.top}px`, width: `${pw}px`, height: `${ph}px` });
-    credit.style.top = `${plateRect.top + ph + 6}px`; credit.style.left = `${plateRect.left}px`;
+    band = { top: bT, bottom: H - bB, left: bL, right: W - bR, snap: u };
+    // Bell's sheet: whole cells of its own shape, as large as the band allows, on the band's lines
+    const bw = bR - bL, bh = bB - bT, a = 1600 / 1740;
+    let ch = Math.floor(bh / u + 1e-6), cw = Math.round(ch * a);
+    if (cw * u > bw + 1e-6) { cw = Math.floor(bw / u + 1e-6); ch = Math.min(Math.floor(bh / u + 1e-6), Math.round(cw / a)); }
+    const pw = cw * u, ph = ch * u, pl = bL + grid.floor((bw - pw) / 2), pt = bT + grid.floor((bh - ph) / 2);
+    plateRect = { left: pl, top: pt, width: pw, height: ph };
+    Object.assign(plateFig.style, { left: `${pl}px`, top: `${pt}px`, width: `${pw}px`, height: `${ph}px` });
+    // the scan inside its sheet (contain): Bell's traced outlines are placed on the scan itself
+    { let iw = pw, ih = iw / a; if (ih > ph) { ih = ph; iw = ih * a; } imgRect = { left: pl + (pw - iw) / 2, top: pt + (ph - ih) / 2, width: iw, height: ih }; }
+    credit.style.top = `${pt + ph}px`; credit.style.left = `${pl}px`;
     // the handover: pose the phone where the X-ray appears, and give Bell's outlines the X-ray outlines to land on
     phone.parts.forEach((part) => { part.e = 0; });
     phone.set(pose(HAND));
-    morph.place(plateRect, W, H, (...s) => phone.loop2D(...s), dpr);
+    morph.place(imgRect, W, H, (...s) => phone.loop2D(...s), dpr);
+    if (desktop) weEl.style.setProperty('--we-w', `${grid.ceil(slot.w.getBoundingClientRect().width)}px`); else weEl.style.removeProperty('--we-w');
     layoutDrum();
+    means.forEach((m) => seatText(m, parseFloat(getComputedStyle(m).getPropertyValue('--q')) || 0.5));   // round 6: on the grid without a trim (grid.js)
     layoutDive();
     placeFlies();
     P = -1;
@@ -167,10 +182,20 @@ export function initPage01(engine) {
   const DETENT = (t) => { const k = 9; return (1 - (1 + k * t) * Math.exp(-k * t)) / (1 - (1 + k) * Math.exp(-k)); };
   const gridSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   gridSvg.setAttribute('class', 'p1-grid'); gridSvg.setAttribute('aria-hidden', 'true'); weEl.prepend(gridSvg);
+  let vBase0 = 0;   // the lit verb's baseline at rest (stage px, on a line)
   function layoutDrum() {
-    const rowH = verbs[0].offsetHeight || 52;
+    const rowH = parseFloat(getComputedStyle(verbs[0]).height) || 52;
     drumR = rowH / (2 * Math.sin(TH * Math.PI / 360));
     verbs.forEach((v, k) => { v.style.transform = `rotateX(${-k * TH}deg) translateZ(${drumR.toFixed(1)}px)`; });
+    // round 6: the facing verb comes to rest on the grid. At rest its transforms cancel out, so its baseline is where it
+    // stands untransformed; the whole wheel is seated by the difference to the nearest line
+    wheel.style.setProperty('--seat', '0px');
+    const vt = verbs[0].style.transform, wt = wheel.style.transform;
+    verbs[0].style.transform = 'none'; wheel.style.transform = 'none';
+    const st = stage.getBoundingClientRect().top, b = baselineOf(verbs[0]) - st;
+    verbs[0].style.transform = vt; wheel.style.transform = wt;
+    const seatPx = grid.snap(b) - b; vBase0 = b + seatPx;
+    wheel.style.setProperty('--seat', `${seatPx.toFixed(3)}px`);
     paintDrum();
     layoutGrid();
   }
@@ -192,17 +217,18 @@ export function initPage01(engine) {
     if (!wordEl || !slotW || !drumEl) return;
     const desktop = W >= 1024, rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
     wordEl.style.translate = '';
-    const box = weEl.getBoundingClientRect();
+    const box = weEl.getBoundingClientRect(), stTop = stage.getBoundingClientRect().top;
     const mv = metrics(verbs[0], 'Understood'), mw = metrics(slotW, 'WE');
     const vcs = getComputedStyle(verbs[0]);
     mctx.font = `${vcs.fontStyle} ${vcs.fontWeight} ${mv.fs}px ${vcs.fontFamily}`;
     const widest = Math.max(...verbs.map((v) => mctx.measureText(v.textContent).actualBoundingBoxRight));
     // baselines: a line box of height lh centres the font's content area (ascent + descent)
     const baseOf = (top, lh, m) => top + (lh - (m.asc + m.desc)) / 2 + m.asc;
-    const dr = drumEl.getBoundingClientRect(), cy = dr.top + dr.height / 2 - box.top;
-    const vBase = baseOf(cy - mv.fs / 2, mv.fs, mv);
+    const dr = drumEl.getBoundingClientRect();
+    // round 6: the baselines as laid out (measured, not computed): the verb's is on its line (layoutDrum), WE's too
+    const vBase = vBase0 + stTop - box.top;
     const sr = slotW.getBoundingClientRect();
-    let wBase = baseOf(sr.top - box.top, sr.height, mw);
+    let wBase = baselineOf(slotW) - box.top;
     if (desktop) { const d = vBase - wBase; wordEl.style.translate = `0 ${d.toFixed(2)}px`; wBase = vBase; }
     const sx = sr.left - box.left, wl = sx + mw.inkL, wr = sx + mw.inkR;
     const vl = dr.left - box.left, vr = vl + widest;
@@ -241,6 +267,7 @@ export function initPage01(engine) {
     verbs.forEach((v, k) => {
       const d = Math.abs(k - drum.a);
       v.style.opacity = (d <= 1 ? 1 - 0.8 * d : d <= 2 ? 0.2 - 0.14 * (d - 1) : d <= 2.5 ? 0.12 * (2.5 - d) : 0).toFixed(3);
+      v.classList.toggle('is-lit', d < 0.01);
     });
   }
   function setVerb(i) {
@@ -263,19 +290,24 @@ export function initPage01(engine) {
     const sr = stage.getBoundingClientRect(), d = measureDot(endH);
     if (!d) return;
     dotNow = { x: d.x - sr.left, y: d.y - sr.top, r: d.r };
-    dive.layout(diveEl.clientWidth || W, diveEl.clientHeight || innerHeight, dotNow);
+    dive.layout(diveEl.clientWidth || W, diveEl.clientHeight || innerHeight, dotNow, { u: grid.u });
   }
 
   // ---------- "you" -> "YOU" and "us" -> "WE": one word each, travelling between its places ----------
   let flyT = { you: {}, we: {} };
+  // round 6: each word comes to rest on a baseline: in its line (the slot's own baseline, measured), or alone on the
+  // line nearest the screen's middle with its left edge on a line
   function measureFly(fly, places) {
     const prev = fly.style.transform; fly.style.transition = 'none'; fly.style.transform = 'none';
-    const sr = stage.getBoundingClientRect(), up = fly.querySelector('.up').getBoundingClientRect(), o = fly.getBoundingClientRect();
-    const fx = up.left - o.left, fy = up.top - o.top, fh = up.height, fw = up.width;
-    const to = (r) => { const s = r.height / fh; return `translate(${r.left - o.left - s * fx}px, ${r.top - o.top - s * fy}px) scale(${s})`; };
+    const sr = stage.getBoundingClientRect(), upEl = fly.querySelector('.up'), up = upEl.getBoundingClientRect(), o = fly.getBoundingClientRect();
+    const fx = up.left - o.left, fw = up.width, fs = parseFloat(getComputedStyle(fly).fontSize), fb = baselineOf(upEl) - o.top;
+    const to = (el) => { const r = el.getBoundingClientRect(), s = parseFloat(getComputedStyle(el).fontSize) / fs, b = baselineOf(el);
+      return `translate(${r.left - o.left - s * fx}px, ${b - o.top - s * fb}px) scale(${s})`; };
     const out = {};
     Object.entries(places).forEach(([k, v]) => {
-      out[k] = v === 'centre' ? `translate(${(W - fw) / 2 - (o.left - sr.left) - fx}px, ${(stripH + H - bottomInset) / 2 - fh / 2 - (o.top - sr.top) - fy}px)` : to(v.getBoundingClientRect());
+      if (v !== 'centre') { out[k] = to(v); return; }
+      const left = grid.snap((W - fw) / 2), base = grid.snap((stripH + H - bottomInset) / 2 + 0.67 * fs / 2);
+      out[k] = `translate(${left - (o.left - sr.left) - fx}px, ${base - (o.top - sr.top) - fb}px)`;
     });
     fly.style.transform = prev; void fly.offsetWidth; fly.style.transition = '';
     return out;
@@ -394,8 +426,9 @@ export function initPage01(engine) {
   }
 
   // names beside each piece: a mono word on a hairline leader with a short shelf under it, alternating sides
+  let shelves = [];   // for the on-grid check: each name's shelf (stage px)
   function drawLabels(on) {
-    const d = leaders.width / W;
+    const d = leaders.width / W; shelves = [];
     lctx.clearRect(0, 0, leaders.width, leaders.height);
     labels.forEach((l) => l.classList.toggle('on', on));
     if (!on) return;
@@ -403,20 +436,22 @@ export function initPage01(engine) {
     const order = boxes.map((b, i) => ({ b, i })).sort((p, q) => (portrait ? p.b.cy - q.b.cy : p.b.cx - q.b.cx));
     const col = stage.classList.contains('is-inv') || G.b >= 0.5 ? 'rgba(236,241,246,.9)' : `rgb(${ink})`;
     lctx.strokeStyle = col; lctx.fillStyle = col; lctx.lineWidth = Math.max(1, d * 0.75);
+    const u = grid.u;
     order.forEach(({ b, i }, k) => {
-      const el = labels[i], w = el.offsetWidth, h = el.offsetHeight, side = k % 2 ? 1 : -1;
+      const el = labels[i], w = el.getBoundingClientRect().width, ww = grid.ceil(w), side = k % 2 ? 1 : -1;
       const [ax, ay] = phone.anchor(phone.parts[i], side * 0.55, 0);
-      let lx, ly;
+      let lx, sy;                                                  // the word's left edge and its shelf, on lines
       if (portrait) {   // pieces stacked down the screen: names left and right
-        lx = side < 0 ? Math.max(band.left, b.left - 26 - w) : Math.min(W - band.right - w, b.right + 26);
-        ly = clamp(ay - h - 4, band.top, H - band.bottom - h - 6);
+        lx = side < 0 ? Math.max(band.left, grid.floor(b.left - u - ww)) : Math.min(W - band.right - ww, grid.ceil(b.right + u));
+        sy = clamp(grid.snap(ay), band.top + u, H - band.bottom);
       } else {          // pieces spread across: names above and below
-        lx = clamp(ax - w / 2, band.left, W - band.right - w);
-        ly = side < 0 ? Math.max(band.top, b.top - 30 - h) : Math.min(H - band.bottom - h - 6, b.bottom + 24);
+        lx = clamp(grid.snap(ax - ww / 2), band.left, W - band.right - ww);
+        sy = side < 0 ? Math.max(band.top + u, grid.floor(b.top - u)) : Math.min(H - band.bottom, grid.ceil(b.bottom + 1.5 * u));
       }
-      el.style.transform = `translate(${lx.toFixed(1)}px, ${ly.toFixed(1)}px)`;
-      const sy = ly + h + 4;                                     // the shelf under the word
-      const sx0 = lx, sx1 = lx + w, ex = portrait ? (side < 0 ? sx1 : sx0) : clamp(ax, sx0, sx1);
+      const ly = sy - u;                                           // its box is half a cell: the baseline half a cell above the shelf
+      el.style.transform = `translate(${lx.toFixed(2)}px, ${ly.toFixed(2)}px)`;
+      const sx0 = lx, sx1 = lx + ww, ex = portrait ? (side < 0 ? sx1 : sx0) : clamp(grid.snap(ax), sx0, sx1);
+      shelves.push({ x0: sx0, x1: sx1, y: sy, name: el.textContent });
       const S = (v) => Math.round(v * d) + 0.5;
       lctx.beginPath(); lctx.moveTo(S(sx0), S(sy)); lctx.lineTo(S(sx1), S(sy)); lctx.stroke();
       lctx.beginPath(); lctx.moveTo(S(ex), S(sy)); lctx.lineTo(ax * d, ay * d); lctx.stroke();
@@ -450,7 +485,7 @@ export function initPage01(engine) {
       const list = document.createElement('div'); list.className = 'p1-hall';
       FRAMES.forEach((F) => {
         const fig = document.createElement('figure'); fig.className = 'p1-hall__f';
-        fig.innerHTML = `<div class="p1-hall__d" role="img" aria-label="${F.alt}">${toSVG(F.draw)}</div><figcaption><span class="ph" data-draft>Draft</span> ${F.caption}</figcaption>`;
+        fig.innerHTML = `<div class="p1-hall__d" role="img" aria-label="${F.alt}">${toSVG(F.draw)}</div><figcaption>${labelHTML(F)}</figcaption>`;
         if (F.real) {
           const img = new Image(); img.alt = 'Our booking app running on an iPhone and an Android phone.'; img.className = 'p1-hall__real';
           img.onload = () => fig.querySelector('.p1-hall__d').after(img); img.src = F.real;
@@ -466,7 +501,7 @@ export function initPage01(engine) {
   }
 
   // the corridor is drawn (aria-hidden); readers get its four frames as a list, in reading order after the last line
-  { const l = document.createElement('div'); l.className = 'sr-only'; l.innerHTML = `<p>On the way to the next page, four drawings:</p><ol>${FRAMES.map((f) => `<li>${f.caption} ${f.alt}</li>`).join('')}</ol>`; stage.append(l); }
+  { const l = document.createElement('div'); l.className = 'sr-only'; l.innerHTML = `<p>On the way to the next page, four drawings:</p><ol>${FRAMES.map((f) => `<li>${f.caption} ${f.fig}. ${f.story} ${f.alt}</li>`).join('')}</ol>`; stage.append(l); }
 
   // ---------- live: the finished phone follows the pointer (desktop) or the visitor's phone's tilt (Android) ----------
   const live = createLive();
@@ -503,11 +538,12 @@ export function initPage01(engine) {
   phone.ready.then(() => { phone.warm(); if (phoneSeen) phone.render(); });   // the dressed materials compile now, not on their first frame
   addEventListener('resize', again);
   engine.on('theme', again);
-  document.fonts?.ready.then(() => { phone.refreshScreen('#121212', '#F2F0EB', '#6B6A66'); again(); });
+  document.fonts?.ready.then(() => { phone.refreshScreen(LIGHT.ink, LIGHT.paper, LIGHT.graphite); again(); });
+  grid.onChange(() => requestAnimationFrame(again));
 
   // for tests
   window.__p1 = { phone, morph, stops: STOPS, scroll: SCROLL, R, yAt: (p) => st.start + (st.end - st.start) * p / SCROLL,
     box: () => phone.screenBox(), band: () => band, plate: () => plateRect, P: () => P, top: () => sec.offsetTop,
-    drum: () => drum.i, drumA: () => drum.a, grid: () => gridLines, ground: () => G.b, live, dive: () => diveNow, dot: () => dotNow, diveApi: dive, morphOn: () => morphState.alpha > 0.001, morphT: () => morphState.t };
+    drum: () => drum.i, drumA: () => drum.a, grid: () => gridLines, shelves: () => shelves, imgRect: () => imgRect, ground: () => G.b, live, dive: () => diveNow, dot: () => dotNow, diveApi: dive, morphOn: () => morphState.alpha > 0.001, morphT: () => morphState.t };
   return { length: () => sec.offsetHeight / innerHeight };
 }
