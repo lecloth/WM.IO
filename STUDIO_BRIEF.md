@@ -748,3 +748,46 @@ three.js; Lenis with light settings.
     and frames don't smear at the edges. Each frame finishes its moment and leaves before it nears the screen edge.
     Check at all 9 sizes, above all 2160×1147 @1.333 and 2560×1440.
 - **Still open:** the "?" dot entry (keep only if it reads well at his review); the page 2–3 wording (flagged draft).
+
+### Round 5 (24 Nov, Wajih after round 4). Overrides the above where they differ.
+- **Round 4 passed on Wajih's S23** (60 fps through page 1 and the dive, all drum clicks accepted). Wajih: "really
+  good"; the hallway idea is "amazing"; the rotating WE and verb drum with its grid is "great work": **keep them
+  exactly as they are.**
+- **1. Frame 4: the iPhone 18 and the S26 rotate** (live 3D, the chat's technical call). The real models load as the
+  dive begins, in the same studio light as phone A. In frame 4 they turn to show their backs (the cameras are what
+  make them read as an iPhone and a Galaxy; logos stay removed), then settle front-on on the booking screen they show
+  now. The still image stays as the fallback while they load and for reduced motion. Measure page 1's added weight
+  and the S23 frame rate.
+- **2. The hallway's surroundings look cheap** (everything around the frames is flat lines with no light, so it
+  reads as a wireframe). Expensive comes from real light, depth and shadow. In every look the **frames become real
+  objects**: depth, a mat, glass that catches the light. Three hallway looks as live candidates on the asset sheet
+  (the chat's ideas), **A on the page until Wajih picks**:
+  - **A. Architect's model** (the chat's pick): white card walls and floor like an architect's scale model, real
+    soft shadows, thin black metal frames. Stays ink on paper.
+  - **B. Gallery:** real plaster walls, a pale oak floor, soft pools of light from picture lights.
+  - **C. Engineering lab:** concrete walls, steel frames, a precise grid of ceiling light strips.
+  - Real materials only from free sources (ambientCG, Poly Haven: CC0), credited. All round 4 rules stay (no
+    stretching, true proportions, the lens, frames leave before the edge); no glows; blue only in the blueprints;
+    light and dark versions; phone performance first.
+- **3. Page 2's call to action must command attention** ("Tap everything that fits" is a tiny caption now). Three
+  live demos on the asset sheet, **A on the page until Wajih picks**. The beacon is the same one as the opening, so
+  the site has one "tap here" signal:
+  - **A. Beacon on the rows** (the chat's pick): "Tap everything that fits" becomes a big line right under the
+    question; the beacon pulses on the first box until the first tap; then it moves to a "Next: your slip" line that
+    takes the visitor to page 3's work slip.
+  - **B. Beacon as a gate:** page 2 opens on the beacon alone with the line; tapping it reveals the rows.
+  - **C. No beacon:** the big line, and the five boxes pulse once in sequence.
+  - Reduced motion: no pulse (a still ring). Nothing else looks clickable. "Next: your slip" is draft wording.
+- **4. Page 1's ground looks cheap** (Wajih: "brownish yellowish"): the aged paper tile (Miller 1905, `.p1__bg--real`,
+  #E9DDC6) behind page 1's later screens. "Refine it, clean it up." Three grounds on the asset sheet, **A on the
+  page until Wajih picks**:
+  - **A. Clean paper** (the chat's pick): the same clean drafting paper and fine grid as the corridor and page 2, so
+    the whole site is one paper; Bell's plate keeps its own real scanned paper as an object on the page.
+  - **B. Museum white:** near-white, no grid, soft real shadows under the plate and the phone.
+  - **C. Fresh real paper:** a bright, unaged real paper scan (CC0 or public domain), almost white.
+  - While there, tidy page 1's text screens (spacing, alignment, the title block) without changing the story or
+    the signed-off lines.
+- **5. Blueprint labels:** the smallest labels inside the drawings (YES, NO, NEXT: about 6 px capitals on the S23) go
+  up one size (the chat's call).
+- **Still open:** the "?" dot entry; the drafts (the four corridor lines, page 2–3 wording, "Next: your slip"); the
+  two phone licences (local only until cleared or replaced).
