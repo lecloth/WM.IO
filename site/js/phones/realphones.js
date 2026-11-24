@@ -9,8 +9,8 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
-import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
 import { drawBooking, SCREEN as APP } from '../apps/booking.js';
+import { studio as studioEnv } from './studio.js';
 
 export const DIR = 'media/phones-unverified/';
 // rotate: Euler (radians) that turns the file screen-forward (+z), top-up (+y); height: mm (the iPhone file is in
@@ -21,6 +21,9 @@ export const PHONES = {
 };
 
 const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+/** decode the meshes in a worker (round 5: the corridor loads the phones mid-walk, so the decode must not stall a frame) */
+let workers = false;
+export function offThread() { if (workers) return; workers = true; try { MeshoptDecoder.useWorkers(1); } catch (e) {} }
 const once = new Map();
 /** the GLB, loaded once per page (a refused request on the plain local server is retried; a 404 is "missing") */
 function fetchGLB(url) {
@@ -38,20 +41,7 @@ function fetchGLB(url) {
   once.set(url, p); return p;
 }
 
-/** the studio light as a PMREM environment for one renderer */
-const envs = new WeakMap();
-export function studio(renderer, base = '') {
-  if (envs.has(renderer)) return envs.get(renderer);
-  const url = `${base}media/hdri/studio_small_09_1k.hdr`;
-  const p = new Promise((res) => {
-    const go = (n) => new HDRLoader().load(n ? `${url}?r=${n}` : url, (t) => {
-      const g = new THREE.PMREMGenerator(renderer); t.mapping = THREE.EquirectangularReflectionMapping;
-      const env = g.fromEquirectangular(t).texture; g.dispose(); t.dispose(); res(env);
-    }, undefined, () => (n < 4 ? setTimeout(() => go(n + 1), 200 * (n + 1)) : res(null)));
-    go(0);
-  });
-  envs.set(renderer, p); return p;
-}
+export { studio } from './studio.js';
 
 /** our app on a canvas texture, for a display */
 export function appTexture(theme) {
@@ -109,7 +99,7 @@ export class PhonePair {
     this.camera = new THREE.PerspectiveCamera(22, 1, 20, 6000);
     this.gap = gap; this.items = []; this.tiltNow = { yaw: 0, pitch: 0 }; this.yaw = 0; this.pitch = 0;
     this.app = appTexture();
-    const env = studio(this.renderer, base).then((e) => { this.scene.environment = e; });
+    const env = studioEnv(this.renderer, base).then((e) => { this.scene.environment = e; });
     const phones = Promise.all(keys.map((k) => loadPhone(k, { base })));
     this.ready = Promise.all([env, phones]).then(([, list]) => {
       list.forEach((p) => {

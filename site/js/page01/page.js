@@ -25,6 +25,7 @@ import { createLive } from './live.js';
 import { createDive, measureDot } from './dive.js';
 import { FRAMES } from './corridor-drawings.js';
 import { haptics } from '../engine/haptics.js';
+import { groundPick, PHONE_SHADOW } from './grounds.js';
 
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const span = (p, a, b) => clamp((p - a) / (b - a));
@@ -45,7 +46,7 @@ const R = {
 };
 const HAND = 0.9;          // the handover: Bell's outlines -> X-ray, pose held until here
 // named stops for tests (a paused frame at each must be clean), including mid-morph, mid-drum and mid-dive
-export const STOPS = { S0: 0.1, draw: 0.24, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.6, END: 4.2, DOT: 4.4, F1: 4.88, F2: 5.26, F3: 5.64, F4: 6.06, LAND: 6.22 };
+export const STOPS = { S0: 0.1, draw: 0.24, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.6, END: 4.2, DOT: 4.4, F1: 4.86, F2: 5.2, F3: 5.54, F4B: 6.0, F4: 6.12, LAND: 6.22 };
 const NAMES = ['Back', 'Battery', 'Board', 'Frame', 'Screen', 'Glass'];   // back to front
 const BLUE = [23, 63, 115];
 
@@ -61,7 +62,8 @@ export function initPage01(engine) {
   const canvas = $('.p1__canvas'), morphSvg = $('.p1__morph');
   const leaders = $('.p1__leaders'), lctx = leaders.getContext('2d');
   const labelsEl = $('.p1__labels');
-  const blue = $('.p1__bg--blue'), real = $('.p1__bg--real');
+  const blue = $('.p1__bg--blue');
+  const ground = groundPick(); sec.dataset.ground = ground;   // round 5: the ground (A on the page)
   const plateFig = $('.p1__plate');
   const credit = $('.p1__credit');
   const T = Object.fromEntries([...sec.querySelectorAll('.p1-txt, .p1-we')].map((t) => [t.dataset.k, t]));
@@ -93,6 +95,7 @@ export function initPage01(engine) {
   const endH = T.end.querySelector('.p1-txt__h');
 
   const phone = new Phone(canvas);
+  phone.shadowK = PHONE_SHADOW[ground] || 1;
   const morph = new BellMorph(morphSvg, gsap);
   const labels = phone.parts.map((p) => { const d = document.createElement('div'); d.className = 'p1-lbl'; d.textContent = p.name; labelsEl.append(d); return d; });
   let W = 1, H = 1, band = null, plateRect = null, P = -1, portrait = true, dpr = 1, ink = [18, 18, 18], paper = [242, 240, 235], dark = false;
@@ -313,7 +316,7 @@ export function initPage01(engine) {
   function dressTo(target) {
     if (target === D.target) return; D.target = target;
     gsap.killTweensOf(D);
-    gsap.to(D, { r: target, duration: 0.55, ease: 'power2.inOut', onUpdate: () => { look.real = D.r; real.style.opacity = D.r.toFixed(3); phone.looks(look); if (phoneSeen) phone.render(); } });
+    gsap.to(D, { r: target, duration: 0.55, ease: 'power2.inOut', onUpdate: () => { look.real = D.r; phone.looks(look); if (phoneSeen) phone.render(); } });
   }
 
   // ---------- one frame of the story at scroll position p ----------
@@ -337,7 +340,6 @@ export function initPage01(engine) {
     canvas.classList.toggle('is-off', !shown);
     // snap ticks (forward only, after the unlock tap; haptics checks reduced motion)
     ps.explodeEach.forEach((e, i) => { const s = e <= 0.001; if (s && !seated[i] && p > R.seat) haptics.tick(14); seated[i] = s; });
-    real.style.opacity = D.r.toFixed(3);
 
     // texts: on at their beats
     T.s0.classList.toggle('on', inR(p, R.s0));
@@ -374,6 +376,7 @@ export function initPage01(engine) {
       if (!on && page2In) { page2In.style.clipPath = ''; page2In.style.transform = ''; page2In.style.transformOrigin = ''; }
     }
     const q = span(p, ...R.dive), going = on && q > 0;
+    if (going) dive.loadPhones();   // round 5: the real phones start loading as the dive begins (frame 4 turns them)
     diveEl.classList.toggle('on', going); diveTop.classList.toggle('on', going);
     if (!on) { diveNow = null; return; }
     // page 2 stays in the flow (no switch to position: fixed, which re-lays out the page): a compositor transform holds
@@ -457,7 +460,7 @@ export function initPage01(engine) {
       T.end.after(list);
     });
     Object.values(T).forEach((t) => t.classList.add('on'));
-    [canvas, morphSvg, leaders, labelsEl, blue, real].forEach((el) => { el.hidden = true; });
+    [canvas, morphSvg, leaders, labelsEl, blue].forEach((el) => { el.hidden = true; });
     diveEl.hidden = true; diveTop.hidden = true;
     return { length: () => sec.offsetHeight / innerHeight };
   }

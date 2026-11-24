@@ -89,6 +89,9 @@ function optimizing() {
 
 // 2 · The right algorithm, written for you: which driver gets this delivery (a precise decision flowchart)
 function algorithm() {
+  // round 5: the branch labels (YES, NO, NEXT) went up one size, 10 -> 11.5, the size of the box words (they were
+  // about 6 px capitals on the S23)
+  const SMALL = 11.5;
   const d = sheet(380, 468, 11.5); head(d, '02', 'WHICH DRIVER?');
   const cx = 160;
   d.box(cx - 70, 40, 140, 30, 'NEW DELIVERY', { round: true });
@@ -97,18 +100,18 @@ function algorithm() {
   d.arrow(cx, 134, cx, 154, 7);
   d.diamond(cx, 188, 150, 68, 'ANY FREE?');
   // no: wait, then look again
-  d.line(cx + 75, 188, 300, 188).text('NO', cx + 84, 182, { size: 10 });
+  d.line(cx + 75, 188, 300, 188).text('NO', cx + 84, 182, { size: SMALL });
   d.box(258, 202, 98, 40, ['WAIT,', 'TRY AGAIN']);
   d.arrow(300, 188, 300, 202, 6);
   d.path([[307, 202], [307, 113], [cx + 90, 113]], 6);
-  d.arrow(cx, 222, cx, 246, 7).text('YES', cx + 8, 238, { size: 10 });
+  d.arrow(cx, 222, cx, 246, 7).text('YES', cx + 8, 238, { size: SMALL });
   d.box(cx - 90, 246, 180, 42, ['RANK BY TIME', 'TO THE PICKUP']);
   d.arrow(cx, 288, cx, 306, 7);
   d.diamond(cx, 340, 160, 68, ['MAKES THE', 'TIME SLOT?']);
   // no: the next driver in the ranking
-  d.line(cx - 80, 340, 34, 340).text('NO', cx - 88, 334, { size: 10, anchor: 'end' });
-  d.path([[34, 340], [34, 267], [cx - 90, 267]], 6).text('NEXT', 40, 300, { size: 10 });
-  d.arrow(cx, 374, cx, 398, 7).text('YES', cx + 8, 390, { size: 10 });
+  d.line(cx - 80, 340, 34, 340).text('NO', cx - 88, 334, { size: SMALL, anchor: 'end' });
+  d.path([[34, 340], [34, 267], [cx - 90, 267]], 6).text('NEXT', 40, 302, { size: SMALL });
+  d.arrow(cx, 374, cx, 398, 7).text('YES', cx + 8, 390, { size: SMALL });
   d.box(cx - 80, 398, 160, 32, 'ASSIGN · NOTIFY', { round: true });
   return d;
 }

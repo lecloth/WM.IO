@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en" data-motion="full">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page 2 call to action · Take 2</title>
+<meta name="robots" content="noindex">
+<!-- Page 2's call to action (round 5), one design per frame on the asset sheet: ?cta=A|B|C (&theme=dark). Page 2's own
+     markup is read from the built page (../index.html) at run time, with the page's own stylesheets and cta.js, so the
+     demo is the page. Taps stay here: "Next: your slip" only says where it would go. -->
+<link rel="stylesheet" href="../css/site.css?v=e8d0bd4807">
+<link rel="stylesheet" href="../css/page-01.css?v=146161f019">
+<link rel="stylesheet" href="../css/page-02.css?v=aab3ce8db6">
+<style>
+  html, body { background: var(--paper); }
+  body { overflow-x: hidden; }
+  html[data-motion] #page-02 { margin-top: 0 !important; }
+  .slip-head { display: none !important; }
+  .p23-flag { display: none; }
+  .lab-said { margin: 0 16px 16px; font-family: var(--f-mono); font-size: 10px; line-height: 1.5; color: var(--graphite); min-height: 15px; }
+</style>
+</head>
+<body>
+<main id="host"></main>
+<p class="lab-said" aria-live="polite"></p>
+<script type="module" src="../dist/cta-demo.js?v=fee1e57326"></script>
+</body>
+</html>

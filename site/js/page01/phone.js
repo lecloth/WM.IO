@@ -317,7 +317,7 @@ export class Phone {
     L.matte.forEach((m) => { m.opacity = m.userData.base * built * (1 - real); m.visible = built > 0.001 && real < 0.999; });
     L.ink.forEach((m) => { m.opacity = m.userData.base * built * (1 - real); m.visible = built > 0.001 && real < 0.999; });
     L.real.forEach((m) => { m.opacity = m.userData.base * built * real; m.visible = built * real > 0.001; m.depthWrite = !m.userData.glass && built * real > 0.999; });
-    this.shadow.material.opacity = 0.34 * built * real; this.shadow.visible = built * real > 0.001;
+    this.shadow.material.opacity = Math.min(0.6, 0.34 * (this.shadowK ?? 1)) * built * real; this.shadow.visible = built * real > 0.001;
   }
 
   /** pose: explodeEach[i] 0..1 per part (back to front), gap in mm, yaw/pitch in radians, fit = the band in CSS px */

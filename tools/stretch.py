@@ -20,7 +20,7 @@ JS = r"""async (steps) => {
   const P = d.P(), fovN = 2 * Math.atan(Math.min(W, H) / 2 / P) * 180 / Math.PI, fovX = 2 * Math.atan(W / 2 / P) * 180 / Math.PI, fovY = 2 * Math.atan(H / 2 / P) * 180 / Math.PI;
   const len = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
   const edge = (q) => Math.min(...q.map(([x, y]) => Math.min(x, y, W - x, H - y)));
-  const STOPS = [[0.26, 0.32], [0.45, 0.51], [0.64, 0.7], [0.83, 0.91]];
+  const STOPS = d.stops || [[0.26, 0.32], [0.45, 0.51], [0.64, 0.7], [0.83, 0.91]];   // the dive's own timeline (round 5 retimed it)
   const out = STOPS.map(() => ({ minEdgeVisible: 1e9, minEdgeReadable: 1e9 }));
   // from the moment the window is fully open (before it, everything outside the dot's circle is clipped away)
   for (let k = Math.ceil(0.18 * steps); k <= steps; k++) {
@@ -62,7 +62,7 @@ async def main(a):
             print(f"{sz}: fov narrow {r['fovNarrow']} deg, across {r['fovAcross']}, down {r['fovDown']}")
             for i, f in enumerate(r["frames"]):
                 print(f"  frame {i + 1}: true {f['true']} on screen {f['screen']} -> {f['dev']:+.3f}% (keystone {f['keystone']}%), {f['sizePx'][0]}x{f['sizePx'][1]} px; "
-                      f"closest to the edge: {f['minEdgeReadable']:.1f} px while readable, {f['minEdgeVisible']:.1f} px while visible (q {f.get('atVisible', 0):.3f})")
+                      f"closest to the edge: {f['minEdgeReadable']:.1f} px while readable, {f['minEdgeVisible']:.1f} px while visible (q {f.get('atVisible', 0):.3f}; readable at q {f.get('atReadable', 0):.3f})")
                 if abs(f["dev"]) > abs(worst[0]): worst = (f["dev"], f"{sz} frame {i + 1}")
                 if f["minEdgeVisible"] < worstEdge[0]: worstEdge = (f["minEdgeVisible"], f"{sz} frame {i + 1}")
             await ctx.close()

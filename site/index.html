@@ -39,12 +39,12 @@
   </script>
   <link rel="preload" href="fonts/newsreader-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/dm-mono-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/site.css" onload="__wm.done('css')">
-  <link rel="stylesheet" href="css/page-01-dive.css">
-  <link rel="stylesheet" href="css/page-01.css">
-  <link rel="stylesheet" href="css/page-02.css">
-  <link rel="stylesheet" href="css/page-03-send.css">
-  <link rel="stylesheet" href="css/page-03.css">
+  <link rel="stylesheet" href="css/site.css?v=e8d0bd4807" onload="__wm.done('css')">
+  <link rel="stylesheet" href="css/page-01-dive.css?v=d17cfdd82f">
+  <link rel="stylesheet" href="css/page-01.css?v=146161f019">
+  <link rel="stylesheet" href="css/page-02.css?v=aab3ce8db6">
+  <link rel="stylesheet" href="css/page-03-send.css?v=3b799356aa">
+  <link rel="stylesheet" href="css/page-03.css?v=83ed324d2b">
   <script defer src="vendor/gsap.min.js" onload="__wm.done('gsap')"></script>
   <script defer src="vendor/ScrollTrigger.min.js" onload="__wm.done('st')"></script>
   <script defer src="vendor/SplitText.min.js"></script>
@@ -64,7 +64,7 @@
         else { var c = el.cloneNode(); el.parentNode.insertBefore(c, el.nextSibling); el.remove(); } }, 150 * (n + 1));
     }, true);
   </script>
-  <script type="module" src="dist/main.js" onerror="(function(s){var n=+(s.dataset.r||0);if(n<5){var c=document.createElement('script');c.type='module';c.src='dist/main.js?r='+(n+1);c.dataset.r=n+1;c.onerror=s.onerror;setTimeout(function(){document.head.appendChild(c)},200*(n+1));}})(this)"></script>
+  <script type="module" src="dist/main.js?v=7dced963f6" onerror="(function(s){var n=+(s.dataset.r||0);if(n<5){var c=document.createElement('script');c.type='module';c.src='dist/main.js?r='+(n+1);c.dataset.r=n+1;c.onerror=s.onerror;setTimeout(function(){document.head.appendChild(c)},200*(n+1));}})(this)"></script>
 </head>
 <body>
 
@@ -114,8 +114,8 @@
          page 2 (a draft, flagged on the screen itself). -->
     <section id="page-01" class="p1" data-sheet="01" data-title="Enter" data-drawn="Design" data-checked="Engineering" data-approved="Strategy" aria-label="Page 1: from Bell's 1877 telephone to today's phone">
       <div class="p1__stage">
+        <!-- the stage's own background is the ground (round 5: A clean paper, B museum white, C fresh real paper; .p1[data-ground]) -->
         <div class="p1__bg p1__bg--blue" aria-hidden="true"></div>
-        <div class="p1__bg p1__bg--real" aria-hidden="true"></div>
 
         <figure class="p1__plate">
           <img class="p1__plate-img" src="media/plates/bell-us186787-sheet1.webp" width="1600" height="1740"
@@ -179,7 +179,7 @@
         <p class="p23-flag mono" data-draft>Draft wording · pending Wajih</p>
         <h2 id="p2-h" class="p2__h display rv" data-draft>What do you need?</h2>
         <div class="p2__pick">
-        <p class="p2__sub rv" data-draft>Tap everything that fits.</p>
+        <p class="p2__sub display rv" data-draft>Tap everything that fits.</p>
         <fieldset class="p2-rows">
           <legend class="sr-only">What do you need? Tap everything that fits.</legend>
           <div class="p2-row" data-id="web">
@@ -213,6 +213,8 @@
             <div class="p2-ans" id="p2-a-sec"><p class="p2-ans__t" data-draft>Locks on every door: your data, your accounts, your customers.</p></div>
           </div>
         </fieldset>
+        <!-- round 5, CTA design A: after the first tap the beacon glides here; it takes the visitor to the work slip (DRAFT wording) -->
+        <a class="p2-next" href="#page-03" data-draft><span class="p2-next__no ph" aria-hidden="true">Draft</span><span class="p2-next__slot" aria-hidden="true"></span><span class="p2-next__t">Next: your slip <i aria-hidden="true">↓</i></span></a>
         </div>
         <p class="sr-only" aria-live="polite" id="p2-said"></p>
         <!-- the work slip's head: it waits at the bottom of the screen while you tap (each tap prints into it), and docks

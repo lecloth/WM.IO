@@ -16,3 +16,17 @@ dist = ROOT / "site" / "dist"
 if dist.exists(): shutil.rmtree(dist)
 subprocess.run(["node", str(ROOT / "tools" / "bundle.mjs")], check=True)
 print("built site/index.html,", len(html), "bytes,", len(css), "sheet stylesheets")
+
+# round 5: cache-busting. The plain local server sends no cache headers, so a phone's Chrome may keep an old stylesheet
+# or entry script for hours (it did: Wajih's S23 ran new markup with round 4's page-02.css). Every stylesheet and entry
+# script URL in the built page and the dev pages gets ?v=<its content hash>.
+import hashlib
+pat = re.compile(r'((?:href|src)=")((?:\.\./)?)(css|dist)/([\w.-]+\.(?:css|js))(?:\?v=\w+)?"')
+def ver2(m):
+    attr, up, rel, name = m.group(1), m.group(2), m.group(3), m.group(4)
+    f = ROOT / "site" / rel / name
+    if not f.exists(): return m.group(0)
+    return f'{attr}{up}{rel}/{name}?v={hashlib.sha1(f.read_bytes()).hexdigest()[:10]}"'
+for page in [ROOT / "site" / "index.html", *sorted((ROOT / "site" / "dev").glob("*.html"))]:
+    t = page.read_text(encoding="utf-8"); t2 = pat.sub(ver2, t)
+    if t2 != t: page.write_text(t2, encoding="utf-8"); print("versioned", page.relative_to(ROOT))

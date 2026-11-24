@@ -14,7 +14,9 @@ const alias = {
   },
 };
 await esbuild.build({
-  entryPoints: [path.join(site, 'js/main.js')], bundle: true, splitting: true, format: 'esm',
+  // the site, and (round 5) the asset sheet and the CTA demo, so a phone's cache never serves a stale module:
+  // chunks are content-hashed, and tools/build.py stamps each entry's URL with its hash
+  entryPoints: [path.join(site, 'js/main.js'), path.join(site, 'dev/assets.js'), path.join(site, 'dev/cta-demo.js')], bundle: true, splitting: true, format: 'esm',
   outdir: path.join(site, 'dist'), target: 'es2022', minify: true, sourcemap: false, plugins: [alias],
-  chunkNames: 'chunk-[name]-[hash]', logLevel: 'warning', legalComments: 'none',
+  chunkNames: 'chunk-[name]-[hash]', entryNames: '[name]', logLevel: 'warning', legalComments: 'none',
 });

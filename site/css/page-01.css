@@ -15,6 +15,10 @@
 .titleblock { border: 1px solid var(--hair); gap: 1px; background: rgba(var(--ink-rgb), .3); }
 .titleblock .tb__cell, .titleblock .tb__theme { border: 0; background: var(--paper); }
 @media (min-width: 1024px) { .titleblock { grid-template-columns: repeat(4, auto); } }
+/* round 5 tidy: the title block sits on the page's own lines: on phones the 16 px gutter the text uses (it stood 35 px
+   in, on nothing); on desktop its corner on the drafting grid (2.5rem = two minor squares from the edges) */
+@media (max-width: 1023px) { .titleblock { right: 16px; bottom: 16px; } }
+@media (min-width: 1024px) { .titleblock { right: 2.5rem; bottom: 2.5rem; } }
 
 /* ---------- cursor: a small hairline cross at the pointer (no full-screen lines, no readout) ---------- */
 .xhair__x { position: absolute; left: 0; top: 0; width: 15px; height: 15px; margin: -7px 0 0 -7px;
@@ -72,12 +76,23 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
   background-image: linear-gradient(rgba(236,241,246,.10) 1px, transparent 1px), linear-gradient(90deg, rgba(236,241,246,.10) 1px, transparent 1px),
     linear-gradient(rgba(236,241,246,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(236,241,246,.05) 1px, transparent 1px);
   background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px; }
-/* real paper: a blank margin of Miller 1905 (Internet Archive, public domain), mirrored into a tile */
-.p1__bg--real { background: #E9DDC6 url(../media/paper/miller-1905-paper.webp) 0 0 / 560px repeat; }
-:root[data-theme="dark"] .p1__bg--real { filter: brightness(.17) saturate(.5); }
+/* ---------- the ground (round 5): round 4's aged paper tile (Miller 1905, #E9DDC6) read "brownish yellowish"; three
+   clean grounds, the stage's own background, so it is the same in every beat and in reduced motion (page.js sets
+   data-ground from grounds.js; A on the page until Wajih picks) ---------- */
+/* A · clean paper: the stage's paper and fine grid above (the hallway's and page 2's), so the whole site is one paper */
+/* B · museum white: near-white, no grid; soft real shadows under the plate and the phone */
+.p1[data-ground="B"] .p1__stage { background: #F8F8F6; }
+:root[data-theme="dark"] .p1[data-ground="B"] .p1__stage { background: #0B0B0B; }
+/* C · fresh real paper: ambientCG Paper001 (CC0), a bright, unaged sheet, at its own aspect (1024 x 600) */
+.p1[data-ground="C"] .p1__stage { background: #F6F5F2 url(../media/materials/Paper001/color.webp) 0 0 / 640px 375px repeat; }
+/* dark: the same sheet as a negative (difference against white), as the plates are printed on black film */
+:root[data-theme="dark"] .p1[data-ground="C"] .p1__stage { background-color: #FFFFFF; background-blend-mode: difference; }
 
-.p1__plate { position: absolute; margin: 0; mix-blend-mode: multiply; }
-:root[data-theme="dark"] .p1__plate { mix-blend-mode: screen; }
+/* Bell's plate keeps its own scanned paper: a sheet lying on the page (round 4 printed it into the ground) */
+.p1__plate { position: absolute; margin: 0; will-change: opacity; background: #FFFFFF; box-shadow: 0 0 0 1px rgba(var(--ink-rgb), .06), 0 1px 2px rgba(0, 0, 0, .05), 0 8px 22px -10px rgba(0, 0, 0, .18); }
+.p1[data-ground="B"] .p1__plate { box-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 4px 10px -4px rgba(0, 0, 0, .1), 0 22px 44px -16px rgba(0, 0, 0, .26); }
+/* dark: the plate prints as a negative (site.css); a hairline edge keeps the black sheet apart from the black page */
+:root[data-theme="dark"] .p1__plate { background: #000000; box-shadow: 0 0 0 1px rgba(var(--ink-rgb), .16); }
 .p1__plate img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .p1__credit { position: absolute; color: var(--graphite); font-size: 10px; white-space: nowrap; }
 
@@ -101,8 +116,8 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
   transition: opacity .2s linear, transform .3s cubic-bezier(.4, 0, 1, 1); }
 .p1 .on .w, .p1 .w.on { opacity: 1; transform: none; transition: opacity .26s linear calc(var(--i, 0) * 45ms), transform .62s var(--ease-out) calc(var(--i, 0) * 45ms); }
 .p1-txt__eyebrow { font-size: 11px; color: var(--graphite); margin-bottom: 10px; transition: color .2s; }
-.p1-txt__h { font-size: 44px; line-height: 1.04; letter-spacing: -.02em; }
-.p1-kin { font-size: 31px; line-height: 1.14; letter-spacing: -.015em; }
+.p1-txt__h { font-size: 44px; line-height: 1.04; letter-spacing: -.02em; text-wrap: balance; }
+.p1-kin { font-size: 31px; line-height: 1.14; letter-spacing: -.015em; text-wrap: balance; }
 .p1__stage.is-inv .p1-txt, .p1__stage.is-inv .p1-lbl { color: #F2F0EB; }
 .p1__stage.is-inv .p1-txt__eyebrow { color: rgba(242,240,235,.82); }
 

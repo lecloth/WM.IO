@@ -9,6 +9,7 @@
 import { slip, NEEDS } from './slip.js';
 import { initSend } from './send.js';
 import { initCalloutB } from './callout.js';
+import { initCta } from './cta.js';
 import { haptics } from '../engine/haptics.js';
 import { settings } from '../settings.js';
 
@@ -170,6 +171,10 @@ export function initPages23(engine) {
   });
   empty.querySelector('a')?.addEventListener('click', (e) => { e.preventDefault(); glide(p2); });
 
+  // round 5: the call to action (the beacon; cta.js, design A on the page)
+  const cta = initCta(stage, { reduced, inDive: () => p2.classList.contains('is-dive'),
+    onNext: () => { const strip = document.getElementById('strip')?.offsetHeight || 40; glide(p3, -head.offsetHeight - strip - 12); } });
+
   const calloutB = initCalloutB(engine);
 
   const relayout = () => { layoutHead(); stuck = null; schedule(); };
@@ -180,7 +185,7 @@ export function initPages23(engine) {
   relayout();
 
   // for tests
-  window.__p23 = { slip, send, head, stuck: () => stuck, calloutB,
+  window.__p23 = { slip, send, head, stuck: () => stuck, calloutB, cta,
     tick: (id, on = true) => { const i = p2.querySelector(`.p2-row[data-id="${id}"] input`); if (i.checked !== on) i.click(); },
     setSwitch: (k, on, endpoint = 'https://example.invalid/slip') => { const o = k === 'page' ? settings.sendFromPage : settings.booking; o.on = on; o.endpoint = on ? endpoint : ''; send.update(); },
   };

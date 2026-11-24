@@ -35,6 +35,8 @@ input:checked + .mark path, input:checked ~ .mark path { stroke-dashoffset: 0; t
 .p2__h { font-size: 44px; line-height: 1.04; letter-spacing: -.02em; max-width: 12ch; }
 .p2__pick { margin-top: 10px; }
 .p2__sub { font-size: 19px; line-height: 1.35; color: var(--ink); }
+/* round 5: the call to action is a big line right under the question (it was a small caption) */
+.p2 .p2__sub { font-size: 31px; line-height: 1.08; letter-spacing: -.015em; text-wrap: balance; }
 .p2-rows { border: 0; margin: 22px 0 28px; min-inline-size: 0; }
 .p2-row { border-top: 1px solid rgba(var(--ink-rgb), .55); }
 .p2-row:last-child { border-bottom: 1px solid rgba(var(--ink-rgb), .55); }
@@ -46,6 +48,50 @@ input:checked + .mark path, input:checked ~ .mark path { stroke-dashoffset: 0; t
 .p2-ans > p { overflow: hidden; min-height: 0; }
 .p2-ans__t { font-size: 19px; line-height: 1.34; padding: 0 0 14px 66px; color: var(--ink); }
 .p2-row.is-on .p2-ans { grid-template-rows: 1fr; visibility: visible; transition: grid-template-rows .34s var(--ease-out), visibility 0s; }
+
+/* ---------- round 5: the call to action (cta.js). The beacon is the opening's own: a breathing dot sending out slow
+   fading rings (one every 1.6 s), in ink. A: on the first box until the first tap, then on "Next: your slip";
+   B: alone under the line, a button that reveals the rows; C: no beacon, the boxes pulse once in turn. ---------- */
+.p2-beacon { position: absolute; z-index: 4; left: 0; top: 0; width: 0; height: 0; padding: 0; border: 0; background: none; color: var(--ink);
+  pointer-events: none; transition: transform .62s var(--ease-out), opacity .3s linear; }
+.p2-beacon__dot, .p2-beacon__ring { position: absolute; left: -5px; top: -5px; width: 10px; height: 10px; border-radius: 50%; }
+.p2-beacon__dot { background: currentColor; animation: breathe 1.6s ease-in-out infinite alternate; }
+.p2-beacon__ring { border: 1px solid currentColor; opacity: 0; animation: ring 3.2s cubic-bezier(.2, .6, .3, 1) infinite; }
+.p2-beacon__ring--2 { animation-delay: 1.6s; }
+.p2-beacon.is-off { opacity: 0; }
+.p2-beacon.is-off .p2-beacon__dot, .p2-beacon.is-off .p2-beacon__ring { animation: none; }
+/* reduced motion: no pulse, a still ring */
+.p2-beacon.is-still .p2-beacon__dot, .p2-beacon.is-still .p2-beacon__ring { animation: none; }
+.p2-beacon.is-still .p2-beacon__ring--1, .p2-beacon.is-still .p2-beacon__ring:not(.p2-beacon__ring--2) { opacity: .45; transform: scale(3); }
+/* while page 1's dive holds page 2 at the hallway's end, the beacon waits (no animation inside the scaled stage) */
+#page-02.is-dive .p2-beacon { visibility: hidden; }
+#page-02.is-dive .p2-beacon * { animation: none; }
+/* A: the box under the beacon's dot reads as the target: its dot sits in the box's centre, the rings run out past it */
+[data-cta="A"] .p2-beacon { transition: transform .62s var(--ease-out), opacity .3s linear; }
+/* "Next: your slip": on the rows' grid (the beacon's slot in the box column), shown from the first tap on */
+.p2-next { display: grid; grid-template-columns: 28px 24px 1fr; align-items: center; column-gap: 14px; min-height: 56px; margin: -14px 0 22px; color: var(--ink);
+  visibility: hidden; opacity: 0; transition: opacity .3s linear .3s, visibility 0s .6s; -webkit-tap-highlight-color: transparent; }
+.p2-next.on { visibility: visible; opacity: 1; transition: opacity .3s linear .3s, visibility 0s; }
+.p2-next__no { font-family: var(--f-mono); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: var(--graphite); }
+.p2-next__slot { width: 24px; height: 24px; }
+.p2-next__t { font-family: var(--f-display); font-weight: 420; font-size: 23px; line-height: 1.12; letter-spacing: -.01em; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; }
+.p2-next__t i { display: inline; font-style: normal; }
+.p2-next:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+:not([data-cta="A"]) > .p2__pick .p2-next { display: none; }
+/* B: the gate. The rows wait hidden (their space kept, so nothing jumps) until the beacon is tapped or the page scrolls on */
+.p2__pick.is-gated .p2-rows { visibility: hidden; opacity: 0; }
+[data-cta="B"] .p2-beacon { pointer-events: auto; cursor: pointer; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; -webkit-tap-highlight-color: transparent; }
+[data-cta="B"] .p2-beacon > i { left: 27px; top: 27px; }
+[data-cta="B"] .p2-beacon:focus-visible { outline: 1px solid var(--ink); outline-offset: 2px; }
+.p2__pick.is-opening .p2-row { animation: rowIn .5s var(--ease-out) both; }
+.p2__pick.is-opening .p2-row:nth-child(2) { animation-delay: .06s; } .p2__pick.is-opening .p2-row:nth-child(3) { animation-delay: .12s; }
+.p2__pick.is-opening .p2-row:nth-child(4) { animation-delay: .18s; } .p2__pick.is-opening .p2-row:nth-child(5) { animation-delay: .24s; }
+@keyframes rowIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+/* C: each box sends out one ring, in turn */
+.p2-pulse { position: absolute; left: 42px; top: 50%; width: 24px; height: 24px; margin-top: -12px; border: 1px solid var(--ink); opacity: 0; pointer-events: none; }
+.p2-rows.is-pulse .p2-pulse { animation: boxPulse .9s cubic-bezier(.2, .6, .3, 1) calc(var(--i) * .14s) 1 both; }
+@keyframes boxPulse { 0% { transform: scale(1); opacity: .75; } 100% { transform: scale(2.1); opacity: 0; } }
+html[data-motion="reduce"] .p2-pulse, html[data-motion="reduce"] .p2__pick.is-opening .p2-row { animation: none !important; }
 
 /* ---------- the work slip's head: waits at the bottom while page 2 is on screen, docks as the slip's top ---------- */
 .slip-head { position: sticky; z-index: 6; bottom: var(--feed-bottom, 92px); display: block; margin-top: auto; background: var(--paper);
@@ -97,6 +143,12 @@ html[data-motion="full"] #page-02 { margin-top: -100vh; margin-top: -100lvh; }
   .p2__stage { padding: calc(var(--strip-h) + 7rem) 6rem 0; }
   .p2__h { font-size: 5rem; max-width: none; }
   .p2__sub { font-size: 1.375rem; }
+  .p2 .p2__sub { font-size: 2.75rem; }
+  .p2-next { grid-template-columns: 2rem 1.5rem 1fr; column-gap: 1.25rem; min-height: 4rem; margin: -1.75rem 0 2.25rem; }
+  .p2-next__slot { width: 1.5rem; height: 1.5rem; }
+  .p2-next__no { font-size: .5625rem; }
+  .p2-next__t { font-size: 2.125rem; }
+  .p2-pulse { left: 3.25rem; width: 1.5rem; height: 1.5rem; margin-top: -.75rem; }
   .p2-rows { margin: 2.25rem 0 2.5rem; }
   /* desktop: the answer sits on its row's right, joined by a hairline leader drawn on as you tick */
   .p2-row { display: grid; grid-template-columns: 31rem 1fr; align-items: center; }
