@@ -1,9 +1,5 @@
-/* Take 2 · Send: three designs in the drawing language (Part 5 "Pages 2 and 3"), side by side on the asset sheet
-   (site/dev/assets.html) for Wajih's pick. Big and unmissable; never a filled or pill button. One markup, three looks:
-     A · Leader      "Send" with a drafting arrow run out to the slip's edge (a leader line with a slender head)
-     B · Cell        the slip's own last title-block cell, framed by its hairlines, labelled like a drawing's cell
-     C · Bubble      a drawing's section bubble: "Send" over the cut line, the arrowhead under it
-   The page uses the one named in site/js/page02/send.js (SEND_DESIGN). */
+/* Take 2 · Send, design A "Leader" (Wajih's pick, 24 Nov): "Send" with a drafting arrow run out to the slip's edge (a
+   leader line with a slender head). Big and unmissable; never a filled or pill button. (B Cell and C Bubble retired.) */
 
 .send { position: relative; display: block; color: var(--ink); text-decoration: none; -webkit-tap-highlight-color: transparent; cursor: pointer; }
 .send__k { display: block; color: var(--graphite); font-size: 10px; }
@@ -25,34 +21,12 @@
 .send--a { padding: 6px 0 4px; }
 .send--a .send__row { margin-top: 4px; }
 
-/* B · Cell: the cell's hairline frame and a corner label, as on a drawing's title block */
-.send--b { border: 1px solid var(--ink); padding: 10px 14px 14px; margin-top: 6px; }
-.send--b .send__row { margin-top: 8px; }
-.send--b .send__arrow { flex: 0 0 64px; margin-left: auto; }
-.send--b::before, .send--b::after { content: ""; position: absolute; width: 10px; height: 10px; border: 0 solid var(--ink); }
-.send--b::before { left: 4px; bottom: 4px; border-left-width: 1px; border-bottom-width: 1px; }
-.send--b::after { right: 4px; top: 4px; border-right-width: 1px; border-top-width: 1px; }
-
-/* C · Bubble: a section bubble, the word above the cut line and the arrowhead below; the words beside it */
-.send--c { display: grid; grid-template-columns: auto 1fr; column-gap: 18px; align-items: center; padding: 8px 0 4px; }
-.send--c .send__k { grid-column: 2; grid-row: 1; align-self: end; }
-.send--c .send__say { grid-column: 2; grid-row: 2; align-self: start; margin-top: 4px; }
-.send--c .send__row { grid-column: 1; grid-row: 1 / span 2; width: 152px; height: 152px; border: 1px solid var(--ink); border-radius: 50%; display: grid; grid-template-rows: 1fr 1fr; justify-items: center; gap: 0; }
-.send--c .send__row::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--ink); }
-.send--c .send__w { align-self: end; font-size: 48px; padding-bottom: 10px; }
-.send--c .send__arrow { display: none; }
-.send--c .send__head { align-self: start; margin: 18px 0 0; width: 40px; height: 16px; }
-
 @media (min-width: 1024px) {
   .send__k { font-size: .625rem; }
   .send__w { font-size: 6rem; }
   .send__arrow { height: 1rem; }
   .send__head { width: 2rem; height: 1rem; margin-left: -1rem; }
   .send__say { font-size: 1.25rem; margin-top: .5rem; }
-  .send--b .send__arrow { flex-basis: 8rem; }
-  .send--c .send__row { width: 11rem; height: 11rem; }
-  .send--c .send__w { font-size: 3.5rem; }
-  .send--c .send__head { width: 3rem; height: 1.25rem; margin: 0; margin-top: 1.25rem; }
 }
 @media (hover: hover) and (pointer: fine) {
   .send:hover .send__head { transform: translateX(6px); }

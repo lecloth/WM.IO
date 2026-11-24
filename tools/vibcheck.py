@@ -1,5 +1,5 @@
 """Count navigator.vibrate calls on page 1: after a tap on the point, after a key press, and with reduced motion.
-  python -I tools/vibcheck.py   (expect: tap = 1 tap buzz + 6 snaps + 6 drum clicks; key = none; reduced = none)"""
+  python -I tools/vibcheck.py   (expect: tap = 1 tap buzz + 6 snaps + 6 drum clicks of 18 ms (round 4); key = none; reduced = none)"""
 import asyncio, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))

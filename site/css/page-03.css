@@ -50,7 +50,6 @@ legend.slip__q + * { clear: both; }
 
 /* the Send area: the slip's last cell */
 .slip__send { position: relative; border-top: 1px solid var(--ink); padding: 10px 14px 16px; }
-.slip__pend { color: var(--graphite); font-size: 9px; margin-bottom: 2px; }
 .slip__said { font-size: 18px; line-height: 1.35; margin-top: 8px; }
 .slip__said:empty { display: none; }
 

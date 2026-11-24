@@ -7,7 +7,7 @@
 import { settings } from '../settings.js';
 import { slip, slipText, clean } from './slip.js';
 
-export const SEND_DESIGN = 'A';   // pending Wajih's pick on the asset sheet (A Leader, B Cell, C Bubble)
+export const SEND_DESIGN = 'A';   // Wajih's pick (24 Nov): A, Leader (B Cell and C Bubble retired)
 const LIM = settings.limits;
 const digits = (n) => String(n ?? '').replace(/\D/g, '');
 const EMAIL = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+$/;   // the studio's own address, from settings: refuse anything odd
@@ -77,7 +77,6 @@ export function initSend(form, { reduced, haptics }) {
   const slots = form.querySelector('.slip__slots'), grid = form.querySelector('.slip__slots-grid');
   const shownAt = performance.now();
   a.className = `send send--${SEND_DESIGN.toLowerCase()}`;
-  form.querySelector('.js-send-d').textContent = SEND_DESIGN;
   let way = null;
 
   function update() {

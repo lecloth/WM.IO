@@ -1,6 +1,6 @@
 """Where do slow frames happen? Scroll page 1 between two positions (in screens of scroll) in emulation (headless Chrome,
 real GPU) and print every frame over 20 ms with the scroll position it happened at. Three passes.
-  python -I tools/slowwhere.py [--size 384x734@2.8125] [--a 3.9 --b 5.3]"""
+  python -I tools/slowwhere.py [--size 384x734@2.8125] [--a 3.9 --b 6.3]"""
 import argparse, asyncio, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -29,5 +29,5 @@ async def main(a):
             await page.wait_for_timeout(800)
             print(f"pass {i + 1}: slow frames [ms, p]:", await page.evaluate(WHERE, [y0, y1, 3], isolated_context=False), flush=True)
         await b.close()
-ap = argparse.ArgumentParser(); ap.add_argument("--size", default="384x734@2.8125"); ap.add_argument("--a", type=float, default=3.9); ap.add_argument("--b", type=float, default=5.3); ap.add_argument("--css", default=""); ap.add_argument("--js", default="")
+ap = argparse.ArgumentParser(); ap.add_argument("--size", default="384x734@2.8125"); ap.add_argument("--a", type=float, default=3.9); ap.add_argument("--b", type=float, default=6.3); ap.add_argument("--css", default=""); ap.add_argument("--js", default="")
 with BrowserLock(): asyncio.run(main(ap.parse_args()))

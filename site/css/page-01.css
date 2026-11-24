@@ -59,7 +59,7 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
 .ph { display: inline-block; margin-right: 8px; font-family: var(--f-mono); font-size: 9px; letter-spacing: .08em; vertical-align: 1px; text-transform: uppercase; }
 
 /* ---------- page 1 (round 3: the design ethos; hairlines, ink, blue only for the drawing stage) ---------- */
-.p1 { position: relative; height: 630vh; height: 630lvh; }
+.p1 { position: relative; height: 730vh; height: 730lvh; }
 .p1__stage { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; isolation: isolate;
   background-color: var(--paper);
   background-image: linear-gradient(var(--grid-major) 1px, transparent 1px), linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
@@ -136,16 +136,29 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
 .p1 .p1-mean p:not(.on) .w { opacity: 0; transform: translateY(.34em) rotate(3deg); transition: opacity .1s linear, transform .1s linear; }
 .p1 .p1-mean p.on .w { transition: opacity .26s linear calc(.14s + var(--i, 0) * 40ms), transform .62s var(--ease-out) calc(.14s + var(--i, 0) * 40ms); }
 .p1-steps { list-style: none; }
+/* the grid behind WE and the verbs (page.js layoutGrid): construction hairlines on the type's cap line, x-height and
+   baseline, the verb window with its index marks, two cap-height dimensions; it comes in with the drum */
+.p1-grid { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; opacity: 0; transition: opacity .3s var(--ease-out); }
+.p1-we.on .p1-grid { opacity: 1; transition-delay: .25s; }
+.p1-grid path { fill: none; vector-effect: non-scaling-stroke; stroke-width: 1px; }
+.p1-grid .g { stroke: rgba(var(--ink-rgb), .16); }
+.p1-grid .t { stroke: rgba(var(--ink-rgb), .5); }
+.p1-grid .w { stroke: rgba(var(--ink-rgb), .55); }
+.p1-grid .d { stroke: rgba(var(--ink-rgb), .45); }
+.p1-grid text { font-family: var(--f-mono); font-size: 8px; letter-spacing: .08em; fill: var(--graphite); }
+.p1-grid text.r { dominant-baseline: middle; }
+@media (min-width: 1024px) { .p1-grid text { font-size: .5rem; } }
 .p1-we:not(.is-static) .p1-steps { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-/* the "?" dot dive (page.js + dive.js): the dot's window shows a corridor of real drawing sheets in one perspective;
-   page 2's stage waits at its end (page-02.css, #page-02.is-dive). Layers: corridor (2) < page 2 (3) < ring + dot (4) */
+/* the "?" dot dive (page.js + dive.js): the dot's window shows the corridor of four blueprint frames in one perspective;
+   page 2's stage waits at its end (page-02.css, #page-02.is-dive). Layers: the paper ground (2) < page 2 (3) < the corridor
+   (WebGL, transparent: walls, edges, frames), the ring, the dot, the captions (4) */
 .p1-dive, .p1-dive-top { position: fixed; inset: 0; pointer-events: none; visibility: hidden; }
-/* the corridor hides with opacity (it stays composited, so turning it on costs no frame) */
+/* both layers hide with opacity (they stay composited, so turning them on costs no frame; the top one holds the WebGL) */
 .p1-dive { z-index: 2; visibility: visible; opacity: 0; }
 .p1-dive.on { opacity: 1; }
-.p1-dive-top { z-index: 4; color: var(--ink); }
-.p1-dive.on, .p1-dive-top.on { visibility: visible; }
+.p1-dive-top { z-index: 4; color: var(--ink); visibility: visible; opacity: 0; }
+.p1-dive-top.on { opacity: 1; }
 .p1__stage.is-inv ~ .p1-dive-top { color: #F2F0EB; }
 /* while the "?" dot is measured, the words stand settled (the reveal's rise and turn switched off for one read) */
 .p1 .is-measuring .w { transform: none !important; transition: none !important; }
@@ -175,13 +188,19 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
 .p1.is-static .p1-slot { color: inherit; font-weight: 560; }
 .p1.is-static .p1-we { display: block; }
 .p1.is-static .p1-we__word { font-size: 72px; }
-.p1.is-static .p1-drum, .p1.is-static .p1-mean, .p1.is-static .p1-dive, .p1.is-static .p1-dive-top { display: none; }
+.p1.is-static .p1-drum, .p1.is-static .p1-grid, .p1.is-static .p1-mean, .p1.is-static .p1-dive, .p1.is-static .p1-dive-top { display: none; }
 .p1.is-static .p1-steps { margin-top: 12px; }
 .p1.is-static .p1-steps li { padding: 12px 0; border-top: 1px solid rgba(var(--ink-rgb), .3); font-size: 18px; line-height: 1.4; }
 .p1.is-static .p1-steps__verb { display: block; font-family: var(--f-display); font-weight: 420; font-size: 28px; line-height: 1.1; margin-bottom: 4px; }
 .p1.is-static .p1__plate { position: relative !important; left: auto !important; top: auto !important; width: 100% !important; height: auto !important; aspect-ratio: 1600 / 1740; max-width: 640px; }
 .p1.is-static .p1__credit { position: static; margin-top: 6px; }
 .p1.is-static .p1__bg { display: none; }
+/* reduced motion: the corridor's four frames as still figures */
+.p1-hall { display: grid; gap: 28px; margin-top: 24px; max-width: 640px; }
+.p1-hall__f { margin: 0; }
+.p1-hall__d svg, .p1-hall__real { display: block; width: 100%; height: auto; }
+.p1-hall__real { margin-top: 8px; }
+.p1-hall figcaption { margin-top: 8px; font-size: 20px; line-height: 1.3; }
 .p1-frame { margin: 0; }
 .p1-frame img { display: block; width: 100%; max-width: 640px; height: auto; }
 .p1-frame--blue { background: #173F73; color: #F2F0EB; padding: 20px 16px; margin-top: 32px; max-width: 640px; }

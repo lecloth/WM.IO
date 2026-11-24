@@ -17,7 +17,7 @@ WHERE = """(async ([a, b, secs]) => { const e = window.__t2.engine; const slow =
     const k = (now - t0) / (secs * 1000); const y = a + (b - a) * Math.min(1, k); if (e.lenis) e.lenis.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y);
     if (k < 1) requestAnimationFrame(f); else res(); } requestAnimationFrame(f); }); return JSON.stringify(slow); })"""
 SEGS = [("plate + draw 0-0.4", 0.0, 0.4), ("morph + handover 0.4-0.9", 0.4, 0.9), ("spread + names 0.9-1.44", 0.9, 1.44), ("assembly + ground 1.44-2.0", 1.44, 2.0),
-        ("dress + real 2.0-2.6", 2.0, 2.6), ("YOU + task 2.6-3.0", 2.6, 3.0), ("WE + drum 3.0-4.0", 3.0, 4.0), ("end + dive 4.0-5.3", 4.0, 5.3)]
+        ("dress + real 2.0-2.6", 2.0, 2.6), ("YOU + task 2.6-3.0", 2.6, 3.0), ("WE + drum 3.0-4.0", 3.0, 4.0), ("end + dot 4.0-4.75", 4.0, 4.75), ("corridor 4.75-6.3", 4.75, 6.3)]
 
 async def main(a):
     S = a.serial
@@ -48,8 +48,8 @@ async def main(a):
                     out[f"{rnd} · {name}"] = r; print(rnd, name, r, flush=True)
             if a.where:
                 for rnd in range(3):
-                    y0 = await c.eval("window.__p1.yAt(3.9)"); y1 = await c.eval("window.__p1.yAt(5.3)"); await c.eval(f"{GOTO_Y}({y0})"); await asyncio.sleep(0.8)
-                    print("slow frames [ms, p] going 3.9 -> 5.3, pass", rnd + 1, await c.eval(f"({WHERE})([{y0}, {y1}, 3])", timeout=60), flush=True)
+                    y0 = await c.eval("window.__p1.yAt(3.9)"); y1 = await c.eval("window.__p1.yAt(6.3)"); await c.eval(f"{GOTO_Y}({y0})"); await asyncio.sleep(0.8)
+                    print("slow frames [ms, p] going 3.9 -> 6.3, pass", rnd + 1, await c.eval(f"({WHERE})([{y0}, {y1}, 3])", timeout=60), flush=True)
                     y0 = await c.eval("window.__p1.yAt(1.9)"); y1 = await c.eval("window.__p1.yAt(2.7)"); await c.eval(f"{GOTO_Y}({y0})"); await asyncio.sleep(0.8)
                     print("slow frames [ms, p] going 1.9 -> 2.7, pass", rnd + 1, await c.eval(f"({WHERE})([{y0}, {y1}, 3])", timeout=60), flush=True)
             ori = json.loads(await c.eval("JSON.stringify(window.__ori)"))

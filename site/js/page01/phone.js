@@ -7,6 +7,11 @@
 //      back under a clear glossy coat, a reflective cover glass, buttons, a camera bump with layered lenses (an
 //      iridescent coating), a soft shadow on the paper; ACES filmic tone mapping. The real look has its own bevelled
 //      geometry (inside the X-ray's crisp outline), so the pieces still assemble exactly and the drawing stays exact.
+// Round 4 (the premium bar, Part 5 "Round 4 picks"), real look only: a precisely machined band (flat brushed sides,
+// a polished 45-degree chamfer front and back that catches one clean highlight line), tight even bezels (a black mask
+// printed under the cover glass, the same width all round), the back glass set inside the frame, a layered camera
+// plateau (a polished chamfered edge, ring, inner lens elements, a cover glass over each lens), real cover glass with
+// a clear coat. The X-ray and built looks keep the crisp geometry, so the six pieces assemble exactly as before.
 // The X-ray's edge loops are tagged (part, piece, face), so Bell's few clean paths can land exactly on chosen ones.
 // No logos, no brand shapes (two plain round lenses in a plain bump, a round punch-hole).
 import * as THREE from 'three';
@@ -48,6 +53,20 @@ function bring(w, h, d, r, t, b, seg = 5) {
   s.holes.push(roundedRect(w - 2 * t, h - 2 * t, Math.max(0.5, r - t)));
   const g = new THREE.ExtrudeGeometry(s, { depth: d - 2 * b, bevelEnabled: true, bevelThickness: b, bevelSize: b, bevelSegments: seg, curveSegments: 16 });
   g.translate(0, 0, -(d - 2 * b) / 2); return g;
+}
+// a chamfer: a strip from the outline (w, h, r) at z0 to the outline inset by c at z1 (real look)
+function chamfer(w, h, r, c, z0, z1) {
+  const a = roundedRect(w, h, r).getPoints(10), b = roundedRect(w - 2 * c, h - 2 * c, Math.max(0.3, r - c)).getPoints(10);
+  const n = Math.min(a.length, b.length), pos = [], idx = [];
+  for (let i = 0; i < n; i++) pos.push(a[i].x, a[i].y, z0, b[i].x, b[i].y, z1);
+  for (let i = 0; i < n; i++) { const j = (i + 1) % n, A = 2 * i, B = 2 * i + 1, C = 2 * j, D = 2 * j + 1; idx.push(A, C, B, B, C, D); }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+  return g;
+}
+// a flat ring between two outlines (real look: the bezel mask under the cover glass)
+function flatRing(w, h, r, w2, h2, r2, z = 0) {
+  const s = roundedRect(w, h, r); s.holes.push(roundedRect(w2, h2, r2));
+  const g = new THREE.ShapeGeometry(s, 16); g.translate(0, 0, z); return g;
 }
 // a turned part (lens ring, glass): profile of [radius, height] pairs; height runs outwards from the back (-z)
 function lathe(profile, z0 = 0) {
@@ -180,7 +199,11 @@ export class Phone {
     const backReal = phys({ color: 0xEEEEEE, metalness: 0, roughness: 0.6, clearcoat: 1, clearcoatRoughness: 0.035 });
     this.dressMats = { frame: [frameReal], back: [backReal] };
     // the cover glass: reflections only, added on top of the screen (so the screen's own colours stay exact)
-    const glassReal = phys({ color: 0x000000, metalness: 0, roughness: 0.03, specularIntensity: 1, ior: 1.52, envMapIntensity: 0.5, blending: THREE.AdditiveBlending });
+    const glassReal = phys({ color: 0x000000, metalness: 0, roughness: 0.03, specularIntensity: 1, ior: 1.52, envMapIntensity: 0.5, clearcoat: 1, clearcoatRoughness: 0.02, blending: THREE.AdditiveBlending });
+    // the polished chamfers (band, camera plateau): mirror-bright titanium, so the studio's octabox draws one clean line
+    const polished = { color: 0xE4E0D8, metalness: 1, roughness: 0.07, envMapIntensity: 2.2, side: THREE.DoubleSide };
+    const bezelInk = { color: 0x030303, metalness: 0, roughness: 0.4, envMapIntensity: 0.2 };
+    const lensCover = { color: 0x000000, metalness: 0, roughness: 0.02, ior: 1.77, specularIntensity: 1, clearcoat: 1, clearcoatRoughness: 0.01, envMapIntensity: 0.9, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide };
     glassReal.userData.glass = true;
     const lensGlass = { color: 0x07080A, roughness: 0.04, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.02, iridescence: 1, iridescenceIOR: 1.8, iridescenceThicknessRange: [260, 520], envMapIntensity: 1.3, side: THREE.DoubleSide };
     const lensRing = { color: 0xC9C5BE, metalness: 1, roughness: 0.22, envMapIntensity: 1.5, side: THREE.DoubleSide };
@@ -214,6 +237,7 @@ export class Phone {
       g.position.z = z; this.parts.push(part); return part;
     };
     const { w: W, h: H, r: R } = PHONE;
+    const CH = 0.6;   // the band's chamfer (mm)
     const screenReal = new THREE.MeshBasicMaterial({ map: this.screenTex, toneMapped: false });
     // back to front; z = assembled depth (mm). The back faces -z. Pieces 1 and 2 (the lenses) are Bell's screw targets.
     // A lens, real: a titanium ring with a chamfer (piece 1/2), the barrel's black throat, a bright inner rim, coated glass.
@@ -222,13 +246,16 @@ export class Phone {
       { realOnly: true, realGeo: lathe([[2.6, 1.05], [3.3, 1.05], [3.3, 1.15]], 0.6), pos: [x, y, -0.9], real: { color: 0x0A0A0B, roughness: 0.6, metalness: 0.2 , side: THREE.DoubleSide } },
       { realOnly: true, realGeo: lathe([[1.5, 1.16], [1.85, 1.19], [2.15, 1.16]], 0.6), pos: [x, y, -0.9], real: { color: 0x8E8A84, roughness: 0.25, metalness: 1, envMapIntensity: 1.3 , side: THREE.DoubleSide } },
       { realOnly: true, realGeo: lathe([[0, 1.4], [1.4, 1.38], [2.6, 1.31], [3.3, 1.24]], 0.6), pos: [x, y, -0.9], real: lensGlass },
+      { realOnly: true, realGeo: lathe([[0, 1.63], [3.2, 1.63], [3.28, 1.58]], 0.6), pos: [x, y, -0.9], real: lensCover },   // the cover glass over it
     ];
     P('Back', -3.4, [
-      { geo: slab(W, H, 0.8, R), realGeo: bslab(W, H, 0.8, R, 0.3), matte: 0xE8E6E1, real: backReal },
+      { geo: slab(W, H, 0.8, R), realGeo: bslab(W - 2 * CH - 0.2, H - 2 * CH - 0.2, 0.8, R - CH, 0.25), matte: 0xE8E6E1, real: backReal },
       { geo: disc(4.4, 1.2), realGeo: ringGeo(), pos: [-24, 63, -0.9], matte: 0x3A3936, real: lensRing },
       { geo: disc(4.4, 1.2), realGeo: ringGeo(), pos: [-24, 50, -0.9], matte: 0x3A3936, real: lensRing },
       // the camera bump: a plain raised plate in the back's own glass (two lenses, a flash, a microphone hole)
       { geo: slab(25, 36, 0.9, 7.5), realGeo: bslab(25, 36, 0.9, 7.5, 0.3), pos: [-22.5, 56.5, -0.85], matte: 0xDCDAD4, real: backReal },
+      // the plateau's machined edge: a polished chamfer round its outer face
+      { realOnly: true, realGeo: chamfer(25.04, 36.04, 7.52, 0.35, -0.1, -0.47), pos: [-22.5, 56.5, -0.85], real: polished },
       { geo: disc(1.5, 0.3), pos: [-14.6, 63, -1.4], matte: 0xF1EFEA, real: { color: 0xEDE6D2, roughness: 0.45, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.05 }, edgeOpacity: 0.8 },
       { realOnly: true, realGeo: disc(0.45, 0.3), pos: [-14.6, 50, -1.32], real: { color: 0x050505, roughness: 0.7, metalness: 0 } },
       ...lensParts(-24, 63), ...lensParts(-24, 50),
@@ -241,7 +268,12 @@ export class Phone {
     ]);
     // the band and its keys (a volume rocker and the power key, on the right side)
     const key = (len, y) => ({ geo: new THREE.BoxGeometry(1.2, len, 2.4), realGeo: roundedKey(len), pos: [W / 2 + 0.2, y, 0], matte: 0xD2D0CA, real: frameReal, edgeOpacity: 0.85 });
-    P('Frame', 0, [{ geo: ring(W, H, 7.6, R, 1.1), realGeo: bring(W, H, 7.6, R, 1.1, 0.85), matte: 0xD9D7D1, real: frameReal }, key(22, 46), key(11, 26)]);
+    // the band, real: flat brushed sides between two polished 45-degree chamfers (front and back), CH wide
+    P('Frame', 0, [{ geo: ring(W, H, 7.6, R, 1.1), realGeo: ring(W, H, 7.6 - 2 * CH, R, 1.1), matte: 0xD9D7D1, real: frameReal }, key(22, 46), key(11, 26),
+      { realOnly: true, realGeo: chamfer(W, H, R, CH, 3.8 - CH, 3.8), real: polished },
+      { realOnly: true, realGeo: chamfer(W, H, R, CH, -3.8 + CH, -3.8), real: polished },
+      { realOnly: true, realGeo: flatRing(W - 2 * CH, H - 2 * CH, R - CH, W - 2.2, H - 2.2, R - 1.1, 3.8), real: frameReal },
+      { realOnly: true, realGeo: flatRing(W - 2 * CH, H - 2 * CH, R - CH, W - 2.2, H - 2.2, R - 1.1, 0).rotateY(Math.PI).translate(0, 0, -3.79), real: frameReal }]);
     P('Screen', 2.6, [
       { geo: slab(W - 1.4, H - 1.4, 0.6, R - 0.7), matte: 0xE2E0DA, real: { color: 0x050505, roughness: 0.3, metalness: 0 }, edges: false },
       { geo: faceUV(new THREE.ShapeGeometry(roundedRect(W - 2.8, H - 2.8, R - 1.4), 12), W - 2.8, H - 2.8), pos: [0, 0, 0.32], matte: 0xEEECE7, real: screenReal, edgeOpacity: 0.8 },
@@ -250,6 +282,8 @@ export class Phone {
       // the glass is see-through: no depth pre-pass, faint in both solid looks, drawn after the faces
       { geo: slab(W, H, 0.7, R), realGeo: bslab(W, H, 0.7, R, 0.3), matte: 0xF7F6F2, matteBase: 0.22, real: glassReal, edgeOpacity: 0.85, glass: true },
       { geo: disc(1.6, 0.8), pos: [0, 72.5, 0.1], matte: 0x0A0A0A, real: { color: 0x050505, roughness: 0.1, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.03 } },
+      // tight, even bezels: the black mask printed under the cover glass, from the chamfer to the display, 0.8 mm all round
+      { realOnly: true, realGeo: flatRing(W - 2 * CH, H - 2 * CH, R - CH, W - 2.8, H - 2.8, R - 1.4, 0.26), real: bezelInk },
     ]);
     // the soft shadow on the paper behind the finished phone (not in the fit; follows the phone's turn)
     this.shadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: 0x000000, alphaMap: shadowTex(), transparent: true, depthTest: false, depthWrite: false, opacity: 0 }));

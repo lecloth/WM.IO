@@ -4,7 +4,7 @@ import argparse, asyncio, json, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browserlock import BrowserLock
-SEGS = {"plate + draw-on 0-0.36": (0.0, 0.36), "morph + handover 0.36-0.9": (0.36, 0.9), "spread + names 0.9-1.42": (0.9, 1.42), "assembly + ground 1.44-2.32": (1.44, 2.32), "real + S2 2.3-2.6": (2.3, 2.6), "YOU + task 2.6-3.0": (2.6, 3.0), "WE + drum 3.0-4.0": (3.0, 4.0), "end + dot dive 4.0-5.3": (4.0, 5.3)}
+SEGS = {"plate + draw-on 0-0.36": (0.0, 0.36), "morph + handover 0.36-0.9": (0.36, 0.9), "spread + names 0.9-1.42": (0.9, 1.42), "assembly + ground 1.44-2.32": (1.44, 2.32), "real + S2 2.3-2.6": (2.3, 2.6), "YOU + task 2.6-3.0": (2.6, 3.0), "WE + drum 3.0-4.0": (3.0, 4.0), "end + dot 4.0-4.75": (4.0, 4.75), "corridor 4.75-6.3": (4.75, 6.3)}
 RUN = """async ([a, b, secs]) => { const e = window.__t2.engine, ya = window.__p1.yAt(a), yb = window.__p1.yAt(b);
   const t = []; let last = performance.now(); const t0 = last;
   await new Promise(res => { function f(now) { t.push(now - last); last = now; const k = (now - t0) / (secs * 1000);

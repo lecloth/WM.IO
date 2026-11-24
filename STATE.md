@@ -17,14 +17,14 @@ Take 1's history below.
 - **How it runs:** style lab first (Wajih points) → one page at a time: build → wording batch → his S23 test →
   geometry check → commit → this file. Stop for Wajih only at style picks, each page's wording, each page's phone review.
 
-### Running order (Part 5 "Lab picks" + "Copy and the team page" + "Page 1 refinements" + "Page 1, round 3", ~36 viewports in total)
+### Running order (Part 5 "Lab picks" + "Copy and the team page" + "Page 1 refinements" + "Page 1, round 3" + "Round 4 picks", ~37 viewports in total)
 
 | # | Page | What happens | Viewports | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | Enter + hook | Beacon → Bell's sheet: eight clean outlines draw on, morph into the X-ray phone → pieces named on leader lines → kinetic line, pieces join, ground back to paper → real (a glossy, live product shot) → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum → "Now, what do you need?" → its "?" dot opens; a corridor of real drawing sheets; page 2 at its end | ~6.3 | **approved ("the core is solid"); fixes done (23 Nov): waiting for Wajih's picks: phone A or a B, corridor set** |
-| 2 | For you | The dot dive lands on it. Five hairline rows; a tap strokes the box, shows the answer, prints onto the slip (its head waits at the bottom and docks), ticks on Android | ~4 with page 3 | **built, waiting for Wajih's phone review, his Send pick and the wording** |
-| 3 | Work slip | Number + date, printed needs, when, name, anything else, send by (5 ways), Send; "or see how we think ↓"; Detail B (a circle) grows into page 4 | (with page 2) | **built, as above** |
-| 4 | Four trips | Security showpiece (~5: lock's A journey → failed pick → B3 → today); AI, websites, apps lighter (~3 each) | ~14 | stub |
+| 1 | Enter + hook | Beacon → Bell's sheet: eight clean outlines draw on, morph into the X-ray phone → pieces named on leader lines → kinetic line, pieces join, ground back to paper → real (phone A, premium: a glossy, live product shot) → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum (detent, 18 ms click, type grid) → "Now, what do you need?" → its "?" dot opens; the corridor: four blueprint frames (left, right, left, right), frame 4 turns into the real iPhone and Galaxy; page 2 at its end | ~7.3 | **round 4 built (24 Nov): waiting for Wajih's phone review** (the "?" dot entry and the four captions are still open) |
+| 2 | For you | The corridor lands on it. Five hairline rows; a tap strokes the box, shows the answer, prints onto the slip (its head waits at the bottom and docks), ticks on Android | ~4 with page 3 | **built, waiting for Wajih's phone review and the wording** (Send: A, picked) |
+| 3 | Work slip | Number + date, printed needs, when, name, anything else, send by (5 ways), Send (design A, Leader); "or see how we think ↓"; Detail B (a circle) grows into page 4 | (with page 2) | **built, as above** |
+| 4 | Four trips | Security showpiece (~5: lock's A journey → failed pick → B3 → today); AI, websites, apps lighter (~3 each); the apps trip uses the real iPhone and Galaxy live in 3D | ~14 | stub (next; not started) |
 | 5 | How we work | The sideways gear train: Wajih's seven steps, each a real gear (model or engraved plate) with its title and real image, the centre one lit; the Break stress test inside "Tested" | ~3 | stub |
 | 6 | Work: the corridor | Four apps + one website, each a doorway with a meaningful entry (our own designs) | ~5 | stub |
 | 7 | Team | Three placeholder cards (image + bio), clearly marked | ~1 | stub |
@@ -37,16 +37,30 @@ Take 1's history below.
   --p2-h so page 3's grid continues page 2's), `slip.js` (state, cleaning + caps, the slip as text), `send.js` (the five ways, link building
   with a 2000-char cap, honeypot + time trap + rate limit for the switched-on sends, booking slots; `SEND_DESIGN` = the Send on the page),
   `callout.js` (Detail B: the circle; page 4 fixed + clipped behind it). CSS: `site/css/page-02.css`, `page-03.css`, `page-03-send.css`
-  (the three Send designs). Contact details + switches: `site/js/settings.js`. Page 4 overlaps page 3's tail (`margin-top: -100lvh`).
-- Send options: `site/dev/send.html?d=A|B|C` (one design at the foot of a filled slip), shown side by side on `site/dev/assets.html`.
+  (Send A, Leader: Wajih's pick; B and C retired in round 4). Contact details + switches: `site/js/settings.js`. Page 4 overlaps page 3's tail (`margin-top: -100lvh`).
+- Send: `site/dev/send.html` (design A at the foot of a filled slip), on `site/dev/assets.html`.
   Build links `site/css/page-*.css` only. Entry: `site/js/main.js` (Take 1's is kept as `site/js/main.take1.js`, not bundled).
-- Page 1 (fixes, 23 Nov): the story is 5.3 screens of scroll in a 6.3-screen section. `site/js/page01/dive.js` (the "?" dot: measured on the
-  rendered glyph on a canvas after fonts load and on every resize; the window, the corridor in WebGL (three.js), its SVG rails and ring; page 2's stage at the end,
-  held by a transform, scaled and clipped by page.js), `dive-sets.js` (the three corridor sets; `PICK` = C, pending), `site/css/page-01-dive.css`;
-  `live.js` (the finished phone follows the pointer on desktop, tilts with deviceorientation on phones, clamped, re-centred over ~4 s; none
-  with reduced motion), `phoneb.js` (version B: a picked model fitted into exactly our box and framing, same light; `MODELS` = B1–B3, files
-  pending Wajih's download). `phone.js`'s real look: physical materials, the studio HDRI (`site/media/hdri/`), bevelled real-look geometry,
-  keys, camera bump, layered lenses, the cover glass's reflection layer, a soft shadow, `tilt()`.
+- Page 1 (round 4, 24 Nov): the story is 6.3 screens of scroll in a 7.3-screen section; the dive and corridor take the last two (p 4.3–6.3).
+  `site/js/page01/dive.js`: the "?" dot (measured on the rendered glyph after fonts load and on every resize), the window, and the corridor
+  in WebGL (three.js): the lens (`lensP`: 50° across the narrower side, at most 66° across), paper walls with the drafting grid (a mipmapped
+  tile), hairline edges, four mounted frames that swing out on their hinges to face you square-on while their drawings draw on (by
+  segment count), rest, then swing back and fade while the camera still rests (so nothing nears the screen edge), captions (DOM, flagged
+  Draft), frame 4's drawn → real beat. Layers: the paper ground (`.p1-dive`, under page 2) < page 2 (scaled into the end frame by a transform)
+  < the WebGL canvas (transparent), ring, dot, captions (`.p1-dive-top`). No clip on page 2 once the window is open (a changing clip made it
+  repaint). `site/js/page01/corridor-drawings.js`: the four drawings as data (segments in draw order, labels), `PHONE_PAIR` (the real phones'
+  measured outlines), `toSVG` (reduced motion). `site/js/apps/booking.js`: our made-up booking app (canvas + its plan). Timeline
+  (q 0..1 over the dive): window open by 0.18; stops [0.26, 0.32], [0.45, 0.51], [0.64, 0.70], [0.83, 0.91]; page 2 home at 1.
+  `live.js` (the finished phone follows the pointer on desktop, tilts with deviceorientation on phones; none with reduced motion).
+  `phone.js`'s real look: physical materials, the studio HDRI, keys, a soft shadow, `tilt()`, and (round 4) the premium bar: flat brushed
+  band between polished 45° chamfers, the bezel mask under the cover glass, cover glass with a clear coat, the back glass set inside the
+  frame, the camera plateau's polished chamfer, cover glass on each lens. The verb drum (page.js): a critically damped detent and an
+  18 ms click as each verb seats; `layoutGrid()` draws the construction grid on the fonts' own metrics (desktop: WE on the lit verb's baseline).
+- **The real phones (round 4, licences UNVERIFIED, local only):** `site/js/phones/realphones.js` (load, normalise to mm, the studio light,
+  our app on the display, `PhonePair` for the asset sheet; copes with missing files). Web copies by `node tools/phones_web.mjs` (logo
+  removed: the iPhone's flattened into its back panel, the S26's wordmark node "Geometry" removed; display picture dropped; textures ≤1024 px
+  WebP; meshopt) into **`site/media/phones-unverified/` (git-ignored)**; the frame-4 still by `python -I tools/phone_stills.py`
+  (`site/dev/phone-stills.html`, orthographic, measured outlines printed). Sources in `tools/sources/phones/` (git-ignored).
+  **Blocker before any hosting: clear both licences or replace both models.**
 - Page 1 (round 3): `site/js/page01/page.js` (the scroll story; texts, the timed ground
   and dress beats, the flies you→YOU and us→WE, the verb drum, the detail callout into page 2, reduced motion), `site/js/page01/phone.js`
   (six-part phone: X-ray hairlines / built / real; tagged X-ray loops for the morph targets; the ethos screen), `site/js/page01/morph.js`
@@ -54,8 +68,9 @@ Take 1's history below.
   options; `PICK` = the one on the page), `site/css/page-01.css` (also the strip, beacon gate, stubs, page 2's callout state).
   Data: `site/media/plates/bell-us186787-paths.json` (`tools/bell_paths.py`), `site/media/materials/*` (`tools/materials.py`).
   Page 2 overlaps page 1's last screen (`margin-top: -100lvh`); during that screen its stage is fixed and clipped to the callout window.
-- Asset sheet: `site/dev/assets.html` + `assets.js`: the finished phone, A (ours) beside the B slots, live, one Turn control; the three corridors
-  (the real dive at phone size, one Dive control); the three Send designs.
+- Asset sheet: `site/dev/assets.html` + `assets.js` (round 4): phone A (raised), live; the two real phones live side by side ("file missing"
+  without them); one Turn control for both; the corridor at phone size (the real dive, one Dive control); Send A. B1–B3, the three historical
+  corridor sets and Sends B and C are gone (`phoneb.js`, `dive-sets.js` deleted; the sheet images stay in `site/media/corridor/`).
 - Enter: `site/js/enter.js` (beacon gate; tap/click/Enter/Space/wheel/swipe all enter; only a pointer tap/click unlocks
   vibration; reduced motion: the same gate, still, enters at once).
   Vibration: `site/js/engine/haptics.js`.
@@ -64,14 +79,32 @@ Take 1's history below.
 - Tests: `tools/p1stops.py` (every named stop + mid-morph, mid-drum, mid-callout), `tools/t2shot.py` (any positions, reduced motion),
   `tools/geom.py` (geometry check, 6 sizes × light/dark × every stop), `tools/axe2.py` (axe + page-1 length), `tools/fps_seg.py` (emulated fps
   per story segment), `tools/phonep1.py` (real phone; its stop list still needs the round-3 stops), `tools/vibcheck.py` (vibration rules),
-  `tools/assetshot.py` (asset sheet). Positions are scroll progress in screens (`__p1.yAt(p)`, 0..5); the named stops are `__p1.stops`
-  (S0 .1, draw .24, morph .6, S1 1.3, kin 1.72, paper 2.2, REAL 2.45, S2 2.5, YOU 2.72, TASK 2.92, WE 3.12, DRUM 3.6, END 4.2, DOT 4.4, DIVE 4.72,
-  LAND 5.12). New (23 Nov, fixes): `tools/dotcheck.py` (the dive starts on the glyph's real dot), `tools/tbcheck.py` (title block at real sizes),
+  `tools/assetshot.py` (asset sheet, also the corridor card at Dive values). Positions are scroll progress in screens (`__p1.yAt(p)`, 0..6.3);
+  the named stops are `__p1.stops` (S0 .1, draw .24, morph .6, S1 1.3, kin 1.72, paper 2.2, REAL 2.45, S2 2.5, YOU 2.72, TASK 2.92, WE 3.12,
+  DRUM 3.6, END 4.2, DOT 4.4, F1 4.88, F2 5.26, F3 5.64, F4 6.06, LAND 6.22). Round 4: `tools/stretch.py` (each frame's on-screen ratio vs its
+  drawing's true ratio, keystone, closest approach to the screen edge, the lens, at 9 sizes); `tools/geom.py` now also checks the facing
+  frames and their captions and runs all 9 sizes. New (23 Nov, fixes): `tools/dotcheck.py` (the dive starts on the glyph's real dot), `tools/tbcheck.py` (title block at real sizes),
   `tools/phoneshot.py` (asset-sheet phones at several turns), `tools/phoneseg.py` (real phone: fps per page-1 segment, gyroscope events),
   `tools/slowwhere.py` (where slow frames happen), `tools/corridor_webp.py` (the corridor sheets). `tools/phonep23.py` now also checks the
   gyroscope, the dive and the finished phone's fps, and shoots the asset sheet on the phone.
 
 ### Take 2 log
+- **Round 4 (24 Nov).** Brief committed (round 4 notes and picks). Built to Part 5 "Round 4 picks" (+ "Round 4 notes" where not overridden).
+  - **Send:** A on the page; B and C off the asset sheet, their CSS and the "pending pick" note gone.
+  - **Verb drum, "both":** a critically damped detent (no overshoot, settles in 0.42 s) and an 18 ms click as each verb seats (Android, after
+    the unlock tap; none after a key or with reduced motion: `tools/vibcheck.py` tap = 1 + 6 snaps of 14 ms + 6 clicks of 18 ms, key = none,
+    reduced = none). The grid: hairlines on the cap line, x-height and baseline of WE and of the lit verb, the ink edges, the verb window with
+    its index marks, equal overshoot on every side, two cap-height dimensions, mono line names; on desktop WE moved onto the lit verb's baseline.
+  - **Phone A, premium bar** (real look only; X-ray and assembly unchanged): see the page-structure note.
+  - **The real phones:** iPhone 18 Pro Max 3.82 → 1.19 MB, S26 Ultra 5.77 → 1.09 MB. Logos: the iPhone's back panel has the logo cut out of it,
+    so removing the logo left an apple-shaped hole; the logo is flattened into the panel instead (its vertex colours dropped, the panel's
+    normals straightened): at most a 3-pixel sliver at the leaf's tip in a contrast-stretched zoom. The S26's wordmark found by rendering
+    each candidate in red: node "Geometry". Measured: iPhone 78.9 × 163.3 mm, corners 13.7 mm; S26 78.1 × 163.0 mm, corners 7.9 mm.
+  - **The corridor:** four frames, left, right, left, right (our own schematics as cyanotype blueprints: a page-load timeline, a which-driver flowchart, a customer's path with the fix drawn in, our booking app's screen on the two phones' true outlines), each swinging out on its hinge to face you square-on while it draws on, one draft line under it; frame 4 turns into the real phones (a still) in one 0.52 s beat. About 2 screens (p 4.3-6.3); page 1 is 7.3 screens. The historical sheet sets are off the page (files kept). The '?' dot entry is unchanged (still open).
+  - **Tests.** Real phone: NOT RUN, the S23 was not on wireless debugging at any point this session (adb devices and adb mdns services empty, checked four times). Emulated (headless Chrome, real GPU): geometry 0 problems in 342 checks (9 sizes x light/dark x 19 stops, including the four facing frames and their captions); stretch (tools/stretch.py): every frame's on-screen ratio = its drawing's true ratio to 0.000%, keystone 0%, at all 9 sizes; lens 50 deg across the narrower side on phones (50 across, 83-91 down), 38-45 deg down and 66 deg across on desktops; closest any frame comes to a screen edge while visible: 16 px on phones, 90-182 px on desktops (frames swing back and fade while the camera still rests); axe 0 at every stop (384x734 light/dark, 1440x900, 2160x1147 dark, reduced motion at both); no console errors (with the git-ignored files hidden: only the expected 404s; frame 4 stays a blueprint, the asset sheet says file missing); dot check worst 0.93 px; length: page 1 7.3 viewports at every size, whole page 36.5 (384x734) / 35.8 (1440x900, 2160x1147); reduced motion 16.0 / 15.5. fps (tools/fps_seg.py): corridor 58.8 fps at 384x734 and 2160x1147, 59 at 2560x1440 (p95 16.7-16.8 ms), every other segment 58.8-60; first pass only: one or two ~100 ms frames when page 2's scaled layer is first rastered (seen last round; repeat passes clean). Page weight: JS bundle +19.7 KB (808,365 -> 828,095 bytes); page 1 no longer loads the five historical sheets (-1.57 MB) and loads the frame-4 still (+38 KB, local only); the two models (2.28 MB) load only on the asset sheet. Screenshots: tools/shots/r4/geom/
+  - **Pending Wajih:** his phone review of round 4; the "?" dot entry (keep or not); the four captions and page 2–3 wording (drafts); the
+    real phones' licences (before any hosting).
+  - Decisions I made alone: the frames swing out on a hinge at their near edge to face you square-on (true proportions by construction) and swing back while the camera rests; the lens caps at 66 deg across; the corridor's WebGL is drawn above page 2 (exact depth, no clip: a changing clip made page 2 repaint at about 33 ms a frame); captions break the lines under them (a tight paper ground, as drawings do); frame 4's still is orthographic and the blueprint uses the phones' measured outlines, so drawn and real match line for line; the iPhone logo is flattened into the back panel (removing it left a hole); the app on the phones is a table-booking concept in the site's own drawing language; the S26 is scaled to 163 mm (its file has no units); WE moves onto the lit verb's baseline on desktop
 - **Fixes after pages 2–3 (23 Nov).** Brief committed (fixes after pages 2–3, glossy live phone). Built to Part 5 "Fixes after pages 2–3".
   - **Dot dive** replaces Detail A: the "?" dot (measured on the glyph; the dive's dot lands within 0.9 CSS px of the glyph's own ink at every
     size, `tools/dotcheck.py`) opens into a window onto a corridor of five real drawing sheets on its walls, hairline rails to page 2's frame;

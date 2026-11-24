@@ -1,10 +1,8 @@
-/* Take 2 · page 1's "?" dot dive: the corridor of real drawing sheets (site/js/page01/dive.js). Shared by page 1 and
-   the asset sheet. Needs the tokens --paper, --ink, --ink-rgb, --grid-major. */
+/* Take 2 · page 1's "?" dot dive and the corridor of four blueprint frames (site/js/page01/dive.js). Shared by page 1
+   and the asset sheet. Needs the tokens --paper, --ink, --ink-rgb, --graphite. */
 .dive__win { position: absolute; inset: 0; overflow: hidden; background-color: var(--paper); }
-/* the corridor itself is WebGL (dive.js): the sheets are textures, so passing them costs no re-raster */
+/* the corridor itself is WebGL (dive.js): walls, edges and frames in one true perspective, so nothing re-rasters */
 .dive__gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.dive__rails { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.dive__rails path { fill: none; stroke: var(--ink); stroke-width: 1px; vector-effect: non-scaling-stroke; opacity: .7; }
 .dive__ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .dive__ring circle { fill: none; stroke: currentColor; stroke-width: 1px; vector-effect: non-scaling-stroke; }
 .dive__dot { position: absolute; left: -10px; top: -10px; width: 20px; height: 20px; border-radius: 50%; background: currentColor; transform-origin: 50% 50%; }
@@ -15,3 +13,15 @@
 .is-open .dive__ring { opacity: 1; }
 .is-open.is-full .dive__ring { opacity: 0; }
 html[data-motion="reduce"] .dive__dot, html[data-motion="reduce"] .dive__ring { transition: none; }
+/* the captions: one plain line under each frame while it faces you (a short timed rise, nothing moves under it after) */
+.dive__caps { position: absolute; inset: 0; pointer-events: none; }
+.dive__cap { position: absolute; left: 0; top: 0; margin: 0; color: var(--ink); font-family: var(--f-display, Newsreader, Georgia, serif); font-size: 20px; line-height: 1.25;
+  opacity: 0; transform: translateY(.3em); transition: opacity .18s linear, transform .3s var(--ease-out, ease-out); }
+.dive__cap.on { opacity: 1; transform: none; transition: opacity .26s linear .06s, transform .5s var(--ease-out, ease-out) .06s; }
+/* where a corridor line runs under the words, it breaks round them (as on a drawing): a tight paper ground, no border */
+.dive__cap-t, .dive__cap .ph { background: var(--paper); box-decoration-break: clone; -webkit-box-decoration-break: clone; padding: 0 3px; }
+.dive__cap .ph { display: inline-block; margin-right: 8px; font-family: var(--f-mono, "DM Mono", monospace); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; vertical-align: 3px; color: var(--graphite, #6B6A66); }
+@media (min-width: 1024px) { .dive__cap { font-size: 1.5rem; } /* where a corridor line runs under the words, it breaks round them (as on a drawing): a tight paper ground, no border */
+.dive__cap-t, .dive__cap .ph { background: var(--paper); box-decoration-break: clone; -webkit-box-decoration-break: clone; padding: 0 3px; }
+.dive__cap .ph { font-size: .5625rem; vertical-align: .25rem; } }
+html[data-motion="reduce"] .dive__cap { transition: none; }

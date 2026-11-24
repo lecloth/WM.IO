@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Send option · Take 2</title>
 <meta name="robots" content="noindex">
-<!-- One Send design (?d=A|B|C) at the foot of a filled work slip, with the page's own stylesheets: shown in a
+<!-- The Send (design A, Leader: Wajih's pick) at the foot of a filled work slip, with the page's own stylesheets: shown in a
      phone-size frame on the asset sheet (assets.html). Taps here never leave the page: they show the link instead. -->
 <link rel="stylesheet" href="../css/site.css">
 <link rel="stylesheet" href="../css/page-02.css">
@@ -49,9 +49,8 @@
 <script type="module">
   import { WAYS } from '../js/page02/send.js';
   import { slip } from '../js/page02/slip.js';
-  const d = (new URLSearchParams(location.search).get('d') || 'A').toUpperCase().replace(/[^ABC]/g, '') || 'A';
   const a = document.querySelector('.send'), said = document.querySelector('.lab-said');
-  a.classList.add(`send--${d.toLowerCase()}`);
+  a.classList.add('send--a');
   slip.setNeed('web', true); slip.setNeed('ai', true); slip.set('when', 'In 1–3 months'); slip.set('name', 'Khalid');
   const paint = () => { const w = WAYS[slip.by](); a.querySelector('.js-send-k').textContent = w.k; a.querySelector('.js-send-w').textContent = w.w; a.querySelector('.js-send-say').textContent = w.say; return w; };
   document.getElementById('slip').addEventListener('change', (e) => { if (e.target.name === 'by') { slip.set('by', e.target.value); paint(); } });

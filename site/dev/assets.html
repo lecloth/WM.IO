@@ -15,42 +15,38 @@
   @font-face { font-family: "Newsreader"; src: url(../fonts/newsreader-var.woff2) format("woff2"); font-weight: 200 800; font-display: swap; }
   @font-face { font-family: "DM Mono"; src: url(../fonts/dm-mono-400.woff2) format("woff2"); font-weight: 400; font-display: swap; }
   @font-face { font-family: "DM Mono"; src: url(../fonts/dm-mono-500.woff2) format("woff2"); font-weight: 500; font-display: swap; }
-  :root { --paper: #F2F0EB; --ink: #121212; --graphite: #6B6A66; --hair: rgba(18,18,18,.55); }
+  :root { --paper: #F2F0EB; --ink: #121212; --ink-rgb: 18, 18, 18; --graphite: #6B6A66; --hair: rgba(18,18,18,.55); --f-display: Newsreader, Georgia, serif; --f-mono: "DM Mono", ui-monospace, monospace;
+    --grid-major: rgba(18,18,18,.085); --ease-out: cubic-bezier(.16, 1, .3, 1); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--paper); color: var(--ink); font-family: Newsreader, Georgia, serif; font-size: 18px; line-height: 1.4; }
-  .mono { font-family: "DM Mono", ui-monospace, monospace; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
-  header { padding: 24px 16px 8px; max-width: 1240px; margin: 0 auto; }
-  header h1 { font-weight: 420; font-size: 34px; line-height: 1.1; letter-spacing: -.015em; margin-top: 8px; }
-  header p { max-width: 60ch; margin-top: 10px; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--f-display); font-size: 18px; line-height: 1.4; }
+  .mono { font-family: var(--f-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+  .ph { display: inline-block; margin-right: 8px; font-family: var(--f-mono); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+  section.block { max-width: 1240px; margin: 0 auto; padding: 24px 16px 40px; border-top: 1px solid var(--hair); }
+  section.block:first-of-type { border-top: 0; }
+  .block h1, .block h2 { font-weight: 420; font-size: 32px; line-height: 1.1; letter-spacing: -.015em; margin-top: 8px; }
+  .block > p { max-width: 62ch; margin-top: 10px; }
   .turn { display: flex; align-items: center; gap: 14px; margin-top: 18px; }
   .turn input { flex: 1; max-width: 360px; accent-color: var(--ink); height: 32px; }
-  .sheet { display: grid; grid-template-columns: repeat(auto-fit, 384px); justify-content: center; gap: 24px; padding: 16px 0 48px; }
-  .card { width: 384px; max-width: 100vw; }
+  .row { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; padding-top: 18px; }
+  .card { width: 384px; max-width: 100%; }
+  .card--wide { width: 768px; }
+  /* two phones side by side: a landscape stage at every width, so on a phone they fill it */
+  .card--wide .card__stage { height: auto; aspect-ratio: 768 / 700; max-height: none; }
   .card__stage { position: relative; height: 734px; max-height: 92vh; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair);
-    background: #E9DDC6 url(../media/paper/miller-1905-paper.webp) 0 0 / 560px repeat; }
+    background: #E9DDC6 url(../media/paper/miller-1905-paper.webp) 0 0 / 560px repeat; overflow: hidden; }
   .card canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
   .card__tag { position: absolute; left: 16px; top: 14px; }
-  .card__pend { position: absolute; right: 16px; top: 14px; color: var(--graphite); }
+  .card__pend { position: absolute; right: 16px; top: 14px; color: var(--graphite); text-align: right; }
   .card__wait { position: absolute; left: 16px; right: 16px; top: 45%; text-align: center; color: var(--graphite); }
-  .card h2 { font-weight: 420; font-size: 26px; line-height: 1.15; padding: 12px 16px 0; }
-  .card p { padding: 4px 16px 0; }
-  .card dl { padding: 10px 16px 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px 12px; }
+  .card h3 { font-weight: 420; font-size: 24px; line-height: 1.15; margin-top: 12px; }
+  .card p { margin-top: 4px; }
+  .card dl { margin-top: 10px; display: grid; grid-template-columns: max-content 1fr; gap: 6px 12px; }
   .card dt { color: var(--graphite); padding-top: 3px; }
   .card dd { font-size: 16px; }
+  .warn { color: var(--ink); border-left: 1px solid var(--ink); padding-left: 10px; margin-top: 10px; }
   a { color: inherit; text-underline-offset: 3px; }
   footer { max-width: 1240px; margin: 0 auto; padding: 0 16px 48px; color: var(--graphite); }
-  @media (max-width: 420px) { .sheet { grid-template-columns: 1fr; gap: 32px; } .card { width: 100%; } }
-  .sends { max-width: 1240px; margin: 0 auto; padding: 8px 16px 48px; border-top: 1px solid var(--hair); }
-  .sends h2 { font-weight: 420; font-size: 30px; line-height: 1.1; margin-top: 18px; }
-  .sends > p { max-width: 62ch; margin-top: 8px; }
-  .sends__row { display: grid; grid-template-columns: repeat(auto-fit, 384px); justify-content: center; gap: 24px; padding-top: 20px; }
-  .sendcard { width: 384px; max-width: calc(100vw - 32px); }
-  .sendcard iframe { display: block; width: 384px; max-width: 100%; height: 734px; max-height: 92vh; border: 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); background: var(--paper); }
-  .sendcard h3 { font-weight: 420; font-size: 24px; line-height: 1.15; margin-top: 12px; }
-  .sendcard p { margin-top: 4px; }
-  .sendcard .mono { color: var(--graphite); margin-top: 6px; }
-  :root { --ink-rgb: 18, 18, 18; --grid-major: rgba(18,18,18,.085); --grid-minor: rgba(18,18,18,.045); }
-  .divecard { width: 384px; max-width: calc(100vw - 32px); }
+  /* the corridor at phone size: the real dive code; page 2's stand-in waits at its end */
   .divecard__stage { position: relative; height: 734px; max-height: 92vh; overflow: hidden; isolation: isolate; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair);
     background-color: var(--paper); background-image: linear-gradient(var(--grid-major) 1px, transparent 1px), linear-gradient(90deg, var(--grid-major) 1px, transparent 1px); background-size: 100px 100px; }
   .divecard__h { position: absolute; left: 16px; right: 16px; top: 64px; font-weight: 420; font-size: 44px; line-height: 1.04; letter-spacing: -.02em; }
@@ -60,35 +56,37 @@
     background-image: linear-gradient(var(--grid-major) 1px, transparent 1px), linear-gradient(90deg, var(--grid-major) 1px, transparent 1px); background-size: 100px 100px; }
   .divecard__end b { display: block; font-weight: 420; font-size: 44px; line-height: 1.04; letter-spacing: -.02em; }
   .divecard__end i { display: block; font-style: normal; font-size: 23px; padding: 18px 0; border-bottom: 1px solid rgba(18,18,18,.55); }
-  .divecard h3 { font-weight: 420; font-size: 24px; line-height: 1.15; margin-top: 12px; }
-  .divecard ol { margin: 6px 0 0 18px; font-size: 15px; } .divecard ol a { color: inherit; }
-  @media (max-width: 420px) { .sends__row { grid-template-columns: 1fr; } .sendcard { width: 100%; max-width: none; } .sendcard iframe { width: 100%; } }
+  .sendcard iframe { display: block; width: 384px; max-width: 100%; height: 734px; max-height: 92vh; border: 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); background: var(--paper); }
+  @media (max-width: 420px) { .card, .card--wide { width: 100%; } }
 </style>
 </head>
 <body>
-  <header>
-    <p class="mono">Asset sheet · Take 2 · page 1 · the finished phone</p>
-    <h1>The finished phone: ours (A) or a free model (B)</h1>
-    <p>Same paper, same studio light, phone size. Move the pointer, or tilt your phone: they follow. Page 1 uses A until you pick. If a B is picked, our six pieces hand over to it in the same place and size.</p>
+  <section class="block" aria-labelledby="h-a">
+    <p class="mono">Asset sheet · Take 2 · round 4</p>
+    <h1 id="h-a">Phone A, raised to the premium bar</h1>
+    <p>Page 1’s own six-piece phone, assembled, in its product-shot look: a machined titanium band with a polished chamfer front and back (one clean highlight line), tight even bezels, cover glass with a clear coat, a layered camera plateau. Studio light, filmic tone mapping. Move the pointer, or tilt your phone.</p>
     <label class="turn mono">Turn <input id="turn" type="range" min="-100" max="100" value="11" aria-label="Turn the phones"></label>
-  </header>
-  <main class="sheet" id="sheet"></main>
-  <section class="sends dives" aria-labelledby="dives-h">
-    <p class="mono" style="margin-top:18px">Asset sheet · page 1 → 2 · the “?” dot dive</p>
-    <h2 id="dives-h">Three corridors of real drawing sheets</h2>
-    <p>The dot of “Now, what do you need?” opens into a window, and we pass down a corridor of five real sheets to page 2. Phone size, the real dive. Drag Dive to travel. Page 1 uses C until you pick.</p>
-    <label class="turn mono">Dive <input id="dive" type="range" min="0" max="1000" value="420" aria-label="Travel through the dive"></label>
-    <div class="sends__row" id="dives"></div>
+    <div class="row" id="rowA"></div>
   </section>
-  <section class="sends" aria-labelledby="sends-h">
-    <p class="mono" style="margin-top:18px">Asset sheet · page 3 · the Send</p>
-    <h2 id="sends-h">Three Sends, in the drawing language</h2>
-    <p>The foot of a filled work slip, at phone size, live: tap a way to send, then the Send (here it only shows the link it would open). Page 3 uses A until you pick.</p>
-    <div class="sends__row">
-      <article class="sendcard"><iframe src="send.html?d=A" title="Send option A, Leader" loading="lazy"></iframe><h3>A · Leader</h3><p>“Send” with a drafting arrow run out to the slip’s edge, like a leader line.</p><p class="mono">On page 3 · pending pick</p></article>
-      <article class="sendcard"><iframe src="send.html?d=B" title="Send option B, Cell" loading="lazy"></iframe><h3>B · Cell</h3><p>The slip’s last cell, framed by its own hairlines and corner marks, like a title block.</p></article>
-      <article class="sendcard"><iframe src="send.html?d=C" title="Send option C, Bubble" loading="lazy"></iframe><h3>C · Bubble</h3><p>A drawing’s section bubble: the word above the cut line, the arrowhead below it.</p></article>
-    </div>
+  <section class="block" aria-labelledby="h-r">
+    <p class="mono">Asset sheet · the real phones · for the corridor’s frame 4, later page 4</p>
+    <h2 id="h-r">iPhone 18 Pro Max and Galaxy S26 Ultra, live</h2>
+    <p>The two market leaders, side by side, running our booking app (a concept), in the same studio light as phone A. Logos removed from both backs. The Turn control above turns them too; on your phone, tilt it.</p>
+    <p class="warn mono">Licences unverified · local only · must be cleared or replaced before any hosting</p>
+    <div class="row" id="rowR"></div>
+  </section>
+  <section class="block" aria-labelledby="h-c">
+    <p class="mono">Asset sheet · page 1 → 2 · the corridor</p>
+    <h2 id="h-c">The corridor: four blueprint frames</h2>
+    <p>The real dive at phone size: the “?” dot opens, four frames swing out from the walls and draw themselves on (left, right, left, right), one line under each, frame 4 turns into the real phones, page 2 at the end. Drag Dive to walk it.</p>
+    <label class="turn mono">Dive <input id="dive" type="range" min="0" max="1000" value="290" aria-label="Walk the corridor"></label>
+    <div class="row" id="rowC"></div>
+  </section>
+  <section class="block" aria-labelledby="h-s">
+    <p class="mono">Asset sheet · page 3 · the Send</p>
+    <h2 id="h-s">Send, design A (Leader)</h2>
+    <p>The foot of a filled work slip, at phone size, live: tap a way to send, then Send (here it only shows the link it would open).</p>
+    <div class="row"><article class="card sendcard"><iframe src="send.html" title="Send, design A, Leader" loading="lazy"></iframe><h3>A · Leader</h3><p>“Send” with a drafting arrow run out to the slip’s edge, like a leader line.</p><p class="mono" style="color:var(--graphite);margin-top:6px">On page 3 · Wajih’s pick</p></article></div>
   </section>
   <footer class="mono">Sources and licences: CREDITS.md</footer>
 <script type="module" src="assets.js"></script>
