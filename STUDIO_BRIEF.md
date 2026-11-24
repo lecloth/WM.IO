@@ -791,3 +791,40 @@ three.js; Lenis with light settings.
   up one size (the chat's call).
 - **Still open:** the "?" dot entry; the drafts (the four corridor lines, page 2–3 wording, "Next: your slip"); the
   two phone licences (local only until cleared or replaced).
+
+### Round 6 (24 Nov, Wajih after round 5). Overrides the above where they differ.
+- **Two grounds only: white drafting paper and the blue blueprint** (dark mode: near-black and the blue). Wajih: the
+  ground changes make sense only between the white and the blue architect's sheet. The paper today is `#F2F0EB`, a
+  warm off-white that reads yellowish on his S23: it becomes a **neutral white with a hint of cool** (not pure white,
+  which glares). Every warm tone goes: no aged paper, no cream tints, no warm shadows; everything that uses the
+  paper colour follows (phone screens, the booking app, the slip).
+  - **Hallway: look A (architect's model, white card) stays; B and C are removed** (code, materials, asset sheet).
+  - **Ground: clean paper only; grounds B and C are removed.**
+- **The grid becomes the layout system** (Wajih: placing design elements off the grid "defeats the purpose").
+  - One grid for the whole site. The unit is sized per screen so the width holds a whole number of cells (the chat's
+    suggestion: 20 cells on phones, 19.2 px each on the S23; a darker line every 5 cells; on wider screens pick the
+    cell count so a cell stays about 20–24 px).
+  - **Every edge sits on a line:** margins, the title block, the top strip, page 2's rows, checkboxes, frames, the
+    phones, images, the beacon (centred on an intersection).
+  - **Every text baseline sits on a line** (or a half line for small text); type sizes and line heights in grid
+    units.
+  - The blue blueprint uses the same grid with the same origin, so lines run straight through the white → blue
+    change.
+  - The hallway (look A) carries the same grid on its walls and floor in perspective; frames hang on its lines.
+  - Moving things (WE, the verb drum, the frames) come to rest on the grid.
+  - **An automatic on-grid check** measures every edge and every baseline against the grid at all 9 sizes and
+    reports anything off by more than half a pixel; any deliberate exception is listed with its reason.
+- **Museum labels under the frames** (Wajih: "like a museum painting's explanation and story", "make it obvious").
+  Under each frame, aligned to the frame's left edge and the grid: the title (big, serif), a small mono line with the
+  drawing's name, and one line of story. **No box** (the ethos bans boxed labels): a hairline above the label
+  instead. Readable at a glance on the S23 (story text at least 16 px). Frames rest long enough to read them; report
+  any change in length. Draft wording (the chat's drafts, flagged for Wajih):
+  1. **Optimizing.** FIG. 01 · PAGE LOAD. "Your page loads one thing after another. We make them load side by side,
+     so your customers wait less."
+  2. **The right algorithm, written for you.** FIG. 02 · WHICH DRIVER? "The rules you follow in your head, turned
+     into steps a machine follows the same way every time."
+  3. **Understanding your customers.** FIG. 03 · A CUSTOMER'S PATH. "We follow your customers through your app,
+     find where they give up, and fix that step."
+  4. **Apps for iPhone and Android.** FIG. 04 · BOOKING APP. "One app, built for both phones your customers carry."
+- **Unchanged:** WE and the verb drum (they now settle on the grid); frame 4's rotating phones; page 2's call to
+  action A (Wajih's pick still open); the "?" dot (open); the phone licences (local only).
