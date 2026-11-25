@@ -24,7 +24,7 @@ Take 1's history below.
 | 1 | Page 1 | Beacon → Bell's ink on our grid → X-ray phone, six named pieces (each leader on its own piece) → kinetic line, real phone → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum → **"Now, how can we serve you?"** (signed off, round 8) | ~5.9 (with 2: 10.54) | **round 8 built (25 Nov): waiting for Wajih's review** |
 | 2 | The hallway | The grid folds into it; it dresses up as you walk; "We design backwards…" (draft); scrolling is walking; five drawings hang on hinges and swing out 40° as you pass, one hairline frame each (1 property app's enquiry path, 2 the property app's listing screen in its design layers, 3 delivery tracker, 4 website loading, 5 booking app on the real iPhone 18 and S26), frosted labels under them turning with them (story lines drafts); the shut door, its lock at eye level; the walk ends with the lock filling the screen | 4.9 (inside page 1's section) | **round 8b built** |
 | 3 | Into the lock | Starts on the hallway's last frame (the lock in X-ray); into the keyhole past the pins; out to the same lock on every crossing point of a grid in every direction; they unlock in a wave and fold back into one. Two lines (drafts) | 4.6 (overlapping page 1's last screen) | **round 9 built** |
-| 4 | How we work | Short lines in Wajih's voice; the wrong key fails, then the pick, a 2D cutaway turning to face you | ~4 | stub (round 10) |
+| 4 | How we work | The lock turns side-on into a 2D cutaway; "First, the obvious key." / "It fails. Most people stop here." / "We don't." (drafts); the wrong key fails; seven pins picked in the drum's order, each verb on a leader, the newest meaning under the lock on a leader; it turns on Delivered | 4 (inside page 3's section) | **round 10 built** |
 | 5 | Lighter trips | AI, websites, apps | ~9 | stub |
 | 6 | Team | Three placeholder cards (nothing invented) | ~1 | stub |
 | 7 | The final room | "What's the task list? Tick everything that fits." (Wajih's, signed off, no flag), then one slip on plain paper: the six needs as small boxes, the details, "Send it by", Send (a box with a 3 px hard ink shadow; fields at half), CTA A (pick open), every way to reach us (switches in settings.js) | ~3.1 | **round 8b built** (needs, answers, slip wording: drafts) |
@@ -247,7 +247,22 @@ Take 1's history below.
   motion: one still frame (the lattice mid-wave) and both lines in the flow. `main.js` `__t2stops` adds L00..L10.
 - **Tools:** `tools/pshot.py` (shots at positions in a later page: `--api __p3 --ss ...` or `--sel #id`; `--reduced`).
 
+### Round 10 structure notes (25 Nov, stage 10)
+- **Page 4 lives in page 3's section** (one scene, no seam): `#page-03` is 960lvh (4.6 + 4 screens of scroll + its own),
+  page 4's marker `span#page-04.p3l__mark` at 460lvh. `lockworld.js` `renderTurn(t)`: the X-ray lock turns side-on (face
+  to the right) while the camera moves so it lands on the cutaway's housing (`setTurnTarget`), and fades as the
+  cutaway draws in. `window.__p4.yAt(t)`; `__t2stops` adds W00..W14.
+- **`site/js/page04/cutaway.js`:** `createCutaway(host)`: an SVG schematic of the Cutaway Lock's pin stack (housing,
+  plug, keyway, shear line, key pins, drivers, springs) with seven chambers, one per verb (the real lock has five; said
+  in the page's sr text); timeline `T` (turn, draw, the three lines, key in / lift / shake / out, tool, pick, turn).
+  The verbs and meanings are read from page 1's `.p1-steps` (signed off, unflagged). Verbs: vertical mono labels on
+  leaders over their pins once set; the newest verb and meaning under the lock on a leader (`.p4m`). Reduced motion:
+  the finished cutaway (all set, turned) and the three lines.
+
 ### Take 2 log
+- **Round 10 (25 Nov, stage 10, how we work).** Built as above. Checks: typecheck 0 machine failures (page 4's 15
+  stops + L10 + P05; 384 x 734, 1440 x 900, 2160 x 1147; light and dark; 102 frames). S23: 60 fps in both segments on
+  both passes (worst frame 17.1 ms); 8 real swipes, no pull-back; 0 errors; reduced motion shots. Shots: `tools/shots/r10/`.
 - **Round 9 (25 Nov, stage 9, into the lock).** Built as above. Lines (drafts): "Your business runs on thousands of
   locks." / "We make sure only the right keys turn them."
   - **Checks:** typecheck 0 machine failures (page 3's 11 stops, the hallway's DOOR and LOCK, P04; 384 x 734, 1440 x 900,

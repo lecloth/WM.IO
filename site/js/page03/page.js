@@ -5,12 +5,15 @@
 // Reduced motion: one still frame of the lattice and both lines, in the flow.
 import { createLockWorld, LEN, BEATS } from './lockworld.js';
 import { grid } from '../engine/grid.js';
+import { createCutaway, LEN4, T as T4 } from '../page04/cutaway.js';
 
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 
 export function initPage03(engine) {
   const sec = document.getElementById('page-03'); if (!sec) return null;
-  const stage = sec.querySelector('.p3l__stage'), canvas = sec.querySelector('.p3l__gl'), lines = [...sec.querySelectorAll('.p3l__line')];
+  const stage = sec.querySelector('.p3l__stage'), canvas = sec.querySelector('.p3l__gl'), lines = [...sec.querySelectorAll('.p3l__line:not(.p4l)')], lines4 = [...sec.querySelectorAll('.p4l')];
+  const cut = createCutaway(sec.querySelector('.p4w'));
+  const ALL = LEN + LEN4;
   const reduced = engine.reduced;
   const world = createLockWorld(canvas, { reduced });
   const geom = () => {
@@ -21,14 +24,22 @@ export function initPage03(engine) {
     world.layout(stage.clientWidth || innerWidth, stage.clientHeight || innerHeight, geom());
     const u = grid.u, desktop = innerWidth >= 1024, N = Math.round(innerWidth / u), g = geom();
     const rT = Math.ceil((g.strip + u) / u - 1e-6);
-    lines.forEach((l) => { l.style.left = `${(desktop ? 5 : 1) * u}px`; l.style.top = `${(rT + (desktop ? 2 : 1)) * u}px`; l.style.width = `${(desktop ? Math.min(26, N - 10) : N - 2) * u}px`; });
+    [...lines, ...lines4].forEach((l) => { l.style.left = `${(desktop ? 5 : 1) * u}px`; l.style.top = `${(rT + (desktop ? 2 : 1)) * u}px`; l.style.width = `${(desktop ? Math.min(26, N - 10) : N - 2) * u}px`; });
+    // page 4's cutaway: as wide as the screen allows (phones) or about half of it (desktop), whole cells, its shear line a
+    // little above the middle; the verbs above it, the newest meaning under it
+    const W = stage.clientWidth || innerWidth, H = stage.clientHeight || innerHeight;
+    const width = desktop ? Math.min(54, Math.round(N * 0.6)) * u : (N - 2) * u, left = Math.round((W - width) / 2 / u) * u, kk = width / 108;
+    const cy = Math.round((H / 2 - 2 * u) / u) * u;
+    world.setTurnTarget({ x: left + 43.5 * kk, y: cy - 3 * kk, w: 85 * kk });   // the cutaway's housing: its middle and length on screen
+    cut.layout(W, H, { u, width, left, cy, labelBase: cy - 21 * kk - 2 * u, blockTop: Math.round((cy + 26 * kk + 1.5 * u) / u) * u, blockLeft: left, blockWidth: desktop ? Math.min(30, N - 10) * u : width });
   };
 
   if (reduced) {
     // one still: the lattice mid-wave
     sec.classList.add('is-static');
     world.load().then(() => { layout(); world.render(3.35); });
-    lines.forEach((l) => l.classList.add('on'));
+    lines.forEach((l) => l.classList.add('on')); lines4.forEach((l) => l.classList.add('on'));
+    requestAnimationFrame(() => { layout(); cut.update(LEN4); });
     addEventListener('resize', () => { layout(); world.render(3.35); });
     return { reduced: true };
   }
@@ -42,17 +53,20 @@ export function initPage03(engine) {
     paint();
     if (S !== target) raf = requestAnimationFrame(frame);
   }
-  let out = null;
+  let out = null, out4 = null;
   function paint() {
     if (!live) return;
     out = world.render(S);
     lines.forEach((l, i) => { const [a, b] = i ? BEATS.lineB : BEATS.lineA; l.classList.toggle('on', S >= a && S <= b); });
+    const t = S - LEN;
+    out4 = cut.update(Math.max(0, t));
+    lines4.forEach((l, i) => { const [a, b] = [T4.line1, T4.line2, T4.line3][i]; l.classList.toggle('on', t >= a && t <= b); });
   }
   // the stage shows from the moment the section's top reaches the screen's top until its end has scrolled by
   function onScroll() {
     const r = sec.getBoundingClientRect(), on = r.top <= 0.5 && r.bottom > 0;
     if (on !== live) { live = on; stage.classList.toggle('is-on', on); }
-    target = clamp(-r.top / innerHeight, 0, LEN);
+    target = clamp(-r.top / innerHeight, 0, ALL);
     if (live && !raf) { last = performance.now(); raf = requestAnimationFrame(frame); }
   }
   addEventListener('scroll', onScroll, { passive: true });
@@ -66,7 +80,8 @@ export function initPage03(engine) {
 
   // for the tools: positions in page 3 (screens), its scene, its drawn shapes for the type check
   const top = () => { let y = 0; for (let n = sec; n; n = n.offsetParent) y += n.offsetTop; return y; };
-  window.__p3 = { world, len: LEN, beats: BEATS, yAt: (s) => top() + s * innerHeight, S: () => S, settled: () => !raf && Math.abs(target - S) < 1e-4, out: () => out };
+  window.__p3 = { world, cut, len: LEN, beats: BEATS, yAt: (s) => top() + s * innerHeight, S: () => S, settled: () => !raf && Math.abs(target - S) < 1e-4, out: () => out, out4: () => out4 };
+  window.__p4 = { yAt: (t) => top() + (LEN + t) * innerHeight, len: LEN4, T: T4 };
   const prev = window.__drawn;
   window.__drawn = () => {
     const D = prev ? prev() : { lines: [], shapes: [], texts: [] };

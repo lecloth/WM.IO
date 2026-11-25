@@ -100,6 +100,7 @@ window.__t2stops = () => {
   else if (document.getElementById('page-01')) out.push({ name: 'P1', y: 0 });
   if (engine.reduced) { const h = document.querySelector('.p1-hall'); if (h) out.push({ name: 'HALL', y: docTop(h) }); }
   if (window.__p3 && !engine.reduced) [0, 0.1, 0.7, 1.2, 1.5, 2.2, 2.6, 3.1, 3.5, 4.0, 4.6].forEach((s, i) => out.push({ name: `L${String(i).padStart(2, '0')}`, y: Math.round(window.__p3.yAt(s)) }));
+  if (window.__p4 && !engine.reduced) [0, 0.4, 0.75, 1.1, 1.5, 1.85, 2.2, 2.5, 2.7, 2.9, 3.1, 3.3, 3.5, 3.75, 3.98].forEach((t, i) => out.push({ name: `W${String(i).padStart(2, '0')}`, y: Math.round(window.__p4.yAt(t)) }));
   ['page-03', 'page-04', 'page-05', 'page-06'].forEach((id) => { const el = document.getElementById(id); if (el) out.push({ name: id.replace('page-', 'P'), y: docTop(el) }); });
   const room = document.getElementById('page-07'), slipEl = document.getElementById('slip-when'), spec = document.getElementById('page-08');
   if (room) { const y = docTop(room); out.push({ name: 'ROOM', y }); const rows = room.querySelector('.p2-rows'); if (rows) out.push({ name: 'ROWS', y: docTop(rows) - Math.round(innerHeight * 0.3) }); }

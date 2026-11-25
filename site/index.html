@@ -79,7 +79,7 @@
   <link rel="stylesheet" href="css/page-01-dive.css?v=e80d84cc88">
   <link rel="stylesheet" href="css/page-01.css?v=1b23f07ef8">
   <link rel="stylesheet" href="css/page-02.css?v=e418050ed9">
-  <link rel="stylesheet" href="css/page-03-lock.css?v=1131f53217">
+  <link rel="stylesheet" href="css/page-03-lock.css?v=e0f8c11f57">
   <link rel="stylesheet" href="css/page-03-send.css?v=09357da7d8">
   <link rel="stylesheet" href="css/page-03.css?v=25c8941b4a">
   <script defer src="vendor/gsap.min.js" onload="__wm.done('gsap')"></script>
@@ -101,7 +101,7 @@
         else { var c = el.cloneNode(); el.parentNode.insertBefore(c, el.nextSibling); el.remove(); } }, 150 * (n + 1));
     }, true);
   </script>
-  <script type="module" src="dist/main.js?v=4275f8aa70" onerror="(function(s){var n=+(s.dataset.r||0);if(n<5){var c=document.createElement('script');c.type='module';c.src='dist/main.js?r='+(n+1);c.dataset.r=n+1;c.onerror=s.onerror;setTimeout(function(){document.head.appendChild(c)},200*(n+1));}})(this)"></script>
+  <script type="module" src="dist/main.js?v=5336ac9a4e" onerror="(function(s){var n=+(s.dataset.r||0);if(n<5){var c=document.createElement('script');c.type='module';c.src='dist/main.js?r='+(n+1);c.dataset.r=n+1;c.onerror=s.onerror;setTimeout(function(){document.head.appendChild(c)},200*(n+1));}})(this)"></script>
 </head>
 <body>
 
@@ -222,13 +222,18 @@
         <canvas class="p3l__gl" aria-hidden="true"></canvas>
         <div class="p3l__line"><p class="p3l__f ph mono gt gt-h">Draft</p><p class="p3l__t display gt" data-draft>Your business runs on thousands of locks.</p></div>
         <div class="p3l__line"><p class="p3l__f ph mono gt gt-h">Draft</p><p class="p3l__t display gt" data-draft>We make sure only the right keys turn them.</p></div>
+        <!-- page 4, how we work (stage 10): the cutaway (site/js/page04/cutaway.js) and its three lines (drafts) -->
+        <div class="p4w" aria-hidden="true"></div>
+        <div class="p3l__line p4l"><p class="p3l__f ph mono gt gt-h">Draft</p><p class="p3l__t display gt" data-draft>First, the obvious key.</p></div>
+        <div class="p3l__line p4l"><p class="p3l__f ph mono gt gt-h">Draft</p><p class="p3l__t display gt" data-draft>It fails. Most people stop here.</p></div>
+        <div class="p3l__line p4l"><p class="p3l__f ph mono gt gt-h">Draft</p><p class="p3l__t display gt" data-draft>We don’t.</p></div>
       </div>
+      <!-- PAGE 04: how we work starts here (a marker; the strip and the title block read it) -->
+      <span id="page-04" class="p3l__mark" data-sheet="04" data-title="How we work" data-drawn="Engineering" data-checked="Design" data-approved="Strategy" aria-hidden="true"></span>
+      <div class="sr-only"><h2>How we work</h2><p>The same lock, drawn as a cutaway: the obvious key goes in and fails. Then the lock is picked, one pin at a time, seven pins for the seven steps: understood, imagined, drew, tested, felt, refined, delivered. On the last pin it turns. (The real lock has five pins; the drawing gives it seven, one per step.)</p></div>
     </section>
     <!-- PAGES 03-06 (round 8 running order): stubs at their planned length, so the order and the scroll length show.
          Page 3 is the security showpiece (round 9), page 4 how we work (round 10). The hallway's door leads here. -->
-    <section id="page-04" class="stub" data-sheet="04" data-title="How we work" data-drawn="Engineering" data-checked="Design" data-approved="Strategy" style="--vh: 4">
-      <div class="stub__in"><p class="stub__no display gt" aria-hidden="true">04</p><h2 class="stub__name display gt">How we work</h2><p class="stub__line gt" data-draft><span class="ph">Draft</span>Coming: the wrong key fails, then the lock is picked, in a turning cutaway.</p><p class="stub__tag mono gt">Stub · about 4 screens</p></div>
-    </section>
     <section id="page-05" class="stub" data-sheet="05" data-title="Lighter trips" data-drawn="Design" data-checked="Engineering" data-approved="Strategy" style="--vh: 9">
       <div class="stub__in"><p class="stub__no display gt" aria-hidden="true">05</p><h2 class="stub__name display gt">Lighter trips</h2><p class="stub__line gt" data-draft><span class="ph">Draft</span>Coming: AI, websites and apps, one short trip each.</p><p class="stub__tag mono gt">Stub · about 9 screens</p></div>
     </section>

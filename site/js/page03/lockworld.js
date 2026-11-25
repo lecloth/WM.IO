@@ -130,6 +130,8 @@ export function createLockWorld(canvas, { base = '', reduced = false } = {}) {
   /** s: screens of scroll into the page (0 .. LEN) */
   function render(s) {
     lastS = s;
+    if (s > LEN) return renderTurn(s - LEN);
+    if (lock) { lock.root.rotation.y = 0; lock.setOpacity(1); }
     const c = cameraAt(s);
     camera.position.set(0, c.y, c.z); camera.rotation.set(c.pitch, 0, 0); camera.updateMatrixWorld();
     renderer.clear(); renderer.render(bgScene, camera);
@@ -150,6 +152,24 @@ export function createLockWorld(canvas, { base = '', reduced = false } = {}) {
     renderer.render(scene, camera);
     return { s, ready: true, cam: c, lockBox: screenBox() };
   }
+  /** page 4: the one lock turns side-on and gives way to the 2D cutaway (cutaway.js) */
+  function renderTurn(t) {
+    // the camera moves so the side-on lock lands on the cutaway's housing (its middle and its length)
+    const e = ease(span(t, 0, 0.7)), tg = turnTarget;
+    let cx = 0, cy = 0, cz = Dend;
+    // side-on, its face on the right (where the cutaway's key goes in), its middle 40 mm behind the face
+    if (tg) { const Dt = 1.12 * 80 * P / tg.w; cz = lerp(Dend, Dt, e); cx = lerp(0, -40 * e - (tg.x - W / 2) * Dt / P, e); cy = lerp(0, (tg.y - H / 2) * Dt / P, e); }
+    camera.position.set(cx, cy, cz); camera.rotation.set(0, 0, 0); camera.updateMatrixWorld();
+    renderer.clear(); renderer.render(bgScene, camera);
+    if (!lock) return { s: LEN + t, ready: false };
+    lock.groups.plug.rotation.z = 0;
+    lock.root.rotation.y = (Math.PI / 2) * ease(span(t, 0, 0.7));
+    const a = 1 - span(t, 0.45, 0.8);
+    lock.setOpacity(a);
+    if (lattice) lattice.mesh.visible = false;
+    if (a > 0.002) renderer.render(scene, camera);
+    return { s: LEN + t, ready: true, lockBox: a > 0.05 ? screenBox() : null };
+  }
   const v = new THREE.Vector3();
   function screenBox() {
     if (!lock) return null;
@@ -160,5 +180,6 @@ export function createLockWorld(canvas, { base = '', reduced = false } = {}) {
     }
     return { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) };
   }
-  return { load, layout, render, screenBox, renderer, camera, stats: () => ({ instances: lattice?.count, segmentsPerLock: lattice?.segs, drawCalls: renderer.info.render.calls }), last: () => lastS };
+  let turnTarget = null;
+  return { setTurnTarget: (t) => { turnTarget = t; }, load, layout, render, screenBox, renderer, camera, stats: () => ({ instances: lattice?.count, segmentsPerLock: lattice?.segs, drawCalls: renderer.info.render.calls }), last: () => lastS };
 }
