@@ -35,7 +35,7 @@ async def main(a):
             async def shot(name):
                 r = await c.call("Page.captureScreenshot", {"format": "jpeg", "quality": 75})
                 f = out / f"{name}.jpg"; f.write_bytes(base64.b64decode(r["data"])); print("shot", f, flush=True)
-            await c.call("Page.navigate", {"url": "http://127.0.0.1:8109/?first"})
+            await c.call("Page.navigate", {"url": "http://127.0.0.1:8109/?first&nosnap"})
             for _ in range(80):
                 await asyncio.sleep(0.25)
                 try:

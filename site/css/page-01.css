@@ -49,7 +49,7 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
 @media (min-width: 1024px) { .ph { font-size: .4375rem; } }
 
 /* ---------- page 1 (the design ethos: hairlines, ink, blue only for the drawing stage) ---------- */
-.p1 { position: relative; height: 840vh; height: 840lvh; }
+.p1 { position: relative; height: 1024vh; height: 1024lvh; }   /* round 7: 9.24 screens of scroll (page.js SCROLL) + one */
 /* the paper ground and its grid (the grid's origin is the stage's top left = the screen's, while page 1 plays) */
 .p1__stage { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; isolation: isolate;
   background-color: var(--paper); background-image: var(--grid-img); background-size: var(--grid-size); }
@@ -57,14 +57,15 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
 /* the blue blueprint: the same grid, the same origin, so its lines run straight through the white -> blue change.
    It changes in one short timed beat (page.js), so a paused frame is always all blue or all paper */
 .p1__bg--blue { background-color: var(--prus);
-  background-image: linear-gradient(rgba(236,241,246,.11) 1px, transparent 1px), linear-gradient(90deg, rgba(236,241,246,.11) 1px, transparent 1px),
-    linear-gradient(rgba(236,241,246,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(236,241,246,.055) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(236,241,246,.11) var(--px1, 1px), transparent var(--px1, 1px)), linear-gradient(90deg, rgba(236,241,246,.11) var(--px1, 1px), transparent var(--px1, 1px)),
+    linear-gradient(rgba(236,241,246,.055) var(--px1, 1px), transparent var(--px1, 1px)), linear-gradient(90deg, rgba(236,241,246,.055) var(--px1, 1px), transparent var(--px1, 1px));
   background-size: var(--grid-size); }
 
-/* Bell's plate: a sheet lying on the page, its edges on the grid; the scan keeps its true proportions inside it */
-.p1__plate { position: absolute; margin: 0; will-change: opacity; background: #FFFFFF; box-shadow: 0 0 0 1px rgba(var(--ink-rgb), .06), 0 1px 2px rgba(0, 0, 0, .05), 0 8px 22px -10px rgba(0, 0, 0, .16); }
-/* dark: the plate prints as a negative (site.css); a hairline edge keeps the black sheet apart from the black page */
-:root[data-theme="dark"] .p1__plate { background: #000000; box-shadow: 0 0 0 1px rgba(var(--ink-rgb), .16); }
+/* Bell's drawing straight on the page (round 7): no sheet, no paper, no shadow. The scan prints by multiply, so its white
+   paper vanishes and only its ink lies on our paper and grid (dark: the scan is inverted, site.css, and prints by
+   screen, so its black vanishes). page.js sets it on the grid by two of its own long lines. */
+.p1__plate { position: absolute; margin: 0; background: none; box-shadow: none; mix-blend-mode: multiply; }
+:root[data-theme="dark"] .p1__plate { background: none; box-shadow: none; mix-blend-mode: screen; }
 .p1__plate img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .p1__credit { position: absolute; margin: 0; color: var(--graphite); white-space: nowrap; line-height: .5rem; }
 
@@ -114,7 +115,7 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
 .p1-we { position: absolute; z-index: 5; left: var(--gut); right: var(--gut); top: 3rem; visibility: hidden; color: var(--ink); }
 .p1-we.on { visibility: visible; }
 .p1-we__word { font-size: 6.5rem; line-height: 6rem; letter-spacing: -.02em; font-weight: 560; }
-.p1-drum { position: relative; height: 8rem; margin-top: 1rem; perspective: 700px; perspective-origin: 50% 50%; opacity: 0; transition: opacity .3s var(--ease-out); }
+.p1-drum { position: relative; height: 8rem; margin-top: 2rem; perspective: 700px; perspective-origin: 50% 50%; opacity: 0; transition: opacity .3s var(--ease-out); }
 .p1-we.on .p1-drum { opacity: 1; transition-delay: .25s; }
 .p1-drum__wheel { position: absolute; left: 0; right: 0; top: 50%; height: 0; transform-style: preserve-3d; translate: 0 var(--seat, 0px); }
 .p1-verb { position: absolute; left: 0; top: 0; font-family: var(--f-display); font-size: 2.5rem; line-height: 3rem; letter-spacing: -.015em; height: 3rem; margin-top: -1.5rem;
@@ -137,6 +138,8 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
 .p1-grid .d { stroke: rgba(var(--ink-rgb), .45); }
 .p1-grid text { font-family: var(--f-mono); font-size: .4375rem; letter-spacing: .08em; fill: var(--graphite); }
 .p1-grid text.r { dominant-baseline: middle; }
+.p1-grid text.m { fill: var(--graphite); opacity: .7; text-anchor: middle; }   /* round 7: the live measurements, faint, along their dimension lines */
+.p1-grid text.e { text-anchor: end; }
 @media (min-width: 1024px) { .p1-grid text { font-size: .375rem; } }
 .p1-we:not(.is-static) .p1-steps { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
@@ -164,12 +167,12 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
   .p1-lbl { font-size: .5rem; }
   /* WE | the drum, then the meaning under the drum; the drum's centre on the line nearest the screen's middle */
   /* (short windows: high enough that the meaning ends a cell above the title block) */
-  .p1-we { right: var(--gut); top: max(4rem, min(calc(round(nearest, 50dvh, 1rem) - 6rem), calc(round(down, 100dvh - 2rem, 1rem) - 24rem))); display: grid; grid-template-columns: var(--we-w, max-content) 1fr;
+  .p1-we { right: var(--gut); top: max(4rem, min(calc(round(nearest, 50dvh, 1rem) - 6rem), calc(round(down, 100dvh - 2rem, 1rem) - 25rem))); display: grid; grid-template-columns: var(--we-w, max-content) 1fr;
     grid-template-rows: auto auto; column-gap: 3rem; align-items: start; }
   .p1-we__word { grid-row: 1; font-size: 9.5rem; line-height: 9rem; }
   .p1-drum { grid-row: 1; height: 12rem; margin-top: 0; perspective: 60rem; }
   .p1-verb { font-size: 4rem; line-height: 5rem; height: 5rem; margin-top: -2.5rem; }
-  .p1-mean { grid-row: 2; grid-column: 2; margin-top: 1rem; min-height: 6rem; max-width: 22rem; }
+  .p1-mean { grid-row: 2; grid-column: 2; margin-top: 3rem; min-height: 6rem; max-width: 22rem; }   /* round 7: a cell clear of the drum's faintest verbs */
   .p1-mean p { font-size: 1.25rem; line-height: 1.5rem; }
 }
 @media (min-width: 1800px) and (min-height: 1000px) {
@@ -180,7 +183,7 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
   .p1-kin { font-size: 3rem; line-height: 4rem; }
   .p1-fly, .p1-we__word { font-size: 11.5rem; line-height: 11rem; }
   .p1-drum { height: 14rem; }
-  .p1-we { top: max(4rem, min(calc(round(nearest, 50dvh, 1rem) - 7rem), calc(round(down, 100dvh - 2rem, 1rem) - 26rem))); }
+  .p1-we { top: max(4rem, min(calc(round(nearest, 50dvh, 1rem) - 7rem), calc(round(down, 100dvh - 2rem, 1rem) - 27rem))); }
   .p1-verb { font-size: 5rem; line-height: 6rem; height: 6rem; margin-top: -3rem; }
   .p1-mean { max-width: 26rem; }
   .p1-mean p { font-size: 1.5rem; line-height: 2rem; --q: 1rem; }

@@ -5,7 +5,7 @@
 //       line (draft wording) that takes the visitor down to page 3's work slip.
 //   B · Beacon as a gate: page 2 opens on the line and the beacon alone; tapping the beacon reveals the rows (scrolling
 //       on reveals them too, so nothing ever stops the scroll).
-//   C · No beacon: the big line, and the five boxes pulse once, one after another, when the rows first come into view.
+//   C · No beacon: the big line, and the six boxes pulse once, one after another, when the rows first come into view.
 // Reduced motion: no pulse, a still ring. Nothing else looks clickable.
 // THE SWITCH: `CTA_DESIGN` is the design on the page; `?cta=B` previews another (for review only, nothing is stored).
 export const CTA_DESIGN = 'A';
@@ -28,7 +28,7 @@ export function initCta(stage, { design = ctaPick(), reduced = false, onNext = (
     beacon = document.createElement(design === 'B' ? 'button' : 'span');
     beacon.className = `p2-beacon${reduced ? ' is-still' : ''}`;
     beacon.innerHTML = '<i class="p2-beacon__ring"></i><i class="p2-beacon__ring p2-beacon__ring--2"></i><i class="p2-beacon__dot"></i>';
-    if (design === 'B') { beacon.type = 'button'; beacon.setAttribute('aria-label', 'Show the five choices'); beacon.setAttribute('aria-expanded', 'false'); beacon.setAttribute('aria-controls', rows.id || (rows.id = 'p2-rows')); }
+    if (design === 'B') { beacon.type = 'button'; beacon.setAttribute('aria-label', 'Show the six choices'); beacon.setAttribute('aria-expanded', 'false'); beacon.setAttribute('aria-controls', rows.id || (rows.id = 'p2-rows')); }
     else beacon.setAttribute('aria-hidden', 'true');
     stage.append(beacon);
   }
@@ -77,7 +77,7 @@ export function initCta(stage, { design = ctaPick(), reduced = false, onNext = (
     const line = stage.querySelector('.p2__sub'); if (line) io.observe(line);
   }
   if (design === 'C' && !reduced) {
-    // the five boxes pulse once, in order, the first time the rows are on screen after the landing
+    // the six boxes pulse once, in order, the first time the rows are on screen after the landing
     marks.forEach((m, i) => { const p = document.createElement('i'); p.className = 'p2-pulse'; p.style.setProperty('--i', i); m.after(p); });
     let done = false;
     const io = new IntersectionObserver((es) => es.forEach((en) => {

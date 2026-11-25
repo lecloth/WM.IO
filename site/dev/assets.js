@@ -1,63 +1,91 @@
-// Asset sheet, round 6: (1) the hallway (look A, the only one now: looks B and C and grounds B and C are gone), the real
-// dive at phone size with its museum labels, walked by one Dive control; (2) page 2's three calls to action (cta.html,
-// one frame each; Wajih's pick is still open); (3) phone A, live; (4) the two real phones, live (git-ignored files:
-// "file missing" without them); (5) Send A. A Print switch shows everything light or dark. One cell = 19.2 px (a
-// 384 px card holds 20, as the S23 does).
+// Asset sheet, round 7: a contents list; (1) the three ways into the hallway, (2) the three treatments of its drawings,
+// each the real hallway at phone size; (3) page 2's three calls to action, on this sheet (page 2's own markup, read
+// from the built page, three times); (4) phone A, live; (5) the two real phones, live (git-ignored files: "file
+// missing" without them); (6) Send A. A Print switch shows everything light or dark. One cell = 19.2 px.
 import { Phone } from '../js/page01/phone.js';
 import { PhonePair, PHONES } from '../js/phones/realphones.js';
 import { createLive } from '../js/page01/live.js';
-import { createDive, measureDot } from '../js/page01/dive.js';
-import { LOOKS, HALL } from '../js/page01/hall-looks.js';
-import { CTAS, CTA_DESIGN } from '../js/page02/cta.js';
+import { createDive, TRANSITIONS, TREATMENTS, TRANSITION, TREATMENT, STOPS } from '../js/page01/dive.js';
+import { CTAS, CTA_DESIGN, initCta } from '../js/page02/cta.js';
 import { LIGHT } from '../js/engine/tokens.js';
+import { snapHeights, seatText } from '../js/engine/grid.js';
 
 const params = new URLSearchParams(location.search);
 const $ = (s) => document.querySelector(s);
 const isDark = () => document.documentElement.dataset.theme === 'dark';
 const onPage = (k, pick) => (k === pick ? '<p class="mono on-page" style="margin-top:6px">On the page · until Wajih picks</p>' : '<p class="mono" style="color:var(--graphite);margin-top:6px">Candidate</p>');
-const U = 19.2;
 
-// ---------- (1) the hallway: look A ----------
-const rowC = $('#rowC'), diveIn = $('#dive');
-const dives = [HALL].map((key) => {
+// ---------- (1) the ways in and (2) the drawings: each card is the real hallway at phone size ----------
+function hallCard(host, { tag, title, note, pick, key, transition, treatment }) {
   const el = document.createElement('article'); el.className = 'card divecard';
-  el.innerHTML = `<div class="divecard__stage"><h3 class="divecard__h">Now, what do you need?</h3>
+  el.innerHTML = `<div class="divecard__stage"><div class="divecard__page"><h3 class="divecard__h">Now, what do you need?</h3></div>
       <div class="p1-dive on"></div>
-      <div class="divecard__end"><b>What do you need?</b><i>A website</i><i>An app</i><i>My systems are a mess</i><i>AI working for me</i><i>Keep it secure</i></div>
-      <div class="p1-dive-top on"></div><span class="card__tag mono" style="z-index:6">${key}</span></div>
-    <h3>${key} · ${LOOKS[key].name}</h3><p>White card walls and floor like an architect’s scale model, open to the light above; real soft shadows; thin black metal frames. The site’s grid printed on the card, continued from the hallway’s mouth; the edges as hairlines.</p>
-    <dl class="mono"><dt>Card</dt><dd><a href="https://ambientcg.com/view?id=Paper001" rel="noopener">ambientCG Paper 001</a>, CC0 (printed in grey)</dd><dt>Light</dt><dd><a href="https://polyhaven.com/a/studio_small_09" rel="noopener">Poly Haven Studio Small 09</a>, CC0, + a key light</dd></dl>
-    <p class="mono on-page" style="margin-top:6px">On the page</p>`;
-  rowC.append(el);
-  const stage = el.querySelector('.divecard__stage'), end = el.querySelector('.divecard__end'), h = el.querySelector('.divecard__h');
-  const dive = createDive(el.querySelector('.p1-dive'), el.querySelector('.p1-dive-top'), { base: '../' });
-  const draw = () => {
-    const r = dive.render(+diveIn.value / 1000); if (!r) return;
-    end.style.transformOrigin = r.origin;
-    end.style.transform = `scale(${r.scale.toFixed(5)}) translate(${r.ox.toFixed(2)}px, ${r.oy.toFixed(2)}px)`;
-    end.style.clipPath = r.clip ? `circle(${(r.r / r.scale).toFixed(2)}px at ${(r.vx - r.ox).toFixed(2)}px ${(r.vy - r.oy).toFixed(2)}px)` : '';
+      <div class="divecard__end"><b>What do you need?</b><i>A website</i><i>An app</i><i>My systems are a mess</i><i>AI working for me</i><i>Keep it secure</i><i>A look that fits my business</i></div>
+      <div class="p1-dive-top on"></div><span class="card__tag mono" style="z-index:6">${tag}</span></div>
+    <h3>${tag} · ${title}</h3><p>${note}</p>${onPage(key, pick)}`;
+  host.append(el);
+  const stage = el.querySelector('.divecard__stage'), page = el.querySelector('.divecard__page'), end = el.querySelector('.divecard__end'), h = el.querySelector('.divecard__h');
+  const dive = createDive(el.querySelector('.p1-dive'), el.querySelector('.p1-dive-top'), { base: '../', transition, treatment });
+  let q = 0;
+  const draw = (v = q) => {
+    q = v; const r = dive.render(q); if (!r) return;
+    end.style.visibility = r.page2 ? '' : 'hidden';
+    end.style.transformOrigin = r.origin; end.style.transform = `scale(${r.scale.toFixed(5)})`;
+    page.style.transformOrigin = r.stage ? r.stage.origin : ''; page.style.transform = r.stage ? r.stage.transform : '';
+    h.style.opacity = q > 0.004 ? '0' : '1';
   };
-  const layout = () => { const sr = stage.getBoundingClientRect(), m = measureDot(h); if (!m) return; dive.layout(sr.width, sr.height, { x: m.x - sr.left, y: m.y - sr.top, r: m.r }, { u: sr.width / 20, strip: 2 * sr.width / 20, noTitleblock: true }); draw(); };
+  const layout = () => { const sr = stage.getBoundingClientRect(), u = sr.width / 20; dive.layout(sr.width, sr.height, { u, strip: 2 * u, noTitleblock: true, cutY: Math.ceil((h.getBoundingClientRect().bottom - sr.top) / u) * u + u }); draw(); };
   dive.onBeat(() => draw());
-  return { key, dive, draw, layout, ready: document.fonts.ready.then(() => dive.load('../')).then(() => { layout(); return dive.loadPhones('../'); }).then(() => draw()) };
-});
-const drawDives = () => dives.forEach((d) => d.draw());
-diveIn.addEventListener('input', drawDives);
-addEventListener('resize', () => dives.forEach((d) => d.layout()));
-
-// ---------- (2) page 2's call to action: three demos ----------
-const CTA_NOTES = {
-  A: 'The beacon pulses on the first box until the first tap, then glides to “Next: your slip”, which takes you down to the work slip.',
-  B: 'Page 2 opens on the line and the beacon alone; tapping the beacon reveals the rows (scrolling on reveals them too, so nothing stops the scroll).',
-  C: 'No beacon: the big line, and the five boxes pulse once, one after another, when the rows come into view.',
+  return { dive, draw, layout, ready: document.fonts.ready.then(() => dive.load('../')).then(() => { layout(); return dive.loadPhones('../'); }).then(() => draw()) };
+}
+const TR_NOTES = {
+  A: 'The page’s flat grid is the hallway’s end wall at first; it recedes and the walls, floor and ceiling unfold behind it, on the same grid.',
+  B: 'A hairline along the grid line under the question; the hallway opens from it, up and down.',
+  C: 'The page pushes into one grid square in the middle of the screen; the square opens into the hallway.',
 };
-const rowT = $('#rowT');
-const ctaFrames = Object.keys(CTAS).map((k) => {
-  const el = document.createElement('article'); el.className = 'card frame384';
-  el.innerHTML = `<iframe title="Page 2, call to action ${k}: ${CTAS[k]}"></iframe><h3>${k} · ${CTAS[k]}</h3><p>${CTA_NOTES[k]}</p>${onPage(k, CTA_DESIGN)}`;
-  rowT.append(el); return { k, f: el.querySelector('iframe') };
-});
-const loadCtas = () => ctaFrames.forEach(({ k, f }) => { f.src = `cta.html?cta=${k}${isDark() ? '&theme=dark' : ''}`; });
+const TM_NOTES = {
+  A: 'Printed straight on the wall (blue, white lines, its edges on the wall’s grid). At each rest the view turns to face it squarely.',
+  B: 'A bare blueprint sheet, no frame, swings off the wall on its hinge to face you (round 4’s move).',
+  C: 'A bare sheet pinned flat on the wall, a hairline shadow under it; the view turns to face it, as in A.',
+};
+const trCards = Object.keys(TRANSITIONS).map((k) => hallCard($('#rowTr'), { tag: k, title: TRANSITIONS[k], note: TR_NOTES[k], pick: TRANSITION, key: k, transition: k, treatment: TREATMENT }));
+const tmCards = Object.keys(TREATMENTS).map((k) => hallCard($('#rowC'), { tag: k, title: TREATMENTS[k], note: TM_NOTES[k], pick: TREATMENT, key: k, transition: TRANSITION, treatment: k }));
+const diveIn = $('#dive');
+const drawDives = () => tmCards.forEach((c) => c.draw(+diveIn.value / 1000));
+diveIn.addEventListener('input', drawDives);
+// play the way in: back to the start, then into the opening line (each transition is its own timed beat)
+$('#play').addEventListener('click', () => { trCards.forEach((c) => c.draw(0)); requestAnimationFrame(() => trCards.forEach((c) => c.draw(0.1))); });
+addEventListener('resize', () => [...trCards, ...tmCards].forEach((c) => c.layout()));
+const dives = [...trCards, ...tmCards];
+
+// ---------- (3) page 2's calls to action, on this sheet ----------
+const CTA_NOTES = {
+  A: 'The beacon pulses on the first box until the first tap, then glides to “Next: your slip”.',
+  B: 'Page 2 opens on the line and the beacon alone; tapping the beacon reveals the rows (scrolling on does too).',
+  C: 'No beacon: the big line, and the boxes pulse once, one after another, when the rows come into view.',
+};
+(async () => {
+  let html = '';
+  for (let n = 0; n < 5 && !html; n++) { try { html = await (await fetch(n ? `../index.html?r=${n}` : '../index.html')).text(); } catch (e) { await new Promise((r) => setTimeout(r, 200 * (n + 1))); } }
+  const src = new DOMParser().parseFromString(html, 'text/html').getElementById('page-02');
+  Object.keys(CTAS).forEach((k) => {
+    const el = document.createElement('article'); el.className = 'card';
+    el.innerHTML = `<div class="ctacard__stage"></div><h3>${k} · ${CTAS[k]}</h3><p>${CTA_NOTES[k]}</p>${onPage(k, CTA_DESIGN)}`;
+    $('#rowT').append(el);
+    const sec = document.importNode(src, true);
+    // its own ids (three copies on one sheet)
+    sec.removeAttribute('id'); sec.querySelectorAll('[id]').forEach((n) => { n.id = `${n.id}-${k}`; });
+    sec.querySelectorAll('[aria-describedby]').forEach((n) => n.setAttribute('aria-describedby', `${n.getAttribute('aria-describedby')}-${k}`));
+    sec.querySelectorAll('[aria-labelledby]').forEach((n) => n.setAttribute('aria-labelledby', `${n.getAttribute('aria-labelledby')}-${k}`));
+    sec.querySelectorAll('.rv').forEach((n) => n.classList.add('on'));
+    el.querySelector('.ctacard__stage').append(sec);
+    const stage = sec.querySelector('.p2__stage');
+    sec.querySelectorAll('.p2-row').forEach((row) => row.querySelector('input').addEventListener('change', (e) => { row.classList.toggle('is-on', e.target.checked); }));
+    initCta(stage, { design: k, reduced: matchMedia('(prefers-reduced-motion: reduce)').matches, onNext: () => {} });
+    sec.querySelectorAll('.p2-ans__t').forEach((a) => seatText(a, 0.5));
+  });
+  snapHeights(document);
+})();
 
 // ---------- (3) phone A, (4) the real phones ----------
 const turn = $('#turn');
@@ -108,7 +136,7 @@ function paintTheme() {
   $('#print-v').textContent = isDark() ? 'Dark' : 'Light';
   dives.forEach((d) => { d.dive.theme(); d.draw(); });
   const ink = isDark() ? 0xEDEEF0 : 0x121212; phoneA.setInk(ink);
-  loadCtas(); draw();
+  draw();
 }
 $('#print').addEventListener('click', () => {
   const d = !isDark(); if (d) document.documentElement.dataset.theme = 'dark'; else delete document.documentElement.dataset.theme;
@@ -117,8 +145,8 @@ $('#print').addEventListener('click', () => {
 });
 
 document.fonts.ready.then(() => { phoneA.refreshScreen(LIGHT.ink, LIGHT.paper, LIGHT.graphite); pair.app.userData.redraw(); draw(); });
-const ready = () => Promise.all([phoneA.ready, pair.ready, ...dives.map((d) => d.ready)]).then(() => { phoneA.warm(); draw(); drawDives(); return { missing, phones: dives.map((d) => d.dive.phones()) }; });
+const ready = () => Promise.all([phoneA.ready, pair.ready, ...dives.map((d) => d.ready)]).then(() => { phoneA.warm(); draw(); drawDives(); trCards.forEach((c) => c.draw(0.1)); return { missing, phones: dives.map((d) => d.dive.phones()) }; });
 const divesReady = () => Promise.all(dives.map((d) => d.ready));
-loadCtas(); $('#print-v').textContent = isDark() ? 'Dark' : 'Light';
+$('#print-v').textContent = isDark() ? 'Dark' : 'Light';
 ready(); draw();
-window.__assets = { ready, draw, turn, live, dive: diveIn, drawDives, divesReady, pair, phoneA, dives, diveApi: dives[0].dive, paintTheme };
+window.__assets = { ready, draw, turn, live, dive: diveIn, drawDives, divesReady, pair, phoneA, dives, trCards, tmCards, diveApi: tmCards[0].dive, paintTheme, STOPS };

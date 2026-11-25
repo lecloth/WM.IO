@@ -9,7 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browserlock import BrowserLock
 
-SIZES = "384x734@2.8125,390x844@3,1280x720@1,1366x768@1,1440x900@1,1920x1080@1,2160x1147@1.333,1440x765@2,2560x1440@1"   # WxH@devicePixelRatio; under 1024 wide = a phone
+SIZES = "384x734@2.8125,390x844@3,1280x720@1,1366x768@1,1440x900@1,1920x1080@1,2160x1147@1.333,1440x765@2,2560x1440@1,360x800@3,375x667@2,393x852@3,412x915@2.625,430x932@3"   # round 7: + the five most common phones
 SETTLE = {"WE": 1100, "DRUM": 1100, "END": 1100, "kin": 1000, "paper": 900, "TASK": 900, "REAL": 1000, "DOT": 700, "F1": 1000, "F2": 1000, "F3": 1000, "F4": 1200, "LAND": 900}
 GOTO_JS = """async (p) => { const e = window.__t2.engine; const y = window.__p1.yAt(p); if (e.lenis) e.lenis.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y);
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); e.ScrollTrigger.update(); return scrollY; }"""
@@ -106,7 +106,7 @@ async def main(a):
                 if theme == "dark": await ctx.add_init_script("try { localStorage.setItem('wm:theme', 'dark'); } catch (e) {}")
                 page = await ctx.new_page(); errs = []
                 page.on("pageerror", lambda e: errs.append(str(e)[:200])); page.on("console", lambda m: m.type == "error" and errs.append(m.text[:200]))
-                await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
+                await page.goto("http://127.0.0.1:8109/?first&nosnap", wait_until="load")
                 await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
                 await page.keyboard.press("Enter")
                 await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)

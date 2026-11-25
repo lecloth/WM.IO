@@ -19,9 +19,15 @@ export const grid = {
 export function baselineOf(el) {
   const p = document.createElement('span');
   p.style.cssText = 'display:inline-block;width:0;height:0;margin:0;padding:0;border:0;vertical-align:baseline';
-  const first = el.firstChild;
-  el.insertBefore(p, first);
+  // right before the first letter (as the element's first child it can stay at the end of the line above, where a
+  // line wraps just before this element: round 7, the "us" in "YOU gave us the task.")
+  const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => (n.textContent.trim() ? 1 : 3) });
+  const t = w.nextNode();
+  if (t) t.parentNode.insertBefore(p, t); else el.insertBefore(p, el.firstChild);
+  // the words stand settled while measured (a word waiting to rise is offset by its reveal)
+  el.classList.add('is-measuring');
   const y = p.getBoundingClientRect().top;
+  el.classList.remove('is-measuring');
   p.remove();
   return y;
 }

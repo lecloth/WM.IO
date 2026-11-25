@@ -67,7 +67,7 @@ export function initCalloutB(engine) {
     const r = lerp(r0, R, g);
     const key = `${y.toFixed(1)}|${r.toFixed(1)}`; if (key === now) return; now = key;
     p4In.style.clipPath = `circle(${r.toFixed(1)}px at ${cx.toFixed(1)}px ${y.toFixed(1)}px)`;
-    circ.setAttribute('cx', cx.toFixed(1)); circ.setAttribute('cy', y.toFixed(1)); circ.setAttribute('r', Math.max(0, r - 0.5).toFixed(1));
+    circ.setAttribute('cx', cx.toFixed(1)); circ.setAttribute('cy', y.toFixed(1)); circ.setAttribute('r', Math.max(0, r - 0.5).toFixed(1)); circ.style.setProperty('--c', `${(2 * Math.PI * Math.max(0, r - 0.5) + 2).toFixed(1)}px`);
     circ.style.opacity = String(1 - span(g, 0.7, 1));
     // the label: a leader from the circle's edge (up and out), a shelf, the mono words on it
     const a = lab ? lab.a : -Math.PI / 4;

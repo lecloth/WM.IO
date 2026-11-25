@@ -11,9 +11,9 @@ Take 1's history below.
   Port 8109 only (Take 1 keeps 8108; never 8000, 8100–8102, 8105–8108).
 - **Commits:** "studio take 2: <short title>"; the final commit gets tag `take-2`.
 - **Phone:** Galaxy S23 Ultra (SM-S918N) over wireless debugging, `adb reverse tcp:8109 tcp:8109` (the site never leaves 127.0.0.1).
-- **Every geometry check runs at 9 sizes** (Part 5 "Fixes after pages 2–3"): 384×734 @2.8125, 390×844 @3, 1280×720, 1366×768, 1440×900,
-  1920×1080, **2160×1147 @1.333 (Wajih's laptop window: 1440×900 at 200% Windows scaling, Chrome at 67%)**, 1440×765 @2, 2560×1440;
-  light and dark; desktop windows with their scrollbar (as real Chrome on Windows).
+- **Every geometry check runs at 14 sizes** (round 7: the 9 of Part 5 "Fixes after pages 2–3" + the five most common phones): 384×734 @2.8125, 390×844 @3, 1280×720, 1366×768, 1440×900,
+  1920×1080, **2160×1147 @1.333 (Wajih's laptop window: 1440×900 at 200% Windows scaling, Chrome at 67%)**, 1440×765 @2, 2560×1440,
+  360×800 @3, 375×667 @2, 393×852 @3, 412×915 @2.625, 430×932 @3; light and dark; desktop windows with their scrollbar (as real Chrome on Windows).
 - **How it runs:** style lab first (Wajih points) → one page at a time: build → wording batch → his S23 test →
   geometry check → commit → this file. Stop for Wajih only at style picks, each page's wording, each page's phone review.
 
@@ -21,7 +21,7 @@ Take 1's history below.
 
 | # | Page | What happens | Viewports | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | Enter + hook | Beacon → Bell's sheet (a sheet on the page): eight clean outlines draw on, morph into the X-ray phone → pieces named on leader lines → kinetic line, pieces join, ground back to paper → real (phone A, premium: a glossy, live product shot) → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum (detent, 18 ms click, type grid) → "Now, what do you need?" → its "?" dot opens; the hallway (look A, architect's model, the site's grid on its card): four framed blueprints (left, right, left, right), each resting with its museum label; frame 4 turns into the real iPhone and Galaxy, live; page 2 at its end. Two grounds: white paper and the blue blueprint | ~8.4 | **round 6 built (24 Nov): waiting for Wajih's phone review** (the four story lines are drafts; the "?" dot entry and page 2's CTA pick still open) |
+| 1 | Enter + hook | Beacon → Bell's sheet (paperless: his ink on our grid): eight clean outlines draw on, morph into the X-ray phone → pieces named on leader lines → kinetic line, pieces join, ground back to paper → real (phone A) → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum (detent, double-pulse click, live measurements) → "Now, what do you need?" → the way in (A: the grid folds into the hallway; B cut, C square on the sheet) → "We design backwards…" → five frameless drawings in backwards order (1 where customers give up, 2 design, 3 your way of deciding, 4 speed, 5 every phone: the real iPhone and Galaxy turn by themselves), each with its label on a frosted backing; the end wall (the page's own paper) gives way to page 2. Soft snap on touch | 10.24 | **round 7 built (25 Nov): waiting for Wajih's review** (the opening line, the five story lines and page 2's sixth row are drafts; transition and treatment picks open) |
 | 2 | For you | The hallway lands on it. The big line "Tap everything that fits."; the beacon on the first box, then on "Next: your slip" (CTA A). Five hairline rows; a tap strokes the box, shows the answer, prints onto the slip (its head waits at the bottom and docks), ticks on Android | ~4 with page 3 | **built, waiting for Wajih's CTA pick, phone review and the wording** (Send: A, picked) |
 | 3 | Work slip | Number + date, printed needs, when, name, anything else, send by (5 ways), Send (design A, Leader); "or see how we think ↓"; Detail B (a circle) grows into page 4 | (with page 2) | **built, as above** |
 | 4 | Four trips | Security showpiece (~5: lock's A journey → failed pick → B3 → today); AI, websites, apps lighter (~3 each); the apps trip uses the real iPhone and Galaxy live in 3D | ~14 | stub (next; not started) |
@@ -122,7 +122,73 @@ Take 1's history below.
   `tools/slowwhere.py` (where slow frames happen), `tools/corridor_webp.py` (the corridor sheets). `tools/phonep23.py` now also checks the
   gyroscope, the dive and the finished phone's fps, and shoots the asset sheet on the phone.
 
+### Round 7 structure notes (25 Nov)
+- **Page 1 is 9.24 screens of scroll** (`SCROLL = 4.94 + DIVE`, `DIVE = 4.3`): the story to 4.94, the hallway 4.94-9.24. Stops
+  (`__p1.stops`): S0 .1, draw .24, morph .6, S1 1.3, kin 1.72, paper 2.2, REAL 2.45, S2 2.5, YOU 2.72, TASK 2.92, WE 3.12, DRUM 3.9,
+  END 4.8, TR 5.05, OPEN 5.49, F1 6.26, F2 6.83, F3 7.4, F4 7.97, F5 8.62, LAND 9.16.
+- **`site/js/page01/dive.js` (rewritten):** `TRANSITION = 'A'` (A the grid folds into the hallway, B a clean cut along one grid line,
+  C into one square; `?tr=`), `TREATMENT = 'A'` (A printed on the wall: the camera turns to face it squarely at rest; B a bare sheet
+  that swings; C a pinned sheet with a hairline shadow; `?hall=`). The way in is timed (1.1 s, `TR_MS`) once its scroll point is
+  crossed. Walls, floor and ceiling are card planes with the grid continued from the mouth; the end wall is the page's paper + grid
+  (in device px), opaque until frame 5 has gone, then page 2 shows. Drawings take at most 60% of the screen's height (capped by
+  width; phones: label under, desktop: 16 cells beside on the inner side); visible only while faced; `linewidth = round(dpr)`.
+  Frame 5's turn plays by itself (3.6 s, `TURN_MS`) once the frame settles. Labels: DOM, `.on` at rest, on a frosted backing
+  (`page-01-dive.css`: blur 10 px, paper veil, no border, edges fade over a cell). The opening line is `OPENING` in corridor-drawings.js.
+- **`corridor-drawings.js`:** five drawings in backwards order (`FRAMES`): customers' path, `design()` (who they are → what they must
+  feel → requirements → palette and type; method only), the decision flow, speed, the two phones. Each head reads `FIG. 0n / 05`;
+  dimension lines carry live measurements (faint grey mono).
+- **Soft snap:** touch: CSS `scroll-snap-type: y mandatory` with `scroll-snap-stop: always` on invisible markers (`.p1-snaps`, built
+  from `SCENES()`), pages 2-3 snap to their tops; desktop: after 160 ms of wheel quiet, Lenis eases to the nearest scene within
+  0.45 screens. `?nosnap` turns it off for tests (every tool uses it except the snap test). Lenis's scroll is rounded to device px.
+- **Grid unit (round 7):** the head script prefers a cell count where the window's device width divides evenly (cell 20-24 CSS px,
+  a multiple of 5 preferred), else `5 * round(W / 110)`; phones 20 cells. `--px1` = one device pixel's worth of hairline
+  (`round(dpr) / dpr`). At Wajih's laptop: 90 cells of 32 device px.
+- **Page 2:** sixth row "A look that fits my business" (`data-id="look"`, draft), carried onto the slip. Tick and circle strokes use
+  plain dash lengths (no `pathLength`, which left half a tick on the S23). The slip's questions snap to whole cells (`g-snap`).
+- **Asset sheet:** a contents list with jump links; the three transitions (Play) and three treatments (Walk) live at phone size; CTA
+  demos A/B/C on the sheet itself.
+- **New tools:** `tools/overlap.py` (text against text and drawings at every stop, with clipping and occlusion; the drawings' share
+  of the screen at rest), `tools/flicker.py` (real Chrome at dpr 1.333, frame-by-frame captures; the "before" is an
+  older commit's built site staged by hand at `site/r6old/`, served at `/r6old/`, deleted again before committing), `tools/phone_r7.py` (S23: fps per segment, frame 5's turn, frosted labels, page 2's empty boxes, reduced motion),
+  `tools/phone_snap.py` (S23: real swipes, where the page rests), `tools/evalp.py` (one-off probes), `tools/r7phones.sh` (its phone half), `t2shot.py --pre` (park first: warms the hallway), `tools/r7final.sh` (the whole
+  emulated pass). `gridcheck.py`, `stretch.py`, `geom.py` run all 14 sizes.
+
 ### Take 2 log
+- **Round 7 (25 Nov).** Brief committed (round 7, `f6220e0`). Built to Part 5 "Round 7" (rounds 4-6 where not changed).
+  - **Built:** the opening line; the "?" dot entry removed and three ways in (A on the page); five frames in backwards order with the
+    new design drawing; frames, mouldings, mats and glass removed, three treatments (A on the page); drawings ~60% of the height on
+    laptops; frosted labels; page 2 hidden behind the end wall until frame 5 has gone; frame 5's timed turn; Bell's sheet paperless
+    (his ink lines on our grid lines, still morphs); page 2's sixth row; soft snap; drum: two more cells of room, a double-pulse
+    click (20-50-20 ms); live measurements; no "keep scrolling" cue existed (none added).
+  - **Fixed:** half tick in empty boxes on the S23 (pathLength + dash); "us" overlapping at YOU → WE (the baseline probe sat on the
+    previous line at a wrap); strip/title block showing 02 on page 1 after scrolling back (the page tracker now uses layout tops);
+    the strip is opaque; the drum's faint verbs a cell clear of the meaning; X-ray names a quarter cell clear of every piece.
+  - **Flicker (real Chrome, Wajih's 200% + 67%, dpr 1.333, 2160 x 1063):** the hallway walk, 36 frame pairs: round 6 335,894
+    pixels changing by more than 24 grey levels between still frames, current 18,379 (-94.5%; more than 48 levels: 300,478 →
+    5,502, -98%). Sources: the frames' mouldings and glass (gone), page 2's scaled preview text (now hidden until the end),
+    fractional scroll (rounded to device px), hairlines thinner than a device pixel (`--px1`), cells that were not whole device
+    px, canvas sizes. Page 1's drum and page 2: 0 both before and after. Files: `tools/shots/r7/flicker/`.
+  - **S23 (384 x 719 @2.8125, Chrome 158):** every page-1 segment 58.3-60 fps on both passes (p95 16.8 ms everywhere; the way in
+    58.3 first time, 60 second); frame 5's timed turn 60 fps; frosted labels 60 fps; page 2 60. The real phones now load in the
+    first 300 ms pause from the WE scene on (at the way in they stalled it: 45 fps, one 700 ms frame; loaded on WE's first frame
+    they stalled that: 54.7 fps, one 216 ms frame), and at once when the hallway starts. Snap with real swipes: eight short flicks each moved
+    exactly one scene, nothing skipped, every rest within 0.2 px of its scene; a long slow drag moves two; flicks back one each.
+    "Remove animations" is **off** (animator, transition and window scales 1.0; Chrome's reduced-motion false). Page 2's empty
+    boxes: dash fully off (400 / 400). On-grid on the phone: 0 off.
+  - **`?nosnap` was broken** until the end of this round: an edit script wrote `\b` as a backspace character into the head
+    script's regex, so every emulated phone-size check ran with the touch snap on (programmatic scrolls pulled to the nearest
+    scene). Fixed (the template had the only stray control character in the project); all phone sizes re-run (`tools/r7phones.sh`);
+    desktop results were unaffected (the wheel snap needs real wheel input).
+  - **Emulated, 14 sizes:** on-grid 0 off the grid (> 0.5 px) at all 14 light and 4 + 2 dark (worst 0.182 px; 9,695 edges,
+    10,471 baselines, 4,984 text edges, 812 picture edges); fixed on the way: the slip's questions (two lines at 1280 x 720 left
+    the ticks half a cell low: `.slip__q`'s own `padding: 0` beat `.g-snap`'s padding). Stretch 0.000% at rest (keystone 0), closest to an edge while visible 17.1 px (360 x 800,
+    frame 1). Overlaps: 1 left of 118,822 pairs: 360 x 800, the X-ray name "Screen" touches the screen piece's bounding box
+    (its outline is about 11 px clear; left edge, screen and glass leave it nowhere else to go); fixed on the way: the drum's
+    faint verbs over the meaning at 1280 x 720 (the meaning a cell lower), page 2's stuck slip bar now counted as chrome (opaque
+    paper; rows scroll under it by design). Geometry (`geom.py`): 0 problems. Drawings' height share at rest: 0.48-0.61 on laptops (1280 x 720 lowest: frame 1, 0.48),
+    0.27-0.51 on phones (capped by width). axe 0 (page 1 every stop, pages 2-3; light, dark, reduced). Console: 0 errors.
+    Length: page 1 10.24 screens to page 2 (9.4 reduced); the whole page 39.76.
+  - Shots: `tools/shots/r7/` (`shots-phone`, `shots-laptop`, `shots-transition`, `shots-treatments`, `shots-reduced`, `phone/`, `flicker/`).
 - **Round 6 (24 Nov).** Brief committed (round 6). Built to Part 5 "Round 6" (rounds 4-5 where not changed).
   - **Two grounds only:** white drafting paper, now `#F6F7F9` (neutral, a hint of cool; it was the warm `#F2F0EB`), and the
     blue blueprint; dark: near-black and the blue. Every warm tone went: the tokens, the dark ink and graphite, phone A's

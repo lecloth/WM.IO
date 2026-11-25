@@ -152,7 +152,7 @@ export function markSVG() {
   const ns = 'http://www.w3.org/2000/svg', s = document.createElementNS(ns, 'svg');
   s.setAttribute('class', 'mark'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('aria-hidden', 'true');
   const r = document.createElementNS(ns, 'rect'); r.setAttribute('x', '.5'); r.setAttribute('y', '.5'); r.setAttribute('width', '23'); r.setAttribute('height', '23');
-  const p = document.createElementNS(ns, 'path'); p.setAttribute('d', 'M4.5 19.5 19.5 4.5'); p.setAttribute('pathLength', '1');
+  const p = document.createElementNS(ns, 'path'); p.setAttribute('d', 'M4.5 19.5 19.5 4.5');
   s.append(r, p); return s;
 }
 

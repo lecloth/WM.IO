@@ -22,7 +22,9 @@
    corner to corner (no checkmark icon) */
 .mark { flex: none; width: 2rem; height: 2rem; overflow: visible; color: var(--ink); }
 .mark rect { fill: none; stroke: currentColor; stroke-width: 1px; vector-effect: non-scaling-stroke; shape-rendering: crispEdges; }
-.mark path { fill: none; stroke: currentColor; stroke-width: 1.25px; vector-effect: non-scaling-stroke; stroke-linecap: square; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .22s cubic-bezier(.4, 0, .2, 1); }
+/* round 7: an empty box is empty. The draw-on uses a dash far longer than the stroke (non-scaling strokes measure dashes
+   on screen, so a dash of "1" with pathLength 1 left half a stroke showing on the S23) */
+.mark path { fill: none; stroke: currentColor; stroke-width: 1.25px; vector-effect: non-scaling-stroke; stroke-linecap: butt; stroke-dasharray: 400 400; stroke-dashoffset: 400; transition: stroke-dashoffset .26s cubic-bezier(.4, 0, .2, 1); }
 input:checked + .mark path, input:checked ~ .mark path { stroke-dashoffset: 0; transition-duration: .26s; }
 /* the native inputs stay (keyboard, screen readers); only their look is replaced */
 .p2-row__in, .tick input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
@@ -41,7 +43,7 @@ input:checked + .mark path, input:checked ~ .mark path { stroke-dashoffset: 0; t
 .p2-row:last-child { box-shadow: inset 0 1px 0 rgba(var(--ink-rgb), .55), inset 0 -1px 0 rgba(var(--ink-rgb), .55); }
 /* a row: four cells tall; its number, its 2 x 2 box (one cell down) and its words, the words' baseline on the row's
    line and a half (level with the box's middle) */
-.p2-row__hit { position: relative; display: grid; grid-template-columns: 2rem 2rem 1fr; align-items: start; column-gap: 0; min-height: 4rem; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; }
+.p2-row__hit { position: relative; display: grid; grid-template-columns: 2rem 2rem 1fr; align-items: start; column-gap: 0; min-height: 4rem; padding: 0 0 var(--snap, 0px); cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; }
 .p2-row__no { color: var(--graphite); margin-top: 2rem; }
 .p2-row .mark { margin-top: 1rem; }
 .p2-row__t { margin: 1.5rem 0 0 1rem; font-family: var(--f-display); font-weight: 420; font-size: 1.25rem; line-height: 1.5rem; letter-spacing: -.01em; }
@@ -87,7 +89,7 @@ input:checked + .mark path, input:checked ~ .mark path { stroke-dashoffset: 0; t
 [data-cta="B"] .p2-beacon:focus-visible { outline: 1px solid var(--ink); outline-offset: 2px; }
 .p2__pick.is-opening .p2-row { animation: rowIn .5s var(--ease-out) both; }
 .p2__pick.is-opening .p2-row:nth-child(2) { animation-delay: .06s; } .p2__pick.is-opening .p2-row:nth-child(3) { animation-delay: .12s; }
-.p2__pick.is-opening .p2-row:nth-child(4) { animation-delay: .18s; } .p2__pick.is-opening .p2-row:nth-child(5) { animation-delay: .24s; }
+.p2__pick.is-opening .p2-row:nth-child(4) { animation-delay: .18s; } .p2__pick.is-opening .p2-row:nth-child(5) { animation-delay: .24s; } .p2__pick.is-opening .p2-row:nth-child(6) { animation-delay: .3s; }
 @keyframes rowIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 /* C: each box sends out one ring, in turn */
 .p2-pulse { position: absolute; left: 2rem; top: 1rem; width: 2rem; height: 2rem; box-shadow: inset 0 0 0 1px var(--ink); opacity: 0; pointer-events: none; }

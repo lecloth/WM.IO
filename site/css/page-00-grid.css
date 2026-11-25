@@ -24,8 +24,9 @@
   --cap-mono: .7;
   --strip-h: 2rem;
   --gut: 1rem;                   /* the text's gutter: one cell on phones, five on desktop */
-  --grid-img: linear-gradient(var(--grid-major) 1px, transparent 1px), linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
-    linear-gradient(var(--grid-minor) 1px, transparent 1px), linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+  /* (round 7: --px1 is one hairline, a whole number of device pixels, set by the head script) */
+  --grid-img: linear-gradient(var(--grid-major) var(--px1, 1px), transparent var(--px1, 1px)), linear-gradient(90deg, var(--grid-major) var(--px1, 1px), transparent var(--px1, 1px)),
+    linear-gradient(var(--grid-minor) var(--px1, 1px), transparent var(--px1, 1px)), linear-gradient(90deg, var(--grid-minor) var(--px1, 1px), transparent var(--px1, 1px));
   --grid-size: 5rem 5rem, 5rem 5rem, 1rem 1rem, 1rem 1rem;
 }
 @media (min-width: 640px) { :root { --u: calc(100vw / 65); } }
@@ -61,6 +62,8 @@ html, html[data-motion] { font-size: var(--u); }
 /* ---------- the strip: two cells tall; nine segments, each on whole columns (main.js sets --c0 / --c1); each label's
    baseline on the strip's first line ---------- */
 .strip { height: 2rem; }
+/* round 7: the strip is opaque paper (it was see-through: page text scrolling under it showed between its labels) */
+html .strip { background: var(--paper); mix-blend-mode: normal; color: var(--ink); }
 .strip__list { display: grid; grid-template-columns: repeat(var(--n, 20), 1fr); }
 .strip__seg { grid-column: var(--c0, auto) / var(--c1, auto); }
 .strip__seg a { display: block; height: 2rem; padding: 0 0 0 .5rem; font-size: .5rem; line-height: 1rem; }
@@ -102,3 +105,12 @@ html, html[data-motion] { font-size: var(--u); }
 .enter__hello { bottom: auto; top: calc(var(--gy) - 3rem); font-size: 1.5rem; line-height: 2rem; text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-serif)), 1rem); transform: translate(-50%, -100%); }
 .enter__hint { top: calc(var(--gy) + 2rem); font-size: .625rem; line-height: 1rem; text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-mono)), .5rem); }
 @media (min-width: 1024px) { .enter__hello { font-size: 2rem; top: calc(var(--gy) - 3rem); } .enter__hint { font-size: .5rem; } }
+
+/* ---------- round 7: the soft snap (touch). Page 1's scenes are snap points the page must stop at (one scene per
+   flick, nothing skipped); pages 2-9 are tall snap areas, so inside them the page scrolls freely. ---------- */
+html[data-snap="touch"][data-phase="ready"] { scroll-snap-type: y mandatory; }
+.p1-snaps { position: absolute; left: 0; top: 0; width: 1px; height: 100%; pointer-events: none; visibility: hidden; }
+.p1-snap { position: absolute; left: 0; width: 1px; height: 1px; scroll-snap-align: start; scroll-snap-stop: always; }
+html[data-snap="touch"] .p23, html[data-snap="touch"] .stub { scroll-snap-align: start; }
+/* while a text's baseline is measured (grid.js baselineOf), its words stand settled */
+.is-measuring .w, .is-measuring .kw, .is-measuring.w { transform: none !important; transition: none !important; }

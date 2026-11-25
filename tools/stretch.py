@@ -11,19 +11,21 @@ import argparse, asyncio, json, math, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browserlock import BrowserLock
-SIZES = "384x734@2.8125,390x844@3,1280x720@1,1366x768@1,1440x900@1,1920x1080@1,2160x1147@1.333,1440x765@2,2560x1440@1"   # as tools/geom.py
+SIZES = "384x734@2.8125,390x844@3,1280x720@1,1366x768@1,1440x900@1,1920x1080@1,2160x1147@1.333,1440x765@2,2560x1440@1,360x800@3,375x667@2,393x852@3,412x915@2.625,430x932@3"   # round 7: + five phones
 
 JS = r"""async (steps) => {
   const p1 = window.__p1, d = p1.diveApi, W = innerWidth, H = innerHeight;
-  await d.load(); const y = p1.yAt(4.3); window.__t2.engine.lenis ? window.__t2.engine.lenis.scrollTo(y, { immediate: true, force: true }) : scrollTo(0, y);
+  await d.load(); const y = p1.yAt(p1.R.dive[0] + 0.3); window.__t2.engine.lenis ? window.__t2.engine.lenis.scrollTo(y, { immediate: true, force: true }) : scrollTo(0, y);
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
   const P = d.P(), fovN = 2 * Math.atan(Math.min(W, H) / 2 / P) * 180 / Math.PI, fovX = 2 * Math.atan(W / 2 / P) * 180 / Math.PI, fovY = 2 * Math.atan(H / 2 / P) * 180 / Math.PI;
   const len = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
   const edge = (q) => Math.min(...q.map(([x, y]) => Math.min(x, y, W - x, H - y)));
-  const STOPS = d.stops || [[0.26, 0.32], [0.45, 0.51], [0.64, 0.7], [0.83, 0.91]];   // the dive's own timeline (round 5 retimed it)
+  const STOPS = d.stops;   // the dive's own timeline
   const out = STOPS.map(() => ({ minEdgeVisible: 1e9, minEdgeReadable: 1e9 }));
+  // the way in is a timed beat: let it finish first
+  d.render(0.05); await new Promise((r) => setTimeout(r, 1500));
   // from the moment the window is fully open (before it, everything outside the dot's circle is clipped away)
-  for (let k = Math.ceil(0.18 * steps); k <= steps; k++) {
+  for (let k = Math.ceil(0.1 * steps); k <= steps; k++) {
     const q = k / steps, r = d.render(q);
     r.info.forEach((f) => {
       if (!f.quad || f.op < 0.05) return;
@@ -53,7 +55,7 @@ async def main(a):
             opts = dict(viewport={"width": w, "height": h}, device_scale_factor=float(dpr))
             if w < 1024: opts.update(is_mobile=True, has_touch=True)
             ctx = await b.new_context(**opts); page = await ctx.new_page()
-            await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
+            await page.goto("http://127.0.0.1:8109/?first&nosnap", wait_until="load")
             await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
             await page.keyboard.press("Enter")
             await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)

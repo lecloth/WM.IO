@@ -1,4 +1,4 @@
-    <!-- PAGE 02: FOR YOU (Part 5 "Pages 2 and 3"). Arrived at through page 1's "?" dot dive (it waits at the end of the corridor). Five
+    <!-- PAGE 02: FOR YOU (Part 5 "Pages 2 and 3"). Arrived at through page 1's hallway (it waits at its end). Six (round 7)
          hairline rows; a tap marks the row's box with one hairline stroke, shows its answer beneath and prints the line
          onto the work slip, whose head waits at the bottom of the screen and docks as page 3 arrives. Every line is a
          DRAFT until Wajih signs it off (data-draft). Script: site/js/page02/page.js -->
@@ -11,34 +11,41 @@
         <fieldset class="p2-rows">
           <legend class="sr-only">What do you need? Tap everything that fits.</legend>
           <div class="p2-row" data-id="web">
-            <label class="p2-row__hit"><input class="p2-row__in" type="checkbox" name="need" value="web" aria-describedby="p2-a-web">
-              <span class="p2-row__no mono gt gt-h" aria-hidden="true">01</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg>
+            <label class="p2-row__hit g-snap"><input class="p2-row__in" type="checkbox" name="need" value="web" aria-describedby="p2-a-web">
+              <span class="p2-row__no mono gt gt-h" aria-hidden="true">01</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg>
               <span class="p2-row__t gt gt-h" data-draft>A website</span></label>
             <div class="p2-ans" id="p2-a-web"><div class="p2-ans__clip"><p class="p2-ans__t gt-js g-snap" data-draft>Fast, clean, and built to turn visitors into calls.</p></div></div>
           </div>
           <div class="p2-row" data-id="app">
-            <label class="p2-row__hit"><input class="p2-row__in" type="checkbox" name="need" value="app" aria-describedby="p2-a-app">
-              <span class="p2-row__no mono gt gt-h" aria-hidden="true">02</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg>
+            <label class="p2-row__hit g-snap"><input class="p2-row__in" type="checkbox" name="need" value="app" aria-describedby="p2-a-app">
+              <span class="p2-row__no mono gt gt-h" aria-hidden="true">02</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg>
               <span class="p2-row__t gt gt-h" data-draft>An app</span></label>
             <div class="p2-ans" id="p2-a-app"><div class="p2-ans__clip"><p class="p2-ans__t gt-js g-snap" data-draft>An app your customers keep, because every tap does what they expect.</p></div></div>
           </div>
           <div class="p2-row" data-id="mess">
-            <label class="p2-row__hit"><input class="p2-row__in" type="checkbox" name="need" value="mess" aria-describedby="p2-a-mess">
-              <span class="p2-row__no mono gt gt-h" aria-hidden="true">03</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg>
+            <label class="p2-row__hit g-snap"><input class="p2-row__in" type="checkbox" name="need" value="mess" aria-describedby="p2-a-mess">
+              <span class="p2-row__no mono gt gt-h" aria-hidden="true">03</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg>
               <span class="p2-row__t gt gt-h" data-draft>My systems are a mess</span></label>
             <div class="p2-ans" id="p2-a-mess"><div class="p2-ans__clip"><p class="p2-ans__t gt-js g-snap" data-draft>One system where your tools, data and numbers finally talk to each other.</p></div></div>
           </div>
           <div class="p2-row" data-id="ai">
-            <label class="p2-row__hit"><input class="p2-row__in" type="checkbox" name="need" value="ai" aria-describedby="p2-a-ai">
-              <span class="p2-row__no mono gt gt-h" aria-hidden="true">04</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg>
+            <label class="p2-row__hit g-snap"><input class="p2-row__in" type="checkbox" name="need" value="ai" aria-describedby="p2-a-ai">
+              <span class="p2-row__no mono gt gt-h" aria-hidden="true">04</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg>
               <span class="p2-row__t gt gt-h" data-draft>AI working for me</span></label>
             <div class="p2-ans" id="p2-a-ai"><div class="p2-ans__clip"><p class="p2-ans__t gt-js g-snap" data-draft>AI that answers, sorts and reports, while you run the business.</p></div></div>
           </div>
           <div class="p2-row" data-id="sec">
-            <label class="p2-row__hit"><input class="p2-row__in" type="checkbox" name="need" value="sec" aria-describedby="p2-a-sec">
-              <span class="p2-row__no mono gt gt-h" aria-hidden="true">05</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg>
+            <label class="p2-row__hit g-snap"><input class="p2-row__in" type="checkbox" name="need" value="sec" aria-describedby="p2-a-sec">
+              <span class="p2-row__no mono gt gt-h" aria-hidden="true">05</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg>
               <span class="p2-row__t gt gt-h" data-draft>Keep it secure</span></label>
             <div class="p2-ans" id="p2-a-sec"><div class="p2-ans__clip"><p class="p2-ans__t gt-js g-snap" data-draft>Locks on every door: your data, your accounts, your customers.</p></div></div>
+          </div>
+          <!-- round 7: the sixth row (design services; draft) -->
+          <div class="p2-row" data-id="look">
+            <label class="p2-row__hit g-snap"><input class="p2-row__in" type="checkbox" name="need" value="look" aria-describedby="p2-a-look">
+              <span class="p2-row__no mono gt gt-h" aria-hidden="true">06</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg>
+              <span class="p2-row__t gt gt-h" data-draft>A look that fits my business</span></label>
+            <div class="p2-ans" id="p2-a-look"><div class="p2-ans__clip"><p class="p2-ans__t gt-js g-snap" data-draft>A look your customers trust on sight, built from what they need to feel.</p></div></div>
           </div>
         </fieldset>
         <!-- round 5, CTA design A: after the first tap the beacon glides here; it takes the visitor to the work slip (DRAFT wording) -->

@@ -48,6 +48,11 @@ export function initScroll() {
   if (reduced) { engine.emit('scroll:ready', null); return null; }
   const lenis = new Lenis({ duration: 1.1, wheelMultiplier: 0.9, touchMultiplier: 1, autoRaf: false });   // Take 2: lighter on desktop; touch screens keep their own scrolling
   engine.lenis = lenis;
+  // round 7 (the flicker at devicePixelRatio 1.333): the glide sets the page's scroll in whole device pixels. A fractional
+  // scroll offset is composited between pixels, so every hairline flips between one sharp row and two soft ones as the
+  // page moves; whole device pixels keep each line the same from frame to frame.
+  const setScroll = lenis.setScroll.bind(lenis);
+  lenis.setScroll = (v) => { const r = window.devicePixelRatio || 1; setScroll(Math.round(v * r) / r); };
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((t) => lenis.raf(t * 1000));
   gsap.ticker.lagSmoothing(0);

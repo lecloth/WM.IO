@@ -24,7 +24,7 @@ async def open_page(pw, a):
     return b, page, errs
 
 async def enter(page, a, out, tag):
-    await page.goto("http://127.0.0.1:8109/?first" + (("&" + a.query) if a.query else ""), wait_until="load")
+    await page.goto("http://127.0.0.1:8109/?first&nosnap" + (("&" + a.query) if a.query else ""), wait_until="load")
     if a.reduced:   # the still gate: shoot it, then enter at once
         await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
         await page.wait_for_timeout(400); await page.screenshot(path=str(out / f"{tag}_gate.png"))
@@ -54,6 +54,8 @@ async def main(a):
         else:
             top = await page.evaluate("document.getElementById('page-01').offsetTop"); vh = await page.evaluate("innerHeight")
             for p in [float(x) for x in a.ps.split(",")]:
+                if a.pre is not None:   # park here first (warms what normal scrolling would have warmed, e.g. the hallway before the way in)
+                    await page.evaluate(GOTO_JS, a.pre, isolated_context=False); await page.wait_for_timeout(a.pre_wait)
                 await page.evaluate(GOTO_JS, p, isolated_context=False)
                 await page.wait_for_timeout(a.wait)
                 await page.screenshot(path=str(out / f"{tag}_{int(p * 1000):04d}.png"))
@@ -64,6 +66,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--size", default="384x734"); ap.add_argument("--dpr", type=float, default=1); ap.add_argument("--mobile", action="store_true")
 ap.add_argument("--ps", default="0,0.5,0.9,1.5,2.2,2.8"); ap.add_argument("--out", default="tools/shots/p1"); ap.add_argument("--dark", action="store_true")
 ap.add_argument("--reduced", action="store_true"); ap.add_argument("--gate", action="store_true"); ap.add_argument("--wait", type=int, default=700); ap.add_argument("--query", default="")
+ap.add_argument("--pre", type=float, default=None); ap.add_argument("--pre-wait", type=int, default=2500)
 a = ap.parse_args()
 with BrowserLock():
     asyncio.run(main(a))

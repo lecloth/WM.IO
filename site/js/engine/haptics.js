@@ -30,6 +30,13 @@ export const haptics = {
     const now = performance.now(); if (now - last < 60) return; last = now;   // never a buzz train
     if (canVibrate) navigator.vibrate(Math.max(10, Math.min(20, ms)));
   },
+  /** round 7: the verb drum's click, heavier than a tick: a double pulse (a web page can't set the strength, so the
+   *  weight comes from two short buzzes 50 ms apart, about 60 ms in all) */
+  click() {
+    if (!unlocked || reduced.matches) return;
+    const now = performance.now(); if (now - last < 120) return; last = now;
+    if (canVibrate) navigator.vibrate([20, 50, 20]);
+  },
   /** inside a tap handler: buzzes on Android and on iPhone */
   tap(ms = 12) {
     if (!unlocked || reduced.matches) return;

@@ -5,7 +5,7 @@ import { settings } from '../settings.js';
 
 const LIM = settings.limits;
 // the needs as the rows name them (page 2); the slip prints the same words
-export const NEEDS = { web: 'A website', app: 'An app', mess: 'My systems are a mess', ai: 'AI working for me', sec: 'Keep it secure' };
+export const NEEDS = { web: 'A website', app: 'An app', mess: 'My systems are a mess', ai: 'AI working for me', sec: 'Keep it secure', look: 'A look that fits my business' };
 export const ORDER = Object.keys(NEEDS);
 
 // C0/C1 controls (but newline and tab), DEL, zero-width space, BOM, and the bidi overrides/isolates that can make text

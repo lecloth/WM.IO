@@ -18,17 +18,17 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browserlock import BrowserLock
 
-SIZES = "384x734@2.8125,390x844@3,1280x720@1,1366x768@1,1440x900@1,1920x1080@1,2160x1147@1.333,1440x765@2,2560x1440@1"
+SIZES = "384x734@2.8125,390x844@3,1280x720@1,1366x768@1,1440x900@1,1920x1080@1,2160x1147@1.333,1440x765@2,2560x1440@1,360x800@3,375x667@2,393x852@3,412x915@2.625,430x932@3"   # round 7: + the five most common phones
 TOL = 0.5
-SETTLE = {"WE": 1900, "DRUM": 1900, "END": 1300, "kin": 1200, "paper": 1000, "TASK": 1100, "YOU": 1100, "S2": 1100, "REAL": 1200, "DOT": 800,
+SETTLE = {"TR": 1800, "OPEN": 2400, "F5": 4800, "WE": 1900, "DRUM": 1900, "END": 1300, "kin": 1200, "paper": 1000, "TASK": 1100, "YOU": 1100, "S2": 1100, "REAL": 1200, "DOT": 800,
           "F1": 1300, "F2": 1300, "F3": 1300, "F4": 1800, "F4B": 1600, "LAND": 900}
 # selectors whose edges / text are not held to the grid, and why (each hit is counted and listed by reason)
 EXCEPTIONS = [
     (".p1-grid, .p1-grid *", "the construction lines behind WE and the verbs follow the type itself (cap line, x-height, ink edges); its baselines are grid lines"),
     (".p1-verb:not(.is-lit)", "the drum's other verbs turn away on the dial (3D); only the lit verb rests"),
-    (".p1__plate img", "Bell's scan keeps its true proportions inside its own sheet (the sheet's edges are on the grid)"),
+    (".p1__plate, .p1__plate img", "Bell's drawing has no sheet now: its own ink sits on the grid (two of its long lines are checked on grid lines)"),
     (".p1__morph, .p1__morph *", "Bell's traced outlines lie on the scan and travel to the phone"),
-    (".dive__ring, .dive__ring *, .dive__dot", "the '?' dot's window is a circle growing from the glyph's real dot"),
+    (".dive__cut, .dive__cut *", "transition B's cut line shows only for the cut's first moment"),
     (".p3-callout, .p3-callout *", "Detail B is a circle that grows into page 4 (its tag rides on it)"),
     (".xhair, .xhair *", "the cursor follows the pointer"),
     (".sing, .sing *, .curtain, .curtain *, .enter, .enter *", "the gate (checked on its own: the beacon on an intersection)"),
@@ -178,11 +178,13 @@ MEASURE_JS = r"""(args) => {
       out.excepted['phone A keeps its true proportions: its fourth side follows its shape'] = (out.excepted['phone A keeps its true proportions: its fourth side follows its shape'] || 0) + 1;
     }
     for (const s of (p1.shelves?.() || [])) for (const [w, v] of [['shelf left', s.x0], ['shelf right', s.x1], ['shelf', s.y]]) { out.pics++; const d = off(v, u); out.worst = Math.max(out.worst, d); if (d > tol) out.fails.push({ what: w, el: `X-ray name ${s.name}`, v: +v.toFixed(2), step: 1, dev: +d.toFixed(2) }); }
+    const bl = p1.bellLines?.(), pf = document.querySelector('.p1__plate');
+    if (bl && pf && visible(pf)) for (const [w, v] of [['Bell line x', bl.x], ['Bell line y', bl.y]]) { out.pics++; const d = off(v, u); out.worst = Math.max(out.worst, d); if (d > tol) out.fails.push({ what: w, el: "Bell's drawing", v: +v.toFixed(2), step: 1, dev: +d.toFixed(2) }); }
     const dv = p1.dive?.();
     if (dv && dv.info) for (const f of dv.info) {
-      if (!f.quad || f.op < 0.9 || f.swing < 0.999) continue;
+      if (!f.quad || f.op < 0.9 || !f.rest) continue;
       const xs = f.quad.map((c) => c[0]), ys = f.quad.map((c) => c[1]);
-      for (const [w, v] of [['frame left', Math.min(...xs)], ['frame right', Math.max(...xs)], ['frame top', Math.min(...ys)], ['frame bottom', Math.max(...ys)]]) {
+      for (const [w, v] of [['drawing left', Math.min(...xs)], ['drawing right', Math.max(...xs)], ['drawing top', Math.min(...ys)], ['drawing bottom', Math.max(...ys)]]) {
         out.pics++; const d = off(v, u); out.worst = Math.max(out.worst, d); if (d > tol) out.fails.push({ what: w, el: `hallway frame ${f.i + 1}`, v: +v.toFixed(2), step: 1, dev: +d.toFixed(2) });
       }
     }
@@ -214,7 +216,7 @@ async def main(a):
                 if theme == "dark": await ctx.add_init_script("try { localStorage.setItem('wm:theme', 'dark'); } catch (e) {}")
                 page = await ctx.new_page(); errs = []
                 page.on("pageerror", lambda e: errs.append(str(e)[:200])); page.on("console", lambda m: m.type == "error" and errs.append(m.text[:200]))
-                await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
+                await page.goto("http://127.0.0.1:8109/?first&nosnap", wait_until="load")
                 await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
                 gate = await page.evaluate("(() => { const p = document.querySelector('.sing__point').getBoundingClientRect(); const u = window.__grid.u; const x = p.left + p.width / 2, y = p.top + p.height / 2; return { x, y, dx: Math.abs(x - Math.round(x / u) * u), dy: Math.abs(y - Math.round(y / u) * u) }; })()", isolated_context=False)
                 gfail = [f"gate beacon off its intersection by {gate['dx']:.2f}, {gate['dy']:.2f}"] if max(gate["dx"], gate["dy"]) > a.tol + 0.01 else []
@@ -255,7 +257,8 @@ async def main(a):
     for k, v in sorted(excepted.items(), key=lambda x: -x[1]): print(f"  {v:5d}  {k}")
     (out / "gridcheck.json").write_text(json.dumps({"totals": tot, "excepted": excepted, "failures": failures}, indent=1), encoding="utf-8")
 
-ap = argparse.ArgumentParser(); ap.add_argument("--sizes", default=SIZES); ap.add_argument("--themes", default="light"); ap.add_argument("--out", default="tools/shots/r6/grid")
-ap.add_argument("--stops", default=""); ap.add_argument("--tol", type=float, default=TOL); ap.add_argument("--shots", action="store_true")
-with BrowserLock():
-    asyncio.run(main(ap.parse_args()))
+if __name__ == '__main__':
+    ap = argparse.ArgumentParser(); ap.add_argument("--sizes", default=SIZES); ap.add_argument("--themes", default="light"); ap.add_argument("--out", default="tools/shots/r7/grid")
+    ap.add_argument("--stops", default=""); ap.add_argument("--tol", type=float, default=TOL); ap.add_argument("--shots", action="store_true")
+    with BrowserLock():
+        asyncio.run(main(ap.parse_args()))

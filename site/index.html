@@ -24,6 +24,9 @@
       }
       try { if (localStorage.getItem('wm:theme') === 'dark') d.dataset.theme = 'dark'; } catch (e) {}
       d.dataset.visit = seen ? 'return' : 'first';
+      /* round 7: the soft snap. Touch screens snap natively (the page follows the thumb; on release it settles on the
+         nearest scene); desktop settles after the wheel stops (main.js). Off with reduced motion; ?nosnap for tests. */
+      d.dataset.snap = rm || /[?&]nosnap\b/.test(location.search) ? 'off' : (matchMedia('(pointer: coarse)').matches ? 'touch' : 'wheel');
       var tasks = ['css', 'gsap', 'st', 'lenis', 'app', 'fonts', 'load'], done = {};
       window.__wm = {
         t0: performance.now(), progress: 0, reduced: rm, returning: seen, jumpTo: jumpTo,
@@ -47,11 +50,26 @@
         var p = document.createElement('div'); p.style.cssText = 'position:absolute;top:-999px;left:0;width:100px;height:100px;overflow:scroll;visibility:hidden';
         d.appendChild(p); sb = Math.max(0, p.offsetWidth - p.clientWidth); p.remove(); return sb;
       }
+      /* Round 7 (the flicker on Wajih's laptop, devicePixelRatio 1.333): where the screen allows it, a cell is a whole number
+         of device pixels (every line then falls on a pixel, and stays there as the page moves): of the cell counts that
+         keep a cell 20-24 px, one that divides the width in device pixels exactly, a multiple of 5 if possible, else the
+         round 6 rule. Hairlines (--px1) are a whole number of device pixels thick. */
+      function pick(W, dpr) {
+        if (W < 640) return 20;
+        var Wd = Math.round(W * dpr), best = 0, bestScore = 1e9;
+        for (var n = Math.ceil(W / 24); n <= Math.floor(W / 20); n++) {
+          if (Math.abs(Wd / n - Math.round(Wd / n)) > 1e-6) continue;
+          var score = Math.abs(W / n - 22) + (n % 5 ? 3 : 0);
+          if (score < bestScore) { bestScore = score; best = n; }
+        }
+        return best || 5 * Math.round(W / 110);
+      }
       function grid() {
-        var W = innerWidth - bar(), n = W < 640 ? 20 : 5 * Math.round(W / 110), u = W / n, old = window.__grid;
-        if (old && old.u === u && old.n === n) { old.H = innerHeight; return; }   /* a height change (a phone's address bar) keeps the grid */
+        var dpr = window.devicePixelRatio || 1, W = innerWidth - bar(), n = pick(W, dpr), u = W / n, old = window.__grid;
+        if (old && old.u === u && old.n === n && old.dpr === dpr) { old.H = innerHeight; return; }   /* a height change (a phone's address bar) keeps the grid */
         d.style.setProperty('--u', u + 'px'); d.style.setProperty('--n', n);
-        window.__grid = { u: u, n: n, W: W, H: innerHeight, sb: sb };
+        d.style.setProperty('--px1', (Math.max(1, Math.round(dpr)) / dpr) + 'px');
+        window.__grid = { u: u, n: n, W: W, H: innerHeight, sb: sb, dpr: dpr };
         if (old) try { document.dispatchEvent(new CustomEvent('wm:grid', { detail: window.__grid })); } catch (e) {}
       }
       grid(); addEventListener('resize', grid);
@@ -60,12 +78,12 @@
   <link rel="preload" href="fonts/newsreader-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/dm-mono-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/site.css?v=e8d0bd4807" onload="__wm.done('css')">
-  <link rel="stylesheet" href="css/page-00-grid.css?v=ac2219c9ac">
-  <link rel="stylesheet" href="css/page-01-dive.css?v=d6d265a2d1">
-  <link rel="stylesheet" href="css/page-01.css?v=eb9853ec44">
-  <link rel="stylesheet" href="css/page-02.css?v=5568f707d2">
+  <link rel="stylesheet" href="css/page-00-grid.css?v=ebc3f43924">
+  <link rel="stylesheet" href="css/page-01-dive.css?v=295ff63a7f">
+  <link rel="stylesheet" href="css/page-01.css?v=89f29e7001">
+  <link rel="stylesheet" href="css/page-02.css?v=8b64f7acf2">
   <link rel="stylesheet" href="css/page-03-send.css?v=9485af8b57">
-  <link rel="stylesheet" href="css/page-03.css?v=3b4b72a6a6">
+  <link rel="stylesheet" href="css/page-03.css?v=338a65fc7c">
   <script defer src="vendor/gsap.min.js" onload="__wm.done('gsap')"></script>
   <script defer src="vendor/ScrollTrigger.min.js" onload="__wm.done('st')"></script>
   <script defer src="vendor/SplitText.min.js"></script>
@@ -85,7 +103,7 @@
         else { var c = el.cloneNode(); el.parentNode.insertBefore(c, el.nextSibling); el.remove(); } }, 150 * (n + 1));
     }, true);
   </script>
-  <script type="module" src="dist/main.js?v=f5dbc9b11e" onerror="(function(s){var n=+(s.dataset.r||0);if(n<5){var c=document.createElement('script');c.type='module';c.src='dist/main.js?r='+(n+1);c.dataset.r=n+1;c.onerror=s.onerror;setTimeout(function(){document.head.appendChild(c)},200*(n+1));}})(this)"></script>
+  <script type="module" src="dist/main.js?v=0809ca094a" onerror="(function(s){var n=+(s.dataset.r||0);if(n<5){var c=document.createElement('script');c.type='module';c.src='dist/main.js?r='+(n+1);c.dataset.r=n+1;c.onerror=s.onerror;setTimeout(function(){document.head.appendChild(c)},200*(n+1));}})(this)"></script>
 </head>
 <body>
 
@@ -191,7 +209,7 @@
       <div class="p1-dive" aria-hidden="true"></div>
       <div class="p1-dive-top" aria-hidden="true"></div>
     </section>
-    <!-- PAGE 02: FOR YOU (Part 5 "Pages 2 and 3"). Arrived at through page 1's "?" dot dive (it waits at the end of the corridor). Five
+    <!-- PAGE 02: FOR YOU (Part 5 "Pages 2 and 3"). Arrived at through page 1's hallway (it waits at its end). Six (round 7)
          hairline rows; a tap marks the row's box with one hairline stroke, shows its answer beneath and prints the line
          onto the work slip, whose head waits at the bottom of the screen and docks as page 3 arrives. Every line is a
          DRAFT until Wajih signs it off (data-draft). Script: site/js/page02/page.js -->
@@ -204,34 +222,41 @@
         <fieldset class="p2-rows">
           <legend class="sr-only">What do you need? Tap everything that fits.</legend>
           <div class="p2-row" data-id="web">
-            <label class="p2-row__hit"><input class="p2-row__in" type="checkbox" name="need" value="web" aria-describedby="p2-a-web">
-              <span class="p2-row__no mono gt gt-h" aria-hidden="true">01</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg>
+            <label class="p2-row__hit g-snap"><input class="p2-row__in" type="checkbox" name="need" value="web" aria-describedby="p2-a-web">
+              <span class="p2-row__no mono gt gt-h" aria-hidden="true">01</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg>
               <span class="p2-row__t gt gt-h" data-draft>A website</span></label>
             <div class="p2-ans" id="p2-a-web"><div class="p2-ans__clip"><p class="p2-ans__t gt-js g-snap" data-draft>Fast, clean, and built to turn visitors into calls.</p></div></div>
           </div>
           <div class="p2-row" data-id="app">
-            <label class="p2-row__hit"><input class="p2-row__in" type="checkbox" name="need" value="app" aria-describedby="p2-a-app">
-              <span class="p2-row__no mono gt gt-h" aria-hidden="true">02</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg>
+            <label class="p2-row__hit g-snap"><input class="p2-row__in" type="checkbox" name="need" value="app" aria-describedby="p2-a-app">
+              <span class="p2-row__no mono gt gt-h" aria-hidden="true">02</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg>
               <span class="p2-row__t gt gt-h" data-draft>An app</span></label>
             <div class="p2-ans" id="p2-a-app"><div class="p2-ans__clip"><p class="p2-ans__t gt-js g-snap" data-draft>An app your customers keep, because every tap does what they expect.</p></div></div>
           </div>
           <div class="p2-row" data-id="mess">
-            <label class="p2-row__hit"><input class="p2-row__in" type="checkbox" name="need" value="mess" aria-describedby="p2-a-mess">
-              <span class="p2-row__no mono gt gt-h" aria-hidden="true">03</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg>
+            <label class="p2-row__hit g-snap"><input class="p2-row__in" type="checkbox" name="need" value="mess" aria-describedby="p2-a-mess">
+              <span class="p2-row__no mono gt gt-h" aria-hidden="true">03</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg>
               <span class="p2-row__t gt gt-h" data-draft>My systems are a mess</span></label>
             <div class="p2-ans" id="p2-a-mess"><div class="p2-ans__clip"><p class="p2-ans__t gt-js g-snap" data-draft>One system where your tools, data and numbers finally talk to each other.</p></div></div>
           </div>
           <div class="p2-row" data-id="ai">
-            <label class="p2-row__hit"><input class="p2-row__in" type="checkbox" name="need" value="ai" aria-describedby="p2-a-ai">
-              <span class="p2-row__no mono gt gt-h" aria-hidden="true">04</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg>
+            <label class="p2-row__hit g-snap"><input class="p2-row__in" type="checkbox" name="need" value="ai" aria-describedby="p2-a-ai">
+              <span class="p2-row__no mono gt gt-h" aria-hidden="true">04</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg>
               <span class="p2-row__t gt gt-h" data-draft>AI working for me</span></label>
             <div class="p2-ans" id="p2-a-ai"><div class="p2-ans__clip"><p class="p2-ans__t gt-js g-snap" data-draft>AI that answers, sorts and reports, while you run the business.</p></div></div>
           </div>
           <div class="p2-row" data-id="sec">
-            <label class="p2-row__hit"><input class="p2-row__in" type="checkbox" name="need" value="sec" aria-describedby="p2-a-sec">
-              <span class="p2-row__no mono gt gt-h" aria-hidden="true">05</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg>
+            <label class="p2-row__hit g-snap"><input class="p2-row__in" type="checkbox" name="need" value="sec" aria-describedby="p2-a-sec">
+              <span class="p2-row__no mono gt gt-h" aria-hidden="true">05</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg>
               <span class="p2-row__t gt gt-h" data-draft>Keep it secure</span></label>
             <div class="p2-ans" id="p2-a-sec"><div class="p2-ans__clip"><p class="p2-ans__t gt-js g-snap" data-draft>Locks on every door: your data, your accounts, your customers.</p></div></div>
+          </div>
+          <!-- round 7: the sixth row (design services; draft) -->
+          <div class="p2-row" data-id="look">
+            <label class="p2-row__hit g-snap"><input class="p2-row__in" type="checkbox" name="need" value="look" aria-describedby="p2-a-look">
+              <span class="p2-row__no mono gt gt-h" aria-hidden="true">06</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg>
+              <span class="p2-row__t gt gt-h" data-draft>A look that fits my business</span></label>
+            <div class="p2-ans" id="p2-a-look"><div class="p2-ans__clip"><p class="p2-ans__t gt-js g-snap" data-draft>A look your customers trust on sight, built from what they need to feel.</p></div></div>
           </div>
         </fieldset>
         <!-- round 5, CTA design A: after the first tap the beacon glides here; it takes the visitor to the work slip (DRAFT wording) -->
@@ -258,35 +283,35 @@
     <section id="page-03" class="p3 p23" data-sheet="03" data-title="Work slip" data-drawn="Engineering" data-checked="Design" data-approved="Strategy" aria-label="Page 3: your work slip">
       <form class="slip" id="slip" novalidate autocomplete="on" aria-label="Work slip">
         <div class="slip__sec g-snap slip__sec--needs">
-          <h3 class="slip__q gt gt-h"><span class="slip__no mono" aria-hidden="true">A</span><span data-draft>What you need</span></h3>
+          <h3 class="slip__q gt g-snap"><span class="slip__no mono" aria-hidden="true">A</span><span data-draft>What you need</span></h3>
           <ol class="slip__needs"></ol>
           <p class="slip__empty gt gt-h" data-draft><a href="#page-02">Nothing yet. Tap what fits, above ↑</a></p>
         </div>
         <fieldset class="slip__sec g-snap slip__sec--when">
-          <legend class="slip__q gt gt-h"><span class="slip__no mono" aria-hidden="true">B</span><span data-draft>When do you need it?</span></legend>
+          <legend class="slip__q gt g-snap"><span class="slip__no mono" aria-hidden="true">B</span><span data-draft>When do you need it?</span></legend>
           <div class="slip__ticks">
-            <label class="tick g-snap"><input type="radio" name="when" value="As soon as possible"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg><span data-draft>As soon as possible</span></label>
-            <label class="tick g-snap"><input type="radio" name="when" value="In 1–3 months"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg><span data-draft>In 1–3 months</span></label>
-            <label class="tick g-snap"><input type="radio" name="when" value="Just exploring"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg><span data-draft>Just exploring</span></label>
+            <label class="tick g-snap"><input type="radio" name="when" value="As soon as possible"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg><span data-draft>As soon as possible</span></label>
+            <label class="tick g-snap"><input type="radio" name="when" value="In 1–3 months"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg><span data-draft>In 1–3 months</span></label>
+            <label class="tick g-snap"><input type="radio" name="when" value="Just exploring"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg><span data-draft>Just exploring</span></label>
           </div>
         </fieldset>
         <div class="slip__sec g-snap slip__sec--name">
-          <label class="slip__q gt gt-h" for="slip-name"><span class="slip__no mono" aria-hidden="true">C</span><span data-draft>Your name</span></label>
+          <label class="slip__q gt g-snap" for="slip-name"><span class="slip__no mono" aria-hidden="true">C</span><span data-draft>Your name</span></label>
           <input class="slip__field" id="slip-name" name="name" type="text" maxlength="60" autocomplete="name" autocapitalize="words" spellcheck="false" enterkeyhint="next">
         </div>
         <div class="slip__sec g-snap slip__sec--note">
-          <label class="slip__q gt gt-h" for="slip-note"><span class="slip__no mono" aria-hidden="true">D</span><span data-draft>Anything else?</span> <span class="slip__opt mono" data-draft>Optional</span></label>
+          <label class="slip__q gt g-snap" for="slip-note"><span class="slip__no mono" aria-hidden="true">D</span><span data-draft>Anything else?</span> <span class="slip__opt mono" data-draft>Optional</span></label>
           <textarea class="slip__field slip__field--box" id="slip-note" name="note" rows="3" maxlength="500" aria-describedby="slip-note-n"></textarea>
           <span class="slip__count mono gt gt-h" id="slip-note-n" aria-live="off"><b class="js-note-n">0</b> / 500</span>
         </div>
         <fieldset class="slip__sec g-snap slip__sec--by">
-          <legend class="slip__q gt gt-h"><span class="slip__no mono" aria-hidden="true">E</span><span data-draft>Send it by</span></legend>
+          <legend class="slip__q gt g-snap"><span class="slip__no mono" aria-hidden="true">E</span><span data-draft>Send it by</span></legend>
           <div class="slip__ticks slip__ticks--by">
-            <label class="tick g-snap"><input type="radio" name="by" value="whatsapp" checked><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg><span data-draft>WhatsApp</span></label>
-            <label class="tick g-snap"><input type="radio" name="by" value="email"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg><span data-draft>Email</span></label>
-            <label class="tick g-snap"><input type="radio" name="by" value="call"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg><span data-draft>Phone call</span></label>
-            <label class="tick g-snap"><input type="radio" name="by" value="page"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg><span data-draft>From this page</span></label>
-            <label class="tick g-snap"><input type="radio" name="by" value="book"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5" pathLength="1"/></svg><span data-draft>Book a call</span></label>
+            <label class="tick g-snap"><input type="radio" name="by" value="whatsapp" checked><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg><span data-draft>WhatsApp</span></label>
+            <label class="tick g-snap"><input type="radio" name="by" value="email"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg><span data-draft>Email</span></label>
+            <label class="tick g-snap"><input type="radio" name="by" value="call"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg><span data-draft>Phone call</span></label>
+            <label class="tick g-snap"><input type="radio" name="by" value="page"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg><span data-draft>From this page</span></label>
+            <label class="tick g-snap"><input type="radio" name="by" value="book"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg><span data-draft>Book a call</span></label>
           </div>
           <!-- booking (only when settings.booking.on): the next working days' slots, in the visitor's own time -->
           <div class="slip__slots" hidden>
@@ -312,7 +337,7 @@
         </div>
       </div>
       <div class="p3-callout" aria-hidden="true">
-        <svg class="p3-callout__svg"><circle class="p3-callout__c" cx="0" cy="0" r="1" pathLength="1"/><path class="p3-callout__lead"/></svg>
+        <svg class="p3-callout__svg"><circle class="p3-callout__c" cx="0" cy="0" r="1"/><path class="p3-callout__lead"/></svg>
         <span class="p3-callout__tag mono" data-draft>Detail B · 04 Trips</span>
       </div>
     </section>

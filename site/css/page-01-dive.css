@@ -1,42 +1,54 @@
-/* Take 2 · page 1's "?" dot dive and the hallway of four framed blueprints (site/js/page01/dive.js). Shared by page 1
-   and the asset sheet. Needs the tokens --paper, --ink, --ink-rgb, --graphite and the grid's 1rem = one cell. */
+/* Take 2 · page 1's hallway (site/js/page01/dive.js). Shared by page 1 and the asset sheet. Needs the tokens --paper,
+   --paper-rgb, --ink, --ink-rgb, --graphite and the grid's 1rem = one cell. */
 .dive__win { position: absolute; inset: 0; overflow: hidden; background-color: var(--paper); }
-/* the hallway itself is WebGL (dive.js): walls, edges and frames in one true perspective, so nothing re-rasters */
+/* the hallway itself is WebGL (dive.js): walls, floor, ceiling, end wall and drawings in one true perspective */
 .dive__gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.dive__ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.dive__ring circle { fill: none; stroke: currentColor; stroke-width: 1px; vector-effect: non-scaling-stroke; }
-.dive__dot { position: absolute; left: -10px; top: -10px; width: 20px; height: 20px; border-radius: 50%; background: currentColor; transform-origin: 50% 50%; }
-/* the ink dot opens in one short timed beat; the ring is there while the window is a window, gone once it fills the screen */
-.dive__dot { transition: opacity .24s linear; }
-.is-open .dive__dot { opacity: 0; }
-.dive__ring { opacity: 0; transition: opacity .2s linear; }
-.is-open .dive__ring { opacity: 1; }
-.is-open.is-full .dive__ring { opacity: 0; }
-html[data-motion="reduce"] .dive__dot, html[data-motion="reduce"] .dive__ring { transition: none; }
+/* transition B: the grid line the hallway opens from (a hairline, there for the cut's first moment) */
+.dive__cut { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; opacity: 0; }
+.dive__cut line { stroke: var(--ink); stroke-width: 1px; vector-effect: non-scaling-stroke; shape-rendering: crispEdges; }
 
-/* ---------- the museum labels (round 6): under each frame while it faces you, on its left edge and the grid, as wide as
-   the frame. No box: a hairline above it. The title (big, serif), a small mono line with the drawing's name, one line
-   of story (a draft, flagged). Each baseline on the grid: the title's on lines, the small lines' on half lines.
-   A short timed rise when the frame comes to rest; nothing moves under it after. ---------- */
+/* ---------- the frosted backing (round 7, Wajih: "a blurry background that fits seamlessly"): the hallway blurred
+   behind the words, a veil of paper over it, no border, its edges fading out over a cell. The backing reaches a cell
+   past the text on every side; the text itself stays on the grid. The words and the backing fade on their own (an
+   opacity on the whole label would stop the blur from seeing the hallway while it fades). ---------- */
+.dive__lab, .dive__open { position: absolute; left: 0; top: 0; margin: 0; color: var(--ink); isolation: isolate; pointer-events: none; transform: translateY(.5rem);
+  transition: transform .3s var(--ease-out, ease-out); }
+.dive__lab::before, .dive__open::before { content: ""; position: absolute; inset: -1rem; z-index: -1; opacity: 0;
+  background: rgba(var(--paper-rgb), .64); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 1rem, #000 calc(100% - 1rem), transparent), linear-gradient(transparent, #000 1rem, #000 calc(100% - 1rem), transparent);
+  -webkit-mask-composite: source-in; mask-image: linear-gradient(90deg, transparent, #000 1rem, #000 calc(100% - 1rem), transparent), linear-gradient(transparent, #000 1rem, #000 calc(100% - 1rem), transparent);
+  mask-composite: intersect; transition: opacity .2s linear; }
+.dive__lab > *, .dive__open > * { opacity: 0; transition: opacity .18s linear; }
+.dive__lab.on, .dive__open.on { transform: none; transition: transform .5s var(--ease-out, ease-out) .06s; }
+.dive__lab.on::before, .dive__open.on::before { opacity: 1; transition: opacity .26s linear; }
+.dive__lab.on > *, .dive__open.on > * { opacity: 1; transition: opacity .26s linear .08s; }
 .dive__labs { position: absolute; inset: 0; pointer-events: none; }
-.dive__lab { position: absolute; left: 0; top: 0; margin: 0; color: var(--ink); box-shadow: inset 0 1px 0 rgba(var(--ink-rgb), .7);
-  opacity: 0; transform: translateY(.5rem); transition: opacity .18s linear, transform .3s var(--ease-out, ease-out); }
-.dive__lab.on { opacity: 1; transform: none; transition: opacity .26s linear .06s, transform .5s var(--ease-out, ease-out) .06s; }
-.dive__lab p { margin: 0; }
+.dive__lab p, .dive__open p { margin: 0; }
 .dive__lab-t { font-family: var(--f-display, Newsreader, Georgia, serif); font-weight: 420; font-size: 1.5rem; line-height: 2rem; letter-spacing: -.012em; text-wrap: balance; }
 .dive__lab-k { margin-top: .5rem !important; color: var(--graphite); font-size: .625rem; line-height: .5rem; }
 .dive__lab-s { margin-top: .5rem !important; font-family: var(--f-display, Newsreader, Georgia, serif); font-size: 1rem; line-height: 1.5rem; max-width: 36ch; }
-.dive__lab .ph { color: var(--graphite); vertical-align: 0; line-height: 0; }
+.dive__lab .ph, .dive__open .ph { color: var(--graphite); vertical-align: 0; line-height: 0; }
+/* the line that opens the hallway (round 7; draft): its lead as a headline, the rest under it */
+.dive__open-l { font-family: var(--f-display, Newsreader, Georgia, serif); font-weight: 420; font-size: 2.5rem; line-height: 3rem; letter-spacing: -.02em; }
+.dive__open-r { margin-top: 1rem !important; font-family: var(--f-display, Newsreader, Georgia, serif); font-size: 1.25rem; line-height: 1.5rem; max-width: 30ch; text-wrap: balance; }
 @media (min-width: 1024px) {
   .dive__lab-t { font-size: 1.75rem; line-height: 2rem; }
   .dive__lab-k { font-size: .5rem; }
   .dive__lab-s { font-size: 1rem; line-height: 1.5rem; }
+  .dive__open-l { font-size: 3.5rem; line-height: 4rem; }
+  .dive__open-r { font-size: 1.375rem; }
 }
 @media (min-width: 1800px) and (min-height: 1000px) {
   .dive__lab-t { font-size: 2rem; line-height: 3rem; }
   .dive__lab-k { font-size: .625rem; }
   .dive__lab-s { font-size: 1.25rem; line-height: 1.5rem; }
+  .dive__open-l { font-size: 4.5rem; line-height: 5rem; }
 }
-html[data-motion="reduce"] .dive__lab { transition: none; }
-/* reduced motion: the same label under each still figure, in the flow */
-.p1-hall .dive__lab { position: relative; opacity: 1; transform: none; margin-top: 1rem; }
+html[data-motion="reduce"] .dive__lab, html[data-motion="reduce"] .dive__lab::before, html[data-motion="reduce"] .dive__lab > * { transition: none; }
+/* reduced motion: the same label under each still figure, in the flow (no backing: it sits on the paper) */
+.p1-hall .dive__lab { position: relative; transform: none; margin-top: 1rem; }
+.p1-hall .dive__lab::before { display: none; }
+.p1-hall .dive__lab > * { opacity: 1; }
+.p1-hall .dive__open { position: relative; transform: none; }
+.p1-hall .dive__open::before { display: none; }
+.p1-hall .dive__open > * { opacity: 1; }

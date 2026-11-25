@@ -20,7 +20,7 @@ async def main(a):
         ctx = await b.new_context(**kw)
         if a.dark: await ctx.add_init_script("try{localStorage.setItem('wm:theme','dark')}catch(e){}")
         page = await ctx.new_page(); ev = lambda js, arg=None: page.evaluate(js, arg, isolated_context=False)
-        await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
+        await page.goto("http://127.0.0.1:8109/?first&nosnap", wait_until="load")
         await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)   # reduced motion: the still gate
         await page.keyboard.press("Enter")
         await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)

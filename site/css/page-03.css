@@ -10,7 +10,7 @@
 .slip__sec { position: relative; border: 0; margin: 0; padding: 1rem 1rem calc(1rem + var(--snap, 0px)); min-inline-size: 0; box-shadow: inset 0 1px 0 rgba(var(--ink-rgb), .35); }
 .slip__sec:first-child { box-shadow: none; }
 /* the question: its letter in a two-cell column, its words after it; baseline one cell down */
-.slip__q { display: block; float: none; width: 100%; padding: 0; font-family: var(--f-display); font-weight: 420; font-size: 1.25rem; line-height: 1.5rem; letter-spacing: -.005em; }
+.slip__q { display: block; float: none; width: 100%; padding: 0 0 var(--snap, 0px); font-family: var(--f-display); font-weight: 420; font-size: 1.25rem; line-height: 1.5rem; letter-spacing: -.005em; }
 legend.slip__q { float: left; }
 legend.slip__q + * { clear: both; }
 .slip__no { display: inline-block; width: 2rem; color: var(--graphite); font-size: .5rem; letter-spacing: var(--mono-track); vertical-align: baseline; }
@@ -69,7 +69,7 @@ legend.slip__q + * { clear: both; }
 .p3-callout.on { visibility: visible; }
 .p3-callout__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .p3-callout__c, .p3-callout__lead { fill: none; stroke: currentColor; stroke-width: 1px; vector-effect: non-scaling-stroke; }
-.p3-callout__c { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .9s cubic-bezier(.4, 0, .2, 1); }
+.p3-callout__c { stroke-dasharray: var(--c, 20000px) 40000px; stroke-dashoffset: var(--c, 20000px); transition: stroke-dashoffset .9s cubic-bezier(.4, 0, .2, 1); }   /* (round 7: the circle's own length, set by callout.js; no pathLength trick, see .mark) */
 .p3-callout.is-drawn .p3-callout__c { stroke-dashoffset: 0; }
 .p3-callout__lead { opacity: 0; transition: opacity .3s linear .6s; }
 .p3-callout.is-drawn .p3-callout__lead { opacity: 1; }

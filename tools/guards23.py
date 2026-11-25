@@ -15,7 +15,7 @@ async def main():
             posts.append(json.loads(route.request.post_data or "{}")); await route.fulfill(status=200, body="ok", headers={"Access-Control-Allow-Origin": "*"})
         await ctx.route("https://example.invalid/**", handle)
         p = await ctx.new_page(); ev = lambda js, arg=None: p.evaluate(js, arg, isolated_context=False)
-        await p.goto("http://127.0.0.1:8109/?first", wait_until="load")
+        await p.goto("http://127.0.0.1:8109/?first&nosnap", wait_until="load")
         await p.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000); await p.keyboard.press("Enter")
         await p.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000); await p.wait_for_timeout(3000)
         R = {}

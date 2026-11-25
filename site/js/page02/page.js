@@ -1,5 +1,5 @@
 // Pages 2 and 3 as one move (Part 5 "Pages 2 and 3"):
-//   page 2 (For you): five hairline rows. A tap marks the row's box with one hairline stroke, shows its answer beneath,
+//   page 2 (For you): six hairline rows (round 7 added "A look that fits my business"). A tap marks the row's box with one hairline stroke, shows its answer beneath,
 //     prints the line onto the work slip and gives a vibration tick on Android. The slip's head waits at the bottom of
 //     the screen (sticky) and types each new line in; when page 3 arrives, it docks as the top of the slip.
 //   page 3 (the work slip): live number and date, the printed needs, when, your name, anything else, how to send,

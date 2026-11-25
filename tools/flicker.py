@@ -1,0 +1,157 @@
+"""Flicker, frame by frame, in a REAL Chrome window on this laptop at Wajih's setup (Part 5 "Round 7"): Windows at 200%,
+Chrome at 67% zoom, so devicePixelRatio is 1.333 and the window is about 2160 CSS px wide. The zoom is set the way he
+sets it: real Ctrl+minus key presses to the Chrome window (4 steps: 90, 80, 75, 67%).
+For each build (round 6 at /r6old/ when staged, and the current one at /) it walks three stretches with the scroll set
+in small fractional steps (as the smooth scroller moves it), capturing every frame:
+  1. page 1, the drum (the stage is pinned: a still area of it must stay exactly still);
+  2. the hallway, walking between two drawings (everything moves: flicker energy, see below);
+  3. page 2, scrolling (its grid lines must keep the same weight from frame to frame).
+Metrics (grey levels 0-255, on device pixels):
+  still    : mean |frame - previous frame| over an area that should not change (page 1's pinned grid);
+  flicker  : temporal flicker energy: mean over pixels of |b - (a + c) / 2| for consecutive frames a, b, c (a line that
+             shimmers jumps there and back; smooth motion is near zero), and the share of pixels where it exceeds 24;
+  lines    : page 2's horizontal grid lines in an empty strip: how much each line's darkness changes between frames.
+  python -I tools/flicker.py [--builds r6old,current] [--out tools/shots/r7/flicker] [--frames 36]
+One headed Chrome window opens on the desktop while it runs (a fresh temporary profile; nothing of the user's)."""
+import argparse, asyncio, json, subprocess, sys, tempfile, time
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import numpy as np
+from PIL import Image
+from browserlock import BrowserLock
+
+GOTO = """async (y) => { const e = window.__t2.engine; if (e.lenis) e.lenis.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y);
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); e.ScrollTrigger.update();
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); return scrollY; }"""
+
+def zoom_out(title_part, presses=4):
+    ps = ("$ws = New-Object -ComObject WScript.Shell; "
+          f"$ok = $ws.AppActivate('{title_part}'); Start-Sleep -Milliseconds 400; "
+          + "".join("$ws.SendKeys('^-'); Start-Sleep -Milliseconds 350; " for _ in range(presses)) + "Write-Output $ok")
+    return subprocess.run(["powershell", "-NoProfile", "-Command", ps], capture_output=True, text=True).stdout.strip()
+
+def gray(p): return np.asarray(Image.open(p).convert("L"), dtype=np.float32)
+
+def flicker(frames, box=None):
+    a = [f if box is None else f[box[1]:box[3], box[0]:box[2]] for f in frames]
+    e, share = [], []
+    for i in range(1, len(a) - 1):
+        d = np.abs(a[i] - (a[i - 1] + a[i + 1]) / 2); e.append(float(d.mean())); share.append(float((d > 24).mean()))
+    return {"energy": round(float(np.mean(e)), 3), "energy_p95": round(float(np.percentile(e, 95)), 3), "share_over_24": round(float(np.mean(share)) * 100, 3)}
+
+def still(frames, box):
+    a = [f[box[1]:box[3], box[0]:box[2]] for f in frames]
+    d = [float(np.abs(a[i] - a[i - 1]).mean()) for i in range(1, len(a))]
+    return {"mean_change": round(float(np.mean(d)), 4), "max_change": round(float(np.max(d)), 4), "frames_changed": int(sum(x > 0.01 for x in d))}
+
+def line_track(frames, box):
+    """each horizontal grid line in an empty strip, followed from frame to frame: how much its darkness and its sharpness
+    (the share of its ink in its darkest row) change as the page moves. A line that keeps its look scores 0."""
+    prev, dk, sh = None, [], []
+    for f in frames:
+        s = f[box[1]:box[3], box[0]:box[2]].mean(axis=1); dips = np.median(s) - s
+        rows = [i for i in range(2, len(s) - 2) if dips[i] > 2 and dips[i] >= dips[i - 1] and dips[i] > dips[i + 1]]
+        cur = [(r + (dips[r + 1] - dips[r - 1]) / max(1e-3, 2 * dips[r]), dips[r], dips[r] / max(1e-3, dips[r - 2:r + 3].clip(0).sum())) for r in rows]
+        if prev:
+            for y, d_, s_ in cur:
+                m = min(prev, key=lambda p: abs(p[0] - y))
+                if abs(m[0] - y) < 4: dk.append(abs(d_ - m[1])); sh.append(abs(s_ - m[2]))
+        prev = cur
+    return {"pairs": len(dk), "darkness_change": round(float(np.mean(dk)), 3) if dk else None, "darkness_change_p95": round(float(np.percentile(dk, 95)), 3) if dk else None,
+            "sharpness_change": round(float(np.mean(sh)), 4) if sh else None}
+
+def line_weights(frames, box):
+    """the darkest row of each grid line in a column strip, per frame: how much a line's darkness wobbles between frames"""
+    out = []
+    for f in frames:
+        s = f[box[1]:box[3], box[0]:box[2]].mean(axis=1)
+        base = np.median(s); dips = base - s
+        rows = [i for i in range(1, len(s) - 1) if dips[i] > 2 and dips[i] >= dips[i - 1] and dips[i] >= dips[i + 1]]
+        out.append(sorted(dips[r] + dips[r - 1] + dips[r + 1] for r in rows))   # a line's total ink, whatever rows it spans
+        out[-1] = [float(np.max(dips[r - 1:r + 2])) for r in rows]
+    peaks = [np.array(v) for v in out if len(v)]
+    if not peaks: return {"lines": 0}
+    allp = np.concatenate(peaks)
+    per_frame = [float(np.mean(v)) for v in peaks]
+    return {"lines_per_frame": round(float(np.mean([len(v) for v in peaks])), 1), "peak_darkness_mean": round(float(allp.mean()), 2),
+            "peak_darkness_spread": round(float(allp.std()), 2), "frame_to_frame_spread": round(float(np.std(per_frame)), 3)}
+
+CDPS = {}
+async def walk(page, ys, out, tag):
+    """each frame straight from the compositor (what the screen shows), not a re-rendered capture"""
+    import base64
+    cdp = CDPS.get(id(page)) or await page.context.new_cdp_session(page); CDPS[id(page)] = cdp
+    files = []
+    for k, y in enumerate(ys):
+        await page.evaluate(GOTO, y, isolated_context=False)
+        r = await cdp.send("Page.captureScreenshot", {"format": "png", "fromSurface": True})
+        f = out / f"{tag}_{k:03d}.png"; f.write_bytes(base64.b64decode(r["data"])); files.append(f)
+    return files
+
+async def run_build(pw, b, a, out):
+    prof = tempfile.mkdtemp(prefix="flicker-prof-")
+    ctx = await pw.chromium.launch_persistent_context(prof, channel="chrome", headless=False, no_viewport=True,
+        args=["--start-maximized", "--no-first-run", "--no-default-browser-check", "--disable-session-crashed-bubble"])
+    page = ctx.pages[0] if ctx.pages else await ctx.new_page()
+    base = "http://127.0.0.1:8109/" + ("r6old/" if b == "r6old" else "")
+    await page.goto(base + "?first&nosnap", wait_until="load")
+    await page.bring_to_front(); await page.wait_for_timeout(800)
+    # Ctrl+minus, one step at a time, until the zoom is 67% (devicePixelRatio 2 x 0.667 = 1.333)
+    res = None
+    for _ in range(14):
+        dpr = await page.evaluate("devicePixelRatio")
+        if 1.32 < dpr < 1.34: break
+        await page.bring_to_front(); await page.wait_for_timeout(250)
+        res = zoom_out("Wajih Mansouri", 1) if dpr > 1.34 else subprocess.run(["powershell", "-NoProfile", "-Command",
+            "$ws = New-Object -ComObject WScript.Shell; $ws.AppActivate('Wajih Mansouri') | Out-Null; Start-Sleep -Milliseconds 300; $ws.SendKeys('^{+}')"], capture_output=True, text=True).stdout
+        await page.wait_for_timeout(800)
+    env = await page.evaluate("({ dpr: devicePixelRatio, w: innerWidth, h: innerHeight, sw: screen.width, sh: screen.height })")
+    print(b, "AppActivate:", res, "env:", env, flush=True)
+    await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
+    await page.keyboard.press("Enter")
+    await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
+    await page.wait_for_timeout(1500)
+    stops = await page.evaluate("window.__p1.stops", isolated_context=False)
+    yAt = lambda p: page.evaluate(f"window.__p1.yAt({p})", isolated_context=False)
+    n = a.frames
+    rep = {"env": env}
+    # 1. the drum (pinned): a still area, lower left, under the meaning and left of the title block
+    d0 = (stops.get("DRUM", 3.6)); y0 = await yAt(d0); y1 = await yAt(d0 + 0.08)
+    await page.evaluate(GOTO, y0, isolated_context=False); await page.wait_for_timeout(1500)
+    fr = await walk(page, [y0 + (y1 - y0) * k / n for k in range(n)], out, f"{b}_drum")
+    G = [gray(f) for f in fr]; H, W = G[0].shape
+    rep["drum_still"] = still(G, (int(W * 0.04), int(H * 0.86), int(W * 0.3), int(H * 0.97)))
+    rep["drum_flicker"] = flicker(G)
+    # 2. the hallway: walking on from the first drawing towards the second
+    f1, f2 = stops["F1"], stops["F2"]; ya = await yAt(f1 + (f2 - f1) * 0.32); yb = await yAt(f1 + (f2 - f1) * 0.5)
+    await page.evaluate(GOTO, ya, isolated_context=False); await page.wait_for_timeout(2500)
+    fr = await walk(page, [ya + (yb - ya) * k / n for k in range(n)], out, f"{b}_hall")
+    G = [gray(f) for f in fr]
+    rep["hall_flicker"] = flicker(G)
+    Hh, Wh = G[0].shape
+    rep["hall_wall_flicker"] = flicker(G, (0, int(Hh * 0.55), int(Wh * 0.12), int(Hh * 0.95)))
+    # 3. page 2 scrolling: its grid lines in an empty strip at the right
+    p2 = await page.evaluate("(() => { const el = document.getElementById('page-02'); let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; })()")
+    await page.evaluate(GOTO, p2 + 40, isolated_context=False); await page.wait_for_timeout(1500)
+    fr = await walk(page, [p2 + 40 + 0.83 * k for k in range(n)], out, f"{b}_p2")
+    G = [gray(f) for f in fr]; H, W = G[0].shape
+    rep["p2_lines"] = line_weights(G, (int(W * 0.955), int(H * 0.08), int(W * 0.985), int(H * 0.8)))
+    rep["p2_shimmer"] = line_track(G, (int(W * 0.955), int(H * 0.08), int(W * 0.985), int(H * 0.8)))
+    rep["p2_scroll_device_px"] = await page.evaluate("[scrollY * devicePixelRatio % 1]")
+    rep["p2_flicker"] = flicker(G, (int(W * 0.9), 0, W, H))
+    await ctx.close()
+    return rep
+
+async def main(a):
+    from patchright.async_api import async_playwright
+    out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
+    report = {}
+    async with async_playwright() as pw:
+        for b in a.builds.split(","):
+            report[b] = await run_build(pw, b, a, out)
+            print(b, json.dumps(report[b], indent=1), flush=True)
+    (out / "flicker.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
+
+ap = argparse.ArgumentParser(); ap.add_argument("--builds", default="r6old,current"); ap.add_argument("--out", default="tools/shots/r7/flicker"); ap.add_argument("--frames", type=int, default=36)
+with BrowserLock():
+    asyncio.run(main(ap.parse_args()))

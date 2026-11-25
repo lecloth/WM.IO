@@ -24,6 +24,9 @@
       }
       try { if (localStorage.getItem('wm:theme') === 'dark') d.dataset.theme = 'dark'; } catch (e) {}
       d.dataset.visit = seen ? 'return' : 'first';
+      /* round 7: the soft snap. Touch screens snap natively (the page follows the thumb; on release it settles on the
+         nearest scene); desktop settles after the wheel stops (main.js). Off with reduced motion; ?nosnap for tests. */
+      d.dataset.snap = rm || /[?&]nosnap\b/.test(location.search) ? 'off' : (matchMedia('(pointer: coarse)').matches ? 'touch' : 'wheel');
       var tasks = ['css', 'gsap', 'st', 'lenis', 'app', 'fonts', 'load'], done = {};
       window.__wm = {
         t0: performance.now(), progress: 0, reduced: rm, returning: seen, jumpTo: jumpTo,
@@ -47,11 +50,26 @@
         var p = document.createElement('div'); p.style.cssText = 'position:absolute;top:-999px;left:0;width:100px;height:100px;overflow:scroll;visibility:hidden';
         d.appendChild(p); sb = Math.max(0, p.offsetWidth - p.clientWidth); p.remove(); return sb;
       }
+      /* Round 7 (the flicker on Wajih's laptop, devicePixelRatio 1.333): where the screen allows it, a cell is a whole number
+         of device pixels (every line then falls on a pixel, and stays there as the page moves): of the cell counts that
+         keep a cell 20-24 px, one that divides the width in device pixels exactly, a multiple of 5 if possible, else the
+         round 6 rule. Hairlines (--px1) are a whole number of device pixels thick. */
+      function pick(W, dpr) {
+        if (W < 640) return 20;
+        var Wd = Math.round(W * dpr), best = 0, bestScore = 1e9;
+        for (var n = Math.ceil(W / 24); n <= Math.floor(W / 20); n++) {
+          if (Math.abs(Wd / n - Math.round(Wd / n)) > 1e-6) continue;
+          var score = Math.abs(W / n - 22) + (n % 5 ? 3 : 0);
+          if (score < bestScore) { bestScore = score; best = n; }
+        }
+        return best || 5 * Math.round(W / 110);
+      }
       function grid() {
-        var W = innerWidth - bar(), n = W < 640 ? 20 : 5 * Math.round(W / 110), u = W / n, old = window.__grid;
-        if (old && old.u === u && old.n === n) { old.H = innerHeight; return; }   /* a height change (a phone's address bar) keeps the grid */
+        var dpr = window.devicePixelRatio || 1, W = innerWidth - bar(), n = pick(W, dpr), u = W / n, old = window.__grid;
+        if (old && old.u === u && old.n === n && old.dpr === dpr) { old.H = innerHeight; return; }   /* a height change (a phone's address bar) keeps the grid */
         d.style.setProperty('--u', u + 'px'); d.style.setProperty('--n', n);
-        window.__grid = { u: u, n: n, W: W, H: innerHeight, sb: sb };
+        d.style.setProperty('--px1', (Math.max(1, Math.round(dpr)) / dpr) + 'px');
+        window.__grid = { u: u, n: n, W: W, H: innerHeight, sb: sb, dpr: dpr };
         if (old) try { document.dispatchEvent(new CustomEvent('wm:grid', { detail: window.__grid })); } catch (e) {}
       }
       grid(); addEventListener('resize', grid);

@@ -18,7 +18,7 @@ async def main(a):
         for s in a.sizes.split(","):
             wh, dpr = s.split("@"); w, h = map(int, wh.split("x"))
             ctx = await b.new_context(viewport={"width": w, "height": h}, device_scale_factor=float(dpr)); page = await ctx.new_page()
-            await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
+            await page.goto("http://127.0.0.1:8109/?first&nosnap", wait_until="load")
             await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
             await page.keyboard.press("Enter")
             await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000); await page.wait_for_timeout(600)

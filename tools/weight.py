@@ -21,7 +21,7 @@ async def main(a):
         phase = ["load"]
         cdp.on("Network.requestWillBeSent", lambda e: (urls.__setitem__(e["requestId"], e["request"]["url"]), phases.__setitem__(e["requestId"], phase[0])))
         cdp.on("Network.loadingFinished", lambda e: sizes.__setitem__(e["requestId"], e.get("encodedDataLength", 0)))
-        await page.goto("http://127.0.0.1:8109/?first" + (("&" + a.query) if a.query else ""), wait_until="load")
+        await page.goto("http://127.0.0.1:8109/?first&nosnap" + (("&" + a.query) if a.query else ""), wait_until="load")
         await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
         await page.keyboard.press("Enter")
         await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)

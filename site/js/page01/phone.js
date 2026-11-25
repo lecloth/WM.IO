@@ -126,7 +126,7 @@ export function drawScreen(c, ink = LIGHT.ink, paper = LIGHT.paper, graphite = L
   hair(96);
   x.fillStyle = ink; x.font = `400 ${46 * k}px Newsreader, Georgia, serif`;
   ['What do', 'you need?'].forEach((t, i) => x.fillText(t, 22 * k, (168 + i * 50) * k));
-  const rows = ['A website', 'An app', 'My systems are a mess', 'AI working for me', 'Keep it secure'];
+  const rows = ['A website', 'An app', 'My systems are a mess', 'AI working for me', 'Keep it secure', 'A look that fits my business'];
   let y = 268; hair(y);
   rows.forEach((t, i) => {
     x.fillStyle = graphite; x.font = `400 ${11 * k}px "DM Mono", monospace`; x.fillText(String(i + 1).padStart(2, '0'), 24 * k, (y + 36) * k);
@@ -302,6 +302,8 @@ export class Phone {
   resize(w, h) {
     this.W = w; this.H = h;
     this.renderer.setSize(w, h, false);
+    // (round 7) the canvas exactly its buffer's device pixels (no fractional resampling)
+    this.canvas.style.width = `${(Math.round(w * this.dpr) / this.dpr).toFixed(4)}px`; this.canvas.style.height = `${(Math.round(h * this.dpr) / this.dpr).toFixed(4)}px`;
     this.camera.aspect = w / h; this.camera.updateProjectionMatrix();
     this.lineMats.forEach((m) => m.resolution.set(w * this.dpr, h * this.dpr));
   }

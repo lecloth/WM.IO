@@ -104,9 +104,9 @@ gone, with the three materials only they used (Plaster002, Poly Haven Laminate F
 
 | Folder | What it is | Source | Licence | Changes | Where used |
 |---|---|---|---|---|---|
-| `Paper001/` | Paper 001: white paper | ambientCG, https://ambientcg.com/view?id=Paper001 (`Paper001_1K-JPG.zip`) | CC0 1.0 | Resampled to square; printed in grey at run time | **The hallway (look A, the only look)**: the white card of the walls and floor, the site's grid printed on it at run time |
+| `Paper001/` | Paper 001: white paper | ambientCG, https://ambientcg.com/view?id=Paper001 (`Paper001_1K-JPG.zip`) | CC0 1.0 | Resampled to square; printed in grey at run time | **The hallway (look A, the only look)**: the white card of the walls, floor and (round 7) ceiling, the site's grid printed on it at run time |
 
-The studio HDRI below lights the hallway's reflections and the real phones in frame 4. Candidates downloaded and looked
+The studio HDRI below lights the hallway's reflections and the real phones in frame 5 (frame 4 until round 6). Candidates downloaded and looked
 at, not shipped: ambientCG Paper003, Plaster002 (round 5's look B, removed in round 6), Plaster003, Plaster005,
 WoodFloor051, WoodFloor066A, WoodFloor067A, Concrete016, Concrete034 (round 5's look C, removed in round 6), Concrete046,
 Concrete048; Poly Haven laminate_floor_03 (round 5's look B, removed in round 6), plank_flooring_04, wooden_floor_02.
@@ -115,7 +115,7 @@ Concrete048; Poly Haven laminate_floor_03 (round 5's look B, removed in round 6)
 
 | File | What it is | Source | Licence | Where used |
 |---|---|---|---|---|
-| `studio_small_09_1k.hdr` (1024 × 512, Radiance HDR, 1.6 MB, unmodified) | "Studio Small 09" by **Sergej Majboroda**: a small photo studio, large octaboxes, soft directional light on a white infinity cyc (16K original; the 1K file) | Poly Haven, https://polyhaven.com/a/studio_small_09 (file `https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr`, downloaded 23 Nov 2026) | **CC0 1.0** (every Poly Haven asset; https://polyhaven.com/license): commercial use, no credit required | **Page 1**: the finished phone's real reflections (phone A); round 5: the hallway's reflections (frames' metal and glass) and the two real phones, live in frame 4; the asset sheet (phone A and the two real phones); the corridor's frame-4 still of the real phones. Two other CC0 studios were downloaded and looked at, not shipped: Studio Small 08, Photo Studio 01 |
+| `studio_small_09_1k.hdr` (1024 × 512, Radiance HDR, 1.6 MB, unmodified) | "Studio Small 09" by **Sergej Majboroda**: a small photo studio, large octaboxes, soft directional light on a white infinity cyc (16K original; the 1K file) | Poly Haven, https://polyhaven.com/a/studio_small_09 (file `https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr`, downloaded 23 Nov 2026) | **CC0 1.0** (every Poly Haven asset; https://polyhaven.com/license): commercial use, no credit required | **Page 1**: the finished phone's real reflections (phone A); round 5: the hallway's reflections and the two real phones (round 7: frame 5), live in frame 4; the asset sheet (phone A and the two real phones); the corridor's frame-4 still of the real phones. Two other CC0 studios were downloaded and looked at, not shipped: Studio Small 08, Photo Studio 01 |
 
 ## Take 2 corridor sheets (`site/media/corridor/`): off the page since round 4, files kept
 
@@ -164,11 +164,11 @@ candidates (B1–B3) were dropped (Part 5 "Round 4 picks"); their slots and `pho
 
 | File (git-ignored) | What it is | Source | Licence | Changes | Where used |
 |---|---|---|---|---|---|
-| `site/media/phones-unverified/iphone18.glb` (1.19 MB) | iPhone 18 Pro Max, silver: 64,954 triangles, 34 materials | `tools/sources/phones/iphone18/model.glb`, from `apple-iphone-18-pro-max-silver-2026.zip`, downloaded by Wajih from Sketchfab (24 Nov). The file's own metadata says "Binkies MDM 3.3 conversion" (Binkies 3D makes phone models for retailers' shop pages): most likely re-uploaded by someone who doesn't own it | **Unverified** | The Apple logo flattened into the back panel's own surface and material (removing it left a hole: the panel has it cut out); the display's own picture removed (our booking app goes on at run time); textures at most 1024 px, WebP; meshopt-compressed (`tools/phones_web.mjs`) | Asset sheet (live, our app on screen); **round 5: live in the hallway's frame 4 on page 1** (loaded as the dive begins; they turn to show their backs, then settle front-on); the frame-4 still (the fallback) |
-| `site/media/phones-unverified/s26.glb` (1.09 MB) | Galaxy S26 Ultra: 62,754 triangles, 32 materials, unnamed nodes | `tools/sources/phones/s26/model.glb`, from `samsung-s26-ultra.zip`, downloaded by Wajih from Sketchfab (24 Nov). Exported by Blender's glTF exporter; carries no maker or licence information (its Sketchfab page is still to be checked) | **Unverified** | The SAMSUNG wordmark (node "Geometry", found by inspection: each candidate rendered in red on the back) removed; the display's picture removed; textures at most 1024 px, WebP; meshopt-compressed | As above (round 5: live in frame 4) |
-| `site/media/phones-unverified/corridor-phones.webp` (38 KB, 1200 × 1098) | The two phones front on, running our booking app, orthographic, transparent ground, in the studio light above | Rendered from the two web copies by `tools/phone_stills.py` (`site/dev/phone-stills.html`) | **Unverified** (made from the two models) | — | Page 1, the hallway's frame 4: round 5, the fallback while the live phones load, with reduced motion, and when the models are missing |
+| `site/media/phones-unverified/iphone18.glb` (1.19 MB) | iPhone 18 Pro Max, silver: 64,954 triangles, 34 materials | `tools/sources/phones/iphone18/model.glb`, from `apple-iphone-18-pro-max-silver-2026.zip`, downloaded by Wajih from Sketchfab (24 Nov). The file's own metadata says "Binkies MDM 3.3 conversion" (Binkies 3D makes phone models for retailers' shop pages): most likely re-uploaded by someone who doesn't own it | **Unverified** | The Apple logo flattened into the back panel's own surface and material (removing it left a hole: the panel has it cut out); the display's own picture removed (our booking app goes on at run time); textures at most 1024 px, WebP; meshopt-compressed (`tools/phones_web.mjs`) | Asset sheet (live, our app on screen); **live in the hallway's last frame on page 1** (round 7: frame 5; loaded from the WE scene on; once the frame settles they turn by themselves to show their backs, then settle front-on); the still (the fallback) |
+| `site/media/phones-unverified/s26.glb` (1.09 MB) | Galaxy S26 Ultra: 62,754 triangles, 32 materials, unnamed nodes | `tools/sources/phones/s26/model.glb`, from `samsung-s26-ultra.zip`, downloaded by Wajih from Sketchfab (24 Nov). Exported by Blender's glTF exporter; carries no maker or licence information (its Sketchfab page is still to be checked) | **Unverified** | The SAMSUNG wordmark (node "Geometry", found by inspection: each candidate rendered in red on the back) removed; the display's picture removed; textures at most 1024 px, WebP; meshopt-compressed | As above (round 7: live in frame 5) |
+| `site/media/phones-unverified/corridor-phones.webp` (38 KB, 1200 × 1098) | The two phones front on, running our booking app, orthographic, transparent ground, in the studio light above | Rendered from the two web copies by `tools/phone_stills.py` (`site/dev/phone-stills.html`) | **Unverified** (made from the two models) | — | Page 1, the hallway's frame 5 (round 7; frame 4 before): the fallback while the live phones load, with reduced motion, and when the models are missing |
 
-Everything that uses them copes with the files being missing: frame 4 shows the still, or stays a blueprint if the still is
+Everything that uses them copes with the files being missing: frame 5 shows the still, or stays a blueprint if the still is
 missing too; the asset sheet says "file missing". Before any hosting: clear both licences (author, licence, commercial use; never NC or ND) or replace
 both models, and credit them here and on the site.
 
@@ -185,6 +185,12 @@ both models, and credit them here and on the site.
 - The phone history drawings (c. 1900 to 2007): generic forms drawn in code (`site/js/sheet01/eras.js`); no logos, no
   brand names, no copy of any one maker's design. Facts: STATE.md "Phone history: sources" and `tools/notes/sweep-truth.md`.
 - The hero phone (six layers, edges, materials), the cyanotype shader, labels and dimensions: three.js and GLSL.
+- **Take 2, round 7:** the three ways into the hallway (the grid folding into it, the cut, the square) and its end wall
+  (the page's own paper and grid), the five drawings with no frames (printed on the wall, bare sheet, pinned sheet with
+  its hairline shadow and pins), the new design drawing (`corridor-drawings.js` `design()`), the frosted label backing
+  (CSS `backdrop-filter`), the live measurements, the soft snap; Bell's scan shown without its paper (CSS blending of the
+  same public-domain file). Dev only: `tools/flicker.py` (real Chrome captures), `tools/overlap.py`, `tools/phone_r7.py`,
+  `tools/phone_snap.py`.
 - **Take 2, round 6:** the grid as the layout system (the unit per screen in the head script, `site/css/page-00-grid.css`,
   `site/js/engine/grid.js`), the two grounds (CSS colours), the hallway's grid continued in perspective from its mouth,
   the frames sized in whole cells and hung on the card's lines, the museum labels under the frames (`dive.js`,

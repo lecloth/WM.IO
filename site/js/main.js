@@ -38,15 +38,22 @@ setActive(0);
 // round 6: the strip's nine segments on whole columns of the grid (the head script's unit)
 function stripCols() { const n = window.__grid?.n || 20; segs.forEach((s, i) => { s.style.setProperty('--c0', Math.round(i * n / 9) + 1); s.style.setProperty('--c1', Math.round((i + 1) * n / 9) + 1); }); }
 stripCols(); document.addEventListener('wm:grid', stripCols);
-pages.forEach((el, i) => {
-  ScrollTrigger.create({
-    trigger: el, start: 'top 50%', end: 'bottom 50%',
-    onToggle: (s) => { if (s.isActive) setActive(i); },
-    onUpdate: (s) => segs[i]?.style.setProperty('--p', s.progress.toFixed(4)),
-    onLeave: () => segs[i]?.style.setProperty('--p', 1),
-    onLeaveBack: () => segs[i]?.style.setProperty('--p', 0),
-  });
-});
+// round 7: the page under the screen's top is the active one (a page counts from the moment it lands; page 2 overlaps
+// page 1's last screen, so "top 50%" ranges overlapped and scrolling back up left 02 showing on page 1). Each segment
+// fills from its page's landing to the next page's.
+let tops = [];
+const docTop = (el) => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; };   // layout (page 2 is transformed during the dive)
+const measureTops = () => { tops = pages.map(docTop); };
+function track() {
+  if (!tops.length) measureTops();
+  const y = scrollY + 1;
+  let i = 0; for (let k = 0; k < tops.length; k++) if (tops[k] <= y) i = k;
+  setActive(i);
+  segs.forEach((sg, k) => { const a = tops[k], b = k + 1 < tops.length ? tops[k + 1] : document.documentElement.scrollHeight - innerHeight;
+    sg.style.setProperty('--p', Math.max(0, Math.min(1, (y - a) / Math.max(1, b - a))).toFixed(4)); });
+}
+ScrollTrigger.create({ start: 0, end: 'max', onUpdate: track, onRefresh: () => { measureTops(); track(); } });
+addEventListener('scroll', track, { passive: true });
 const go = (hash) => { const el = document.querySelector(hash); if (el) engine.scrollTo(el, { duration: 1.4 }); };
 segs.forEach((seg) => seg.querySelector('a').addEventListener('click', (e) => {
   e.preventDefault();
@@ -55,6 +62,22 @@ segs.forEach((seg) => seg.querySelector('a').addEventListener('click', (e) => {
 }));
 
 initCursor(engine);
+
+// round 7: the soft snap on desktop: once the wheel has stopped and the page has come to rest, it settles on the nearest
+// scene of page 1 (if one is near); touch screens snap natively (page-00-grid.css). Nothing else moves the page.
+if (document.documentElement.dataset.snap === 'wheel' && engine.lenis) {
+  let lastWheel = 0, settling = false, t = 0;
+  addEventListener('wheel', () => { lastWheel = performance.now(); settling = false; }, { passive: true });
+  engine.lenis.on('scroll', () => {
+    clearTimeout(t);
+    t = setTimeout(() => {
+      if (settling || performance.now() - lastWheel < 140 || document.documentElement.dataset.phase !== 'ready') return;
+      const ys = window.__p1?.snaps?.() || [], y = scrollY; if (!ys.length || y > ys[ys.length - 1] + innerHeight * 0.45) return;
+      let best = null; for (const v of ys) if (best === null || Math.abs(v - y) < Math.abs(best - y)) best = v;
+      if (best !== null && Math.abs(best - y) > 2 && Math.abs(best - y) < innerHeight * 0.45) { settling = true; engine.lenis.scrollTo(best, { duration: 0.5 }); }
+    }, 160);
+  });
+}
 
 runEnter(engine, () => {
   engine.lockScroll(false);
