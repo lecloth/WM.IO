@@ -1,14 +1,15 @@
-    <!-- PAGE 03: THE WORK SLIP (the lab's C3). Its head is page 2's last line (docked); then the printed needs, when,
-         your name, anything else, how to send, and Send. WhatsApp and email open in the visitor's own app with the slip
-         filled in; sending from the page and booking are built but switched off in site/js/settings.js (off: they hand
-         over to the email app). Then "or see how we think", and Detail B, a circle that grows into page 4.
-         Every line is a DRAFT until Wajih signs it off. Script: site/js/page02/slip.js, send.js, callout.js -->
-    <section id="page-03" class="p3 p23" data-sheet="03" data-title="Work slip" data-drawn="Engineering" data-checked="Design" data-approved="Strategy" aria-label="Page 3: your work slip">
+    <!-- THE FINAL ROOM, part 2: THE WORK SLIP (the lab's C3). Its head is the rows' last line (docked); then the printed
+         needs, when, your name, anything else, how to send, and Send. WhatsApp and email open in the visitor's own app
+         with the slip filled in; sending from the page and booking are built but switched off in site/js/settings.js
+         (off: they hand over to the email app). Round 8: the slip ends with Send; the spec sheet follows in plain scroll
+         ("or see how we think" and Detail B pointed at the old page 4 and are gone). Every line is a DRAFT until Wajih
+         signs it off. Script: site/js/page02/slip.js, send.js -->
+    <section id="page-07b" class="p3 p23" aria-label="The final room: your work slip">
       <form class="slip" id="slip" novalidate autocomplete="on" aria-label="Work slip">
         <div class="slip__sec g-snap slip__sec--needs">
           <h3 class="slip__q gt g-snap"><span class="slip__no mono" aria-hidden="true">A</span><span data-draft>What you need</span></h3>
           <ol class="slip__needs"></ol>
-          <p class="slip__empty gt gt-h" data-draft><a href="#page-02">Nothing yet. Tap what fits, above ↑</a></p>
+          <p class="slip__empty gt gt-h" data-draft><a href="#page-07">Nothing yet. Tick what fits, above ↑</a></p>
         </div>
         <fieldset class="slip__sec g-snap slip__sec--when">
           <legend class="slip__q gt g-snap"><span class="slip__no mono" aria-hidden="true">B</span><span data-draft>When do you need it?</span></legend>
@@ -53,14 +54,4 @@
           <p class="slip__said gt gt-h" role="status" aria-live="polite"></p>
         </div>
       </form>
-      <!-- the way on: a line, then Detail B (a circle) with page 4 already behind it; it grows into page 4's stage -->
-      <div class="p3__tail">
-        <div class="p3__pin">
-          <p class="p3__more rv gt"><a href="#page-04" data-draft>or see how we think ↓</a></p>
-        </div>
-      </div>
-      <div class="p3-callout" aria-hidden="true">
-        <svg class="p3-callout__svg"><circle class="p3-callout__c" cx="0" cy="0" r="1"/><path class="p3-callout__lead"/></svg>
-        <span class="p3-callout__tag mono" data-draft>Detail B · 04 Trips</span>
-      </div>
     </section>

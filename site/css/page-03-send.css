@@ -28,3 +28,5 @@
   .send:hover .send__shaft { stroke-width: 1.5px; }
 }
 html[data-motion="reduce"] .send__head, html[data-motion="reduce"] .send__arrow { transition: none; }
+/* round 8 (TYPE_RULES rule 5): balanced, no lone word */
+.send__say { text-wrap: balance; }

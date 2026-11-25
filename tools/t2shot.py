@@ -24,7 +24,7 @@ async def open_page(pw, a):
     return b, page, errs
 
 async def enter(page, a, out, tag):
-    await page.goto("http://127.0.0.1:8109/?first&nosnap" + (("&" + a.query) if a.query else ""), wait_until="load")
+    await page.goto("http://127.0.0.1:8109/?first" + (("&" + a.query) if a.query else ""), wait_until="load")
     if a.reduced:   # the still gate: shoot it, then enter at once
         await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
         await page.wait_for_timeout(400); await page.screenshot(path=str(out / f"{tag}_gate.png"))

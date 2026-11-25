@@ -10,10 +10,10 @@ written in code for this site (see the last section).
 | File | What it is | Source | Licence | Where used |
 |---|---|---|---|---|
 | `newsreader-var.woff2`, `newsreader-var-italic.woff2` | Newsreader, variable (weight 200–800, optical size 6–72), roman + italic, v5.3.0 | npm `@fontsource-variable/newsreader` (Production Type, via Google Fonts), https://github.com/productiontype/Newsreader | SIL Open Font License 1.1; full text shipped as `site/fonts/LICENSE-newsreader.txt` | Site-wide: headlines, body, product screens |
-| `dm-mono-400.woff2`, `dm-mono-500.woff2` | DM Mono 400 and 500, v5.3.0 | npm `@fontsource/dm-mono` (Colophon Foundry for Google), https://github.com/googlefonts/dm-mono | SIL Open Font License 1.1; full text shipped as `site/fonts/LICENSE-dm-mono.txt` | Labels, strip, title blocks, dimensions, product screens |
+| `dm-mono-300.woff2` (round 8), `dm-mono-400.woff2`, `dm-mono-500.woff2` | DM Mono Light 300 (round 8: the live measurements on the dimension lines), 400 and 500, v5.3.0, latin subset, unmodified | npm `@fontsource/dm-mono` (Colophon Foundry for Google), https://github.com/googlefonts/dm-mono | SIL Open Font License 1.1; full text shipped as `site/fonts/LICENSE-dm-mono.txt` | Labels, strip, title blocks, dimensions, product screens |
 
 No other font files are shipped. Pairings A and C were removed in slice 3 with `/type.html`; none of their files or
-`@font-face` rules remain (checked: `site/css/*.css` declares only the four files above).
+`@font-face` rules remain (checked: `site/css/*.css` declares only the five files above).
 
 ## Libraries (`site/vendor/`)
 
@@ -176,7 +176,7 @@ both models, and credit them here and on the site.
 
 | Files | What it is | Source | Licence | Where used |
 |---|---|---|---|---|
-| `body.stl`, `core.stl`, `lid.stl`, `clip.stl`, `pin-a…e.stl`, `driver-{standard,spool,mushroom,serrated,tpin}.stl`, `key_abcde.stl` (15 of the 21 files, unmodified binary STL, 7.2 MB, 148,042 triangles) + our own `manifest.json` (part names, explode offsets) | **"Cutaway Lock" by zbzzn**: a 5-pin pin-tumbler cutaway (housing, plug, retaining clip, cap, five key pins, five drivers including security pins, keys), parts in their assembled positions | Printables model 250197, https://www.printables.com/model/250197, downloaded by Wajih (logged in) on 22 Nov 2026 as `cutaway-lock-250197.zip` (21 STLs + Printables' info sheet) | **CC BY 4.0** (commercial use allowed; credit required): "Cutaway Lock" by zbzzn, https://creativecommons.org/licenses/by/4.0/. Changes: restyled (matte, brass/steel, X-ray), taken apart and animated; pins lifted by the key's own profile | Style lab A1–A3 (assembly) and B1–B3 (trip into the lock). On the live site the credit line goes in the caption and the spec sheet |
+| `body.stl`, `core.stl`, `lid.stl`, `clip.stl`, `pin-a…e.stl`, `driver-{standard,spool,mushroom,serrated,tpin}.stl`, `key_abcde.stl` (15 of the 21 files, unmodified binary STL, 7.2 MB, 148,042 triangles) + our own `manifest.json` (part names, explode offsets) | **"Cutaway Lock" by zbzzn**: a 5-pin pin-tumbler cutaway (housing, plug, retaining clip, cap, five key pins, five drivers including security pins, keys), parts in their assembled positions | Printables model 250197, https://www.printables.com/model/250197, downloaded by Wajih (logged in) on 22 Nov 2026 as `cutaway-lock-250197.zip` (21 STLs + Printables' info sheet) | **CC BY 4.0** (commercial use allowed; credit required): "Cutaway Lock" by zbzzn, https://creativecommons.org/licenses/by/4.0/. Changes: restyled (matte, brass/steel, X-ray), taken apart and animated; pins lifted by the key's own profile. Round 8: housing, plug, cap and clip merged into `door-lock.bin` (one indexed mesh plus its 32° crease edges, `tools/lock_web.mjs`), restyled as matte card with ink hairlines and turned a little | Style lab A1–A3 (assembly) and B1–B3 (trip into the lock); round 8: the lock on the hallway's door (page 2), so rounds 9 and 10 continue from it. On the live site the credit line goes in the caption and the spec sheet |
 
 ## Made in code (no outside asset)
 
@@ -185,6 +185,17 @@ both models, and credit them here and on the site.
 - The phone history drawings (c. 1900 to 2007): generic forms drawn in code (`site/js/sheet01/eras.js`); no logos, no
   brand names, no copy of any one maker's design. Facts: STATE.md "Phone history: sources" and `tools/notes/sweep-truth.md`.
 - The hero phone (six layers, edges, materials), the cyanotype shader, labels and dimensions: three.js and GLSL.
+- **Take 2, round 8:** the hallway's dress (its flat paper-and-grid surfaces under the lit card), the swing, the labels
+  carried in the sheet's perspective (CSS `matrix3d`) on their rounded frosted backing, the knockout of the hallway's
+  edges round every label, the five product drawings (the property app's enquiry path, the watch face, the delivery
+  tracker's which-driver flow, the website loading, the booking app on the two phones: `corridor-drawings.js`, all our
+  own made-up products, named by what they are, no brands, no logos; the watch and the dispatcher take their subjects
+  from Take 1's concept products, not their drawings), dimension lines broken round their DM Mono Light measurements,
+  the door (leaf, panels, architrave, hinge marks) in WebGL hairlines, "Cut to the chase" and its hyperdrive (pages
+  flashing past, the grid wrapping into a tunnel, its crossing points streaming as hairline streaks and settling into
+  the final room's grid: `site/js/engine/hyperdrive.js`, our own visual, canvas 2D, no glow, nothing taken from any
+  launch film), the held scenes' lagged scroll (`page.js`). Dev only: `tools/typecheck.py` + `.js`, `tcsum.py`,
+  `phone_r8.py`, `axe8.py`, `selfcheck.py`, `contactsheet.py`, `lock_web.mjs` (merges the CC BY lock above).
 - **Take 2, round 7:** the three ways into the hallway (the grid folding into it, the cut, the square) and its end wall
   (the page's own paper and grid), the five drawings with no frames (printed on the wall, bare sheet, pinned sheet with
   its hairline shadow and pins), the new design drawing (`corridor-drawings.js` `design()`), the frosted label backing

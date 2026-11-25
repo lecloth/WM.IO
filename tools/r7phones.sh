@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Round 7: the phone-size half of r7final.sh, re-run after the ?nosnap fix (a stray control character in the head script
+# Round 7: the phone-size half of r7final.sh, re-run after the  fix (a stray control character in the head script
 # kept the touch snap on in every emulated phone check, so programmatic scrolls were pulled to the nearest scene).
 cd "$(dirname "$0")/.."
 O=tools/shots/r7

@@ -29,5 +29,5 @@ async def main(a):
         if errs: print("console:", errs)
         await b.close()
 ap = argparse.ArgumentParser(); ap.add_argument("expr"); ap.add_argument("--size", default="384x734@2.8125"); ap.add_argument("--p", type=float); ap.add_argument("--dark", action="store_true")
-ap.add_argument("--url", default="?first&nosnap"); ap.add_argument("--wait", type=int, default=900); ap.add_argument("--shot", default="")
+ap.add_argument("--url", default="?first"); ap.add_argument("--wait", type=int, default=900); ap.add_argument("--shot", default="")
 with BrowserLock(): asyncio.run(main(ap.parse_args()))

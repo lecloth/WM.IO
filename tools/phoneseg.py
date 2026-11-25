@@ -26,7 +26,7 @@ async def main(a):
     try:
         async with websockets.connect(f"ws://127.0.0.1:9222/devtools/page/{tid}", max_size=64 << 20) as ws:
             c = CDP(ws); await c.call("Runtime.enable")
-            await c.call("Page.navigate", {"url": "http://127.0.0.1:8109/?first&nosnap"})
+            await c.call("Page.navigate", {"url": "http://127.0.0.1:8109/?first"})
             for _ in range(120):
                 await asyncio.sleep(0.25)
                 try:

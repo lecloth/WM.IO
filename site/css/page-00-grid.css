@@ -59,8 +59,8 @@ html, html[data-motion] { font-size: var(--u); }
 .mono { font-family: var(--f-mono); letter-spacing: var(--mono-track); text-transform: uppercase; font-size: .625rem; line-height: 1rem; }
 @media (min-width: 1024px) { .mono { font-size: .5rem; } }
 
-/* ---------- the strip: two cells tall; nine segments, each on whole columns (main.js sets --c0 / --c1); each label's
-   baseline on the strip's first line ---------- */
+/* ---------- the strip: two cells tall; eight segments and "Cut to the chase", each on whole columns (main.js sets
+   --c0 / --c1); each label's baseline on the strip's first line ---------- */
 .strip { height: 2rem; }
 /* round 7: the strip is opaque paper (it was see-through: page text scrolling under it showed between its labels) */
 html .strip { background: var(--paper); mix-blend-mode: normal; color: var(--ink); }
@@ -68,28 +68,47 @@ html .strip { background: var(--paper); mix-blend-mode: normal; color: var(--ink
 .strip__seg { grid-column: var(--c0, auto) / var(--c1, auto); }
 .strip__seg a { display: block; height: 2rem; padding: 0 0 0 .5rem; font-size: .5rem; line-height: 1rem; }
 .strip__seg a > span { display: inline-block; text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-mono)), 1rem); }
-@media (max-width: 1023px) { .strip__seg a > .strip__name { display: none; } }
 .strip__no { margin-right: .25rem; }
-@media (max-width: 1023px) { .strip__seg a { justify-content: flex-start; padding: 0 0 0 .5rem; } }
+/* round 8, phones: the eight segments are bars (the title block names the page); their words stay for screen readers */
+@media (max-width: 1023px) {
+  .strip__seg a { justify-content: flex-start; padding: 0; }
+  .strip__seg a > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+/* round 8: "Cut to the chase": quiet (graphite mono, no box), always in the strip's last columns; a hairline before it
+   like a segment's */
+.strip__cut { position: relative; grid-column: var(--c0, auto) / var(--c1, auto); }
+.strip__cut::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: var(--px1, 1px); background: currentColor; opacity: .5; }
+.strip__cut a { display: block; height: 2rem; padding: 0 0 0 .5rem; font-family: var(--f-mono); font-weight: 400; font-size: .5rem; line-height: 1rem; letter-spacing: var(--mono-track);
+  text-transform: uppercase; white-space: nowrap; color: var(--graphite); -webkit-tap-highlight-color: transparent; }
+.strip__cut a > span { display: inline-block; text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-mono)), 1rem); }
+.strip__cut a:hover, .strip__cut a:focus-visible { color: var(--ink); text-decoration: underline; text-decoration-thickness: var(--px1, 1px); text-underline-offset: .25em; }
+.strip__cut a:focus-visible { outline: none; }
 
-/* ---------- the title block: a closed hairline box of cells, each whole cells wide and two cells tall (the key's baseline
-   on the cell's half line, the value's on its line and a half); its top on a line above the screen's bottom ---------- */
-.titleblock { --tb-rows: 1; right: 1rem; bottom: auto; top: calc(round(down, 100dvh - 1rem, 1rem) - var(--tb-rows) * 2rem);
+/* ---------- the title block: a closed hairline box of cells, each whole cells wide and (round 8, TYPE_RULES rule 2) three
+   cells tall: the key's baseline on the cell's first line, the value's on its second, so every word keeps half a cell
+   clear of every rule; its top on a line above the screen's bottom ---------- */
+.titleblock { --tb-rows: 1; right: 1rem; bottom: auto; top: calc(round(down, 100dvh - 1rem, 1rem) - var(--tb-rows) * 3rem);
   display: grid; gap: 0; border: 0; background: var(--paper); box-shadow: inset 0 0 0 1px var(--hair);
-  grid-template-columns: 4rem 6rem 3rem 3rem; grid-auto-rows: 2rem; }
-.titleblock .tb__cell, .titleblock .tb__theme { display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; min-width: 0; height: 2rem; padding: 0 0 0 1rem; border: 0; gap: 0; background: transparent;
+  grid-template-columns: 5rem 8rem 4rem; grid-auto-rows: 3rem; }
+.titleblock .tb__cell, .titleblock .tb__theme { display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; min-width: 0; height: 3rem; padding: 0 0 0 1rem; border: 0; gap: 0; background: transparent;
   box-shadow: inset 1px 0 0 rgba(var(--ink-rgb), .3), inset 0 1px 0 rgba(var(--ink-rgb), .3); }
 .titleblock .tb__k, .titleblock .tb__v { display: block; white-space: nowrap; overflow: hidden; line-height: .5rem;
   text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-mono)), .5rem); }
-.titleblock .tb__k { font-size: .4375rem; color: var(--graphite); }
+.titleblock .tb__k { font-size: .4375rem; color: var(--graphite); margin-top: .5rem; }
 .titleblock .tb__v { font-size: .625rem; color: var(--ink); margin-top: .5rem; }
 @media (max-width: 1023px) {
-  .titleblock .tb__cell--wide, .titleblock .tb__cell:nth-child(n+5) { display: none; }
+  .titleblock .tb__cell--wide, .titleblock .tb__cell:nth-child(n+4) { display: none; }
   .titleblock .tb__theme { display: flex !important; }
 }
 @media (min-width: 1024px) {
-  .titleblock { --tb-rows: 2; right: 2rem; top: calc(round(down, 100dvh - 2rem, 1rem) - var(--tb-rows) * 2rem);
-    grid-template-columns: 5rem 5rem 5rem 5rem 3rem; }
+  .titleblock { --tb-rows: 2; right: 2rem; top: calc(round(down, 100dvh - 2rem, 1rem) - var(--tb-rows) * 3rem);
+    grid-template-columns: 6rem 6rem 6rem 6rem 4rem; }
+  /* round 8: on short windows one row (page, title, scale, print), so the hallway's drawings and labels have room */
+  @media (max-height: 860px) {
+    .titleblock { --tb-rows: 1; grid-template-columns: 6rem 7rem 4rem 4rem; }
+    .titleblock .tb__cell--wide, .titleblock .tb__cell:nth-child(n+5) { display: none; }
+    .titleblock .tb__cell--wide { grid-column: auto; }
+  }
   .titleblock .tb__cell--wide { grid-column: 1 / 3; }
   .titleblock .tb__k { font-size: .375rem; }
   .titleblock .tb__v { font-size: .5rem; }
@@ -106,11 +125,5 @@ html .strip { background: var(--paper); mix-blend-mode: normal; color: var(--ink
 .enter__hint { top: calc(var(--gy) + 2rem); font-size: .625rem; line-height: 1rem; text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-mono)), .5rem); }
 @media (min-width: 1024px) { .enter__hello { font-size: 2rem; top: calc(var(--gy) - 3rem); } .enter__hint { font-size: .5rem; } }
 
-/* ---------- round 7: the soft snap (touch). Page 1's scenes are snap points the page must stop at (one scene per
-   flick, nothing skipped); pages 2-9 are tall snap areas, so inside them the page scrolls freely. ---------- */
-html[data-snap="touch"][data-phase="ready"] { scroll-snap-type: y mandatory; }
-.p1-snaps { position: absolute; left: 0; top: 0; width: 1px; height: 100%; pointer-events: none; visibility: hidden; }
-.p1-snap { position: absolute; left: 0; width: 1px; height: 1px; scroll-snap-align: start; scroll-snap-stop: always; }
-html[data-snap="touch"] .p23, html[data-snap="touch"] .stub { scroll-snap-align: start; }
 /* while a text's baseline is measured (grid.js baselineOf), its words stand settled */
 .is-measuring .w, .is-measuring .kw, .is-measuring.w { transform: none !important; transition: none !important; }

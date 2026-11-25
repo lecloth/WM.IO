@@ -24,9 +24,6 @@
       }
       try { if (localStorage.getItem('wm:theme') === 'dark') d.dataset.theme = 'dark'; } catch (e) {}
       d.dataset.visit = seen ? 'return' : 'first';
-      /* round 7: the soft snap. Touch screens snap natively (the page follows the thumb; on release it settles on the
-         nearest scene); desktop settles after the wheel stops (main.js). Off with reduced motion; ?nosnap for tests. */
-      d.dataset.snap = rm || /[?&]nosnap\b/.test(location.search) ? 'off' : (matchMedia('(pointer: coarse)').matches ? 'touch' : 'wheel');
       var tasks = ['css', 'gsap', 'st', 'lenis', 'app', 'fonts', 'load'], done = {};
       window.__wm = {
         t0: performance.now(), progress: 0, reduced: rm, returning: seen, jumpTo: jumpTo,
@@ -77,13 +74,13 @@
   </script>
   <link rel="preload" href="fonts/newsreader-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/dm-mono-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/site.css?v=e8d0bd4807" onload="__wm.done('css')">
-  <link rel="stylesheet" href="css/page-00-grid.css?v=ebc3f43924">
-  <link rel="stylesheet" href="css/page-01-dive.css?v=295ff63a7f">
-  <link rel="stylesheet" href="css/page-01.css?v=89f29e7001">
-  <link rel="stylesheet" href="css/page-02.css?v=8b64f7acf2">
-  <link rel="stylesheet" href="css/page-03-send.css?v=9485af8b57">
-  <link rel="stylesheet" href="css/page-03.css?v=338a65fc7c">
+  <link rel="stylesheet" href="css/site.css?v=c23da05b4e" onload="__wm.done('css')">
+  <link rel="stylesheet" href="css/page-00-grid.css?v=b84aeac290">
+  <link rel="stylesheet" href="css/page-01-dive.css?v=44bff83895">
+  <link rel="stylesheet" href="css/page-01.css?v=02db5bc39f">
+  <link rel="stylesheet" href="css/page-02.css?v=da3d2476e4">
+  <link rel="stylesheet" href="css/page-03-send.css?v=9f3ef1a7f3">
+  <link rel="stylesheet" href="css/page-03.css?v=6b9bb28098">
   <script defer src="vendor/gsap.min.js" onload="__wm.done('gsap')"></script>
   <script defer src="vendor/ScrollTrigger.min.js" onload="__wm.done('st')"></script>
   <script defer src="vendor/SplitText.min.js"></script>
@@ -103,7 +100,7 @@
         else { var c = el.cloneNode(); el.parentNode.insertBefore(c, el.nextSibling); el.remove(); } }, 150 * (n + 1));
     }, true);
   </script>
-  <script type="module" src="dist/main.js?v=0809ca094a" onerror="(function(s){var n=+(s.dataset.r||0);if(n<5){var c=document.createElement('script');c.type='module';c.src='dist/main.js?r='+(n+1);c.dataset.r=n+1;c.onerror=s.onerror;setTimeout(function(){document.head.appendChild(c)},200*(n+1));}})(this)"></script>
+  <script type="module" src="dist/main.js?v=8d8a36659d" onerror="(function(s){var n=+(s.dataset.r||0);if(n<5){var c=document.createElement('script');c.type='module';c.src='dist/main.js?r='+(n+1);c.dataset.r=n+1;c.onerror=s.onerror;setTimeout(function(){document.head.appendChild(c)},200*(n+1));}})(this)"></script>
 </head>
 <body>
 
@@ -112,14 +109,15 @@
   <div class="strip__base" aria-hidden="true"></div>
   <ol class="strip__list">
     <li class="strip__seg" style="--i:0"><a href="#page-01"><span class="strip__no">01</span><span class="strip__name">Enter</span></a><i class="strip__fill"></i></li>
-    <li class="strip__seg" style="--i:1"><a href="#page-02"><span class="strip__no">02</span><span class="strip__name">For you</span></a><i class="strip__fill"></i></li>
-    <li class="strip__seg" style="--i:2"><a href="#page-03"><span class="strip__no">03</span><span class="strip__name">Work slip</span></a><i class="strip__fill"></i></li>
-    <li class="strip__seg" style="--i:3"><a href="#page-04"><span class="strip__no">04</span><span class="strip__name">Trips</span></a><i class="strip__fill"></i></li>
-    <li class="strip__seg" style="--i:4"><a href="#page-05"><span class="strip__no">05</span><span class="strip__name">How we work</span></a><i class="strip__fill"></i></li>
-    <li class="strip__seg" style="--i:5"><a href="#page-06"><span class="strip__no">06</span><span class="strip__name">Work</span></a><i class="strip__fill"></i></li>
-    <li class="strip__seg" style="--i:6"><a href="#page-07"><span class="strip__no">07</span><span class="strip__name">Team</span></a><i class="strip__fill"></i></li>
-    <li class="strip__seg" style="--i:7"><a href="#page-08"><span class="strip__no">08</span><span class="strip__name">Final room</span></a><i class="strip__fill"></i></li>
-    <li class="strip__seg" style="--i:8"><a href="#page-09"><span class="strip__no">09</span><span class="strip__name">Spec</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:1"><a href="#page-02"><span class="strip__no">02</span><span class="strip__name">Hallway</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:2"><a href="#page-03"><span class="strip__no">03</span><span class="strip__name">The lock</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:3"><a href="#page-04"><span class="strip__no">04</span><span class="strip__name">How we work</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:4"><a href="#page-05"><span class="strip__no">05</span><span class="strip__name">Trips</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:5"><a href="#page-06"><span class="strip__no">06</span><span class="strip__name">Team</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:6"><a href="#page-07"><span class="strip__no">07</span><span class="strip__name">Final room</span></a><i class="strip__fill"></i></li>
+    <li class="strip__seg" style="--i:7"><a href="#page-08"><span class="strip__no">08</span><span class="strip__name">Spec</span></a><i class="strip__fill"></i></li>
+    <!-- round 8: "Cut to the chase" (Wajih's wording): quiet, always here; jumps to the final room with the hyperdrive -->
+    <li class="strip__cut"><a href="#page-07" class="strip__cut-a"><span>Cut to the chase</span></a></li>
   </ol>
 </nav>
 <script>
@@ -141,16 +139,18 @@
   })();
 </script>
 
-<!-- THE BOARD: Take 2's running order. Pages 1-3 are built; pages 4-9 are stubs at their planned length. -->
+<!-- THE BOARD: Take 2's running order (round 8): 1 page 1 + 2 the hallway (one section), 3-6 stubs, 7 the final room, 8 the spec sheet (stub). -->
 <div id="board" class="board">
   <div class="board__grid" aria-hidden="true"></div>
   <main id="sheets">
-    <!-- PAGE 01: ENTER + HOOK (round 3). Bell's 1877 sheet gives up a few clean outlines, which morph into today's phone
-         as a hairline X-ray; the pieces spread, are named on leader lines, come together; the ground turns to paper; the
-         phone dresses in real materials; "…to serve you." -> YOU -> "YOU gave us the task." -> WE, pinned, with the
-         verb drum -> "Now, what do you need?" -> its "?" dot opens into a hallway of four framed blueprints, each with its museum label -> page 2. Scroll-driven
-         (site/js/page01/page.js). Wording signed off by Wajih (22-23 Nov), except the phone screen's preview of
-         page 2 (a draft, flagged on the screen itself). -->
+    <!-- PAGE 01: ENTER + HOOK, then PAGE 02: THE HALLWAY (one section, round 8). Bell's 1877 sheet gives up a few clean
+         outlines, which morph into today's phone as a hairline X-ray; the pieces spread, are named on leader lines, come
+         together; the ground turns to paper; the phone dresses in real materials; "…to serve you." -> YOU -> "YOU gave us
+         the task." -> WE, pinned, with the verb drum -> "Now, how can we serve you?" (signed off, round 8) -> the grid
+         folds into the hallway, which dresses up as you walk: "We design backwards…", five drawings that swing out like
+         museum portraits, each with its frosted label, then the door with the lock (it leads to page 3). Scroll-driven
+         (site/js/page01/page.js, dive.js). Wording signed off by Wajih (22-25 Nov) except the hallway's lines (drafts,
+         flagged). -->
     <section id="page-01" class="p1" data-sheet="01" data-title="Enter" data-drawn="Design" data-checked="Engineering" data-approved="Strategy" aria-label="Page 1: from Bell's 1877 telephone to today's phone">
       <div class="p1__stage">
         <!-- the stage's own background is the ground: white drafting paper with the grid; the blue blueprint over it (round 6: two grounds only) -->
@@ -171,8 +171,8 @@
           <h1 class="p1-txt__h display gt">It began on paper.</h1>
         </div>
         <div class="p1-txt" data-k="s1">
-          <p class="p1-txt__eyebrow mono gt">Today's phone · six pieces</p>
-          <h2 class="p1-txt__h display gt">Every piece, named.</h2>
+          <p class="p1-txt__eyebrow mono gt">Today’s phone · six pieces</p>
+          <h2 class="p1-txt__h p1-txt__h--one display gt">Every piece, named.</h2>
         </div>
         <div class="p1-txt" data-k="kin">
           <p class="p1-kin display gt">Every piece, built meticulously, until it serves the grand design…</p>
@@ -192,35 +192,53 @@
             <li><b class="p1-steps__verb">Understood</b> <span class="p1-steps__mean">the real problem behind your request, and what perfect looks like to you.</span></li>
             <li><b class="p1-steps__verb">Imagined</b> <span class="p1-steps__mean">every way it could work, how it should feel, how it should look. Kept the best.</span></li>
             <li><b class="p1-steps__verb">Drew</b> <span class="p1-steps__mean">every screen, every part, every colour, before any code.</span></li>
-            <li><b class="p1-steps__verb">Tested</b> <span class="p1-steps__mean">made the code more elegant, more efficient, then stress-tested it to the absolute limit, so it won't break on you.</span></li>
-            <li><b class="p1-steps__verb">Felt</b> <span class="p1-steps__mean">every vibration, every motion, every word, until it feels right in your customers' hands.</span></li>
+            <li><b class="p1-steps__verb">Tested</b> <span class="p1-steps__mean">made the code more elegant, more efficient, then stress-tested it to the absolute limit, so it won’t break on you.</span></li>
+            <li><b class="p1-steps__verb">Felt</b> <span class="p1-steps__mean">every vibration, every motion, every word, until it feels right in your customers’ hands.</span></li>
             <li><b class="p1-steps__verb">Refined</b> <span class="p1-steps__mean">until nothing is extra.</span></li>
             <li><b class="p1-steps__verb">Delivered</b> <span class="p1-steps__mean">working, finished, yours.</span></li>
           </ol>
         </div>
         <div class="p1-txt p1-txt--end" data-k="end">
-          <h2 class="p1-txt__h display gt">Now, what do you need?</h2>
+          <h2 class="p1-txt__h display gt">Now, how can we serve you?</h2>
         </div>
         <div class="p1-fly display" data-w="you" aria-hidden="true"><span class="lo">you</span><span class="up">YOU</span></div>
         <div class="p1-fly display" data-w="we" aria-hidden="true"><span class="lo">us</span><span class="up">WE</span></div>
         <p class="p1__credit mono gt gt-h" aria-hidden="true">Plate: US Patent 186,787 · public domain</p>
       </div>
-      <!-- the dive: the "?" dot grows into a window onto the corridor of four blueprint frames; page 2 waits at its end -->
+      <!-- page 2, the hallway (round 8): the paper behind it, and the hallway itself (WebGL, labels, the door) -->
       <div class="p1-dive" aria-hidden="true"></div>
       <div class="p1-dive-top" aria-hidden="true"></div>
+      <!-- where page 2 starts (page.js places it at the hallway's first scroll position; the strip and title block read it) -->
+      <span id="page-02" class="p1-mark" data-sheet="02" data-title="Hallway" data-drawn="Design" data-checked="Engineering" data-approved="Strategy" aria-hidden="true"></span>
     </section>
-    <!-- PAGE 02: FOR YOU (Part 5 "Pages 2 and 3"). Arrived at through page 1's hallway (it waits at its end). Six (round 7)
-         hairline rows; a tap marks the row's box with one hairline stroke, shows its answer beneath and prints the line
-         onto the work slip, whose head waits at the bottom of the screen and docks as page 3 arrives. Every line is a
-         DRAFT until Wajih signs it off (data-draft). Script: site/js/page02/page.js -->
-    <section id="page-02" class="p2 p23" data-sheet="02" data-title="For you" data-drawn="Design" data-checked="Strategy" data-approved="Engineering" aria-labelledby="p2-h">
+    <!-- PAGES 03-06 (round 8 running order): stubs at their planned length, so the order and the scroll length show.
+         Page 3 is the security showpiece (round 9), page 4 how we work (round 10). The hallway's door leads here. -->
+    <section id="page-03" class="stub" data-sheet="03" data-title="Into the lock" data-drawn="Security" data-checked="Engineering" data-approved="Strategy" style="--vh: 5">
+      <div class="stub__in"><p class="stub__no display gt" aria-hidden="true">03</p><h2 class="stub__name display gt">Into the lock</h2><p class="stub__line gt" data-draft><span class="ph">Draft</span>Coming: the lock becomes endless locks, and they open in a wave.</p><p class="stub__tag mono gt">Stub · about 5 screens</p></div>
+    </section>
+    <section id="page-04" class="stub" data-sheet="04" data-title="How we work" data-drawn="Engineering" data-checked="Design" data-approved="Strategy" style="--vh: 4">
+      <div class="stub__in"><p class="stub__no display gt" aria-hidden="true">04</p><h2 class="stub__name display gt">How we work</h2><p class="stub__line gt" data-draft><span class="ph">Draft</span>Coming: the wrong key fails, then the lock is picked, in a turning cutaway.</p><p class="stub__tag mono gt">Stub · about 4 screens</p></div>
+    </section>
+    <section id="page-05" class="stub" data-sheet="05" data-title="Lighter trips" data-drawn="Design" data-checked="Engineering" data-approved="Strategy" style="--vh: 9">
+      <div class="stub__in"><p class="stub__no display gt" aria-hidden="true">05</p><h2 class="stub__name display gt">Lighter trips</h2><p class="stub__line gt" data-draft><span class="ph">Draft</span>Coming: AI, websites and apps, one short trip each.</p><p class="stub__tag mono gt">Stub · about 9 screens</p></div>
+    </section>
+    <section id="page-06" class="stub" data-sheet="06" data-title="Team" data-drawn="Strategy" data-checked="Design" data-approved="Engineering" style="--vh: 1">
+      <div class="stub__in"><p class="stub__no display gt" aria-hidden="true">06</p><h2 class="stub__name display gt">Team</h2><p class="stub__line gt" data-draft><span class="ph">Draft</span>Coming: three cards, one for each of us. Placeholders until the real people go in.</p><p class="stub__tag mono gt">Stub · about 1 screen</p></div>
+    </section>
+    <!-- PAGE 07: THE FINAL ROOM (round 8: the site shows first and asks last; the old pages 2-3 moved here). The heading is
+         Wajih's wording, signed off: "What's the task list? Tick everything that fits." (a callback to "YOU gave us the
+         task."). Six hairline rows; a tap marks the row's box with one hairline stroke, shows its answer beneath and prints
+         the line onto the work slip, whose head waits at the bottom of the screen and docks as the slip arrives. The rows,
+         answers and the slip's wording are DRAFTS until Wajih signs them off (data-draft). Script: site/js/page02/page.js.
+         "Cut to the chase" (the strip) lands here. -->
+    <section id="page-07" class="p2 p23" data-sheet="07" data-title="Final room" data-drawn="Design" data-checked="Strategy" data-approved="Engineering" aria-labelledby="p2-h">
       <div class="p2__stage g-snap">
         <p class="p23-flag mono gt gt-h" data-draft>Draft wording · pending Wajih</p>
-        <h2 id="p2-h" class="p2__h display rv gt" data-draft>What do you need?</h2>
+        <h2 id="p2-h" class="p2__h display rv gt">What’s the task list?</h2>
         <div class="p2__pick">
-        <p class="p2__sub display rv gt" data-draft>Tap everything that fits.</p>
+        <p class="p2__sub display rv gt">Tick everything that fits.</p>
         <fieldset class="p2-rows">
-          <legend class="sr-only">What do you need? Tap everything that fits.</legend>
+          <legend class="sr-only">What’s the task list? Tick everything that fits.</legend>
           <div class="p2-row" data-id="web">
             <label class="p2-row__hit g-snap"><input class="p2-row__in" type="checkbox" name="need" value="web" aria-describedby="p2-a-web">
               <span class="p2-row__no mono gt gt-h" aria-hidden="true">01</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg>
@@ -259,13 +277,13 @@
             <div class="p2-ans" id="p2-a-look"><div class="p2-ans__clip"><p class="p2-ans__t gt-js g-snap" data-draft>A look your customers trust on sight, built from what they need to feel.</p></div></div>
           </div>
         </fieldset>
-        <!-- round 5, CTA design A: after the first tap the beacon glides here; it takes the visitor to the work slip (DRAFT wording) -->
-        <a class="p2-next" href="#page-03" data-draft><span class="p2-next__no ph gt gt-h" aria-hidden="true">Draft</span><span class="p2-next__slot" aria-hidden="true"></span><span class="p2-next__t gt gt-h">Next: your slip <i aria-hidden="true">↓</i></span></a>
+        <!-- CTA design A (round 5): after the first tap the beacon glides here; it takes the visitor to the work slip (DRAFT wording) -->
+        <a class="p2-next" href="#page-07b" data-draft><span class="p2-next__no ph gt gt-h" aria-hidden="true">Draft</span><span class="p2-next__slot" aria-hidden="true"></span><span class="p2-next__t gt gt-h">Next: your slip <i aria-hidden="true">↓</i></span></a>
         </div>
         <p class="sr-only" aria-live="polite" id="p2-said"></p>
         <!-- the work slip's head: it waits at the bottom of the screen while you tap (each tap prints into it), and docks
              as the top of the slip when page 3 arrives (sticky, so the dock is the browser's own layout) -->
-        <a class="slip-head" href="#page-03"><span class="sr-only">Go down to </span>
+        <a class="slip-head" href="#page-07b"><span class="sr-only">Go down to </span>
           <span class="slip-head__cells">
             <span class="slip-cell"><span class="slip-cell__k mono" data-draft>Work slip</span><span class="slip-cell__v mono">No. <b class="js-slip-no">000000-0000</b></span></span>
             <span class="slip-cell"><span class="slip-cell__k mono" data-draft>Date</span><span class="slip-cell__v mono js-slip-date">—</span></span>
@@ -275,17 +293,18 @@
         </a>
       </div>
     </section>
-    <!-- PAGE 03: THE WORK SLIP (the lab's C3). Its head is page 2's last line (docked); then the printed needs, when,
-         your name, anything else, how to send, and Send. WhatsApp and email open in the visitor's own app with the slip
-         filled in; sending from the page and booking are built but switched off in site/js/settings.js (off: they hand
-         over to the email app). Then "or see how we think", and Detail B, a circle that grows into page 4.
-         Every line is a DRAFT until Wajih signs it off. Script: site/js/page02/slip.js, send.js, callout.js -->
-    <section id="page-03" class="p3 p23" data-sheet="03" data-title="Work slip" data-drawn="Engineering" data-checked="Design" data-approved="Strategy" aria-label="Page 3: your work slip">
+    <!-- THE FINAL ROOM, part 2: THE WORK SLIP (the lab's C3). Its head is the rows' last line (docked); then the printed
+         needs, when, your name, anything else, how to send, and Send. WhatsApp and email open in the visitor's own app
+         with the slip filled in; sending from the page and booking are built but switched off in site/js/settings.js
+         (off: they hand over to the email app). Round 8: the slip ends with Send; the spec sheet follows in plain scroll
+         ("or see how we think" and Detail B pointed at the old page 4 and are gone). Every line is a DRAFT until Wajih
+         signs it off. Script: site/js/page02/slip.js, send.js -->
+    <section id="page-07b" class="p3 p23" aria-label="The final room: your work slip">
       <form class="slip" id="slip" novalidate autocomplete="on" aria-label="Work slip">
         <div class="slip__sec g-snap slip__sec--needs">
           <h3 class="slip__q gt g-snap"><span class="slip__no mono" aria-hidden="true">A</span><span data-draft>What you need</span></h3>
           <ol class="slip__needs"></ol>
-          <p class="slip__empty gt gt-h" data-draft><a href="#page-02">Nothing yet. Tap what fits, above ↑</a></p>
+          <p class="slip__empty gt gt-h" data-draft><a href="#page-07">Nothing yet. Tick what fits, above ↑</a></p>
         </div>
         <fieldset class="slip__sec g-snap slip__sec--when">
           <legend class="slip__q gt g-snap"><span class="slip__no mono" aria-hidden="true">B</span><span data-draft>When do you need it?</span></legend>
@@ -330,35 +349,10 @@
           <p class="slip__said gt gt-h" role="status" aria-live="polite"></p>
         </div>
       </form>
-      <!-- the way on: a line, then Detail B (a circle) with page 4 already behind it; it grows into page 4's stage -->
-      <div class="p3__tail">
-        <div class="p3__pin">
-          <p class="p3__more rv gt"><a href="#page-04" data-draft>or see how we think ↓</a></p>
-        </div>
-      </div>
-      <div class="p3-callout" aria-hidden="true">
-        <svg class="p3-callout__svg"><circle class="p3-callout__c" cx="0" cy="0" r="1"/><path class="p3-callout__lead"/></svg>
-        <span class="p3-callout__tag mono" data-draft>Detail B · 04 Trips</span>
-      </div>
     </section>
-    <!-- PAGES 04-09: stubs at their planned length (Part 5 running order), so the order and the scroll length show. -->
-    <section id="page-04" class="stub" data-sheet="04" data-title="Four trips" data-drawn="Security" data-checked="AI" data-approved="Engineering" style="--vh: 14">
-      <div class="stub__in"><p class="stub__no display gt" aria-hidden="true">04</p><h2 class="stub__name display gt">Four trips</h2><p class="stub__line gt">Coming: inside the lock, the engine, the press and the switchboard.</p><p class="stub__tag mono gt">Stub · about 14 screens</p></div>
-    </section>
-    <section id="page-05" class="stub" data-sheet="05" data-title="How we work" data-drawn="Engineering" data-checked="Design" data-approved="Strategy" style="--vh: 4">
-      <div class="stub__in"><p class="stub__no display gt" aria-hidden="true">05</p><h2 class="stub__name display gt">How we work</h2><p class="stub__line gt">Coming: four gears, then we try to break it.</p><p class="stub__tag mono gt">Stub · about 4 screens</p></div>
-    </section>
-    <section id="page-06" class="stub" data-sheet="06" data-title="Work" data-drawn="Design" data-checked="Engineering" data-approved="Strategy" style="--vh: 5">
-      <div class="stub__in"><p class="stub__no display gt" aria-hidden="true">06</p><h2 class="stub__name display gt">Work</h2><p class="stub__line gt">Coming: a corridor of apps and sites, each a doorway.</p><p class="stub__tag mono gt">Stub · about 5 screens</p></div>
-    </section>
-    <section id="page-07" class="stub" data-sheet="07" data-title="Team" data-drawn="Strategy" data-checked="Design" data-approved="Engineering" style="--vh: 1">
-      <div class="stub__in"><p class="stub__no display gt" aria-hidden="true">07</p><h2 class="stub__name display gt">Team</h2><p class="stub__line gt">Coming: three cards, one for each of us.</p><p class="stub__tag mono gt">Stub · about 1 screen</p></div>
-    </section>
-    <section id="page-08" class="stub" data-sheet="08" data-title="Final room" data-drawn="Design" data-checked="Strategy" data-approved="Engineering" style="--vh: 2">
-      <div class="stub__in"><p class="stub__no display gt" aria-hidden="true">08</p><h2 class="stub__name display gt">Final room</h2><p class="stub__line gt">Coming: the full work slip and every way to reach us.</p><p class="stub__tag mono gt">Stub · about 2 screens</p></div>
-    </section>
-    <section id="page-09" class="stub" data-sheet="09" data-title="Spec sheet" data-drawn="Engineering" data-checked="Security" data-approved="Strategy" style="--vh: 1">
-      <div class="stub__in"><p class="stub__no display gt" aria-hidden="true">09</p><h2 class="stub__name display gt">Spec sheet</h2><p class="stub__line gt">Coming: this page, measured live, then back to the point.</p><p class="stub__tag mono gt">Stub · about 1 screen</p></div>
+    <!-- PAGE 08: the spec sheet (stub), after the final room; then the loop back to the point -->
+    <section id="page-08" class="stub" data-sheet="08" data-title="Spec sheet" data-drawn="Engineering" data-checked="Security" data-approved="Strategy" style="--vh: 1">
+      <div class="stub__in"><p class="stub__no display gt" aria-hidden="true">08</p><h2 class="stub__name display gt">Spec sheet</h2><p class="stub__line gt" data-draft><span class="ph">Draft</span>Coming: this page, measured live, then back to the point.</p><p class="stub__tag mono gt">Stub · about 1 screen</p></div>
     </section>
   </main>
 </div>
@@ -366,7 +360,7 @@
 <!-- TITLE BLOCK: a real drawing title block, updates as sheets pass -->
 <aside id="titleblock" class="titleblock mono reveal-late" aria-label="Title block">
   <div class="tb__cell tb__cell--wide"><span class="tb__k">Project</span><span class="tb__v">Wajih Mansouri · Studio</span></div>
-  <div class="tb__cell"><span class="tb__k">Page</span><span class="tb__v"><b class="tb__sheet">01</b> / 09</span></div>
+  <div class="tb__cell"><span class="tb__k">Page</span><span class="tb__v"><b class="tb__sheet">01</b> / 08</span></div>
   <div class="tb__cell tb__cell--title"><span class="tb__k">Title</span><span class="tb__v tb__title">Enter</span></div>
   <div class="tb__cell"><span class="tb__k">Scale</span><span class="tb__v">1:1</span></div>
   <div class="tb__cell"><span class="tb__k">Drawn</span><span class="tb__v tb__drawn">Design</span></div>

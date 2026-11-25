@@ -21,7 +21,7 @@ async def main(a):
         page = await ctx.new_page(); errs = []
         page.on("console", lambda m: m.type in ("error", "warning") and errs.append(f"{m.type}: {m.text[:200]}")); page.on("pageerror", lambda e: errs.append(str(e)[:200]))
         ev = lambda js, arg=None: page.evaluate(js, arg, isolated_context=False)
-        await page.goto("http://127.0.0.1:8109/?first&nosnap", wait_until="load")
+        await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
         await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
         await page.wait_for_timeout(700); await page.screenshot(path=str(out / f"{tag}_00_gate.png"))
         await page.keyboard.press("Enter")

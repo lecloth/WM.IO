@@ -17,19 +17,20 @@ Take 1's history below.
 - **How it runs:** style lab first (Wajih points) → one page at a time: build → wording batch → his S23 test →
   geometry check → commit → this file. Stop for Wajih only at style picks, each page's wording, each page's phone review.
 
-### Running order (Part 5 "Lab picks" + "Copy and the team page" + "Page 1 refinements" + "Page 1, round 3" + "Round 4 picks", ~37 viewports in total)
+### Running order (Part 5 "Round 8": the site shows first and asks last)
 
 | # | Page | What happens | Viewports | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | Enter + hook | Beacon → Bell's sheet (paperless: his ink on our grid): eight clean outlines draw on, morph into the X-ray phone → pieces named on leader lines → kinetic line, pieces join, ground back to paper → real (phone A) → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum (detent, double-pulse click, live measurements) → "Now, what do you need?" → the way in (A: the grid folds into the hallway; B cut, C square on the sheet) → "We design backwards…" → five frameless drawings in backwards order (1 where customers give up, 2 design, 3 your way of deciding, 4 speed, 5 every phone: the real iPhone and Galaxy turn by themselves), each with its label on a frosted backing; the end wall (the page's own paper) gives way to page 2. Soft snap on touch | 10.24 | **round 7 built (25 Nov): waiting for Wajih's review** (the opening line, the five story lines and page 2's sixth row are drafts; transition and treatment picks open) |
-| 2 | For you | The hallway lands on it. The big line "Tap everything that fits."; the beacon on the first box, then on "Next: your slip" (CTA A). Five hairline rows; a tap strokes the box, shows the answer, prints onto the slip (its head waits at the bottom and docks), ticks on Android | ~4 with page 3 | **built, waiting for Wajih's CTA pick, phone review and the wording** (Send: A, picked) |
-| 3 | Work slip | Number + date, printed needs, when, name, anything else, send by (5 ways), Send (design A, Leader); "or see how we think ↓"; Detail B (a circle) grows into page 4 | (with page 2) | **built, as above** |
-| 4 | Four trips | Security showpiece (~5: lock's A journey → failed pick → B3 → today); AI, websites, apps lighter (~3 each); the apps trip uses the real iPhone and Galaxy live in 3D | ~14 | stub (next; not started) |
-| 5 | How we work | The sideways gear train: Wajih's seven steps, each a real gear (model or engraved plate) with its title and real image, the centre one lit; the Break stress test inside "Tested" | ~3 | stub |
-| 6 | Work: the corridor | Four apps + one website, each a doorway with a meaningful entry (our own designs) | ~5 | stub |
-| 7 | Team | Three placeholder cards (image + bio), clearly marked | ~1 | stub |
-| 8 | The final room | Full C3 work slip, founder line, every way to reach us (switches in settings.js) | ~2 | stub |
-| 9 | Spec sheet | One screen of live numbers, then the loop back to the point | ~1 | stub |
+| 1 | Page 1 | Beacon → Bell's ink on our grid → X-ray phone, six named pieces (each leader on its own piece) → kinetic line, real phone → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum → **"Now, how can we serve you?"** (signed off, round 8) | ~5.9 (with 2: 10.54) | **round 8 built (25 Nov): waiting for Wajih's review** |
+| 2 | The hallway | The grid folds into it; it dresses up as you walk; "We design backwards…" (draft); five drawings swing out (treatment B) on our made-up products (1 property app's enquiry path, 2 watch face, 3 delivery tracker, 4 website loading, 5 booking app on the real iPhone 18 and S26), frosted labels under them turning with them (story lines drafts); the camera walks straight; the door with the real lock, faint then clear; it opens and leads to page 3 | 4.6 (inside page 1's section) | **round 8 built** |
+| 3 | Into the lock | Security showpiece: endless locks, unlocking in a wave | ~5 | stub (round 9) |
+| 4 | How we work | Short lines in Wajih's voice; the wrong key fails, then the pick, a 2D cutaway turning to face you | ~4 | stub (round 10) |
+| 5 | Lighter trips | AI, websites, apps | ~9 | stub |
+| 6 | Team | Three placeholder cards (nothing invented) | ~1 | stub |
+| 7 | The final room | "What's the task list? Tick everything that fits." (Wajih's, signed off), the six rows, CTA A (pick open), the work slip, Send A, every way to reach us (switches in settings.js) | ~3.4 | **moved here in round 8** (rows, answers, slip wording: drafts) |
+| 8 | Spec sheet | One screen of live numbers, then the loop back | ~1 | stub |
+
+"Cut to the chase" (strip, always): the hyperdrive into the final room; the strip's last square and 07 do the same.
 
 ### Page structure (Take 2)
 - `src/index.template.html` + `src/parts/page-01.html` + `page-02.html` + `page-03.html` + `src/parts/stubs.html` (pages 4-9) → `python -I tools/build.py` → `site/index.html`.
@@ -153,7 +154,97 @@ Take 1's history below.
   `tools/phone_snap.py` (S23: real swipes, where the page rests), `tools/evalp.py` (one-off probes), `tools/r7phones.sh` (its phone half), `t2shot.py --pre` (park first: warms the hallway), `tools/r7final.sh` (the whole
   emulated pass). `gridcheck.py`, `stretch.py`, `geom.py` run all 14 sizes.
 
+### Round 8 structure notes (25 Nov)
+- **Sections:** `#page-01` holds page 1 and the hallway (page 2 = a marker, `span#page-02.p1-mark`, placed by page.js at the
+  hallway's first scroll position; the strip and title block read it); `src/parts/stubs.html` = pages 3-6; the final room
+  = `src/parts/page-02.html` (`section#page-07`, the rows) + `page-03.html` (`section#page-07b`, the slip, no page number of
+  its own); `stub-08.html` = the spec sheet. Page 1's section is 10.54 screens (`SCROLL = 4.94 + DIVE`, `DIVE = 4.6`).
+- **No snap, held scenes:** the touch scroll-snap, `.p1-snaps`, the desktop wheel snap and `?nosnap` are gone (head script,
+  main.js, CSS, every tool). Page 1 renders from a lagged scroll position (`page.js` `chase()`: an exponential follow,
+  0.1 s; a jump of more than 2 screens is taken at once); `__p1.settled()` says when it has caught up. Scrubbed now (were
+  timed): the way in, frame 5's drawn → real and its phones' turn. Still short timed beats (by design): the word reveals
+  (a paused frame shows whole words), the ground's blue/paper change and the dress to real (never a murky mix), the drum's
+  detent (Wajih: keep), the phones' cross-fade when they finish loading mid-frame (a load event).
+- **`dive.js` (rewritten):** way in A only (`WAY_IN`), the dress (`DRESS`: flat paper-and-grid surfaces under the lit
+  card, which fades in), treatment B only (`restB`, hinge swing; a pivot off the wall when a big drawing near the middle
+  would otherwise poke through the ceiling), the camera straight down the axis (`camT`), labels as DOM on a frosted
+  rounded backing carried by the sheet's perspective (`quadMatrix` → `matrix3d`, a plain translate at rest; `data-rest`),
+  sheets that widen in landscape (`setSheet`: more blue margin, so the label under them, as wide as them, stays short;
+  `F.wide` for the square sheet), the knockout (`knockout()`: the hallway's edges and the shut door's lines cut half a
+  cell round every label on screen), the door (`DOOR`: leaf on its hinge, panels, architrave, faint → clear by distance,
+  opens 100°, the camera walks through) and its lock (`door-lock.bin`, from the real Cutaway Lock by `tools/lock_web.mjs`;
+  mounted on the leaf like a rim lock; it steps back where a label would sit over it), `drawn()` for the type check
+  (every hairline, sheet and in-drawing word on screen, lines behind an opaque sheet removed).
+- **`corridor-drawings.js`:** five product drawings (`enquiry`, `watch`, `dispatch`, `website`, `phones`), labels at 14
+  units (heads 12), at least 17 units of clear space round every word (half a cell at a 360-wide phone's scale);
+  dimensions kept apart (`d.dims`, `dimParts`): the live measurement on the line in DM Mono Light, the line broken round
+  it, or beside its end when too short.
+- **Cut to the chase:** `site/js/engine/hyperdrive.js` (`playHyperdrive`, `drawHyperdrive`, `HYPER_MS` 1.8 s; the jump
+  happens under an opaque frame at t 0.2; reduced motion: a plain jump), wired in main.js (`cutToChase`, also on the
+  strip's 07 and last square). Dev page `site/dev/hyper.html`.
+- **Type rules:** `TYPE_RULES.md`; `tools/typecheck.py` + `tools/typecheck.js` (in-page collector), `tools/tcsum.py`
+  (summary). Title block cells are 3 cells tall (key on the first line, value on the second; desktop 2 rows, 1 row on
+  windows under 861 px tall); the slip head's cells too. Drum rows 4/6/7 cells (one faint verb each side), the verb window
+  half a cell clear of ascenders and descenders, no ticks on the letters, the WE dimension right of WE on phones and left
+  on desktop.
+- **Fonts:** `dm-mono-300.woff2` (DM Mono Light, @fontsource/dm-mono 5.3.0 latin, the same release as 400/500).
+- **Page 1's names:** each leader on a point of its own piece's face that no other piece's outline covers (`phone.partHull`,
+  `inHull`, `hullNear`), pieces 68 mm apart (was 52), names half a cell clear of every outline, shelf and leader; a rising
+  leader leaves its shelf a cell past the word.
+- **New tools:** `typecheck.py/.js`, `tcsum.py`, `phone_r8.py` (S23: fps per segment, hyperdrive, swipes with traces,
+  reduced motion), `axe8.py` (axe at every stop of the whole page, lengths), `lock_web.mjs`, `contactsheet.py`, `r8final.sh`;
+  `flicker.py` now compares a staged `site/<name>old/` build and steps the hyperdrive; `gridcheck.py`/`overlap.py` know the
+  final room.
+
 ### Take 2 log
+- **Round 8 (25 Nov).** Brief committed (round 8, `17429de`). Built to Part 5 "Round 8" (rounds 4-7 where not changed).
+  - **Built:** `TYPE_RULES.md` first (five rules, the type scale, the wording status, eight screenshot self-checks, the gate)
+    and `tools/typecheck.py`; the new running order (8 pages; the hallway is page 2; stubs 3-6 and 8; the final room = the
+    old pages 2-3 with Wajih's heading); page 1's last line "Now, how can we serve you?"; the hallway's finish (way in A
+    scrubbed, dressing up from grid lines, treatment B, the straight camera, frosted rounded labels as wide as the drawing
+    and turning with it, five product drawings, the door with the real lock, faint → clear, opening onto page 3); "Cut to
+    the chase" + the hyperdrive; no snap, held scenes (a 0.1 s lagged scrub); DM Mono Light measurements on their lines;
+    page 1's names on their own pieces; the asset sheet (ways in B/C and treatments A/C gone; the door and the hyperdrive
+    with Play; contents list). Removed: the soft snap everywhere and `?nosnap`, `callout.js` (Detail B), "or see how we
+    think", the hallway's `?tr=` and `?hall=`.
+  - **Calls made alone:** see the round 8 report (also below in "What's open" where Wajih decides).
+  - **TYPE_RULES gate: passed.** `typecheck.py`: 0 machine failures (crossings, clearance, scale, wording, breaks all 0)
+    over 924 frames (14 sizes x light/dark x every stop of the whole page, from `__t2stops`) and, with reduced motion, 0
+    over 496 frames. Screenshot self-check: 8 of 8 passed, each with its sheet in `tools/shots/r8/selfcheck/`. The last
+    full re-run on the final build was stopped by Claude Code for low memory; the final build differs from the one that
+    passed by one CSS rule (`.stub .ph`, the stubs' Draft flag) and the slip section's snap padding reverted to the passing
+    state.
+  - **On-grid (`gridcheck.py`, 14 sizes light + 4 dark; 8,788 edges, 8,807 baselines, 4,048 text edges, 854 picture
+    edges):** every stop clean except three faults, each fixed and re-checked: the opening line (3 sizes: 0 off, worst 0.06
+    px), the stuck slip head (3 sizes: 0 off, worst 0.09 px), the final room and the spec sheet (14 sizes: 0 off, 1,462
+    edges, 1,021 baselines, worst 0.188 px). Fixed on the way: the opening line's Draft flag (inline-block, off the grid), the stuck slip head (a
+    collapsing margin made it 3.5 cells), the spec sheet's Draft flag moving its baseline.
+  - **Stretch:** 0.000% at rest at all 14 sizes (keystone 0); closest to a screen edge while visible 18.0 px (360 x 800,
+    frame 5). **Overlap:** 0 in 83,923 pairs. **Geometry:** 0 problems (14 sizes, light and dark). **axe:** 0 violations
+    (6 runs: 384 light/dark, 1440, 2160 dark, 384 and 1440 reduced; 33 stops each, 11 reduced). **Console:** 0 errors.
+    **Drawings' height share at rest:** 0.34-0.47 on phones, 0.43-0.60 on laptops (the label is under the drawing now).
+  - **Length:** page 1 with the hallway 10.54 screens; the whole page 33.4 (384 x 734), 32.7 (1440 x 900), 32.3 (2160 x
+    1147); the final room 1.7-2.9; reduced motion 17.4 / 18.6.
+  - **S23 (SM-S918N, Chrome 158, 384 x 719 @2.8125, `tools/phone_r8.py`, final run):** every hallway segment, the way in and
+    the door 60 fps on both passes (p95 16.7-16.8 ms); page 1's first segment 58.3 on the first pass (Bell's first paints)
+    and 60 on the second; the hyperdrive 59.1 fps (worst frame 33 ms), landing exactly on the final room (top 0); the final
+    room scrolling 59.7; frosted labels with small scrolls 60. Real swipes: 9 (5 flicks, 2 slow drags, 2 flicks back), no
+    reversal after release in any (Chrome's own fling only), nothing skipped; the scene settles 0.03-0.5 s after the
+    scroll stops, never more than 0.064 screens per frame. Fixed on the way (first-pass stalls): the lock's four STLs were
+    parsed and edge-found on the main thread (one 300 ms frame) -> `door-lock.bin`, compiled once placed; the real phones
+    now load in the first quiet pause from the X-ray on (they were still loading at the way in: one 83-500 ms frame).
+    Reduced motion (emulated on the phone): the cut is a plain jump to the final room (top -0.1 px), the hallway still
+    figures. "Remove animations" is off. 0 errors. Shots: `tools/shots/r8/phone/`.
+  - **Hyperdrive frame cost (headless, its fork's measure):** 0.4-0.7 ms per frame mean (worst 3 ms); 2.2-3.1 ms at a 4x
+    CPU throttle; at t = 1 its grid matches the page's CSS grid line for line.
+  - **Flicker: not run this round** (the run was stopped by Claude Code for low memory before it reached it). Ready:
+    `tools/flicker.py` (round 7 at `site/r7old/` vs now, plus the hyperdrive stepped frame by frame); the staged build was
+    deleted before committing.
+  - Shots: `tools/shots/r8/` (`shots-phone`, `shots-laptop`, `shots-360`, `shots-reduced`, `phone/`, `selfcheck/`,
+    `typecheck/`, `hyper/`, `dev/`).
+  - **Pending Wajih:** his review of round 8 on the S23; the final room's CTA pick (A, B or C); the drafts (the opening line,
+    the five story lines, the final room's rows, answers, "Next: your slip" and slip wording, the stubs' lines); the two
+    phone licences; a go to re-run the flicker comparison and the full checks once memory allows.
 - **Round 7 (25 Nov).** Brief committed (round 7, `f6220e0`). Built to Part 5 "Round 7" (rounds 4-6 where not changed).
   - **Built:** the opening line; the "?" dot entry removed and three ways in (A on the page); five frames in backwards order with the
     new design drawing; frames, mouldings, mats and glass removed, three treatments (A on the page); drawings ~60% of the height on

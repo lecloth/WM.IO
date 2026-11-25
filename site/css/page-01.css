@@ -2,9 +2,12 @@
    Round 6: every size is in grid units (1rem = one cell, page-00-grid.css); every edge on a line, every baseline on a
    line (half a line for small text). Phones first (20 cells across); desktop from 1024 px (the gutter is five cells). */
 
-/* ---------- strip: nine pages ---------- */
-.strip__seg::before { transform: scaleY(clamp(0, calc(var(--load) * 9 - var(--i)), 1)); }
-.strip__seg a { opacity: clamp(0, calc((var(--load) * 9 - var(--i) - .25) * 1.6), 1); }
+/* ---------- strip: eight pages (round 8) and "Cut to the chase" ---------- */
+.strip__seg::before { transform: scaleY(clamp(0, calc(var(--load) * 8 - var(--i)), 1)); }
+.strip__seg a { opacity: clamp(0, calc((var(--load) * 8 - var(--i) - .25) * 1.6), 1); }
+.strip__cut { opacity: clamp(0, calc((var(--load) - .9) * 10), 1); }
+/* page 2's marker inside page 1 (page.js places it where the hallway starts) */
+.p1-mark { position: absolute; left: 0; top: 0; width: 1px; height: 1px; pointer-events: none; }
 
 /* ---------- cursor: a small hairline cross at the pointer (no full-screen lines, no readout) ---------- */
 .xhair__x { position: absolute; left: 0; top: 0; width: 15px; height: 15px; margin: -7px 0 0 -7px;
@@ -45,11 +48,11 @@ html[data-motion="reduce"][data-phase="gate"] .sing__ring--1 { opacity: .45; tra
 html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hint { transition: none; }
 
 /* ---------- the draft flag on every line Wajih hasn't signed off ---------- */
-.ph { display: inline-block; margin-right: .5rem; font-family: var(--f-mono); font-size: .5rem; letter-spacing: .08em; text-transform: uppercase; }
+.ph { display: inline-block; margin-right: .5rem; font-family: var(--f-mono); font-weight: 400; font-size: .5rem; letter-spacing: .08em; text-transform: uppercase; }
 @media (min-width: 1024px) { .ph { font-size: .4375rem; } }
 
 /* ---------- page 1 (the design ethos: hairlines, ink, blue only for the drawing stage) ---------- */
-.p1 { position: relative; height: 1024vh; height: 1024lvh; }   /* round 7: 9.24 screens of scroll (page.js SCROLL) + one */
+.p1 { position: relative; height: 1054vh; height: 1054lvh; }   /* round 8: 9.54 screens of scroll (page.js SCROLL) + one */
 /* the paper ground and its grid (the grid's origin is the stage's top left = the screen's, while page 1 plays) */
 .p1__stage { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; isolation: isolate;
   background-color: var(--paper); background-image: var(--grid-img); background-size: var(--grid-size); }
@@ -115,10 +118,10 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
 .p1-we { position: absolute; z-index: 5; left: var(--gut); right: var(--gut); top: 3rem; visibility: hidden; color: var(--ink); }
 .p1-we.on { visibility: visible; }
 .p1-we__word { font-size: 6.5rem; line-height: 6rem; letter-spacing: -.02em; font-weight: 560; }
-.p1-drum { position: relative; height: 8rem; margin-top: 2rem; perspective: 700px; perspective-origin: 50% 50%; opacity: 0; transition: opacity .3s var(--ease-out); }
+.p1-drum { position: relative; height: 10rem; margin-top: 2rem; perspective: 700px; perspective-origin: 50% 50%; opacity: 0; transition: opacity .3s var(--ease-out); }
 .p1-we.on .p1-drum { opacity: 1; transition-delay: .25s; }
 .p1-drum__wheel { position: absolute; left: 0; right: 0; top: 50%; height: 0; transform-style: preserve-3d; translate: 0 var(--seat, 0px); }
-.p1-verb { position: absolute; left: 0; top: 0; font-family: var(--f-display); font-size: 2.5rem; line-height: 3rem; letter-spacing: -.015em; height: 3rem; margin-top: -1.5rem;
+.p1-verb { position: absolute; left: 0; top: 0; font-family: var(--f-display); font-size: 2.5rem; line-height: 4rem; letter-spacing: -.015em; height: 4rem; margin-top: -2rem;
   display: block; white-space: nowrap; backface-visibility: hidden; color: var(--ink); opacity: 0; }
 .p1-mean { position: relative; margin-top: 1rem; min-height: 6rem; max-width: 34ch; }
 .p1-mean p { position: absolute; left: 0; top: 0; right: 0; font-size: 1rem; line-height: 1.5rem; visibility: hidden; transition: visibility 0s .3s; --q: .5rem; }
@@ -138,7 +141,7 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
 .p1-grid .d { stroke: rgba(var(--ink-rgb), .45); }
 .p1-grid text { font-family: var(--f-mono); font-size: .4375rem; letter-spacing: .08em; fill: var(--graphite); }
 .p1-grid text.r { dominant-baseline: middle; }
-.p1-grid text.m { fill: var(--graphite); opacity: .7; text-anchor: middle; }   /* round 7: the live measurements, faint, along their dimension lines */
+.p1-grid text.m { fill: var(--graphite); opacity: .75; text-anchor: middle; font-weight: 300; }   /* round 8: the live measurements in DM Mono Light, on their dimension lines (the line broken round them) */
 .p1-grid text.e { text-anchor: end; }
 @media (min-width: 1024px) { .p1-grid text { font-size: .375rem; } }
 .p1-we:not(.is-static) .p1-steps { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -161,17 +164,17 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
   .p1-txt--end { width: 32rem; }
   .p1-txt__eyebrow { font-size: .5rem; }
   .p1-txt__h { font-size: 3.5rem; line-height: 4rem; }
-  .p1-kin { font-size: 2.5rem; line-height: 3rem; }
+  .p1-kin { font-size: 2rem; line-height: 3rem; }
   .p1-fly { font-size: 9.5rem; line-height: 9rem; }
   .p1__credit { font-size: .4375rem; }
   .p1-lbl { font-size: .5rem; }
   /* WE | the drum, then the meaning under the drum; the drum's centre on the line nearest the screen's middle */
   /* (short windows: high enough that the meaning ends a cell above the title block) */
-  .p1-we { right: var(--gut); top: max(4rem, min(calc(round(nearest, 50dvh, 1rem) - 6rem), calc(round(down, 100dvh - 2rem, 1rem) - 25rem))); display: grid; grid-template-columns: var(--we-w, max-content) 1fr;
+  .p1-we { right: var(--gut); top: max(4rem, min(calc(round(nearest, 50dvh, 1rem) - 6rem), calc(round(down, 100dvh - 2rem, 1rem) - 30rem))); display: grid; grid-template-columns: var(--we-w, max-content) 1fr;
     grid-template-rows: auto auto; column-gap: 3rem; align-items: start; }
   .p1-we__word { grid-row: 1; font-size: 9.5rem; line-height: 9rem; }
-  .p1-drum { grid-row: 1; height: 12rem; margin-top: 0; perspective: 60rem; }
-  .p1-verb { font-size: 4rem; line-height: 5rem; height: 5rem; margin-top: -2.5rem; }
+  .p1-drum { grid-row: 1; height: 14rem; margin-top: 0; perspective: 60rem; }
+  .p1-verb { font-size: 4rem; line-height: 6rem; height: 6rem; margin-top: -3rem; }
   .p1-mean { grid-row: 2; grid-column: 2; margin-top: 3rem; min-height: 6rem; max-width: 22rem; }   /* round 7: a cell clear of the drum's faintest verbs */
   .p1-mean p { font-size: 1.25rem; line-height: 1.5rem; }
 }
@@ -180,11 +183,11 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
   .p1-txt--end { width: 40rem; }
   .p1-txt__eyebrow { font-size: .625rem; }
   .p1-txt__h { font-size: 4.5rem; line-height: 5rem; }
-  .p1-kin { font-size: 3rem; line-height: 4rem; }
+  .p1-kin { font-size: 2.5rem; line-height: 3rem; }
   .p1-fly, .p1-we__word { font-size: 11.5rem; line-height: 11rem; }
-  .p1-drum { height: 14rem; }
-  .p1-we { top: max(4rem, min(calc(round(nearest, 50dvh, 1rem) - 7rem), calc(round(down, 100dvh - 2rem, 1rem) - 27rem))); }
-  .p1-verb { font-size: 5rem; line-height: 6rem; height: 6rem; margin-top: -3rem; }
+  .p1-drum { height: 16rem; }
+  .p1-we { top: max(4rem, min(calc(round(nearest, 50dvh, 1rem) - 7rem), calc(round(down, 100dvh - 2rem, 1rem) - 33rem))); }
+  .p1-verb { font-size: 5rem; line-height: 7rem; height: 7rem; margin-top: -3.5rem; }
   .p1-mean { max-width: 26rem; }
   .p1-mean p { font-size: 1.5rem; line-height: 2rem; --q: 1rem; }
   .p1__credit { font-size: .5rem; }
@@ -193,16 +196,16 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
 /* reduced motion: still frames with the full text, one after the other, on the same grid */
 .p1.is-static { height: auto; }
 .p1.is-static .p1__stage { position: relative; height: auto; overflow: visible; padding: 3rem var(--gut) 6rem; }
-.p1.is-static .p1-txt, .p1.is-static .p1-we { position: relative; left: auto; right: auto; top: auto; bottom: auto; width: auto; max-width: 34rem; visibility: visible; margin: 2rem 0 1rem; }
+.p1.is-static .p1-txt, .p1.is-static .p1-we { position: relative; left: auto; right: auto; top: auto; bottom: auto; width: auto; max-width: 34rem; visibility: visible; margin: 2rem 0 2rem; }   /* round 8: a picture under a line clears its descenders by half a cell */
 .p1.is-static .w { opacity: 1; transform: none; transition: none; }
 .p1.is-static .p1-slot { color: inherit; font-weight: 560; }
 .p1.is-static .p1-we { display: block; }
 .p1.is-static .p1-we__word { font-size: 4rem; line-height: 4rem; }
 .p1.is-static .p1-drum, .p1.is-static .p1-grid, .p1.is-static .p1-mean, .p1.is-static .p1-dive, .p1.is-static .p1-dive-top { display: none; }
 .p1.is-static .p1-steps { margin-top: 1rem; }
-.p1.is-static .p1-steps li { padding: 0 0 1rem; box-shadow: inset 0 1px 0 rgba(var(--ink-rgb), .3); font-size: 1rem; line-height: 1.5rem; }
+.p1.is-static .p1-steps li { padding: 1rem 0 1rem; box-shadow: inset 0 1px 0 rgba(var(--ink-rgb), .3); font-size: 1rem; line-height: 1.5rem; text-wrap: pretty; }
 .p1.is-static .p1-steps__verb { display: block; font-family: var(--f-display); font-weight: 420; font-size: 1.5rem; line-height: 2rem; margin-bottom: .5rem; }
-.p1.is-static .p1__plate { position: relative !important; left: auto !important; top: auto !important; width: 100% !important; height: auto !important; aspect-ratio: 1600 / 1740; max-width: 34rem; }
+.p1.is-static .p1__plate { margin-top: 1rem; position: relative !important; left: auto !important; top: auto !important; width: 100% !important; height: auto !important; aspect-ratio: 1600 / 1740; max-width: 34rem; }
 .p1.is-static .p1__credit { position: static; margin-top: .5rem; }
 .p1.is-static .p1__bg { display: none; }
 /* reduced motion: the hallway's four frames as still figures, each with its museum label */
@@ -220,15 +223,21 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
 /* ---------- stubs: pages 4-9, at their planned length; the text on the grid from the screen's top ---------- */
 .stub { position: relative; height: calc(var(--vh, 1) * 100vh); height: calc(var(--vh, 1) * 100lvh); background: var(--paper); box-shadow: inset 0 1px 0 rgba(var(--ink-rgb), .2); }
 .stub__in { position: sticky; top: 0; height: 100vh; height: 100lvh; display: block; padding: 7rem var(--gut) 0; }
-.stub__no { font-size: 6rem; line-height: 6rem; color: transparent; -webkit-text-stroke: 1px rgba(var(--ink-rgb), .45); }
+.stub__no { font-size: 6.5rem; line-height: 6rem; color: transparent; -webkit-text-stroke: 1px rgba(var(--ink-rgb), .45); }
 .stub__name { font-size: 2rem; line-height: 3rem; margin-top: 0; }
 .stub__line { font-size: 1rem; line-height: 1.5rem; max-width: 30ch; margin-top: 1rem; --q: .5rem; }
 .stub__tag { color: var(--graphite); margin-top: 1rem; --q: .5rem; }
 @media (min-width: 1024px) {
   .stub__in { padding-top: 9rem; }
-  .stub__no { font-size: 9rem; line-height: 9rem; }
+  .stub__no { font-size: 9.5rem; line-height: 9rem; }
   .stub__name { font-size: 3rem; line-height: 4rem; }
   .stub__line { font-size: 1rem; }
 }
 html[data-motion="reduce"] .stub { height: auto; min-height: 100vh; }
 html[data-motion="reduce"] .stub__in { position: relative; height: auto; min-height: 100vh; }
+/* round 8 (TYPE_RULES rule 5): three words never split two and one: on phones this headline takes the next step down */
+@media (max-width: 1023px) { .p1-txt__h--one { font-size: 2rem; } }
+.p1-txt__h--one { white-space: nowrap; }
+@media (min-width: 1024px) { .p1-txt[data-k="s1"] { width: max-content; } }
+/* round 8: the stubs' Draft flag sits in the line without moving its baseline (as on the hallway's labels) */
+.stub .ph { vertical-align: 0; line-height: 0; }

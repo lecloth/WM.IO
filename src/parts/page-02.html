@@ -1,15 +1,17 @@
-    <!-- PAGE 02: FOR YOU (Part 5 "Pages 2 and 3"). Arrived at through page 1's hallway (it waits at its end). Six (round 7)
-         hairline rows; a tap marks the row's box with one hairline stroke, shows its answer beneath and prints the line
-         onto the work slip, whose head waits at the bottom of the screen and docks as page 3 arrives. Every line is a
-         DRAFT until Wajih signs it off (data-draft). Script: site/js/page02/page.js -->
-    <section id="page-02" class="p2 p23" data-sheet="02" data-title="For you" data-drawn="Design" data-checked="Strategy" data-approved="Engineering" aria-labelledby="p2-h">
+    <!-- PAGE 07: THE FINAL ROOM (round 8: the site shows first and asks last; the old pages 2-3 moved here). The heading is
+         Wajih's wording, signed off: "What's the task list? Tick everything that fits." (a callback to "YOU gave us the
+         task."). Six hairline rows; a tap marks the row's box with one hairline stroke, shows its answer beneath and prints
+         the line onto the work slip, whose head waits at the bottom of the screen and docks as the slip arrives. The rows,
+         answers and the slip's wording are DRAFTS until Wajih signs them off (data-draft). Script: site/js/page02/page.js.
+         "Cut to the chase" (the strip) lands here. -->
+    <section id="page-07" class="p2 p23" data-sheet="07" data-title="Final room" data-drawn="Design" data-checked="Strategy" data-approved="Engineering" aria-labelledby="p2-h">
       <div class="p2__stage g-snap">
         <p class="p23-flag mono gt gt-h" data-draft>Draft wording · pending Wajih</p>
-        <h2 id="p2-h" class="p2__h display rv gt" data-draft>What do you need?</h2>
+        <h2 id="p2-h" class="p2__h display rv gt">What’s the task list?</h2>
         <div class="p2__pick">
-        <p class="p2__sub display rv gt" data-draft>Tap everything that fits.</p>
+        <p class="p2__sub display rv gt">Tick everything that fits.</p>
         <fieldset class="p2-rows">
-          <legend class="sr-only">What do you need? Tap everything that fits.</legend>
+          <legend class="sr-only">What’s the task list? Tick everything that fits.</legend>
           <div class="p2-row" data-id="web">
             <label class="p2-row__hit g-snap"><input class="p2-row__in" type="checkbox" name="need" value="web" aria-describedby="p2-a-web">
               <span class="p2-row__no mono gt gt-h" aria-hidden="true">01</span><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg>
@@ -48,13 +50,13 @@
             <div class="p2-ans" id="p2-a-look"><div class="p2-ans__clip"><p class="p2-ans__t gt-js g-snap" data-draft>A look your customers trust on sight, built from what they need to feel.</p></div></div>
           </div>
         </fieldset>
-        <!-- round 5, CTA design A: after the first tap the beacon glides here; it takes the visitor to the work slip (DRAFT wording) -->
-        <a class="p2-next" href="#page-03" data-draft><span class="p2-next__no ph gt gt-h" aria-hidden="true">Draft</span><span class="p2-next__slot" aria-hidden="true"></span><span class="p2-next__t gt gt-h">Next: your slip <i aria-hidden="true">↓</i></span></a>
+        <!-- CTA design A (round 5): after the first tap the beacon glides here; it takes the visitor to the work slip (DRAFT wording) -->
+        <a class="p2-next" href="#page-07b" data-draft><span class="p2-next__no ph gt gt-h" aria-hidden="true">Draft</span><span class="p2-next__slot" aria-hidden="true"></span><span class="p2-next__t gt gt-h">Next: your slip <i aria-hidden="true">↓</i></span></a>
         </div>
         <p class="sr-only" aria-live="polite" id="p2-said"></p>
         <!-- the work slip's head: it waits at the bottom of the screen while you tap (each tap prints into it), and docks
              as the top of the slip when page 3 arrives (sticky, so the dock is the browser's own layout) -->
-        <a class="slip-head" href="#page-03"><span class="sr-only">Go down to </span>
+        <a class="slip-head" href="#page-07b"><span class="sr-only">Go down to </span>
           <span class="slip-head__cells">
             <span class="slip-cell"><span class="slip-cell__k mono" data-draft>Work slip</span><span class="slip-cell__v mono">No. <b class="js-slip-no">000000-0000</b></span></span>
             <span class="slip-cell"><span class="slip-cell__k mono" data-draft>Date</span><span class="slip-cell__v mono js-slip-date">—</span></span>

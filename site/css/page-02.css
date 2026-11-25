@@ -1,4 +1,4 @@
-/* Take 2 · pages 2 and 3, one move (Part 5 "Pages 2 and 3"). Shared bits + page 2 (For you) + the work slip's head.
+/* Take 2 · the final room (round 8: the old pages 2 and 3, one move). Shared bits + the rows + the work slip's head.
    The design ethos: hairlines, ink on paper, mono words for labels, no pills, no fills, no checkmark icons.
    Round 6: on the grid (1rem = one cell). Page 2's grid starts at its own top (which is the screen's when the hallway
    lands it); page 3's continues it (page 2 is whole cells tall). Hairlines are drawn inside boxes (inset shadows), so
@@ -11,11 +11,9 @@
 /* words: the calm rise-and-straighten (as page 1), played once when the line first comes into view */
 .p23 .w { display: inline-block; opacity: 0; transform: translateY(.34em) rotate(3deg); transform-origin: 0 100%; }
 .p23 .rv.on .w, .p23 .on > .w { opacity: 1; transform: none; transition: opacity .26s linear calc(var(--i, 0) * 45ms), transform .62s var(--ease-out) calc(var(--i, 0) * 45ms); }
-/* seen first at the end of page 1's hallway: the words stand settled (no rise inside the scaled stage) */
-.p23 .rv.on.is-still .w { transition: none; }
 
 /* the draft flag: one mono line per page, on the right gutter; every line on pages 2-3 carries data-draft */
-.p23-flag { position: absolute; right: var(--gut); top: 2.5rem; color: var(--graphite); text-align: right; }
+.p23-flag { position: absolute; right: var(--gut); top: 3.5rem; color: var(--graphite); text-align: right; }
 .p2 .p23-flag { z-index: 1; }
 
 /* the mark: a hairline box, whole cells (2 x 2 on page 2, 1 x 1 on the slip); ticking it draws ONE hairline stroke
@@ -32,9 +30,9 @@ input:checked + .mark path, input:checked ~ .mark path { stroke-dashoffset: 0; t
 .p2-row__in:focus-visible ~ .p2-row__t, .tick input:focus-visible ~ span { text-decoration: underline; text-underline-offset: .18em; text-decoration-thickness: 1px; }
 
 /* ---------- page 2 ---------- */
-.p2__stage { position: relative; display: flex; flex-direction: column; min-height: round(up, 100vh, 1rem); min-height: round(up, 100lvh, 1rem); padding: 3rem var(--gut) var(--snap, 0px); }
+.p2__stage { position: relative; display: flex; flex-direction: column; min-height: round(up, 100vh, 1rem); min-height: round(up, 100lvh, 1rem); padding: 5rem var(--gut) var(--snap, 0px); }   /* round 8: the draft line above it, clear of the strip */
 /* the question sits where page 1's closing line stood */
-.p2__h { font-size: 2.5rem; line-height: 3rem; letter-spacing: -.02em; max-width: 12ch; }
+.p2__h { font-size: 2.5rem; line-height: 3rem; letter-spacing: -.02em; max-width: 12ch; text-wrap: balance; }
 .p2__pick { margin-top: 1rem; }
 /* round 5: the call to action is a big line right under the question */
 .p2 .p2__sub { font-size: 1.5rem; line-height: 2rem; letter-spacing: -.015em; text-wrap: balance; color: var(--ink); }
@@ -46,7 +44,7 @@ input:checked + .mark path, input:checked ~ .mark path { stroke-dashoffset: 0; t
 .p2-row__hit { position: relative; display: grid; grid-template-columns: 2rem 2rem 1fr; align-items: start; column-gap: 0; min-height: 4rem; padding: 0 0 var(--snap, 0px); cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; }
 .p2-row__no { color: var(--graphite); margin-top: 2rem; }
 .p2-row .mark { margin-top: 1rem; }
-.p2-row__t { margin: 1.5rem 0 0 1rem; font-family: var(--f-display); font-weight: 420; font-size: 1.25rem; line-height: 1.5rem; letter-spacing: -.01em; }
+.p2-row__t { margin: 1.5rem 0 0 1rem; padding-bottom: 1rem; font-family: var(--f-display); font-weight: 420; font-size: 1.25rem; line-height: 1.5rem; letter-spacing: -.01em; text-wrap: balance; }
 /* the answer, beneath its row: the space opens (rows grid 0fr -> 1fr), then the words rise; whole cells tall */
 .p2-ans { display: grid; grid-template-rows: 0fr; visibility: hidden; transition: grid-template-rows .34s var(--ease-out), visibility 0s .34s; }
 .p2-ans__clip { overflow: hidden; min-height: 0; }
@@ -61,16 +59,15 @@ input:checked + .mark path, input:checked ~ .mark path { stroke-dashoffset: 0; t
   pointer-events: none; transition: transform .62s var(--ease-out), opacity .3s linear; }
 .p2-beacon__dot, .p2-beacon__ring { position: absolute; left: -5px; top: -5px; width: 10px; height: 10px; border-radius: 50%; }
 .p2-beacon__dot { background: currentColor; animation: breathe 1.6s ease-in-out infinite alternate; }
-.p2-beacon__ring { border: 1px solid currentColor; opacity: 0; animation: ring 3.2s cubic-bezier(.2, .6, .3, 1) infinite; }
+.p2-beacon__ring { border: 1px solid currentColor; opacity: 0; animation: p2ring 3.2s cubic-bezier(.2, .6, .3, 1) infinite; }
+/* round 8 (TYPE_RULES rule 2): the rings fade out half a cell short of the row's words */
+@keyframes p2ring { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(4.6); opacity: 0; } }
 .p2-beacon__ring--2 { animation-delay: 1.6s; }
 .p2-beacon.is-off { opacity: 0; }
 .p2-beacon.is-off .p2-beacon__dot, .p2-beacon.is-off .p2-beacon__ring { animation: none; }
 /* reduced motion: no pulse, a still ring */
 .p2-beacon.is-still .p2-beacon__dot, .p2-beacon.is-still .p2-beacon__ring { animation: none; }
 .p2-beacon.is-still .p2-beacon__ring--1, .p2-beacon.is-still .p2-beacon__ring:not(.p2-beacon__ring--2) { opacity: .45; transform: scale(3); }
-/* while page 1's dive holds page 2 at the hallway's end, the beacon waits (no animation inside the scaled stage) */
-#page-02.is-dive .p2-beacon { visibility: hidden; }
-#page-02.is-dive .p2-beacon * { animation: none; }
 [data-cta="A"] .p2-beacon { transition: transform .62s var(--ease-out), opacity .3s linear; }
 /* "Next: your slip": on the rows' grid (the beacon's slot in the box column), shown from the first tap on */
 .p2-next { display: grid; grid-template-columns: 2rem 2rem 1fr; align-items: start; column-gap: 0; min-height: 4rem; margin: 0 0 1rem; color: var(--ink);
@@ -102,18 +99,18 @@ html[data-motion="reduce"] .p2-pulse, html[data-motion="reduce"] .p2__pick.is-op
 .slip-head { position: sticky; z-index: 6; bottom: var(--feed-bottom, 6rem); display: block; margin-top: auto; background: var(--paper);
   box-shadow: inset 0 0 0 1px var(--ink); color: var(--ink); -webkit-tap-highlight-color: transparent;
   transition: transform .34s var(--ease-out), opacity .22s linear; }
-.slip-head__cells { display: grid; grid-template-columns: 7rem 6rem 1fr; }
-.slip-cell { display: block; height: 2rem; padding: 0 0 0 1rem; min-width: 0; box-shadow: inset 1px 0 0 rgba(var(--ink-rgb), .35); }
+.slip-head__cells { display: grid; grid-template-columns: 8rem 6rem 1fr; }
+.slip-cell { display: flow-root; height: 3rem; padding: 0 0 0 1rem; min-width: 0; box-shadow: inset 1px 0 0 rgba(var(--ink-rgb), .35); }
 .slip-cell:first-child { box-shadow: none; }
 .slip-cell__k, .slip-cell__v { display: block; white-space: nowrap; overflow: hidden; line-height: .5rem; text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-mono)), .5rem); }
-.slip-cell__k { font-size: .4375rem; color: var(--graphite); }
+.slip-cell__k { font-size: .4375rem; color: var(--graphite); margin-top: .5rem; }
 .slip-cell__v { font-size: .625rem; margin-top: .5rem; }
 .slip-cell__v b { font-weight: 500; }
 .slip-cell--n { text-align: right; padding: 0 1rem 0 0; }
 .slip-head__go { display: inline; font-style: normal; }
 /* the paper coming out of the head: the needs printed so far, the newest typed in by the print head; its baseline level
    with the values' */
-.slip-head__feed { display: none; height: 2rem; padding: calc(1.5rem - 1em * var(--cap-mono)) 0 0 1rem; font-size: .625rem; line-height: .5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+.slip-head__feed { display: none; height: 3rem; padding: calc(2rem - 1em * var(--cap-mono)) 0 0 1rem; font-size: .625rem; line-height: .5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   text-box: trim-both cap alphabetic; }
 .slip-head__feed .new { display: inline-block; vertical-align: bottom; clip-path: inset(0 100% 0 0); animation: print var(--print-ms, .5s) steps(var(--print-n, 10), end) forwards; }
 @keyframes print { to { clip-path: inset(0 0 0 0); } }
@@ -129,15 +126,6 @@ html[data-motion="reduce"] .p2-pulse, html[data-motion="reduce"] .p2__pick.is-op
 .slip-head:not(.is-stuck) .slip-head__go { display: none; }
 .slip-head:not(.is-stuck) { pointer-events: none; }
 .slip-head:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
-/* while page 2 waits at the end of page 1's dive, the head stays out of it */
-#page-02.is-dive .slip-head { opacity: 0; transition: none; }
-
-/* ---------- page 1's dive lands here: page 2's stage waits at the hallway's end (page 1 holds, scales and clips it) ---------- */
-html[data-motion="full"] #page-02 { margin-top: -100vh; margin-top: -100lvh; }
-#page-02.is-dive { z-index: 3; background: transparent; }
-/* page 1 holds the stage at the screen's top with a transform (no position change, so no re-layout) */
-.p2__stage { will-change: transform; }
-#page-02.is-dive .p2__stage { background-color: var(--paper); background-image: var(--grid-img); background-size: var(--grid-size); }
 
 @media (hover: hover) and (pointer: fine) {
   .p2-row__hit:hover .p2-row__t { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .16em; }
@@ -152,17 +140,17 @@ html[data-motion="full"] #page-02 { margin-top: -100vh; margin-top: -100lvh; }
   /* desktop: the answer sits on its row's right, its baseline level with the row's words, joined by a hairline leader
      on the row's middle line, drawn on as you tick */
   .p2-row { display: grid; grid-template-columns: 22rem 1fr; align-items: start; }
-  .p2-row__t { font-size: 1.375rem; line-height: 1.5rem; }
+  .p2-row__t { font-size: 1.25rem; line-height: 1.5rem; }
   .p2-row__hit::after { content: ""; position: absolute; right: 1rem; top: 2rem; width: 3rem; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: 0 50%; transition: transform .26s cubic-bezier(.4, 0, .2, 1); }
   .p2-row.is-on .p2-row__hit::after { transform: none; transition-delay: .1s; }
   .p2-ans { grid-template-rows: none; display: block; visibility: hidden; transition: visibility 0s .3s; }
   .p2-ans__clip { overflow: visible; }
   .p2-row.is-on .p2-ans { visibility: visible; transition: none; }
   .p2-ans__t { margin-top: 1.5rem; padding-left: 0; padding-bottom: var(--snap, 0px); max-width: 34ch; --snap-off: .5; }
-  .p2-next__t { font-size: 1.375rem; line-height: 1.5rem; }
+  .p2-next__t { font-size: 1.25rem; line-height: 1.5rem; }
   .slip-head { max-width: 50rem; bottom: var(--feed-bottom, 2rem); }
   .slip-head.is-stuck { max-width: min(50rem, var(--feed-max, 50rem)); }
-  .slip-head__cells { grid-template-columns: 6rem 5rem 1fr; }
+  .slip-head__cells { grid-template-columns: 7rem 6rem 1fr; }
   .slip-cell__k { font-size: .375rem; }
   .slip-cell__v, .slip-head__feed { font-size: .5rem; }
 }
@@ -170,7 +158,8 @@ html[data-motion="full"] #page-02 { margin-top: -100vh; margin-top: -100lvh; }
   .p2__stage { padding-top: 8rem; }
   .p2__h { font-size: 4.5rem; line-height: 5rem; }
   .p2 .p2__sub { font-size: 2.5rem; line-height: 3rem; }
-  .p2-row__t, .p2-next__t { font-size: 1.375rem; }
+  .p2-rows { margin-top: 2rem; }   /* its descenders a full half cell clear of the first row's rule */
+  .p2-row__t, .p2-next__t { font-size: 1.25rem; }
   .p2-ans__t { font-size: 1.25rem; }
 }
 

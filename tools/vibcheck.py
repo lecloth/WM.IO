@@ -11,7 +11,7 @@ async def run(mode):
         ctx = await b.new_context(viewport={"width": 384, "height": 734}, is_mobile=True, has_touch=True, reduced_motion="reduce" if mode == "reduced" else "no-preference")
         await ctx.add_init_script("window.__vib=[]; navigator.vibrate = (ms) => { window.__vib.push(ms); return true; };")
         page = await ctx.new_page()
-        await page.goto("http://127.0.0.1:8109/?first&nosnap", wait_until="load")
+        await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
         await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
         if mode in ("tap", "reduced"): await page.tap("#enter")   # reduced: a real tap on the still gate must stay silent
         else: await page.keyboard.press("Enter")

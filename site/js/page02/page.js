@@ -1,21 +1,19 @@
-// Pages 2 and 3 as one move (Part 5 "Pages 2 and 3"):
+// The final room (round 8: the old pages 2 and 3, one move; Part 5 "Pages 2 and 3", heading per "Round 8"):
 //   page 2 (For you): six hairline rows (round 7 added "A look that fits my business"). A tap marks the row's box with one hairline stroke, shows its answer beneath,
 //     prints the line onto the work slip and gives a vibration tick on Android. The slip's head waits at the bottom of
 //     the screen (sticky) and types each new line in; when page 3 arrives, it docks as the top of the slip.
 //   page 3 (the work slip): live number and date, the printed needs, when, your name, anything else, how to send,
-//     Send (send.js). Then "or see how we think", and Detail B, a circle that grows into page 4 (callout.js).
-// Page 1's "?" dot dive lands on page 2: page 2's stage waits at the end of its corridor (page 1 fixes and scales it).
+//     Send (send.js). Round 8: the slip ends with Send; the spec sheet follows in plain scroll (callout.js is retired).
 // Reduced motion: every word shown, no stroke draws, no rise, no pin, no vibration.
 import { slip, NEEDS } from './slip.js';
 import { initSend } from './send.js';
-import { initCalloutB } from './callout.js';
 import { initCta } from './cta.js';
 import { haptics } from '../engine/haptics.js';
 import { settings } from '../settings.js';
 import { grid, snapHeights, seatText } from '../engine/grid.js';
 
 export function initPages23(engine) {
-  const p2 = document.getElementById('page-02'), p3 = document.getElementById('page-03');
+  const p2 = document.getElementById('page-07'), p3 = document.getElementById('page-07b');   // round 8: the final room (the old pages 2 and 3)
   if (!p2 || !p3) return null;
   const { ScrollTrigger } = engine;
   const reduced = engine.reduced;
@@ -39,12 +37,9 @@ export function initPages23(engine) {
   const show = (el) => el.classList.add('on');
   if (reduced) rvs.forEach(show);
   else {
-    // page 2's lines rise as the dive's window first shows them at the corridor's end (page 2 is fixed there), not before
+    // each line rises once, when it first comes into view
     const io = new IntersectionObserver((es) => es.forEach((e) => {
       if (!e.isIntersecting) return;
-      // during the dive page 2 is a small, scaled sheet at the corridor's end: its words stand settled (no rise inside a
-      // scaled layer, which would re-raster it every frame)
-      if (e.target.closest('#page-02') && p2.classList.contains('is-dive')) { if ((window.__p1?.P?.() ?? 9) >= 4.3) { e.target.classList.add('on', 'is-still'); io.unobserve(e.target); } return; }
       show(e.target); io.unobserve(e.target);
     }), { rootMargin: '0px 0px -8% 0px' });
     rvs.forEach((el) => io.observe(el));
@@ -141,17 +136,15 @@ export function initPages23(engine) {
     raf = 0;
     const sr = stage.getBoundingClientRect();
     const fb = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--feed-bottom')) || 0;
-    const s = !p2.classList.contains('is-dive') && sr.top < innerHeight && sr.bottom > innerHeight - fb + 0.5;
+    const s = sr.top < innerHeight && sr.bottom > innerHeight - fb + 0.5;
     if (s !== stuck) { stuck = s; head.classList.toggle('is-stuck', s); }
   }
   const schedule = () => { if (!raf) raf = requestAnimationFrame(frame); };
   addEventListener('scroll', schedule, { passive: true });
-  new MutationObserver(schedule).observe(p2, { attributes: true, attributeFilter: ['class'] });
 
-  // page 3's grid continues page 2's; while page 1 fixes page 2's stage, page 2 keeps its height
+  // the slip's grid continues the rows' (page 2's stage is whole cells tall)
   let refreshT = 0;
   const ro = new ResizeObserver((es) => {
-    if (p2.classList.contains('is-dive')) return;
     const h = es[0]?.borderBoxSize?.[0]?.blockSize ?? p2.getBoundingClientRect().height;   // whole cells (page 2's stage is snapped)
     if (Math.abs(h - p2h) < 0.5) return;
     const first = !p2h; p2h = h;
@@ -161,7 +154,7 @@ export function initPages23(engine) {
   });
   ro.observe(p2);
 
-  // links within the move glide instead of jumping (the head to the slip, the empty slip back up, on to page 4)
+  // links within the move glide instead of jumping (the head to the slip, the empty slip back up)
   const glide = (el, offset = 0) => {
     const y = scrollY + el.getBoundingClientRect().top + offset;
     if (engine.lenis) engine.lenis.scrollTo(y, { duration: 1.1 }); else scrollTo({ top: y, behavior: reduced ? 'auto' : 'smooth' });
@@ -174,10 +167,9 @@ export function initPages23(engine) {
   empty.querySelector('a')?.addEventListener('click', (e) => { e.preventDefault(); glide(p2); });
 
   // round 5: the call to action (the beacon; cta.js, design A on the page)
-  const cta = initCta(stage, { reduced, inDive: () => p2.classList.contains('is-dive'),
+  const cta = initCta(stage, { reduced, inDive: () => false,
     onNext: () => { const strip = document.getElementById('strip')?.offsetHeight || 40; glide(p3, -head.offsetHeight - strip - 12); } });
 
-  const calloutB = initCalloutB(engine);
   snapHeights(document);   // page 2's stage, the answers and the slip's cells stay whole cells tall
 
   // the answers: their first baseline seated on the grid by measurement (split words: no trim, grid.js seatText)
@@ -191,9 +183,9 @@ export function initPages23(engine) {
   relayout();
 
   // for tests
-  window.__p23 = { slip, send, head, stuck: () => stuck, calloutB, cta,
+  window.__p23 = { slip, send, head, stuck: () => stuck, cta,
     tick: (id, on = true) => { const i = p2.querySelector(`.p2-row[data-id="${id}"] input`); if (i.checked !== on) i.click(); },
     setSwitch: (k, on, endpoint = 'https://example.invalid/slip') => { const o = k === 'page' ? settings.sendFromPage : settings.booking; o.on = on; o.endpoint = on ? endpoint : ''; send.update(); },
   };
-  return { length: () => (document.getElementById('page-04').offsetTop - p2.offsetTop) / innerHeight };
+  return { length: () => ((document.getElementById('page-08')?.offsetTop ?? p3.offsetTop + p3.offsetHeight) - p2.offsetTop) / innerHeight };
 }

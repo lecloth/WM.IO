@@ -1,32 +1,30 @@
-// Page 1 (Enter + hook), round 3 + fixes + rounds 4-6. Scroll-driven, 8.4 screens tall: the stage stays put while 7.4
-// screens of scroll play the story; the last 3.1 are the "?" dot dive and the hallway into page 2 (round 6: longer, so
-// each frame rests long enough to read its museum label). Positions p are in screens of scroll (0..7.4):
-//   S0     Bell's 1877 sheet (the real scan), headline and credit                                      0.00 – 0.22
+// Page 1 (Enter + hook) and page 2 (the hallway), rounds 3-8. Scroll-driven: the stage stays put while 9.54 screens of
+// scroll play the story, then it scrolls away and page 3 follows. Positions p are in screens of scroll (0..9.54):
+//   S0     Bell's 1877 sheet (his ink on our grid), headline and credit                                0.00 – 0.22
 //          eight clean outlines draw on exactly over the scan (DrawSVG); the scan fades and leaves them 0.12 – 0.36
 //          the ground turns blue (one timed beat); the outlines morph into the phone's (MorphSVG)       0.36 – 0.80
-//          the 3D X-ray appears exactly on them                                                        0.80 – 0.90
-//          the pieces spread far apart and turn                                                        0.90 – 1.12
-//   S1     six pieces, named on hairline leaders                                                       1.12 – 1.42
-//   KIN    kinetic line; the pieces come together (a tick each)                                        1.44 – 2.32
-//          the ground turns back to paper (one timed beat, lines flip to ink); built (scrubbed);
-//          real materials (one timed beat)                                                              1.98 – 2.30
+//          the 3D X-ray appears exactly on them; the pieces spread far apart and turn                  0.80 – 1.12
+//   S1     six pieces, named on hairline leaders (each pointing at its own piece)                      1.12 – 1.42
+//   KIN    kinetic line; the pieces come together (a tick each); paper, built, real                    1.44 – 2.32
 //   S2     "…to serve you."                                                                            2.34 – 2.60
 //   YOU    alone                                                                                       2.62 – 2.80
 //   TASK   "YOU gave us the task."                                                                     2.82 – 3.00
-//   WE     "us" becomes WE, pinned; the verb drum turns through the seven steps, each meaning beneath   3.02 – 3.98
-//   END    "Now, what do you need?"                                                                    4.00 – 4.30
-//   DIVE   its "?" dot grows into a window; down a hallway of four framed blueprints; page 2 at its end  4.30 – 7.40
-// Words land on beats as short timed reveals (SplitText words rise and straighten), so a paused frame always settles
-// on whole, readable words. The ground changes and the drum's turns are timed too; only the pictures scrub.
+//   WE     "us" becomes WE, pinned; the verb drum turns through the seven steps, each meaning beneath   3.02 – 4.62
+//   END    "Now, how can we serve you?" (round 8, signed off)                                          4.64 – 4.94
+//   HALL   page 2: the grid folds into the hallway, which dresses up as you walk; "We design backwards…";
+//          five drawings swing out and rest, each with its frosted label; the door, which opens        4.94 – 9.54
+// Round 8, held scenes: each scene holds still for a stretch of scroll, and the page renders from a lagged scroll
+// position that follows the real one smoothly (scrubbed, never timed), so nothing pops and nothing jumps when the thumb
+// lets go. Words still land on beats as short timed reveals (a paused frame always settles on whole, readable words);
+// the ground's and the dress's changes and the drum's detent are short beats too (never a murky mix, never a wobble).
 // Reduced motion: still frames with the full text, no vibration.
-// Round 6: the grid is the layout system. The band the pictures sit in, Bell's sheet, the phone, the X-ray names and
-// their shelves, the travelling words and the drum all land on grid lines (site/js/engine/grid.js; the texts' own
-// baselines are set in CSS, page-00-grid.css .gt).
+// Round 6: the grid is the layout system (site/js/engine/grid.js; the texts' baselines are set in CSS, .gt).
 import { Phone } from './phone.js';
 import { BellMorph } from './morph.js';
 import { createLive } from './live.js';
 import { createDive, labelHTML, openingHTML, DIVE } from './dive.js';
-import { FRAMES } from './corridor-drawings.js';
+import { FRAMES, OPENING } from './corridor-drawings.js';
+const OPENING_TXT = `${OPENING.lead} ${OPENING.rest}`;
 import { haptics } from '../engine/haptics.js';
 import { grid, baselineOf, seatText } from '../engine/grid.js';
 import { LIGHT } from '../engine/tokens.js';
@@ -42,7 +40,7 @@ function keys(p, k) {
 }
 const inR = (p, [a, b]) => p >= a - 1e-4 && p <= b + 1e-4;
 
-// round 7: the drum turns slower (more room: 1.6 screens for seven verbs), and the hallway is 4.3 screens
+// round 7: the drum turns slower (more room: 1.6 screens for seven verbs); round 8: the hallway is 4.6 screens
 export const SCROLL = 4.94 + DIVE;
 const R = {
   s0: [0, 0.22], draw: [0.12, 0.28], scanOut: [0.26, 0.36], blueOn: 0.36, morph: [0.4, 0.8], xray: [0.8, 0.88], linesOut: [0.86, 0.9],
@@ -51,7 +49,7 @@ const R = {
 };
 const HAND = 0.9;          // the handover: Bell's outlines -> X-ray, pose held until here
 // named stops for tests (a paused frame at each must be clean), including mid-morph, mid-drum and mid-dive
-export const STOPS = { S0: 0.1, draw: 0.24, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.9, END: 4.8, TR: 5.05, OPEN: 5.49, F1: 6.26, F2: 6.83, F3: 7.4, F4: 7.97, F5: 8.62, LAND: 9.16 };
+export const STOPS = { S0: 0.1, draw: 0.24, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.9, END: 4.8, TR: 5.11, OPEN: 5.48, SW1: 5.97, F1: 6.2, F2: 6.77, F3: 7.34, F4: 7.91, F5: 8.54, F5B: 8.72, DOOR: 9.22, OUT: 9.5 };
 const NAMES = ['Back', 'Battery', 'Board', 'Frame', 'Screen', 'Glass'];   // back to front
 const BLUE = [23, 63, 115];
 
@@ -93,8 +91,7 @@ export function initPage01(engine) {
 
   const flyYou = $('.p1-fly[data-w="you"]'), flyWe = $('.p1-fly[data-w="we"]');
   const slot = { a: $('.p1-slot--a'), c: $('.p1-slot--c'), u: $('.p1-slot--u'), w: $('.p1-slot--w') };
-  const diveEl = $('.p1-dive'), diveTop = $('.p1-dive-top');
-  const page2 = document.getElementById('page-02'), page2In = page2?.querySelector('.p2__stage') || page2?.querySelector('.stub__in');
+  const diveEl = $('.p1-dive'), diveTop = $('.p1-dive-top'), mark2 = $('.p1-mark');
   const dive = createDive(diveEl, diveTop);
   const endH = T.end.querySelector('.p1-txt__h');
 
@@ -114,7 +111,7 @@ export function initPage01(engine) {
     const K = [[HAND, Hd], [R.spread[1], E], [R.seat, E], [R.real[1], F], [R.s2[1], F2]];
     const spread = ease(span(p, HAND, R.spread[1]));
     const explodeEach = phone.parts.map((_, i) => (p < R.seat ? spread : 1 - ease(span(p, R.seat + i * 0.06, R.seat + 0.14 + i * 0.06))));   // back seats first
-    return { explodeEach, yaw: keys(p, K.map(([q, o]) => [q, o.yaw])), pitch: keys(p, K.map(([q, o]) => [q, o.pitch])), fit: band };
+    return { explodeEach, yaw: keys(p, K.map(([q, o]) => [q, o.yaw])), pitch: keys(p, K.map(([q, o]) => [q, o.pitch])), fit: band, gap: 68 };   // round 8: the pieces further apart (was 52 mm)
   }
 
   // ---------- layout: where the picture may sit (never under the text, the strip or the title block) ----------
@@ -145,7 +142,7 @@ export function initPage01(engine) {
     if (desktop) {
       const sl = stage.getBoundingClientRect().left;
       const textRight = Math.max(...pictureTexts.map((t) => t.getBoundingClientRect().right - sl));
-      bT = 4 * u; bB = grid.floor(tbTop) - 2 * u; bL = grid.ceil(Math.min(W * 0.5, textRight + 2 * u)); bR = W - 2 * u;
+      bT = 4 * u; bB = grid.floor(tbTop) - 2 * u; bL = grid.ceil(Math.max(Math.min(W * 0.5, textRight + 2 * u), textRight + u)); bR = W - 2 * u;   // round 8: never under a wide line
     } else {
       const tallest = Math.max(...pictureTexts.map((t) => t.getBoundingClientRect().height));
       bT = 3 * u + grid.ceil(tallest) + u; bB = grid.floor(tbTop) - 2 * u; bL = u; bR = W - u;   // the last cell: the plate's credit line
@@ -164,7 +161,7 @@ export function initPage01(engine) {
     plateRect = imgRect = { left: il, top: it, width: iw, height: ih };
     bellLines = { x: il + BELL_LINES.x * ks, y: it + BELL_LINES.y * ks };
     Object.assign(plateFig.style, { left: `${il}px`, top: `${it}px`, width: `${iw}px`, height: `${ih}px` });
-    credit.style.top = `${grid.ceil(it + ih)}px`; credit.style.left = `${grid.ceil(il)}px`;
+    credit.style.top = `${grid.ceil(it + ih) + u / 2}px`; credit.style.left = `${grid.ceil(il)}px`;   // round 8: half a cell clear of the scan, a cell clear of the title block
     // the handover: pose the phone where the X-ray appears, and give Bell's outlines the X-ray outlines to land on
     phone.parts.forEach((part) => { part.e = 0; });
     phone.set(pose(HAND));
@@ -235,41 +232,52 @@ export function initPage01(engine) {
     const vBase = vBase0 + stTop - box.top;
     const sr = slotW.getBoundingClientRect();
     let wBase = baselineOf(slotW) - box.top;
-    if (desktop) { const d = vBase - wBase; wordEl.style.translate = `0 ${d.toFixed(2)}px`; wBase = vBase; }
+    if (desktop && !engine.reduced) { const d = vBase - wBase; wordEl.style.translate = `0 ${d.toFixed(2)}px`; wBase = vBase; }   // (reduced motion: no drum to stand on)
     const sx = sr.left - box.left, wl = sx + mw.inkL, wr = sx + mw.inkR;
     const vl = dr.left - box.left, vr = vl + widest;
     const wCap = wBase - mw.cap, vCap = vBase - mv.cap, vX = vBase - mv.xh;
-    const band = vBase - vCap, m = Math.max(4, (verbs[0].offsetHeight - band) / 2) * 0.62;
-    const win = { t: vCap - m, b: vBase + m, l: vl - m, r: vr + m };
-    const o = desktop ? 1.5 * rem : 10;                         // the overshoot, the same on every side
-    const L = Math.min(wl, win.l) - o, R = Math.max(wr, win.r) + o, T = Math.min(wCap, win.t) - o, B = Math.max(wBase, win.b) + o;
+    // round 8 (TYPE_RULES): every drawn mark keeps half a cell clear of every letter. The verb window clears the verbs'
+    // tallest ascender and deepest descender by half a cell; there are no ticks on the letters; the dimensions sit a cell
+    // off the type, with their live measurement ON the line (DM Mono Light), the line broken round it (CAD style)
+    const u = grid.u, half = u / 2 + 1;
+    let asc = 0, desc = 0; verbs.forEach((v) => { const m = mctx.measureText(v.textContent); asc = Math.max(asc, m.actualBoundingBoxAscent); desc = Math.max(desc, m.actualBoundingBoxDescent); });
+    const win = { t: vBase - asc - half, b: vBase + desc + half, l: vl - half, r: vr + half };
+    mctx.font = `300 ${(desktop ? 0.375 : 0.4375) * rem}px "DM Mono"`; if ('letterSpacing' in mctx) mctx.letterSpacing = `${0.08 * (desktop ? 0.375 : 0.4375) * rem}px`;
+    const mcap = mctx.measureText('8').actualBoundingBoxAscent, mw_ = (s) => mctx.measureText(s).width;
     const f = (v) => v.toFixed(1);
+    const px = (v) => `${v.toFixed(1)} PX`;
+    // WE's dimension: phones on its right (the left is the screen's gutter), desktop on its left (the drum is on its right)
+    const dimW = desktop ? wl - u : wr + u, dimV = win.r + u;
+    // the verb window's height is short: its measurement stands beside its line (outside, half a cell clear)
+    const mV = px(win.b - win.t), mVx = dimV + half + mcap / 2;
+    const o = desktop ? 1.5 * rem : 10;                          // the grid's overshoot past the outermost mark
+    const L = Math.min(wl, win.l, desktop ? dimW - half : wl) - o, R = Math.max(desktop ? wr : dimW + half + mw_('BASE') + 6, mVx + mcap / 2 + half) + o;
+    const T = Math.min(wCap, win.t) - o, B = Math.max(wBase, win.b) + o;
     const hl = (y) => `<path class="g" d="M${f(L)} ${f(y)}H${f(R)}"/>`;
     const vline = (x) => `<path class="g" d="M${f(x)} ${f(T)}V${f(B)}"/>`;
-    const tick = (x, y) => `<path class="t" d="M${f(x - 3)} ${f(y)}H${f(x + 3)}M${f(x)} ${f(y - 3)}V${f(y + 3)}"/>`;
-    // a vertical dimension with slender arrowheads
-    const dim = (x, y0, y1) => { const a = 5, w = 2; return `<path class="d" d="M${f(x)} ${f(y0)}V${f(y1)}M${f(x - w)} ${f(y0 + a)}L${f(x)} ${f(y0)}L${f(x + w)} ${f(y0 + a)}M${f(x - w)} ${f(y1 - a)}L${f(x)} ${f(y1)}L${f(x + w)} ${f(y1 - a)}"/>`; };
-    // line names: WE's just above its lines at its ink edge; the verb's outside the grid's right end, on the line
+    // a vertical dimension with slender arrowheads; gap: the measurement's room on the line (0: whole)
+    const dim = (x, y0, y1, gap = 0) => { const a = 5, w = 2, m = (y0 + y1) / 2;
+      const shaft = gap && (y1 - y0) / 2 - gap / 2 > a + 2 ? `M${f(x)} ${f(y0)}V${f(m - gap / 2)}M${f(x)} ${f(m + gap / 2)}V${f(y1)}` : `M${f(x)} ${f(y0)}V${f(y1)}`;
+      return `<path class="d" d="${shaft}M${f(x - w)} ${f(y0 + a)}L${f(x)} ${f(y0)}L${f(x + w)} ${f(y0 + a)}M${f(x - w)} ${f(y1 - a)}L${f(x)} ${f(y1)}L${f(x + w)} ${f(y1 - a)}"/>`; };
+    // line names: on the grid line's end, clear of the dimensions
     const lab = (x, y, t, cls = '') => `<text class="${cls}" x="${f(x)}" y="${f(y)}">${t}</text>`;
     const seen = new Set(), Hs = [];
+    const weNameX = desktop ? dimW - half - 4 : dimW + half + 4;   // clear of the dimension's arrowheads
     const addH = (y, name, side) => {
       const k = Math.round(y); if (seen.has(k)) return; seen.add(k);
-      Hs.push(hl(y) + (side === 'we' ? lab(wr + 6, y - 4, name) : lab(R + 5, y, name, 'r')));
+      Hs.push(hl(y) + (side === 'we' ? lab(weNameX, y - 4, name, desktop ? 'e' : '') : lab(R + 5, y, name, 'r')));
     };
     addH(wCap, 'CAP', 'we'); addH(wBase, 'BASE', desktop ? 'verb' : 'we'); addH(vCap, 'CAP', 'verb'); addH(vX, 'X', 'verb'); addH(vBase, 'BASE', 'verb');
     const Vs = [wl, wr, win.l, win.r].map(vline).join('');
-    const ticks = [[wl, wCap], [wr, wCap], [wl, wBase], [wr, wBase], [win.l, vCap], [win.r, vCap], [win.l, vBase], [win.r, vBase]].map(([x, y]) => tick(x, y)).join('');
     const winRect = `<path class="w" d="M${f(win.l)} ${f(win.t)}H${f(win.r)}V${f(win.b)}H${f(win.l)}Z"/>`;
     const mid = (win.t + win.b) / 2, ix = 6;   // the window's index marks, left and right, as on a dial
     const index = `<path class="w" d="M${f(win.l - ix)} ${f(mid)}H${f(win.l)}M${f(win.r)} ${f(mid)}H${f(win.r + ix)}"/>`;
-    const dims = dim(L + o * 0.45, wCap, wBase) + dim(R - o * 0.45, win.t, win.b);
-    // round 7: the real measurements, live, in faint grey mono: each cap height as it is on this screen, and the verb
-    // window's width and height
-    const px = (v) => `${v.toFixed(1)} PX`, half = (a, b) => (a + b) / 2;
-    const turned = (x, y, t) => `<text class="m t" transform="translate(${f(x)} ${f(y)}) rotate(-90)">${t}</text>`;
-    const meas = turned(L + o * 0.45 - 3, half(wCap, wBase), px(wBase - wCap)) + turned(R - o * 0.45 - 3, half(win.t, win.b), px(win.b - win.t));
+    const mW = px(wBase - wCap), gapW = mw_(mW) + 2 * half;
+    const dims = dim(dimW, wCap, wBase, gapW) + dim(dimV, win.t, win.b);
+    const turned = (x, y, t) => `<text class="m" transform="translate(${f(x)} ${f(y)}) rotate(-90)" dy="${f(mcap / 2)}">${t}</text>`;
+    const meas = turned(dimW, (wCap + wBase) / 2, mW) + turned(mVx, (win.t + win.b) / 2, mV);
     gridSvg.setAttribute('viewBox', `0 0 ${f(box.width)} ${f(box.height)}`);
-    gridSvg.innerHTML = Hs.join('') + Vs + ticks + winRect + index + dims + meas;
+    gridSvg.innerHTML = Hs.join('') + Vs + winRect + index + dims + meas;
     gridLines = { wCap, wBase, vCap, vX, vBase, win, L, R, T, B, o, wl, wr };
   }
   let gridLines = null;
@@ -277,7 +285,7 @@ export function initPage01(engine) {
     wheel.style.transform = `translateZ(${(-drumR).toFixed(1)}px) rotateX(${(drum.a * TH).toFixed(2)}deg)`;
     verbs.forEach((v, k) => {
       const d = Math.abs(k - drum.a);
-      v.style.opacity = (d <= 1 ? 1 - 0.8 * d : d <= 2 ? 0.2 - 0.14 * (d - 1) : d <= 2.5 ? 0.12 * (2.5 - d) : 0).toFixed(3);
+      v.style.opacity = (d <= 1 ? 1 - 0.8 * d : d <= 1.5 ? 0.4 * (1.5 - d) : 0).toFixed(3);   // round 8: one faint verb each side (the next ones would crowd WE and the meaning)
       v.classList.toggle('is-lit', d < 0.01);
     });
   }
@@ -295,13 +303,8 @@ export function initPage01(engine) {
     if (Math.abs(drum.a - n) < 0.025 && n !== drum.seated) { drum.seated = n; haptics.click(); }   // round 7: a heavier click, a double pulse
   }
 
-  // ---------- the dive: the "?" dot, measured on the rendered glyph (after fonts load, on every resize) ----------
-  // round 7: the hallway's layout; transition B cuts along the grid line under the last line
-  function layoutDive() {
-    const sr = stage.getBoundingClientRect(), u = grid.u;
-    const cutY = grid.ceil(endH.getBoundingClientRect().bottom - sr.top) + u;
-    dive.layout(diveEl.clientWidth || W, diveEl.clientHeight || innerHeight, { u, cutY });
-  }
+  // ---------- the hallway's layout ----------
+  function layoutDive() { dive.layout(diveEl.clientWidth || W, diveEl.clientHeight || innerHeight, { u: grid.u }); }
 
   // ---------- "you" -> "YOU" and "us" -> "WE": one word each, travelling between its places ----------
   let flyT = { you: {}, we: {} };
@@ -407,40 +410,48 @@ export function initPage01(engine) {
   }
   let phoneSeen = true;
 
-  // the dive: page 2's stage waits at the hallway's end (held at the screen's top by a transform, scaled by the
-  // perspective, hidden behind the end wall until the last frame has gone) and is home, 1:1, when the walk ends (within
-  // 1.5 px of the end: phones scroll in whole pixels). Transition C pushes page 1's stage into one grid square.
-  let diveOn = null, diveNow = null, phonesT = 0;
+  // page 2, the hallway: on from its first scroll position until page 1's last (then the stage, plain paper and grid like
+  // the open door's view, scrolls away and page 3 follows)
+  let diveNow = null, phonesT = 0;
   function renderDive(p) {
-    if (!page2) return;
-    const on = p >= R.end[0] && p < R.end[1] - 1.5 / Math.max(1, H);
-    if (on !== diveOn) {
-      diveOn = on; page2.classList.toggle('is-dive', on);
-      if (!on && page2In) { page2In.style.transform = ''; page2In.style.transformOrigin = ''; page2In.style.visibility = ''; }
-    }
-    const q = span(p, ...R.dive), going = on && q > 0;
-    // round 7: the real phones load from the WE scene on, in the first pause (300 ms without scrolling: every snap scene is
-    // one), so their parsing never lands in a moving frame; once the hallway starts they load at once whatever happens
+    const q = span(p, ...R.dive), going = p > R.dive[0] && p < R.dive[1] - 1.5 / Math.max(1, H);
+    // the real phones load from the X-ray scene on (round 8; round 7: WE), in the first pause (300 ms without scrolling), so their parsing
+    // never lands in a moving frame; once the hallway starts they load at once whatever happens
     if (p >= R.dive[0]) dive.loadPhones();
-    else if (p >= R.we[0]) { clearTimeout(phonesT); phonesT = setTimeout(() => dive.loadPhones(), 300); }
+    else if (p >= R.s1[0]) { clearTimeout(phonesT); phonesT = setTimeout(() => dive.loadPhones(), 300); }   // round 8: from the X-ray on (they were still loading at the way in on a first visit)
     diveEl.classList.toggle('on', going); diveTop.classList.toggle('on', going);
-    const pin = on ? -page2.getBoundingClientRect().top : 0;
-    if (!on || !going) { diveNow = null; stage.style.transform = ''; dive.reset(); if (on) { page2In.style.visibility = 'hidden'; page2In.style.transform = `translateY(${pin.toFixed(2)}px)`; } return; }
+    if (!going) { diveNow = null; return; }
     const d = dive.render(q); if (!d) return;
     diveNow = { ...d, q };
-    stage.style.transformOrigin = d.stage ? d.stage.origin : ''; stage.style.transform = d.stage ? d.stage.transform : '';
-    // page 2 stays drawn behind the opaque end wall (showing it only at the end made its first raster land mid-walk); it is
-    // hidden only while the way in is still opening (a clip there would show it over page 1)
-    page2In.style.visibility = d.open ? '' : 'hidden';
-    page2In.style.transformOrigin = d.origin;
-    const still = d.scale > 0.99995 && Math.abs(pin) < 0.01;
-    page2In.style.transform = still ? '' : `translateY(${pin.toFixed(2)}px) scale(${d.scale.toFixed(5)})`;
   }
 
-  // names beside each piece: a mono word on a hairline leader with a short shelf under it, alternating sides
-  let shelves = [];   // for the on-grid check: each name's shelf (stage px)
+  // names beside each piece: a mono word on a hairline leader with a short shelf under it, alternating sides.
+  // Round 8: each leader points at its own piece (a point on the piece's face that no other piece covers, on its name's
+  // side), and every name keeps half a grid cell clear of every piece (TYPE_RULES rule 2)
+  let shelves = [], leaderSegs = [];   // for the checks: each name's shelf and leader (stage px)
+  const inBox = (x, y, q, m = 0) => x > q.left - m && x < q.right + m && y > q.top - m && y < q.bottom + m;
+  /** does the segment s meet the rect (x0, y0)-(x1, y1) */
+  const segNear = (s, x0, y0, x1, y1) => {
+    let t0 = 0, t1 = 1; const dx = s.x2 - s.x1, dy = s.y2 - s.y1;
+    for (const [p, q] of [[-dx, s.x1 - x0], [dx, x1 - s.x1], [-dy, s.y1 - y0], [dy, y1 - s.y1]]) {
+      if (Math.abs(p) < 1e-9) { if (q < 0) return false; continue; }
+      const r = q / p; if (p < 0) { if (r > t1) return false; if (r > t0) t0 = r; } else { if (r < t0) return false; if (r < t1) t1 = r; }
+    }
+    return t0 <= t1;
+  };
+  function anchorFor(i, side, boxes) {
+    const part = phone.parts[i]; let best = null;
+    for (const v of [0, -0.35, 0.35, -0.65, 0.65]) for (const uu of [0.55, 0.3, 0.8, 0, -0.3, -0.55, -0.8]) {
+      const [x, y] = phone.anchor(part, side * uu, v);
+      if (!inBox(x, y, boxes[i], -2)) continue;
+      const covered = phone.parts.reduce((n, _, k) => n + (k !== i && phone.inHull(k, x, y, 3) ? 1 : 0), 0);   // inside how many other pieces' outlines
+      const score = covered * 1000 + Math.abs(v) * 2 + Math.abs(uu - 0.55);
+      if (!best || score < best.score) best = { x, y, score };
+    }
+    return best ? [best.x, best.y] : phone.anchor(part, side * 0.55, 0);
+  }
   function drawLabels(on) {
-    const d = leaders.width / W; shelves = [];
+    const d = leaders.width / W; shelves = []; leaderSegs = [];
     lctx.clearRect(0, 0, leaders.width, leaders.height);
     labels.forEach((l) => l.classList.toggle('on', on));
     if (!on) return;
@@ -448,10 +459,11 @@ export function initPage01(engine) {
     const order = boxes.map((b, i) => ({ b, i })).sort((p, q) => (portrait ? p.b.cy - q.b.cy : p.b.cx - q.b.cx));
     const col = stage.classList.contains('is-inv') || G.b >= 0.5 ? 'rgba(236,241,246,.9)' : `rgb(${ink})`;
     lctx.strokeStyle = col; lctx.fillStyle = col; lctx.lineWidth = Math.max(1, d * 0.75);
-    const u = grid.u;
+    const u = grid.u, c = u / 2 + 1;                                      // half a cell clear of every piece
+    const placed = [];
     order.forEach(({ b, i }, k) => {
       const el = labels[i], w = el.getBoundingClientRect().width, ww = grid.ceil(w), side = k % 2 ? 1 : -1;
-      const [ax, ay] = phone.anchor(phone.parts[i], side * 0.55, 0);
+      const [ax, ay] = anchorFor(i, side, boxes);
       let lx, sy;                                                  // the word's left edge and its shelf, on lines
       if (portrait) {   // pieces stacked down the screen: names left and right
         lx = side < 0 ? Math.max(band.left, grid.floor(b.left - u - ww)) : Math.min(W - band.right - ww, grid.ceil(b.right + u));
@@ -459,23 +471,34 @@ export function initPage01(engine) {
       } else {          // pieces spread across: names above and below
         lx = clamp(grid.snap(ax - ww / 2), band.left, W - band.right - ww);
         sy = side < 0 ? Math.max(band.top + u, grid.floor(b.top - u)) : Math.min(H - band.bottom, grid.ceil(b.bottom + 1.5 * u));
+        // below the piece the leader rises to it: the word stands beside the anchor, so the leader never crosses it
+        if (side > 0) { lx = grid.ceil(ax + u); if (lx + ww + u > W - band.right) lx = grid.floor(ax - 2 * u - ww); }
       }
-      // clear of every piece (not only its own): out a cell at a time, away from the phone, while it would touch one
-      const c = 0;                                                         // clearance around every piece (a quarter cell pushed "Board" into the back on phones)
-      const touches = (x) => boxes.some((q) => x < q.right + c && x + ww > q.left - c && sy - u < q.bottom + c && sy > q.top - c);
+      // the word's ink: from its cap line to its baseline (half a cell above the shelf); clear of every piece's outline
+      const touches = (x, y) => { const t0 = y - u / 2 - 0.45 * u, b0 = y - u / 2;
+        return phone.parts.some((_, q) => phone.hullNear(q, x - c, t0 - c, x + ww + c, b0 + c))
+          || placed.some((q) => x < q.x1 + u && x + ww > q.x0 - u && y - u < q.y + u && y > q.y - 2 * u)
+          || leaderSegs.some((s) => segNear(s, x - c, t0 - c, x + ww + c, b0 + c)); };   // and every other name's shelf and leader
       const fits = (x, y) => x >= band.left && x + ww <= W - band.right && y >= band.top + u && y <= H - band.bottom;
-      for (let k = 0; k < 8 && touches(lx); k++) {
-        const nx = portrait ? lx + (side < 0 ? -u : u) : lx, ny = portrait ? sy : sy + (side < 0 ? -u : u);
-        if (fits(nx, ny)) { lx = nx; sy = ny; continue; }
-        // blocked at the band's edge: a cell down, then a cell up, instead
-        if (fits(lx, sy + u) && !boxes.some((q) => lx < q.right + c && lx + ww > q.left - c && sy < q.bottom + c && sy + u > q.top - c)) { sy += u; break; }
-        if (fits(lx, sy - u) && !boxes.some((q) => lx < q.right + c && lx + ww > q.left - c && sy - 2 * u < q.bottom + c && sy - u > q.top - c)) { sy -= u; break; }
-        break;
+      // out a cell at a time, away from the phone; else down or up a cell at a time
+      if (touches(lx, sy)) {
+        let found = null;
+        for (let n = 1; n <= 12 && !found; n++) {
+          const cands = portrait ? [[lx + (side < 0 ? -n * u : n * u), sy], [lx, sy + n * u], [lx, sy - n * u]] : [[lx, sy + (side < 0 ? -n * u : n * u)], [lx + n * u, sy], [lx - n * u, sy]];
+          for (const [x, y] of cands) if (fits(x, y) && !touches(x, y)) { found = [x, y]; break; }
+        }
+        if (found) [lx, sy] = found;
       }
+      placed.push({ x0: lx, x1: lx + ww, y: sy });
       const ly = sy - u;                                           // its box is half a cell: the baseline half a cell above the shelf
       el.style.transform = `translate(${lx.toFixed(2)}px, ${ly.toFixed(2)}px)`;
-      const sx0 = lx, sx1 = lx + ww, ex = portrait ? (side < 0 ? sx1 : sx0) : clamp(grid.snap(ax), sx0, sx1);
+      // the leader meets the shelf where it can't cross the word: straight down from under it, or (rising) from the shelf
+      // run out a cell past the word's end nearest the anchor
+      let sx0 = lx, sx1 = lx + ww, ex;
+      if (ay > sy + 1) ex = clamp(grid.snap(ax), sx0, sx1);
+      else if (ax >= lx + ww / 2) { sx1 = lx + ww + u; ex = sx1; } else { sx0 = lx - u; ex = sx0; }
       shelves.push({ x0: sx0, x1: sx1, y: sy, name: el.textContent });
+      leaderSegs.push({ x1: sx0, y1: sy, x2: sx1, y2: sy, tag: `shelf:${el.textContent}` }, { x1: ex, y1: sy, x2: ax, y2: ay, tag: `leader:${el.textContent}` });
       const S = (v) => Math.round(v * d) + 0.5;
       lctx.beginPath(); lctx.moveTo(S(sx0), S(sy)); lctx.lineTo(S(sx1), S(sy)); lctx.stroke();
       lctx.beginPath(); lctx.moveTo(S(ex), S(sy)); lctx.lineTo(ax * d, ay * d); lctx.stroke();
@@ -519,6 +542,8 @@ export function initPage01(engine) {
         list.append(fig);
       });
       T.end.after(list);
+      // page 2 starts at the hallway's still figures
+      mark2.style.top = `${list.getBoundingClientRect().top - sec.getBoundingClientRect().top}px`;
     });
     Object.values(T).forEach((t) => t.classList.add('on'));
     [canvas, morphSvg, leaders, labelsEl, blue].forEach((el) => { el.hidden = true; });
@@ -527,39 +552,37 @@ export function initPage01(engine) {
   }
 
   // the corridor is drawn (aria-hidden); readers get its four frames as a list, in reading order after the last line
-  { const l = document.createElement('div'); l.className = 'sr-only'; l.innerHTML = `<p>On the way to the next page, four drawings:</p><ol>${FRAMES.map((f) => `<li>${f.caption} ${f.fig}. ${f.story} ${f.alt}</li>`).join('')}</ol>`; stage.append(l); }
+  { const l = document.createElement('div'); l.className = 'sr-only'; l.innerHTML = `<p>${OPENING_TXT} Down the hallway, five drawings, then a door with a lock:</p><ol>${FRAMES.map((f) => `<li>${f.caption} ${f.fig}. ${f.story} ${f.alt}</li>`).join('')}</ol>`; stage.append(l); }
 
   // ---------- live: the finished phone follows the pointer (desktop) or the visitor's phone's tilt (Android) ----------
   const live = createLive();
   live.onChange((t) => { phone.tilt(t.yaw, t.pitch); if (phoneSeen) phone.render(); });
 
-  // ---------- round 7: the scenes the page settles on (the soft snap): each rest of the story, each verb on the drum,
-  // the opening line, each drawing at rest; then page 2 (its own snap area). Positions in screens of scroll. ----------
-  const snapsEl = document.createElement('div'); snapsEl.className = 'p1-snaps'; snapsEl.setAttribute('aria-hidden', 'true'); sec.append(snapsEl);
-  const SCENES = () => {
-    const vstep = (R.verbs[1] - R.verbs[0]) / steps.length, rest = dive.stops.map(([s0, e0]) => R.dive[0] + (s0 + (e0 - s0) * 0.45) * (R.dive[1] - R.dive[0]));
-    return [0, 1.3, 1.86, 2.47, 2.72, 2.92, ...steps.map((_, k) => R.verbs[0] + (k + 0.5) * vstep), 4.8, R.dive[0] + 0.55, ...rest];
-  };
-  let snapY = [];
-  function buildSnaps(t) {   // t: page 1's ScrollTrigger (passed in: its first refresh runs while it is being created)
-    if (!t) return;
-    const top = sec.getBoundingClientRect().top + scrollY;
-    snapY = SCENES().map((p) => t.start + (t.end - t.start) * p / SCROLL);
-    snapsEl.innerHTML = snapY.map((y) => `<i class="p1-snap" style="top:${(y - top).toFixed(1)}px"></i>`).join('');
-  }
-
-  // ---------- scroll ----------
+  // ---------- scroll (round 8: held scenes, no snap). The page renders from a lagged position that follows the real
+  // scroll smoothly (an exponential follow, about 0.1 s), so the scenes are scrubbed, never timed, and nothing jumps when
+  // the thumb lets go. A jump of more than two screens (a link, the hyperdrive) is taken at once. ----------
   layout();
   phone.warm();
   const { ScrollTrigger } = engine;
+  const TAU = 0.1;
+  let target = 0, lagRaf = 0, lastT = 0;
+  function chase(now) {
+    lagRaf = 0;
+    const dt = Math.min(0.05, Math.max(0.001, (now - lastT) / 1000)); lastT = now;
+    const d = target - P;
+    const p = Math.abs(d) > 2 || Math.abs(d) < 2e-4 ? target : P + d * (1 - Math.exp(-dt / TAU));
+    P = p; render(p);
+    if (p !== target) lagRaf = requestAnimationFrame(chase);
+  }
+  function setTarget(p) { target = p; if (!lagRaf && p !== P) { lastT = performance.now(); lagRaf = requestAnimationFrame(chase); } }
+  const placeMark = (s) => { mark2.style.top = `${((s.end - s.start) * R.dive[0] / SCROLL).toFixed(1)}px`; };
   const st = ScrollTrigger.create({
     trigger: sec, start: 'top top', end: 'bottom bottom',
-    onUpdate: (s) => { const p = s.progress * SCROLL; if (Math.abs(p - P) > 1e-5) { P = p; render(p); } },
-    onRefresh: (s) => { layout(); P = s.progress * SCROLL; render(P); buildSnaps(s); },
+    onUpdate: (s) => setTarget(s.progress * SCROLL),
+    onRefresh: (s) => { layout(); cancelAnimationFrame(lagRaf); lagRaf = 0; target = P = s.progress * SCROLL; render(P); placeMark(s); },
   });
-  render(0); buildSnaps(st);
-  if (page2In) { page2In.style.opacity = '0.01'; page2.classList.add('is-dive'); requestAnimationFrame(() => requestAnimationFrame(() => { page2In.style.opacity = ''; if (!diveOn) page2.classList.remove('is-dive'); })); }   // page 2 painted once now, not on the dive's first frame
-  const again = () => { layout(); render(st.progress * SCROLL); };
+  render(0); placeMark(st);
+  const again = () => { layout(); cancelAnimationFrame(lagRaf); lagRaf = 0; target = P = st.progress * SCROLL; render(P); };
   // first paints of the dashed hairlines (Bell's outlines) and the corridor's sheets cost ~120 ms once on the GPU: they
   // happen right after the page opens, at 1% opacity, not mid-scroll
   let warmed = false;
@@ -571,7 +594,7 @@ export function initPage01(engine) {
       // every frame drawn whole once, then three depths over three frames, so it all reaches the GPU now, not mid-dive
       diveEl.style.opacity = '0.01'; diveEl.classList.add('on'); diveTop.style.opacity = '0.01'; diveTop.classList.add('on'); dive.warm(0.35);
       requestAnimationFrame(() => { dive.render(0.55); requestAnimationFrame(() => { dive.render(0.75); requestAnimationFrame(() => requestAnimationFrame(() => {
-        diveEl.style.opacity = ''; diveEl.classList.remove('on'); diveTop.style.opacity = ''; diveTop.classList.remove('on'); render(st.progress * SCROLL); })); }); });
+        diveEl.style.opacity = ''; diveEl.classList.remove('on'); diveTop.style.opacity = ''; diveTop.classList.remove('on'); render(P); })); }); });
     });
   };
   morph.load('media/plates/bell-us186787-paths.json').then(() => { again(); warm(); }).catch((e) => console.warn('[page 01] paths', e));
@@ -584,7 +607,18 @@ export function initPage01(engine) {
 
   // for tests
   window.__p1 = { phone, morph, stops: STOPS, scroll: SCROLL, R, yAt: (p) => st.start + (st.end - st.start) * p / SCROLL,
-    box: () => phone.screenBox(), band: () => band, plate: () => plateRect, P: () => P, top: () => sec.offsetTop,
-    snaps: () => snapY, drum: () => drum.i, drumA: () => drum.a, grid: () => gridLines, shelves: () => shelves, imgRect: () => imgRect, bellLines: () => bellLines, ground: () => G.b, live, dive: () => diveNow, diveApi: dive, morphOn: () => morphState.alpha > 0.001, morphT: () => morphState.t };
+    box: () => phone.screenBox(), band: () => band, plate: () => plateRect, P: () => P, top: () => sec.offsetTop, settled: () => !lagRaf && Math.abs(target - P) < 1e-4,
+    leaders: () => leaderSegs, drum: () => drum.i, drumA: () => drum.a, grid: () => gridLines, shelves: () => shelves, imgRect: () => imgRect, bellLines: () => bellLines, ground: () => G.b, live, dive: () => diveNow, diveApi: dive, morphOn: () => morphState.alpha > 0.001, morphT: () => morphState.t };
+  // for the type check (TYPE_RULES.md): page 1's drawn lines and shapes that are not in the DOM (the 3D phone's pieces as
+  // their outlines, the names' shelves and leaders) and the hallway's (dive.js)
+  window.__drawn = () => {
+    const D = { lines: [], shapes: [], texts: [] };
+    if (!canvas.classList.contains('is-off') && P >= R.xray[0] && P < R.s2[1]) phone.parts.forEach((pt, k) => {
+      const h = phone.partHull(k); h.forEach((a, j) => { const b = h[(j + 1) % h.length]; D.lines.push({ x1: a[0], y1: a[1], x2: b[0], y2: b[1], tag: `phoneA:${pt.name}` }); });
+    });
+    if (inR(P, R.s1)) leaderSegs.forEach((s) => D.lines.push(s));
+    if (diveTop.classList.contains('on')) { const dd = dive.drawn(); D.lines.push(...dd.lines); D.shapes.push(...dd.shapes); D.texts.push(...dd.texts); }
+    return D;
+  };
   return { length: () => sec.offsetHeight / innerHeight };
 }

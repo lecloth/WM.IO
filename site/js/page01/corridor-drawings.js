@@ -1,4 +1,4 @@
-// The corridor's four drawings (Part 5 "Round 4 picks"): our own schematics, drawn as cyanotype blueprints (white
+// The hallway's drawings (Part 5 "Round 4 picks" ... "Round 8"): our own schematics, drawn as cyanotype blueprints (white
 // lines on Prussian blue #173F73) in the corridor after the "?" dot. They show METHOD, never results: no numbers, no
 // claims. Five, alternating walls (round 7); each has a museum label (the wording is a draft for Wajih).
 // A drawing is data: { w, h } (its own units, y down), segs (short straight segments in draw order, so the corridor
@@ -50,11 +50,10 @@ function sheet(w, h, size) {
     },
     // a dimension line: extension stubs, arrowheads both ends. Round 7: it carries its live measured length (the length
     // it has on the visitor's screen when the drawing rests, set by the hallway), small and faint; never a claimed result
-    dimH(x1, x2, y, ext = w / 90) {
-      d.line(x1, y - ext, x1, y + ext).line(x2, y - ext, x2, y + ext); d.arrow(x2, y, x1, y).head(x1, y, x2, y);
-      labels.push({ t: '', x: (x1 + x2) / 2, y: y - ext - 2, size: size * 0.75, anchor: 'middle', at: segs.length, live: [x1, x2], faint: true });
-      return d;
-    },
+    // round 8: dimensions are kept apart (d.dims) and drawn by the hallway once it knows the scale at rest: the measured
+    // length sits ON the line in DM Mono Light, the line broken round it with half a grid cell clear (CAD style), so it
+    // never touches a letter. ext: the extension stubs' half length.
+    dimH(x1, x2, y, o = {}) { (d.dims ||= []).push({ x1, x2, y, ext: o.ext ?? w / 90, size: size * 0.75, at: segs.length }); return d; },
     text(t, x, y, o = {}) { labels.push({ t, x, y, size: o.size || size, anchor: o.anchor || 'start', at: segs.length }); return d; },
     // a text box: hairline rect with its words centred (1 or 2 lines)
     box(x, y, bw, bh, words, o = {}) {
@@ -72,125 +71,119 @@ function sheet(w, h, size) {
   };
   return d;
 }
-const head = (d, fig, title) => { d.text(`FIG. ${fig} · ${title}`, d.w * 0.05, d.size * 2.1); d.text(`${fig} / 05`, d.w * 0.95, d.size * 2.1, { anchor: 'end' }); };
+const head = (d, fig, title) => { d.text(`FIG. ${fig} · ${title}`, 0, d.size * 0.9, { size: d.size * 0.86 }); d.text(`${fig} / 05`, d.w, d.size * 0.9, { size: d.size * 0.86, anchor: 'end' }); };
+// Round 8: every drawing keeps half a grid cell of clear space round its words at rest on a 360-wide phone (TYPE_RULES
+// rule 2): about 16 drawing units at these sizes. CLEAR is that space; label sizes are 14 (head 12).
+const CLEAR = 17, S = 14;
 
-// 4 · Speed: a page-load timeline. Long bars running one after another, redrawn as short ones side by side.
-function optimizing() {
-  const d = sheet(400, 312, 12); head(d, '04', 'PAGE LOAD');
-  const x0 = 112, names = ['HTML', 'CSS', 'FONT', 'IMAGES', 'SCRIPT'];
-  // the time axis: ticks, no numbers
-  d.arrow(x0, 50, 380, 50, 6); for (let x = x0; x <= 360; x += 31) d.line(x, 46, x, 50);
-  d.text('TIME', 380, 42, { anchor: 'end', size: 10 });
-  d.text('A · ONE AFTER ANOTHER', 20, 74, { size: 11 });
-  const long = [36, 44, 34, 70, 52]; let x = x0;
-  names.forEach((n, i) => { const y = 84 + i * 15; d.text(n, 20, y + 8.5, { size: 10 }); d.rect(x, y, long[i], 9); x += long[i]; });
-  d.dimH(x0, x, 166);
-  d.text('B · SIDE BY SIDE', 20, 196, { size: 11 });
-  const short = [22, 20, 16, 30, 22], start = [0, 3, 3, 6, 5];
-  names.forEach((n, i) => { const y = 206 + i * 15; d.text(n, 20, y + 8.5, { size: 10 }); d.rect(x0 + start[i], y, short[i], 9); });
-  d.dimH(x0, x0 + 36, 288);
+// a phone screen as a wireframe (rounded outline, a status line), w x h at (x, y)
+function screenAt(d, x, y, w, h) { d.rrect(x, y, w, h, 7); d.line(x + 10, y + 12, x + w - 10, y + 12); return d; }
+
+// 1 · The property app's enquiry path: search, a listing, a long enquiry form where people give up; the fix drawn in
+// (ask about this home in one tap, straight from the listing)
+function enquiry() {
+  const d = sheet(400, 384, S); head(d, '01', 'ENQUIRY PATH');
+  const sw = 64, sh = 88, X = [16, 168, 320], top = 76, nameY = 52;
+  [['SEARCH', 0], ['LISTING', 1], ['ENQUIRE', 2]].forEach(([n, i]) => d.text(n, X[i] + sw / 2, nameY, { anchor: 'middle' }));
+  // search: a search bar and three result rows
+  screenAt(d, X[0], top, sw, sh); d.rect(X[0] + 9, top + 22, sw - 18, 11);
+  [44, 58, 72].forEach((yy) => d.line(X[0] + 9, top + yy, X[0] + sw - 9, top + yy));
+  // the listing: a photo, the price line, the details
+  screenAt(d, X[1], top, sw, sh); d.rect(X[1] + 9, top + 22, sw - 18, 26); d.line(X[1] + 9, top + 58, X[1] + 38, top + 58).line(X[1] + 9, top + 70, X[1] + sw - 9, top + 70);
+  // the enquiry form: field after field (where they give up)
+  screenAt(d, X[2], top, sw, sh); [24, 34, 44, 54, 64, 74].forEach((yy) => d.line(X[2] + 9, top + yy, X[2] + sw - 9, top + yy));
+  const mid = top + sh / 2;
+  d.arrow(X[0] + sw, mid, X[1], mid, 7).arrow(X[1] + sw, mid, X[2], mid, 7);
+  // they leave: the path breaks off below the form, marked with a cross
+  const lx = X[2] + sw / 2, ly = top + sh + 44;
+  d.dash(lx, top + sh, lx, ly - 10);
+  d.line(lx - 7, ly - 7, lx + 7, ly + 7).line(lx - 7, ly + 7, lx + 7, ly - 7);
+  d.text('THEY LEAVE', lx - 7 - CLEAR, ly + 4.9, { anchor: 'end' });
+  // the fix: from the listing straight down to "sent"
+  const fx = X[1] + sw / 2, sy = 268;
+  d.arrow(fx, top + sh, fx, sy, 7);
+  d.text('ASK IN ONE TAP', fx - CLEAR, top + sh + 58, { anchor: 'end' });
+  screenAt(d, X[1], sy, sw, sh); d.circle(fx, sy + 46, 12); d.line(fx - 6, sy + 46, fx - 1, sy + 51).line(fx - 1, sy + 51, fx + 7, sy + 41);
+  d.text('SENT', fx, sy + sh + CLEAR + 9.8, { anchor: 'middle' });
   return d;
 }
 
-// 3 · Your way of deciding, built in: which driver gets this delivery (a precise decision flowchart)
-function algorithm() {
-  // round 5: the branch labels (YES, NO, NEXT) went up one size, 10 -> 11.5, the size of the box words (they were
-  // about 6 px capitals on the S23)
-  const SMALL = 11.5;
-  const d = sheet(380, 468, 11.5); head(d, '03', 'WHICH DRIVER?');
-  const cx = 160;
-  d.box(cx - 70, 40, 140, 30, 'NEW DELIVERY', { round: true });
-  d.arrow(cx, 70, cx, 92, 7);
-  d.box(cx - 90, 92, 180, 42, ['FIND FREE DRIVERS', 'NEAR THE PICKUP']);
-  d.arrow(cx, 134, cx, 154, 7);
-  d.diamond(cx, 188, 150, 68, 'ANY FREE?');
-  // no: wait, then look again
-  d.line(cx + 75, 188, 300, 188).text('NO', cx + 84, 182, { size: SMALL });
-  d.box(258, 202, 98, 40, ['WAIT,', 'TRY AGAIN']);
-  d.arrow(300, 188, 300, 202, 6);
-  d.path([[307, 202], [307, 113], [cx + 90, 113]], 6);
-  d.arrow(cx, 222, cx, 246, 7).text('YES', cx + 8, 238, { size: SMALL });
-  d.box(cx - 90, 246, 180, 42, ['RANK BY TIME', 'TO THE PICKUP']);
-  d.arrow(cx, 288, cx, 306, 7);
-  d.diamond(cx, 340, 160, 68, ['MAKES THE', 'TIME SLOT?']);
-  // no: the next driver in the ranking
-  d.line(cx - 80, 340, 34, 340).text('NO', cx - 88, 334, { size: SMALL, anchor: 'end' });
-  d.path([[34, 340], [34, 267], [cx - 90, 267]], 6).text('NEXT', 40, 302, { size: SMALL });
-  d.arrow(cx, 374, cx, 398, 7).text('YES', cx + 8, 390, { size: SMALL });
-  d.box(cx - 80, 398, 160, 32, 'ASSIGN · NOTIFY', { round: true });
-  return d;
-}
-
-// 1 · Where customers give up: their path through an app, the point where they give up, the fix drawn in
-function customers() {
-  const d = sheet(400, 330, 11); head(d, '01', 'A CUSTOMER’S PATH');
-  const sw = 50, sh = 76;
-  const screen = (x, y, name) => {
-    d.rrect(x, y, sw, sh, 5);
-    d.line(x + 8, y + 16, x + sw - 8, y + 16).line(x + 8, y + 28, x + sw - 18, y + 28).line(x + 8, y + 40, x + sw - 12, y + 40);
-    d.text(name, x + sw / 2, y + sh + 14, { anchor: 'middle', size: 10 });
-  };
-  const X = [40, 175, 310], Y1 = 52, Y2 = 196;
-  screen(X[0], Y1, 'OPEN'); d.arrow(X[0] + sw, Y1 + sh / 2, X[1], Y1 + sh / 2, 6);
-  screen(X[1], Y1, 'BROWSE'); d.arrow(X[1] + sw, Y1 + sh / 2, X[2], Y1 + sh / 2, 6);
-  screen(X[2], Y1, 'PICK'); d.path([[X[2] + sw / 2, Y1 + sh + 20], [X[2] + sw / 2, Y2]], 6);
-  screen(X[2], Y2, 'SIGN UP');
-  // where they give up: the path breaks off, marked
-  d.dash(X[2], Y2 + sh / 2, X[1] + sw + 8, Y2 + sh / 2);
-  const mx = (X[1] + sw + X[2]) / 2 + 4, my = Y2 + sh / 2;
-  d.line(mx - 6, my - 6, mx + 6, my + 6).line(mx - 6, my + 6, mx + 6, my - 6);
-  d.text('THEY LEAVE', mx, my - 14, { anchor: 'middle', size: 10 });
-  screen(X[1], Y2, 'PAY'); d.arrow(X[1], Y2 + sh / 2, X[0] + sw, Y2 + sh / 2, 6);
-  screen(X[0], Y2, 'DONE');
-  // the fix, drawn in last: from PICK straight to PAY ("pay as a guest"), with a revision triangle
-  const f0 = [X[2], Y1 + sh - 10], f1 = [X[1] + sw / 2, Y2];
-  d.arrow(f0[0], f0[1], f1[0], f1[1], 6);
-  // its note at the left, on a leader to the path: a revision triangle and the change
-  const tx = 46, ty = 170, mid = [f0[0] + (f1[0] - f0[0]) * 0.55, f0[1] + (f1[1] - f0[1]) * 0.55];
-  d.poly([[tx, ty - 8], [tx + 8, ty + 6], [tx - 8, ty + 6]], true).text('1', tx, ty + 4.5, { anchor: 'middle', size: 8 });
-  d.text('FIX: PAY AS A GUEST', tx + 14, ty + 4, { size: 10 });
-  d.line(tx + 14 + 19 * 10 * 0.8 + 4, ty, mid[0] - 4, mid[1]);
-  return d;
-}
-
-// 2 · Design that understands people (round 7, design services): from who the customers are, to what they need to
-// feel, to the requirements, to a colour palette and type. Method, never results: no numbers, no claims.
-function design() {
-  const d = sheet(400, 316, 11); head(d, '02', 'FROM PEOPLE TO A PALETTE');
-  const S = 9.5;
-  // four steps, clockwise: who -> feel -> requirements -> palette and type
-  const P = [[22, 40, 166, 120], [212, 40, 166, 120], [212, 190, 166, 112], [22, 190, 166, 112]];
-  P.forEach(([x, y, w, h]) => d.rect(x, y, w, h));
-  d.text('1 · WHO THEY ARE', 30, 54, { size: S }).text('2 · WHAT THEY NEED TO FEEL', 220, 54, { size: S });
-  d.text('3 · REQUIREMENTS', 220, 204, { size: S }).text('4 · PALETTE · TYPE', 30, 204, { size: S });
-  // 1: three people (a head and shoulders each), different heights
-  [[62, 102, 1], [105, 96, 1.15], [148, 104, 0.92]].forEach(([cx, cy, k]) => {
-    d.circle(cx, cy - 18 * k, 9 * k).arc(cx, cy + 22 * k, 19 * k, Math.PI * 1.05, Math.PI * 1.95, 12);
+// 2 · A watch face, from the customer to the palette: who wears it, what it must feel like, the palette and type, then
+// the face itself (method, never results)
+function watch() {
+  const d = sheet(400, 330, S); head(d, '02', 'FROM PEOPLE TO A PALETTE');
+  const lx = 0;
+  // 1 who: three people
+  d.text('1 · WHO', lx, 56);
+  [[22, 100, 1], [58, 96, 1.12], [94, 101, 0.94]].forEach(([cx, cy, k]) => d.circle(cx, cy - 10 * k, 8 * k).arc(cx, cy + 22 * k, 16 * k, Math.PI * 1.08, Math.PI * 1.92, 10));
+  // 2 feel: two scales with their marks
+  d.text('2 · FEEL', lx, 150);
+  [['CALM', 0.7, 178], ['EXACT', 0.86, 210]].forEach(([t, v, y]) => {
+    d.text(t, lx, y + 4.9);
+    const a = 74, b = 150; d.line(a, y, b, y).line(a, y - 4, a, y + 4).line(b, y - 4, b, y + 4);
+    const mx = a + (b - a) * v; d.line(mx, y - 8, mx, y + 8);
   });
-  d.line(40, 140, 170, 140);
-  // 2: what they need to feel, each on a scale with its mark (a hairline slider, no numbers)
-  [['CALM', 0.72], ['SURE', 0.84], ['WELCOME', 0.6]].forEach(([t, v], i) => {
-    const y = 82 + i * 26; d.text(t, 220, y + 3, { size: S }); d.line(290, y, 366, y);
-    const mx = 290 + 76 * v; d.line(mx, y - 6, mx, y + 6).line(290, y - 3, 290, y + 3).line(366, y - 3, 366, y + 3);
-  });
-  // 3: the requirements, each with its box
-  ['READS AT A GLANCE', 'ONE CLEAR NEXT STEP', 'BIG TAP TARGETS'].forEach((t, i) => { const y = 226 + i * 24; d.rect(222, y - 8, 9, 9); d.text(t, 238, y, { size: S }); });
-  // 4: the palette (four swatches, told apart by hatching) and the type (a specimen)
-  [0, 3, 6, 12].forEach((n, i) => {
-    const x = 32 + i * 30, y = 220; d.rect(x, y, 22, 22);
-    for (let k = 1; k <= n; k++) d.line(x, y + 22 * k / (n + 1), x + 22, y + 22 * k / (n + 1));
-  });
-  d.text('Aa', 34, 286, { size: 30 }).text('SERIF · MONO', 98, 282, { size: S });
-  // the way through: clockwise arrows
-  d.arrow(188, 100, 212, 100, 6).arrow(295, 160, 295, 190, 6).arrow(212, 246, 188, 246, 6);
+  // 3 palette and type: four swatches told apart by hatching
+  d.text('3 · PALETTE', lx, 256);
+  [0, 3, 6, 11].forEach((n, i) => { const x = lx + i * 34, y = 274; d.rect(x, y, 24, 24); for (let k = 1; k <= n; k++) d.line(x, y + 24 * k / (n + 1), x + 24, y + 24 * k / (n + 1)); });
+  // the way through, to the face
+  d.arrow(166, 190, 206, 190, 7);
+  // 4 the face: case, bezel, twelve indices, two hands, the crown, lugs and strap
+  const cx = 300, cy = 196, R = 84;
+  d.text('4 · THE FACE', cx, 56, { anchor: 'middle' });
+  d.line(cx - 34, cy - R - 26, cx - 30, cy - R + 4).line(cx + 34, cy - R - 26, cx + 30, cy - R + 4);   // top lugs and strap
+  d.line(cx - 34, cy + R + 26, cx - 30, cy + R - 4).line(cx + 34, cy + R + 26, cx + 30, cy + R - 4);
+  d.circle(cx, cy, R).circle(cx, cy, R - 10);
+  for (let k = 0; k < 12; k++) { const a = k * Math.PI / 6, r0 = R - 22 - (k % 3 ? 0 : 6), r1 = R - 16; d.line(cx + r0 * Math.sin(a), cy - r0 * Math.cos(a), cx + r1 * Math.sin(a), cy - r1 * Math.cos(a)); }
+  d.line(cx, cy, cx + 30 * Math.sin(2.2), cy - 30 * Math.cos(2.2)).line(cx, cy, cx + 50 * Math.sin(-0.55), cy - 50 * Math.cos(-0.55));
+  d.circle(cx, cy, 3);
+  d.rect(cx + R, cy - 7, 9, 14);   // the crown
   return d;
 }
 
-// 5 · On every phone they carry: the blueprint of our app's screen on the two phones (true outlines, mm); the
+// 3 · The delivery tracker: which driver gets this delivery (the rules, as steps a machine follows every time). Round 8:
+// two columns, so it stays wide enough on a phone for its words to keep their clear space
+function dispatch() {
+  const d = sheet(480, 410, S); head(d, '03', 'WHICH DRIVER?');
+  const cx = 112, bh = 9.8 + 2 * CLEAR, bh2 = bh + 18.2;
+  d.box(cx - 86, 40, 172, bh, 'NEW DELIVERY');
+  d.arrow(cx, 40 + bh, cx, 118, 7);
+  d.box(cx - 110, 118, 220, bh2, ['FREE DRIVERS', 'NEAR THE PICKUP']);
+  d.arrow(cx, 118 + bh2, cx, 214, 7);
+  d.box(cx - 110, 214, 220, bh2, ['RANK BY TIME', 'TO THE PICKUP']);
+  const dx = 370, dy = 214 + bh2 / 2;
+  d.arrow(cx + 110, dy, dx - 110, dy, 7);
+  d.diamond(dx, dy, 220, 112, ['MAKES THE', 'TIME SLOT?']);
+  // no: look again, from the free drivers
+  d.path([[dx, dy - 56], [dx, 150], [cx + 110, 150]], 7);
+  d.text('NO', dx + CLEAR, 177);
+  // yes: assign and notify
+  d.arrow(dx, dy + 56, dx, 350, 7).text('YES', dx + CLEAR, 330);
+  d.box(dx - 98, 350, 196, bh, 'ASSIGN · NOTIFY');
+  return d;
+}
+
+// 4 · The website loading: parts that load one after another, redrawn as parts that load side by side. Each timeline
+// carries its live measured length (on the visitor's screen at rest), never a claimed result.
+function website() {
+  const d = sheet(400, 400, S); head(d, '04', 'PAGE LOAD');
+  const x0 = 104, names = ['HTML', 'CSS', 'FONT', 'IMAGES', 'SCRIPT'], rh = 10, step = 22;
+  d.text('A · ONE AFTER ANOTHER', 0, 56);
+  const long = [34, 42, 32, 66, 52]; let x = x0;
+  names.forEach((n, i) => { const y = 74 + i * step; d.text(n, 0, y + rh / 2 + 4.9); d.rect(x, y, long[i], rh); x += long[i]; });
+  d.dimH(x0, x, 74 + 5 * step + 22);
+  d.text('B · SIDE BY SIDE', 0, 238);
+  const short = [22, 20, 16, 30, 22], start = [0, 4, 4, 8, 6];
+  names.forEach((n, i) => { const y = 256 + i * step; d.text(n, 0, y + rh / 2 + 4.9); d.rect(x0 + start[i], y, short[i], rh); });
+  d.dimH(x0, x0 + 38, 256 + 5 * step + 22);
+  return d;
+}
+
+// 5 · On every phone they carry: the blueprint of our booking app's screen on the two phones (true outlines, mm); the
 // hallway then turns it real (the still of the real phones running the same app sits exactly on these lines)
 function phones() {
-  const R = PHONE_PAIR.region, m = 8, top = 13, w = (R.x1 - R.x0) + 2 * m, h = (R.y1 - R.y0) + top + 15;
-  const d = sheet(w, h, 5.6); head(d, '05', 'BOOKING APP · CONCEPT');
+  const R = PHONE_PAIR.region, m = 0, top = 16, w = (R.x1 - R.x0) + 2 * m, h = (R.y1 - R.y0) + top + 17;
+  const d = sheet(w, h, 5.6); head(d, '05', 'BOOKING APP');
   const U = (x) => m + (x - R.x0), V = (y) => top + (R.y1 - y);   // mm (y up) -> drawing units (y down)
   d.region = { u: m, v: top, w: R.x1 - R.x0, h: R.y1 - R.y0 };
   PHONE_PAIR.phones.forEach((p) => {
@@ -211,28 +204,30 @@ function phones() {
       const [x0, y0] = P(x, t.y - t.size * 0.62), [x1, y1] = P(x + tw, t.y);
       if (t.size >= 30) d.rect(x0, y0, x1 - x0, y1 - y0); else d.line(x0, (y0 + y1) / 2, x1, (y0 + y1) / 2);
     });
-    d.text(p.label, U(p.x + p.w / 2), V(R.y0) + 9, { anchor: 'middle' });
+    d.text(p.label, U(p.x + p.w / 2), V(R.y0) + 12.5, { anchor: 'middle' });
   });
   return d;
 }
 
-// Round 7: five frames in the "backwards" order (from what customers live, back to the drawing board), each with its
-// label: the title (big, serif), a small mono line with the drawing's name, one line of story (the chat's drafts,
+// Round 8: the five canvases each show their point on one of our made-up products (named by what they are, never a
+// brand): 1 the property app's enquiry path, 2 a watch face (from the customer to the palette), 3 the delivery tracker
+// ("which driver gets this delivery"), 4 the website loading, 5 the booking app on the iPhone 18 and the S26. Each has
+// its label: the title (big, serif), a small mono line naming the drawing, one line of story (the chat's drafts,
 // flagged for Wajih). cells: the sheet's shape in whole grid cells (width : height); its blue margin takes up the
 // difference, so the sheet sits on the grid while the drawing inside keeps its true proportions.
 export const FRAMES = [
-  { key: 'customers', side: 'l', cells: [6, 5], caption: 'Where customers give up.', fig: 'Fig. 01 · A customer’s path',
+  { key: 'enquiry', side: 'l', cells: [6, 6], wide: [6, 5], caption: 'Where customers give up.', fig: 'Fig. 01 · Property app · enquiry path',
     story: 'We walk every step your customers take, find the one that loses them, and fix it.',
-    alt: 'Blueprint: a customer’s path through an app, from open to done. The path breaks off at sign-up, where they leave; the fix is drawn in: pay as a guest.', draw: customers() },
-  { key: 'design', side: 'r', cells: [5, 4], caption: 'Design that understands people.', fig: 'Fig. 02 · From people to a palette',
+    alt: 'Blueprint: the property app’s enquiry path. Search, a listing, then a long enquiry form where people leave; the fix is drawn in: ask about the home in one tap, straight from the listing.', draw: enquiry() },
+  { key: 'watch', side: 'r', cells: [6, 5], caption: 'Design that understands people.', fig: 'Fig. 02 · Watch face',
     story: 'First we learn what your customers need to feel. Then every colour, shape and word is chosen for it.',
-    alt: 'Blueprint: four steps, clockwise. Who the customers are; what they need to feel, each on a scale; the requirements; a colour palette and a type specimen.', draw: design() },
-  { key: 'algorithm', side: 'l', cells: [5, 6], caption: 'Your way of deciding, built in.', fig: 'Fig. 03 · Which driver?',
+    alt: 'Blueprint: who wears the watch, what it must feel like (calm, exact), a palette, then the watch face itself with its indices, hands and crown.', draw: watch() },
+  { key: 'dispatch', side: 'l', cells: [6, 5], caption: 'Your way of deciding, built in.', fig: 'Fig. 03 · Delivery tracker',
     story: 'The rules you carry in your head, turned into a system that decides like you, every time.',
-    alt: 'Blueprint: a decision flowchart for which driver gets a delivery: find free drivers near the pickup, rank them by time to the pickup, check the time slot, assign and notify.', draw: algorithm() },
-  { key: 'speed', side: 'r', cells: [5, 4], caption: 'Speed.', fig: 'Fig. 04 · Page load',
+    alt: 'Blueprint: the delivery tracker’s decision flow for which driver gets a delivery: free drivers near the pickup, ranked by time to the pickup; if the first can’t make the time slot, look again; then assign and notify.', draw: dispatch() },
+  { key: 'website', side: 'r', cells: [6, 5], caption: 'Speed.', fig: 'Fig. 04 · Website · page load',
     story: 'Every second of waiting costs you a customer. We find the slow parts and cut them.',
-    alt: 'Blueprint: a page-load timeline. Five loads running one after another are redrawn as short loads running side by side.', draw: optimizing() },
+    alt: 'Blueprint: a website loading. Five parts loading one after another are redrawn as parts loading side by side; each timeline carries its measured length.', draw: website() },
   { key: 'apps', side: 'l', cells: [1, 1], caption: 'On every phone they carry.', fig: 'Fig. 05 · Booking app',
     story: 'One app, at home on iPhone and Android.',
     alt: 'Blueprint of our booking app’s screen on an iPhone and an Android phone, which turns into the app running on the real phones.', draw: phones(), real: 'media/phones-unverified/corridor-phones.webp' },
@@ -240,13 +235,28 @@ export const FRAMES = [
 // the line that opens the hallway, before the first frame (round 7; draft wording, flagged)
 export const OPENING = { lead: 'We design backwards.', rest: 'From what your customers live, know and feel, back to the drawing board.' };
 
+/** a dimension line's parts (round 8): the extension stubs, the arrowheads, and the line broken round its measurement
+ *  (textW wide, clear on each side), so the words sit ON the line and never touch it (CAD style). Too short to break:
+ *  the line runs whole and the words sit on its line just past its end, clear. */
+export function dimParts(dm, textW, clear) {
+  const { y, ext } = dm, a = Math.min(dm.x1, dm.x2), b = Math.max(dm.x1, dm.x2), mid = (a + b) / 2, hw = textW / 2 + clear;
+  const s = Math.min(6, (b - a) / 8), k = 0.32;
+  const segs = [[a, y - ext, a, y + ext], [b, y - ext, b, y + ext],
+    [a + s * Math.cos(k), y - s * Math.sin(k), a, y], [a + s * Math.cos(k), y + s * Math.sin(k), a, y],
+    [b - s * Math.cos(k), y - s * Math.sin(k), b, y], [b - s * Math.cos(k), y + s * Math.sin(k), b, y]];
+  if (mid - hw > a + s + 2) { segs.push([a, y, mid - hw, y], [mid + hw, y, b, y]); return { segs, label: { x: mid, y, inline: true } }; }
+  segs.push([a, y, b, y]); return { segs, label: { x: b + ext + clear + textW / 2, y, inline: true } };   // too short to break: the words beside it, on its line
+}
+
 /** a drawing as an SVG string (reduced motion: the still figures; the asset sheet) */
 export function toSVG(d, { ink = '#FFFFFF', ground = '#173F73', pad = 0 } = {}) {
   const f = (v) => +v.toFixed(2);
   const path = d.segs.map(([a, b, c, e]) => `M${f(a)} ${f(b)}L${f(c)} ${f(e)}`).join('');
+  // dimensions: broken round a nominal clear space; the reduced-motion figure has no live measurement, so no words
+  const dimPath = (d.dims || []).map((dm) => dimParts(dm, 0, 0).segs.map(([a, b, c, e]) => `M${f(a)} ${f(b)}L${f(c)} ${f(e)}`).join('')).join('');
   const txt = d.labels.filter((l) => l.t).map((l) => `<text x="${f(l.x)}" y="${f(l.y)}" font-size="${f(l.size)}" text-anchor="${l.anchor}">${l.t}</text>`).join('');
   return `<svg viewBox="${-pad} ${-pad} ${f(d.w + 2 * pad)} ${f(d.h + 2 * pad)}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">` +
     `<rect x="0" y="0" width="${f(d.w)}" height="${f(d.h)}" fill="${ground}"/>` +
-    `<path d="${path}" fill="none" stroke="${ink}" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/>` +
+    `<path d="${path}${dimPath}" fill="none" stroke="${ink}" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/>` +
     `<g fill="${ink}" font-family="DM Mono, monospace" font-weight="500" letter-spacing=".06em">${txt}</g></svg>`;
 }

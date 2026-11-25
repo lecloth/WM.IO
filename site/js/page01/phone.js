@@ -384,6 +384,37 @@ export class Phone {
       const x = (v.x + 1) / 2 * this.W, y = (1 - v.y) / 2 * this.H; l = Math.min(l, x); r = Math.max(r, x); t = Math.min(t, y); b = Math.max(b, y); });
     return { left: l, right: r, top: t, bottom: b, cx: (l + r) / 2, cy: (t + b) / 2 };
   }
+  /** round 8: a part's projected outline (the convex hull of its corners on screen, CSS px), for the names' clearance
+   *  and the type check: tighter than its box when the phone is turned */
+  partHull(k) {
+    const part = this.parts[k], v = new THREE.Vector3(), pts = [];
+    part.corners.forEach((c) => { v.copy(c.v).applyMatrix4(c.holder.matrixWorld).project(this.camera); pts.push([(v.x + 1) / 2 * this.W, (1 - v.y) / 2 * this.H]); });
+    pts.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    const cross = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+    const lo = [], hi = [];
+    for (const q of pts) { while (lo.length >= 2 && cross(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); }
+    for (let i = pts.length - 1; i >= 0; i--) { const q = pts[i]; while (hi.length >= 2 && cross(hi[hi.length - 2], hi[hi.length - 1], q) <= 0) hi.pop(); hi.push(q); }
+    return lo.slice(0, -1).concat(hi.slice(0, -1));
+  }
+  /** is (x, y) inside part k's outline, or within m px of it */
+  inHull(k, x, y, m = 0) {
+    const h = this.partHull(k); let inside = false;
+    for (let i = 0, j = h.length - 1; i < h.length; j = i++) { const [xi, yi] = h[i], [xj, yj] = h[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside; }
+    if (inside || !m) return inside;
+    for (let i = 0; i < h.length; i++) { const a = h[i], b = h[(i + 1) % h.length], dx = b[0] - a[0], dy = b[1] - a[1], L = dx * dx + dy * dy;
+      const s = L ? Math.max(0, Math.min(1, ((x - a[0]) * dx + (y - a[1]) * dy) / L)) : 0; if (Math.hypot(x - a[0] - s * dx, y - a[1] - s * dy) < m) return true; }
+    return false;
+  }
+  /** does the rect (x0, y0)-(x1, y1) meet part k's outline */
+  hullNear(k, x0, y0, x1, y1) {
+    const h = this.partHull(k);
+    if (h.some(([x, y]) => x >= x0 && x <= x1 && y >= y0 && y <= y1)) return true;
+    if ([[x0, y0], [x1, y0], [x1, y1], [x0, y1]].some(([x, y]) => this.inHull(k, x, y))) return true;
+    const segX = (a, b, c, d) => { const o = (p, q, r) => (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]); return o(a, b, c) * o(a, b, d) < 0 && o(c, d, a) * o(c, d, b) < 0; };
+    const R = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+    for (let i = 0; i < h.length; i++) for (let j = 0; j < 4; j++) if (segX(h[i], h[(i + 1) % h.length], R[j], R[(j + 1) % 4])) return true;
+    return false;
+  }
   /** a point on a part's surface, projected (CSS px); u, v in -1..1 across its first piece's box, on its front face */
   anchor(part, u = 0, v = 0) {
     const c = part.corners.slice(0, 8), xs = c.map((q) => q.v.x), ys = c.map((q) => q.v.y), zs = c.map((q) => q.v.z);

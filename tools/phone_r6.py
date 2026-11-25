@@ -44,7 +44,7 @@ async def main(a):
             async def goto(p): y = await c.eval(f"window.__p1.yAt({p})"); await c.eval(f"{GOTO_Y}({y})")
             await c.call("Runtime.enable"); await c.call("Log.enable")
             errs = []
-            await c.call("Page.navigate", {"url": "http://127.0.0.1:8109/?first&nosnap" + (("&" + a.query) if a.query else "")})
+            await c.call("Page.navigate", {"url": "http://127.0.0.1:8109/?first" + (("&" + a.query) if a.query else "")})
             for _ in range(120):
                 await asyncio.sleep(0.25)
                 try:

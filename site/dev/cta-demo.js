@@ -9,7 +9,7 @@ if (reduced) document.documentElement.dataset.motion = 'reduce';
 const said = document.querySelector('.lab-said');
 let html = '';
 for (let n = 0; n < 5 && !html; n++) { try { html = await (await fetch(n ? `../index.html?r=${n}` : '../index.html')).text(); } catch (e) { await new Promise((r) => setTimeout(r, 200 * (n + 1))); } }
-const sec = new DOMParser().parseFromString(html, 'text/html').getElementById('page-02');
+const sec = new DOMParser().parseFromString(html, 'text/html').getElementById('page-07');
 document.getElementById('host').append(document.importNode(sec, true));
 const stage = document.querySelector('.p2__stage');
 stage.style.minHeight = 'auto';

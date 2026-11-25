@@ -19,8 +19,8 @@ MEASURE = r"""() => {
     if (/rgba\(.*,\s*0\)|transparent/.test(cs.color)) return false;   // a see-through slot (its word travels on its own)
     return true;
   };
-  const p2 = document.getElementById('page-02');
-  const inDive = p2?.classList.contains('is-dive');
+  const p2 = document.getElementById('page-07');
+  const inDive = false;
   const block = (el) => el.closest('p, h1, h2, h3, h4, li, legend, label, .tb__cell, .tb__theme, .strip__seg, .slip-cell, .slip-head__feed, .p1-lbl, .p2-row__hit, .p2-next, .send, .dive__lab, .dive__open, .p1-fly, .p1-verb, .p1-mean, .p23-flag, text') || el;
   const desc = (el) => `${el.tagName.toLowerCase()}.${(el.getAttribute('class') || '').split(' ')[0]} "${(el.textContent || '').trim().slice(0, 22)}"`;
   const groups = new Map();
@@ -28,7 +28,8 @@ MEASURE = r"""() => {
   for (let n = walker.nextNode(); n; n = walker.nextNode()) {
     if (!n.textContent.trim()) continue;
     const el = n.parentElement; if (!el || el.closest('script, style, .sr-only, .p1-steps, title, .enter, .curtain, .xhair')) continue;
-    if (el.closest('#page-02, #page-03') && inDive) continue;
+    if (el.closest('.dive__lab[data-rest="0"]')) continue;   // round 8: a label mid-swing is seen in perspective (its lines' upright boxes overlap); judged at rest
+    if (el.closest('#page-07, #page-07b') && inDive) continue;
     if (!visible(el)) continue;
     const rg = document.createRange(); rg.selectNodeContents(n);
     // the boxes that clip it (overflow), and whether a page below the one on top is hidden under it (a stub under page 3)
@@ -47,7 +48,7 @@ MEASURE = r"""() => {
   }
   const host = (b) => { if (!b.classList?.contains('p1-fly')) return null; const st = b.dataset.state, w = b.dataset.w;
     return w === 'you' ? (st === 'a' ? 's2' : st === 'c' ? 'task' : null) : (st === 'a' ? 'task' : st === 'b' ? 'we' : null); };
-  for (const [b, rs] of groups) out.texts.push({ name: desc(b), rects: rs, chrome: !!b.closest('.titleblock, .strip, .slip-head.is-stuck'), page: !!b.closest('#page-02, #page-03'),
+  for (const [b, rs] of groups) out.texts.push({ name: desc(b), rects: rs, chrome: !!b.closest('.titleblock, .strip, .slip-head.is-stuck'), page: !!b.closest('#page-07, #page-07b'),
     k: b.closest('[data-k]')?.dataset.k || host(b) });
   const pic = (name, l, t, r, b) => { if (r - l > 1 && b - t > 1) out.pics.push({ name, l, t, r, b }); };
   const p1 = window.__p1;
@@ -61,7 +62,7 @@ MEASURE = r"""() => {
     pic(`hallway drawing ${f.i + 1}`, Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys));
     if (f.rest) out.shares.push({ i: f.i + 1, share: +((Math.max(...ys) - Math.min(...ys)) / H).toFixed(3), width: +((Math.max(...xs) - Math.min(...xs)) / W).toFixed(3) });
   });
-  if (!inDive) document.querySelectorAll('#page-02 .p2-row .mark').forEach((m, k) => { if (visible(m)) { const r = m.getBoundingClientRect(); pic(`tick box ${k + 1}`, r.left, r.top, r.right, r.bottom); } });
+  if (!inDive) document.querySelectorAll('#page-07 .p2-row .mark').forEach((m, k) => { if (visible(m)) { const r = m.getBoundingClientRect(); pic(`tick box ${k + 1}`, r.left, r.top, r.right, r.bottom); } });
   return out;
 }"""
 
@@ -93,7 +94,7 @@ async def main(a):
             opts = dict(viewport={"width": w, "height": h}, device_scale_factor=float(dpr))
             if w < 1024: opts.update(is_mobile=True, has_touch=True)
             ctx = await b.new_context(**opts); page = await ctx.new_page()
-            await page.goto("http://127.0.0.1:8109/?first&nosnap", wait_until="load")
+            await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
             await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
             await page.keyboard.press("Enter"); await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
             await page.wait_for_timeout(600)
@@ -119,6 +120,6 @@ async def main(a):
     for size, d in shares.items(): print(f"  {size}: " + ", ".join(f"{i}: {v['share']:.2f} h / {v['width']:.2f} w" for i, v in sorted(d.items())))
     (out / "overlap.json").write_text(json.dumps({"overlaps": total, "pairs": pairs, "shares": shares, "rows": rows}, indent=1), encoding="utf-8")
 
-ap = argparse.ArgumentParser(); ap.add_argument("--sizes", default=SIZES); ap.add_argument("--out", default="tools/shots/r7/overlap")
+ap = argparse.ArgumentParser(); ap.add_argument("--sizes", default=SIZES); ap.add_argument("--out", default="tools/shots/r8/overlap")
 with BrowserLock():
     asyncio.run(main(ap.parse_args()))

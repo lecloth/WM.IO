@@ -55,7 +55,7 @@ async def main(a):
             opts = dict(viewport={"width": w, "height": h}, device_scale_factor=float(dpr))
             if w < 1024: opts.update(is_mobile=True, has_touch=True)
             ctx = await b.new_context(**opts); page = await ctx.new_page()
-            await page.goto("http://127.0.0.1:8109/?first&nosnap", wait_until="load")
+            await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
             await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
             await page.keyboard.press("Enter")
             await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)

@@ -20,16 +20,16 @@ from browserlock import BrowserLock
 
 SIZES = "384x734@2.8125,390x844@3,1280x720@1,1366x768@1,1440x900@1,1920x1080@1,2160x1147@1.333,1440x765@2,2560x1440@1,360x800@3,375x667@2,393x852@3,412x915@2.625,430x932@3"   # round 7: + the five most common phones
 TOL = 0.5
-SETTLE = {"TR": 1800, "OPEN": 2400, "F5": 4800, "WE": 1900, "DRUM": 1900, "END": 1300, "kin": 1200, "paper": 1000, "TASK": 1100, "YOU": 1100, "S2": 1100, "REAL": 1200, "DOT": 800,
-          "F1": 1300, "F2": 1300, "F3": 1300, "F4": 1800, "F4B": 1600, "LAND": 900}
+# round 8: the scenes are scrubbed (a 0.1 s lag), so a stop settles fast; the word reveals and the drum's detent still take their beat
+SETTLE = {"OPEN": 1400, "WE": 1900, "DRUM": 1900, "END": 1300, "kin": 1200, "paper": 1000, "TASK": 1100, "YOU": 1100, "S2": 1100, "REAL": 1200,
+          "F1": 1100, "F2": 1100, "F3": 1100, "F4": 1100, "F5": 1100, "F5B": 1100, "DOOR": 900, "OUT": 900}
 # selectors whose edges / text are not held to the grid, and why (each hit is counted and listed by reason)
 EXCEPTIONS = [
     (".p1-grid, .p1-grid *", "the construction lines behind WE and the verbs follow the type itself (cap line, x-height, ink edges); its baselines are grid lines"),
     (".p1-verb:not(.is-lit)", "the drum's other verbs turn away on the dial (3D); only the lit verb rests"),
     (".p1__plate, .p1__plate img", "Bell's drawing has no sheet now: its own ink sits on the grid (two of its long lines are checked on grid lines)"),
     (".p1__morph, .p1__morph *", "Bell's traced outlines lie on the scan and travel to the phone"),
-    (".dive__cut, .dive__cut *", "transition B's cut line shows only for the cut's first moment"),
-    (".p3-callout, .p3-callout *", "Detail B is a circle that grows into page 4 (its tag rides on it)"),
+    (".dive__lab[data-rest='0'], .dive__lab[data-rest='0'] *", "a hallway label mid-swing is seen in the sheet's perspective (it rests on the grid)"),
     (".xhair, .xhair *", "the cursor follows the pointer"),
     (".sing, .sing *, .curtain, .curtain *, .enter, .enter *", "the gate (checked on its own: the beacon on an intersection)"),
     (".strip__fill", "the strip's progress bar grows with the scroll"),
@@ -51,8 +51,8 @@ MEASURE_JS = r"""(args) => {
   const out = { u, W, H, edges: 0, baselines: 0, textEdges: 0, worst: 0, fails: [], excepted: {}, pics: 0 };
   const exSel = exceptions.map(([s]) => s).join(', ');
   const exReason = (el) => { for (const [s, r] of exceptions) if (el.closest(s.split(', ').map((x) => x.replace(/ \*$/, '')).join(', ')) || el.matches(s)) return r; return null; };
-  const p2 = document.getElementById('page-02');
-  const inDive = p2?.classList.contains('is-dive');
+  const p2 = document.getElementById('page-07');   // round 8: the final room (the old pages 2-3)
+  const inDive = false;
   // the origin a box is measured from: the screen's top if it (or what holds it) is pinned or fixed, else page 2's top
   const pinned = (el) => {
     for (let n = el; n && n !== document.body; n = n.parentElement) {
@@ -65,7 +65,7 @@ MEASURE_JS = r"""(args) => {
     }
     return false;
   };
-  const originY = (el) => (el.closest('#page-02, #page-03') && !pinned(el) ? p2.getBoundingClientRect().top : 0);
+  const originY = (el) => (pinned(el) ? 0 : el.closest('#page-07, #page-07b') ? p2.getBoundingClientRect().top : el.closest('.stub') ? el.closest('.stub').getBoundingClientRect().top : 0);   // a stub (the spec sheet under the slip) is its own page: from its own top
   const off = (v, step) => { const d = v - Math.round(v / step) * step; return Math.abs(d); };
   const fail = (what, el, v, step, dev) => { out.fails.push({ what, el: desc(el), v: +v.toFixed(2), step: +(step / u).toFixed(2), dev: +dev.toFixed(2) }); };
   const desc = (el) => { if (!el || !el.tagName) return String(el); const c = (el.className && el.className.baseVal === undefined ? el.className : el.getAttribute?.('class') || '').toString().trim().split(/\s+/).slice(0, 2).join('.'); const t = (el.textContent || '').trim().slice(0, 24); return `${el.tagName.toLowerCase()}${c ? '.' + c : ''}${t ? ' "' + t + '"' : ''}`; };
@@ -108,7 +108,7 @@ MEASURE_JS = r"""(args) => {
       if (x > 0) s.add('l'); if (x < 0) s.add('r'); if (y > 0) s.add('t'); if (y < 0) s.add('b');
     }
     const bg = cs.backgroundColor, a = bg.startsWith('rgba') ? parseFloat(bg.split(',')[3]) : bg === 'transparent' ? 0 : 1;
-    if ((a > 0.05 || (cs.backgroundImage !== 'none' && !el.matches('.p23, .p1__stage, .p1__bg, .dive__win, #page-02 .p2__stage')))) ['l', 'r', 't', 'b'].forEach((k) => s.add(k));
+    if ((a > 0.05 || (cs.backgroundImage !== 'none' && !el.matches('.p23, .p1__stage, .p1__bg, .dive__win')))) ['l', 'r', 't', 'b'].forEach((k) => s.add(k));
     if (el.matches('.p1__stage, .p1__bg, .dive__win, .p1-dive, .p1-dive-top')) s.clear();   // the grounds: their edges are the screen's
     if (el.matches('img, canvas:not(.p1__canvas):not(.p1__leaders):not(.dive__gl), svg.mark')) ['l', 'r', 't', 'b'].forEach((k) => s.add(k));
     return s;
@@ -132,7 +132,6 @@ MEASURE_JS = r"""(args) => {
     if (el.closest('svg') && !el.matches('svg.mark')) { if (!el.closest('.mark') && visible(el)) skip(el); continue; }
     if (el.matches('script, style, br, input[type="checkbox"], input[type="radio"]')) continue;
     if (!visible(el)) continue;
-    if (el.closest('#page-02, #page-03') && inDive) continue;   // page 2 at the hallway's end is scaled with it (checked when it lands)
     if (scaled(el)) continue;
     if (skip(el)) continue;
     const cs = getComputedStyle(el);
@@ -197,7 +196,7 @@ MEASURE_JS = r"""(args) => {
   return out;
 }"""
 
-P23 = [("P2", "#page-02|0", None), ("P2T", "#page-02|0", "tick"), ("P3", "#page-03|-8", None), ("P3S", ".slip__send|-14", None), ("P3T", ".p3__tail|0.5", None)]
+P23 = [("ROOM", "#page-07|0", None), ("ROOMT", "#page-07|0", "tick"), ("SLIP", "#page-07b|-8", None), ("SEND", ".slip__send|-14", None)]
 
 async def main(a):
     from patchright.async_api import async_playwright
@@ -216,7 +215,7 @@ async def main(a):
                 if theme == "dark": await ctx.add_init_script("try { localStorage.setItem('wm:theme', 'dark'); } catch (e) {}")
                 page = await ctx.new_page(); errs = []
                 page.on("pageerror", lambda e: errs.append(str(e)[:200])); page.on("console", lambda m: m.type == "error" and errs.append(m.text[:200]))
-                await page.goto("http://127.0.0.1:8109/?first&nosnap", wait_until="load")
+                await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
                 await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
                 gate = await page.evaluate("(() => { const p = document.querySelector('.sing__point').getBoundingClientRect(); const u = window.__grid.u; const x = p.left + p.width / 2, y = p.top + p.height / 2; return { x, y, dx: Math.abs(x - Math.round(x / u) * u), dy: Math.abs(y - Math.round(y / u) * u) }; })()", isolated_context=False)
                 gfail = [f"gate beacon off its intersection by {gate['dx']:.2f}, {gate['dy']:.2f}"] if max(gate["dx"], gate["dy"]) > a.tol + 0.01 else []
@@ -258,7 +257,7 @@ async def main(a):
     (out / "gridcheck.json").write_text(json.dumps({"totals": tot, "excepted": excepted, "failures": failures}, indent=1), encoding="utf-8")
 
 if __name__ == '__main__':
-    ap = argparse.ArgumentParser(); ap.add_argument("--sizes", default=SIZES); ap.add_argument("--themes", default="light"); ap.add_argument("--out", default="tools/shots/r7/grid")
+    ap = argparse.ArgumentParser(); ap.add_argument("--sizes", default=SIZES); ap.add_argument("--themes", default="light"); ap.add_argument("--out", default="tools/shots/r8/grid")
     ap.add_argument("--stops", default=""); ap.add_argument("--tol", type=float, default=TOL); ap.add_argument("--shots", action="store_true")
     with BrowserLock():
         asyncio.run(main(ap.parse_args()))

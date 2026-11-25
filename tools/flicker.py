@@ -11,7 +11,9 @@ Metrics (grey levels 0-255, on device pixels):
   flicker  : temporal flicker energy: mean over pixels of |b - (a + c) / 2| for consecutive frames a, b, c (a line that
              shimmers jumps there and back; smooth motion is near zero), and the share of pixels where it exceeds 24;
   lines    : page 2's horizontal grid lines in an empty strip: how much each line's darkness changes between frames.
-  python -I tools/flicker.py [--builds r6old,current] [--out tools/shots/r7/flicker] [--frames 36]
+  python -I tools/flicker.py [--builds r7old,current] [--out tools/shots/r8/flicker] [--frames 36]
+Round 8: the older build is staged by hand at site/<name>old/ (deleted again before committing); page 2's rows are the
+final room's now; the current build also steps the hyperdrive frame by frame.
 One headed Chrome window opens on the desktop while it runs (a fresh temporary profile; nothing of the user's)."""
 import argparse, asyncio, json, subprocess, sys, tempfile, time
 from pathlib import Path
@@ -93,8 +95,8 @@ async def run_build(pw, b, a, out):
     ctx = await pw.chromium.launch_persistent_context(prof, channel="chrome", headless=False, no_viewport=True,
         args=["--start-maximized", "--no-first-run", "--no-default-browser-check", "--disable-session-crashed-bubble"])
     page = ctx.pages[0] if ctx.pages else await ctx.new_page()
-    base = "http://127.0.0.1:8109/" + ("r6old/" if b == "r6old" else "")
-    await page.goto(base + "?first&nosnap", wait_until="load")
+    base = "http://127.0.0.1:8109/" + (f"{b}/" if b.endswith("old") else "")
+    await page.goto(base + "?first", wait_until="load")
     await page.bring_to_front(); await page.wait_for_timeout(800)
     # Ctrl+minus, one step at a time, until the zoom is 67% (devicePixelRatio 2 x 0.667 = 1.333)
     res = None
@@ -131,7 +133,8 @@ async def run_build(pw, b, a, out):
     Hh, Wh = G[0].shape
     rep["hall_wall_flicker"] = flicker(G, (0, int(Hh * 0.55), int(Wh * 0.12), int(Hh * 0.95)))
     # 3. page 2 scrolling: its grid lines in an empty strip at the right
-    p2 = await page.evaluate("(() => { const el = document.getElementById('page-02'); let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; })()")
+    # (round 8: the rows moved to the final room, page 7; round 7 had them on page 2)
+    p2 = await page.evaluate("(() => { const el = document.getElementById('page-07') || document.getElementById('page-02'); let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; })()")
     await page.evaluate(GOTO, p2 + 40, isolated_context=False); await page.wait_for_timeout(1500)
     fr = await walk(page, [p2 + 40 + 0.83 * k for k in range(n)], out, f"{b}_p2")
     G = [gray(f) for f in fr]; H, W = G[0].shape
@@ -139,6 +142,19 @@ async def run_build(pw, b, a, out):
     rep["p2_shimmer"] = line_track(G, (int(W * 0.955), int(H * 0.08), int(W * 0.985), int(H * 0.8)))
     rep["p2_scroll_device_px"] = await page.evaluate("[scrollY * devicePixelRatio % 1]")
     rep["p2_flicker"] = flicker(G, (int(W * 0.9), 0, W, H))
+    # 4. (round 8, current build only) the hyperdrive, frame by frame: its own drawing stepped at 60 fps over the stars and
+    # the settle, on a full-window canvas in this same window (dev/hyper.html?full draws one frame per call)
+    if not b.endswith("old"):
+        await page.goto("http://127.0.0.1:8109/dev/hyper.html?full&t=0.3", wait_until="load"); await page.wait_for_timeout(1500)
+        cdp = CDPS.get(id(page)) or await page.context.new_cdp_session(page); CDPS[id(page)] = cdp
+        import base64
+        files = []; steps = [0.24 + (0.98 - 0.24) * k / (n * 2) for k in range(n * 2)]
+        for k, tt in enumerate(steps):
+            await page.evaluate(f"(async () => {{ window.__draw({tt}); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); }})()")
+            r = await cdp.send("Page.captureScreenshot", {"format": "png", "fromSurface": True}); f = out / f"{b}_hyper_{k:03d}.png"; f.write_bytes(base64.b64decode(r["data"])); files.append(f)
+        G = [gray(f) for f in files]
+        rep["hyper_flicker"] = flicker(G)
+        rep["hyper_dpr"] = await page.evaluate("devicePixelRatio")
     await ctx.close()
     return rep
 
@@ -152,6 +168,6 @@ async def main(a):
             print(b, json.dumps(report[b], indent=1), flush=True)
     (out / "flicker.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
 
-ap = argparse.ArgumentParser(); ap.add_argument("--builds", default="r6old,current"); ap.add_argument("--out", default="tools/shots/r7/flicker"); ap.add_argument("--frames", type=int, default=36)
+ap = argparse.ArgumentParser(); ap.add_argument("--builds", default="r7old,current"); ap.add_argument("--out", default="tools/shots/r8/flicker"); ap.add_argument("--frames", type=int, default=36)
 with BrowserLock():
     asyncio.run(main(ap.parse_args()))

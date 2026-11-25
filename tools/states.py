@@ -1,4 +1,4 @@
-"""Visit states + the loop: first visit (?first&nosnap) timing, return visit timing, key-press skip, and two loops back to the
+"""Visit states + the loop: first visit (?first) timing, return visit timing, key-press skip, and two loops back to the
 singularity with the product rotation (hero phone + tag text).  python -I tools/states.py [--mobile]"""
 import asyncio, json, sys, time
 from pathlib import Path
@@ -25,7 +25,7 @@ async def main(mobile):
         page = await ctx.new_page()
         errs = []; page.on("pageerror", lambda e: errs.append(str(e)[:200])); page.on("console", lambda m: m.type in ("error", "warning") and errs.append(m.text[:200]))
         # first visit
-        t0 = time.perf_counter(); await page.goto("http://127.0.0.1:8109/?first&nosnap", wait_until="commit")
+        t0 = time.perf_counter(); await page.goto("http://127.0.0.1:8109/?first", wait_until="commit")
         out["first_visit_s"] = await until_ready(page, t0)
         out["first_visit_flag"] = await page.evaluate("document.documentElement.dataset.visit")
         # return visit
@@ -33,7 +33,7 @@ async def main(mobile):
         out["return_visit_s"] = await until_ready(page, t0)
         out["return_visit_flag"] = await page.evaluate("document.documentElement.dataset.visit")
         # first visit again, skipped with a key press after 400 ms
-        t0 = time.perf_counter(); await page.goto("http://127.0.0.1:8109/?first&nosnap", wait_until="commit")
+        t0 = time.perf_counter(); await page.goto("http://127.0.0.1:8109/?first", wait_until="commit")
         await page.wait_for_timeout(400); await page.keyboard.press("Space")
         out["skip_s"] = await until_ready(page, t0)
         await page.wait_for_timeout(1500)

@@ -9,14 +9,15 @@
 <script type="importmap">
 { "imports": { "three": "../vendor/three/three.module.min.js", "three/addons/": "../vendor/three/addons/" } }
 </script>
-<link rel="stylesheet" href="../css/page-00-grid.css?v=ebc3f43924">
-<link rel="stylesheet" href="../css/page-01-dive.css?v=295ff63a7f">
-<link rel="stylesheet" href="../css/page-02.css?v=8b64f7acf2">
-<link rel="stylesheet" href="../css/page-01.css?v=89f29e7001">
+<link rel="stylesheet" href="../css/page-00-grid.css?v=b84aeac290">
+<link rel="stylesheet" href="../css/page-01-dive.css?v=44bff83895">
+<link rel="stylesheet" href="../css/page-02.css?v=da3d2476e4">
+<link rel="stylesheet" href="../css/page-01.css?v=02db5bc39f">
 <link rel="preload" href="../fonts/newsreader-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../fonts/dm-mono-500.woff2" as="font" type="font/woff2" crossorigin>
 <style>
   @font-face { font-family: "Newsreader"; src: url(../fonts/newsreader-var.woff2) format("woff2"); font-weight: 200 800; font-display: swap; }
+  @font-face { font-family: "DM Mono"; src: url(../fonts/dm-mono-300.woff2) format("woff2"); font-weight: 300; font-display: swap; }
   @font-face { font-family: "DM Mono"; src: url(../fonts/dm-mono-400.woff2) format("woff2"); font-weight: 400; font-display: swap; }
   @font-face { font-family: "DM Mono"; src: url(../fonts/dm-mono-500.woff2) format("woff2"); font-weight: 500; font-display: swap; }
   /* the tokens are the site's (page-00-grid.css); the cards are phone-sized, so one cell is 384 / 20 = 19.2 px */
@@ -69,78 +70,86 @@
   .ctacard__stage .p2__stage { min-height: auto; }
   .divecard .p1-dive, .divecard .p1-dive-top { position: absolute; inset: 0; pointer-events: none; visibility: visible; opacity: 1; }
   .divecard .p1-dive { z-index: 2; } .divecard .p1-dive-top { z-index: 4; color: var(--ink); }
-  .divecard__end { position: absolute; inset: 0; z-index: 3; padding: 3rem 1rem 0; transform-origin: 0 0; background-color: var(--paper); background-image: var(--grid-img); background-size: var(--grid-size); }
-  .divecard__end b { display: block; font-weight: 420; font-size: 2.5rem; line-height: 3rem; letter-spacing: -.02em; }
-  .divecard__end i { display: block; font-style: normal; font-size: 1.25rem; line-height: 4rem; height: 4rem; box-shadow: inset 0 -1px 0 rgba(var(--ink-rgb), .55); }
+  .hypercard__stage { position: relative; height: 734px; max-height: 92vh; overflow: hidden; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); background-color: var(--paper); background-image: var(--grid-img); background-size: var(--grid-size); }
+  .hypercard__stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
   .frame384 iframe { display: block; width: 384px; max-width: 100%; height: 734px; max-height: 92vh; border: 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); background: var(--paper); }
   @media (max-width: 420px) { .card, .card--wide { width: 100%; } }
 </style>
 </head>
 <body>
   <section class="block" aria-labelledby="h-0">
-    <p class="mono">Asset sheet · Take 2 · round 7</p>
-    <h1 id="h-0">Round 7 candidates</h1>
-    <p>Each candidate is live, at phone size (384 × 734, the S23’s screen), side by side. <b>A</b> of each is on the page until Wajih picks. One switch per choice, in the code; each can be previewed on the real page.</p>
+    <p class="mono">Asset sheet · Take 2 · round 8</p>
+    <h1 id="h-0">Round 8</h1>
+    <p>Each piece is live, at phone size (384 × 734, the S23’s screen). The hallway now has one way in (the grid folds into it) and one treatment (the drawings swing out on their hinges); ways in B and C and treatments A and C are gone. New: the door with the real lock, and “Cut to the chase” (the hyperdrive). The final room’s call to action is still Wajih’s pick (A on the page).</p>
     <nav class="toc mono" aria-label="Contents">
-      <a href="#h-tr">1 · The way into the hallway (A, B, C)</a>
-      <a href="#h-c">2 · The hallway’s drawings (A, B, C)</a>
-      <a href="#h-t">3 · Page 2’s call to action (A, B, C)</a>
-      <a href="#h-a">4 · Phone A</a>
-      <a href="#h-r">5 · The real phones</a>
-      <a href="#h-s">6 · Send</a>
+      <a href="#h-c">1 · The hallway</a>
+      <a href="#h-d">2 · The door, with the lock</a>
+      <a href="#h-h">3 · Cut to the chase: the hyperdrive</a>
+      <a href="#h-t">4 · The final room’s call to action (A, B, C)</a>
+      <a href="#h-a">5 · Phone A</a>
+      <a href="#h-r">6 · The real phones</a>
+      <a href="#h-s">7 · Send</a>
     </nav>
     <dl class="switches mono">
-      <dt>Way in</dt><dd><code>site/js/page01/dive.js</code> · <code>TRANSITION = 'A'</code> · <a href="../?first&amp;tr=B">/?first&amp;tr=B</a>, <a href="../?first&amp;tr=C">C</a></dd>
-      <dt>Drawings</dt><dd><code>site/js/page01/dive.js</code> · <code>TREATMENT = 'A'</code> · <a href="../?first&amp;hall=B">/?first&amp;hall=B</a>, <a href="../?first&amp;hall=C">C</a></dd>
-      <dt>Page 2</dt><dd><code>site/js/page02/cta.js</code> · <code>CTA_DESIGN = 'A'</code> · <a href="../?first&amp;cta=B">/?first&amp;cta=B</a>, <a href="../?first&amp;cta=C">C</a></dd>
+      <dt>Final room</dt><dd><code>site/js/page02/cta.js</code> · <code>CTA_DESIGN = 'A'</code> · <a href="../?first&amp;cta=B">/?first&amp;cta=B</a>, <a href="../?first&amp;cta=C">C</a></dd>
     </dl>
     <button class="print mono" id="print" type="button">Print: <span id="print-v">Light</span> · switch</button>
   </section>
 
-  <section class="block" aria-labelledby="h-tr">
-    <p class="mono">Asset sheet · page 1 → the hallway · the way in · three candidates</p>
-    <h2 id="h-tr">1 · The way into the hallway</h2>
-    <p>From “Now, what do you need?” into the hallway, as a short timed beat. A: the page’s grid folds into the hallway (it recedes and the walls, floor and ceiling unfold behind it). B: a clean cut along one grid line. C: the page pushes into one grid square, which opens into the hallway. Play runs all three.</p>
-    <button class="play mono" id="play" type="button">Play the way in</button>
-    <div class="row" id="rowTr"></div>
-  </section>
-
   <section class="block" aria-labelledby="h-c">
-    <p class="mono">Asset sheet · page 1 → 2 · the hallway’s drawings · three candidates</p>
-    <h2 id="h-c">2 · The hallway: five drawings, no frames</h2>
-    <p>The real walk at phone size. A: printed straight on the wall; at each rest the view turns to face it squarely. B: a bare sheet swinging off the wall. C: a sheet pinned flat on the wall with a hairline shadow, faced as in A. At rest each drawing is square-on and whole grid cells, with its label on a frosted backing. Drag Walk to move through all three at once.</p>
+    <p class="mono">Asset sheet · page 2 · the hallway</p>
+    <h2 id="h-c">1 · The hallway</h2>
+    <p>The real walk at phone size. The grid folds into the hallway and it dresses up as you walk; the camera walks straight, never turning; each drawing swings out on its hinge to face you, square-on and whole grid cells at rest, its frosted label right under it, as wide as it, turning with it. Each canvas shows one of our made-up products. Play runs the way in; Walk moves through it all.</p>
+    <button class="play mono" id="play" type="button">Play the way in</button>
     <label class="turn mono">Walk <input id="dive" type="range" min="0" max="1000" value="320" aria-label="Walk the hallway"></label>
     <div class="row" id="rowC"></div>
   </section>
 
+  <section class="block" aria-labelledby="h-d">
+    <p class="mono">Asset sheet · page 2 · the end of the hallway</p>
+    <h2 id="h-d">2 · The door, with the lock</h2>
+    <p>The hallway’s end: a door in the hallway’s hairlines, its lock the real “Cutaway Lock” (zbzzn, Printables 250197, CC BY 4.0), so rounds 9 and 10 continue from the same lock. Faint from the start, clearer as you walk towards it; it opens, and until round 9 leads to the security stub. Walk from the last drawing to the door and through it.</p>
+    <label class="turn mono">Walk <input id="door" type="range" min="0" max="1000" value="600" aria-label="Walk to the door"></label>
+    <div class="row" id="rowD"></div>
+  </section>
+
+  <section class="block" aria-labelledby="h-h">
+    <p class="mono">Asset sheet · the strip · cut to the chase</p>
+    <h2 id="h-h">3 · Cut to the chase: the hyperdrive</h2>
+    <p>Tapping “Cut to the chase” in the strip jumps to the final room: pages flash past, the page wraps into a tunnel, the grid’s crossing points stream past like stars, then align and settle into the final room’s grid. Hairlines only, no glow. With reduced motion it is a plain jump.</p>
+    <button class="play mono" id="hyperPlay" type="button">Play</button>
+    <label class="turn mono">Scrub <input id="hyperT" type="range" min="0" max="1000" value="520" aria-label="Scrub the hyperdrive"></label>
+    <div class="row"><article class="card"><div class="hypercard__stage"><canvas id="hyper" role="img" aria-label="The hyperdrive: the grid’s crossing points streaming past like stars"></canvas><span class="card__tag mono">C</span></div><h3>C · The hyperdrive</h3><p>1.8 s, then the final room. The scrubber shows any moment of it.</p><p class="mono on-page" style="margin-top:6px">On the page</p></article></div>
+  </section>
+
   <section class="block" aria-labelledby="h-t">
-    <p class="mono">Asset sheet · page 2 · the call to action · three demos, on this sheet</p>
-    <h2 id="h-t">3 · “Tap everything that fits”</h2>
-    <p>Page 2 itself, three times. A: the beacon on the first box, then on “Next: your slip”. B: the beacon as a gate that reveals the rows. C: no beacon, the boxes pulse once in turn. Tap the boxes. “Next: your slip” and the new sixth row are draft wording.</p>
+    <p class="mono">Asset sheet · page 7, the final room · the call to action · three demos, on this sheet</p>
+    <h2 id="h-t">4 · “Tick everything that fits”</h2>
+    <p>The final room itself, three times. A: the beacon on the first box, then on “Next: your slip”. B: the beacon as a gate that reveals the rows. C: no beacon, the boxes pulse once in turn. Tap the boxes. The rows, answers and “Next: your slip” are draft wording; the heading is Wajih’s.</p>
     <div class="row" id="rowT"></div>
   </section>
 
   <section class="block" aria-labelledby="h-a">
     <p class="mono">Asset sheet · page 1 · phone A</p>
-    <h2 id="h-a">4 · Phone A, at the premium bar</h2>
+    <h2 id="h-a">5 · Phone A, at the premium bar</h2>
     <p>Page 1’s own six-piece phone, assembled, in its product-shot look. Move the pointer, or tilt your phone.</p>
     <label class="turn mono">Turn <input id="turn" type="range" min="-100" max="100" value="11" aria-label="Turn the phones"></label>
     <div class="row" id="rowA"></div>
   </section>
   <section class="block" aria-labelledby="h-r">
-    <p class="mono">Asset sheet · the real phones · frame 5 of the hallway, later page 4</p>
-    <h2 id="h-r">5 · iPhone 18 Pro Max and Galaxy S26 Ultra, live</h2>
+    <p class="mono">Asset sheet · the real phones · frame 5 of the hallway, later the apps trip</p>
+    <h2 id="h-r">6 · iPhone 18 Pro Max and Galaxy S26 Ultra, live</h2>
     <p>Side by side, running our booking app (a concept), in the same studio light as phone A. Logos removed from both backs. The Turn control above turns them too.</p>
     <p class="warn mono">Licences unverified · local only · must be cleared or replaced before any hosting</p>
     <div class="row" id="rowR"></div>
   </section>
   <section class="block" aria-labelledby="h-s">
-    <p class="mono">Asset sheet · page 3 · the Send</p>
-    <h2 id="h-s">6 · Send, design A (Leader)</h2>
+    <p class="mono">Asset sheet · the final room · the Send</p>
+    <h2 id="h-s">7 · Send, design A (Leader)</h2>
     <p>The foot of a filled work slip, at phone size, live: tap a way to send, then Send (here it only shows the link it would open).</p>
-    <div class="row frame384"><article class="card"><iframe src="send.html" title="Send, design A, Leader" loading="lazy"></iframe><h3>A · Leader</h3><p class="mono" style="color:var(--graphite);margin-top:6px">On page 3 · Wajih’s pick</p></article></div>
+    <div class="row frame384"><article class="card"><iframe src="send.html" title="Send, design A, Leader" loading="lazy"></iframe><h3>A · Leader</h3><p class="mono" style="color:var(--graphite);margin-top:6px">In the final room · Wajih’s pick</p></article></div>
   </section>
   <footer class="mono">Sources and licences: CREDITS.md</footer>
-<script type="module" src="../dist/assets.js?v=873b1ef974"></script>
+<script type="module" src="../dist/assets.js?v=58a390b5ee"></script>
 </body>
 </html>

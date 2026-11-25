@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en" data-motion="full">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hyperdrive · Take 2</title>
+<meta name="robots" content="noindex">
+<!-- "Cut to the chase" (round 8): the hyperdrive at phone size (384 x 734), with Play and a scrubber.
+     ?theme=dark · ?full&t=0.5 draws one frame across the whole window (tests) · ?grid shows the page's CSS grid alone
+     (the t = 1 frame must match it pixel for pixel) · ?play plays it full screen over a plain page. -->
+<script>
+  /* the site's grid unit, as the head script picks it (index.template.html) */
+  (function () {
+    var d = document.documentElement, q = location.search;
+    if (/[?&]theme=dark\b/.test(q)) d.dataset.theme = 'dark';
+    function pick(W, dpr) {
+      if (W < 640) return 20;
+      var Wd = Math.round(W * dpr), best = 0, bestScore = 1e9;
+      for (var n = Math.ceil(W / 24); n <= Math.floor(W / 20); n++) {
+        if (Math.abs(Wd / n - Math.round(Wd / n)) > 1e-6) continue;
+        var score = Math.abs(W / n - 22) + (n % 5 ? 3 : 0);
+        if (score < bestScore) { bestScore = score; best = n; }
+      }
+      return best || 5 * Math.round(W / 110);
+    }
+    var dpr = window.devicePixelRatio || 1, W = innerWidth, n = pick(W, dpr), u = W / n;
+    d.style.setProperty('--u', u + 'px'); d.style.setProperty('--px1', (Math.max(1, Math.round(dpr)) / dpr) + 'px');
+    window.__grid = { u: u, n: n, W: W, H: innerHeight, dpr: dpr };
+  })();
+</script>
+<link rel="stylesheet" href="../css/site.css?v=c23da05b4e">
+<link rel="stylesheet" href="../css/page-00-grid.css?v=b84aeac290">
+<style>
+  html, body { margin: 0; background: var(--paper); color: var(--ink); }
+  .full, .grid { position: fixed; inset: 0; }
+  .grid { background-color: var(--paper); background-image: var(--grid-img); background-size: var(--grid-size); }
+  .demo { padding: 1rem; font-family: var(--f-mono); }
+  .frame { position: relative; width: 384px; height: 734px; box-shadow: 0 0 0 1px rgba(var(--ink-rgb), .3); overflow: hidden;
+    background-color: var(--paper); background-image: var(--grid-img); background-size: 96px 96px, 96px 96px, 19.2px 19.2px, 19.2px 19.2px; }
+  .frame canvas { position: absolute; left: 0; top: 0; }
+  .ctl { display: flex; gap: 1rem; align-items: center; margin-top: 1rem; font-size: .5rem; text-transform: uppercase; letter-spacing: .08em; }
+  .ctl button { font: inherit; color: inherit; background: none; border: 0; box-shadow: inset 0 -1px 0 currentColor; padding: .25rem 0; cursor: pointer; }
+  .ctl input { width: 16rem; }
+  .page { min-height: 300vh; background-color: var(--paper); background-image: var(--grid-img); background-size: var(--grid-size); }
+  .page p { margin: 0; padding: 3rem 1rem; font-family: var(--f-display); font-size: 2.5rem; line-height: 3rem; }
+</style>
+</head>
+<body>
+<script type="module">
+  import { drawHyperdrive, playHyperdrive, HYPER_MS } from '../js/engine/hyperdrive.js';
+  const q = new URLSearchParams(location.search), d = document.documentElement, cs = getComputedStyle(d);
+  const opts = (dpr, u) => ({ u, dpr, px1: Math.max(1, Math.round(dpr)), paper: cs.getPropertyValue('--paper').trim(), inkRgb: cs.getPropertyValue('--ink-rgb').trim(), dark: d.dataset.theme === 'dark' });
+  const dpr = Math.min(devicePixelRatio || 1, 3);
+  if (q.has('grid')) {
+    document.body.innerHTML = '<div class="grid"></div>';
+  } else if (q.has('full')) {
+    const c = document.createElement('canvas'), W = Math.round(innerWidth * dpr), H = Math.round(innerHeight * dpr);
+    c.width = W; c.height = H; c.className = 'full'; c.style.width = `${W / dpr}px`; c.style.height = `${H / dpr}px`;
+    document.body.append(c);
+    const o = opts(dpr, window.__grid.u * dpr), ctx = c.getContext('2d');
+    window.__draw = (t) => { const t0 = performance.now(); drawHyperdrive(ctx, W, H, t, o); return performance.now() - t0; };
+    window.__draw(+(q.get('t') || 1));
+    window.__run = async () => { const times = []; const t0 = performance.now();
+      await new Promise((res) => { const step = () => { const t = Math.min(1, (performance.now() - t0) / HYPER_MS); times.push(window.__draw(t)); if (t < 1) requestAnimationFrame(step); else res(); }; requestAnimationFrame(step); });
+      return times; };
+  } else if (q.has('play')) {
+    document.body.innerHTML = '<div class="page"><p>A page, then the hyperdrive.</p></div>';
+    window.__play = () => playHyperdrive({ jump: () => scrollTo(0, innerHeight * 2) });
+  } else {
+    // phone size: 384 x 734 CSS px, a 20-cell grid (19.2 px)
+    document.body.innerHTML = `<div class="demo"><div class="frame"><canvas></canvas></div>
+      <div class="ctl"><button type="button" class="play">Play</button><input class="t" type="range" min="0" max="1" step="0.001" value="0" aria-label="Progress"><span class="v">0.000</span></div></div>`;
+    const c = document.querySelector('.frame canvas'), W = Math.round(384 * dpr), H = Math.round(734 * dpr);
+    c.width = W; c.height = H; c.style.width = `${W / dpr}px`; c.style.height = `${H / dpr}px`;
+    const ctx = c.getContext('2d'), o = opts(dpr, 19.2 * dpr), range = document.querySelector('.t'), val = document.querySelector('.v');
+    const draw = (t) => { drawHyperdrive(ctx, W, H, t, o); range.value = t; val.textContent = t.toFixed(3); };
+    range.addEventListener('input', () => draw(+range.value));
+    let raf = 0;
+    document.querySelector('.play').addEventListener('click', () => {
+      cancelAnimationFrame(raf); const t0 = performance.now();
+      const step = () => { const t = Math.min(1, (performance.now() - t0) / HYPER_MS); draw(t); if (t < 1) raf = requestAnimationFrame(step); };
+      raf = requestAnimationFrame(step);
+    });
+    draw(0);
+  }
+</script>
+</body>
+</html>

@@ -1,5 +1,5 @@
-/* Take 2 · page 3: the work slip (its head is page 2's last line), then "or see how we think" and Detail B, a circle
-   that grows into page 4. A form drawn as an engineering work order: hairline cells, mono letters, ink on paper.
+/* Take 2 · the final room, part 2: the work slip (its head is the rows' last line). Round 8: the slip ends with Send and
+   the spec sheet follows in plain scroll. A form drawn as an engineering work order: hairline cells, mono letters, ink on paper.
    Round 6: on the grid (1rem = one cell); page 3 starts on a line (page 2 is whole cells tall), every cell of the slip
    is whole cells, every baseline on a line or half line. The text typed into the fields is placed by the browser (its
    writing line is on the grid). */
@@ -10,29 +10,29 @@
 .slip__sec { position: relative; border: 0; margin: 0; padding: 1rem 1rem calc(1rem + var(--snap, 0px)); min-inline-size: 0; box-shadow: inset 0 1px 0 rgba(var(--ink-rgb), .35); }
 .slip__sec:first-child { box-shadow: none; }
 /* the question: its letter in a two-cell column, its words after it; baseline one cell down */
-.slip__q { display: block; float: none; width: 100%; padding: 0 0 var(--snap, 0px); font-family: var(--f-display); font-weight: 420; font-size: 1.25rem; line-height: 1.5rem; letter-spacing: -.005em; }
+.slip__q { display: block; float: none; width: 100%; padding: 0 0 var(--snap, 0px); font-family: var(--f-display); font-weight: 420; font-size: 1.25rem; line-height: 1.5rem; letter-spacing: -.005em; text-wrap: balance; }
 legend.slip__q { float: left; }
 legend.slip__q + * { clear: both; }
-.slip__no { display: inline-block; width: 2rem; color: var(--graphite); font-size: .5rem; letter-spacing: var(--mono-track); vertical-align: baseline; }
-.slip__opt { position: absolute; right: 1rem; top: 1.5rem; color: var(--graphite); font-size: .5rem; line-height: .5rem; text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-mono)), .5rem) !important; }
+.slip__no { display: inline-block; width: 2rem; color: var(--graphite); font-size: .5rem; font-weight: 400; letter-spacing: var(--mono-track); vertical-align: baseline; }
+.slip__opt { position: absolute; right: 1rem; top: 1.5rem; color: var(--graphite); font-size: .5rem; font-weight: 400; line-height: .5rem; text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-mono)), .5rem) !important; }
 
 /* A · the printed needs: mono index + the need, two cells a line, typed in by the print head when the slip is on screen */
 .slip__needs { margin: 1rem 0 0 2rem; }
 .slip__needs li { display: grid; grid-template-columns: 2rem 1fr; align-items: start; height: 2rem; box-shadow: inset 0 -1px 0 rgba(var(--ink-rgb), .2); }
 .slip__needs li:last-child { box-shadow: none; }
 .slip__needs .n { color: var(--graphite); font-size: .5rem; line-height: .5rem; margin-top: 1rem; text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-mono)), .5rem); }
-.slip__needs .t { font-family: var(--f-mono); font-size: .75rem; line-height: .5rem; text-transform: uppercase; letter-spacing: .03em; margin-top: .5rem;
+.slip__needs .t { font-family: var(--f-mono); font-size: .625rem; line-height: .5rem; text-transform: uppercase; letter-spacing: .03em; margin-top: .5rem;
   text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-mono)), .5rem); }
 .slip__needs li.is-new .t { clip-path: inset(0 100% 0 0); animation: print var(--print-ms, .5s) steps(var(--print-n, 12), end) forwards; }
-.slip__empty { margin: 1rem 0 0 2rem; font-size: 1rem; line-height: 1.5rem; color: var(--graphite); }
+.slip__empty { margin: 1rem 0 0 2rem; font-size: 1rem; line-height: 1.5rem; color: var(--graphite); text-wrap: pretty; }
 .slip__empty a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; }
 
 /* B, E · ticks: a one-cell box, a cell down in a three-cell row; the words' baseline two cells down */
 .slip__ticks { display: grid; gap: 0; margin: 0 0 0 2rem; }
 .tick { position: relative; display: grid; grid-template-columns: 1rem 1fr; column-gap: 1rem; align-items: start; min-height: 3rem; padding-bottom: var(--snap, 0px); font-size: 1rem; line-height: 1.5rem; cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; }
 .tick .mark { width: 1rem; height: 1rem; margin-top: 1rem; }
-.tick > span { margin-top: 1rem; text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-serif)), .5rem); }
-.slip__ticks--by { grid-auto-flow: column; grid-template-rows: repeat(3, auto); grid-template-columns: 8rem 1fr; column-gap: 0; }
+.tick > span { text-wrap: balance; margin-top: 1rem; text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-serif)), .5rem); }
+.slip__ticks--by { grid-auto-flow: row; grid-template-columns: 1fr; column-gap: 0; }   /* round 8: one column on phones too (two left a lone word) */
 
 /* C, D · typed fields: a hairline to write on (a line of the grid); the box for the longer note */
 .slip__field { display: block; width: calc(100% - 2rem); height: 2rem; margin: 1rem 0 0 2rem; padding: calc(1.5rem - .7292em) 0 0; border: 0; border-radius: 0; background: transparent; color: var(--ink);
@@ -59,27 +59,6 @@ legend.slip__q + * { clear: both; }
 .slip__said { font-size: 1rem; line-height: 1.5rem; margin-top: .5rem; }
 .slip__said:empty { display: none; }
 
-/* ---------- the way on: "or see how we think", then Detail B (a circle) with page 4 already behind it ---------- */
-.p3__tail { position: relative; height: 190vh; height: 190lvh; }
-.p3__pin { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; }
-.p3__more { position: absolute; left: var(--gut); right: var(--gut); top: 3rem; font-family: var(--f-display); font-weight: 420; font-size: 1.5rem; line-height: 2rem; letter-spacing: -.01em; }
-.p3__more a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .16em; }
-.p3__more a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-.p3-callout { position: fixed; inset: 0; z-index: 4; pointer-events: none; visibility: hidden; color: var(--ink); }
-.p3-callout.on { visibility: visible; }
-.p3-callout__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.p3-callout__c, .p3-callout__lead { fill: none; stroke: currentColor; stroke-width: 1px; vector-effect: non-scaling-stroke; }
-.p3-callout__c { stroke-dasharray: var(--c, 20000px) 40000px; stroke-dashoffset: var(--c, 20000px); transition: stroke-dashoffset .9s cubic-bezier(.4, 0, .2, 1); }   /* (round 7: the circle's own length, set by callout.js; no pathLength trick, see .mark) */
-.p3-callout.is-drawn .p3-callout__c { stroke-dashoffset: 0; }
-.p3-callout__lead { opacity: 0; transition: opacity .3s linear .6s; }
-.p3-callout.is-drawn .p3-callout__lead { opacity: 1; }
-.p3-callout__tag { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; transition: opacity .3s linear .7s; }
-.p3-callout.is-drawn .p3-callout__tag { opacity: 1; }
-/* page 4 is already there, at full scale, seen through the circle (callout.js fixes and clips it) */
-html[data-motion="full"] #page-04 { margin-top: -100vh; margin-top: -100lvh; }   /* the tail is 100lvh + 90lvh of growing */
-#page-04.is-callout { z-index: 3; background: transparent; box-shadow: none; }
-#page-04.is-callout .stub__in { position: fixed; left: 0; right: 0; top: 0; background: var(--paper); }
-
 @media (hover: hover) and (pointer: fine) {
   .tick:hover > span:last-child { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .16em; }
   .tick:hover .mark rect { stroke-width: 1.5px; }
@@ -101,15 +80,6 @@ html[data-motion="full"] #page-04 { margin-top: -100vh; margin-top: -100lvh; }  
   .slip__ticks--by { grid-auto-flow: row; grid-template-rows: none; grid-template-columns: 1fr; }
   .slip__field { font-size: 1rem; }
   .slip__field--box { height: 6rem; min-height: 6rem; }
-  .p3__more { right: auto; width: 22rem; top: 7rem; font-size: 2rem; line-height: 3rem; }
-}
-@media (min-width: 1800px) and (min-height: 1000px) {
-  .p3__more { top: 8rem; font-size: 2.5rem; }
 }
 
-/* reduced motion: no pin, no growing; the circle stands drawn, and page 4 follows in normal flow */
-html[data-motion="reduce"] .p3__tail { height: auto; }
-html[data-motion="reduce"] .p3__pin { position: relative; height: auto; padding: 2rem 0 3rem; }
-html[data-motion="reduce"] .p3__more { position: relative; left: auto; right: auto; top: auto; margin: 0 var(--gut); }
-html[data-motion="reduce"] .p3-callout { display: none; }
 html[data-motion="reduce"] .slip__needs li.is-new .t { animation: none; clip-path: none; }
