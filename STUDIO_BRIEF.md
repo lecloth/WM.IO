@@ -828,3 +828,70 @@ three.js; Lenis with light settings.
   4. **Apps for iPhone and Android.** FIG. 04 · BOOKING APP. "One app, built for both phones your customers carry."
 - **Unchanged:** WE and the verb drum (they now settle on the grid); frame 4's rotating phones; page 2's call to
   action A (Wajih's pick still open); the "?" dot (open); the phone licences (local only).
+
+### Round 7 (25 Nov, Wajih's review of round 6). Overrides the above where they differ.
+- **Positioning (Wajih): "We design backwards."** We start from what a customer lives, knows and feels, and work
+  back to the drawing board, the engineering and the design, instead of making the tech fit the customer. It opens
+  the hallway as one line before the first frame (draft wording): **"We design backwards. From what your customers
+  live, know and feel, back to the drawing board."**
+- **The "?" dot entry is dropped** (Wajih: a cleaner transition). Three transitions from "Now, what do you need?"
+  into the hallway, as live candidates on the asset sheet, **A on the page until Wajih picks**:
+  - **A. The grid folds into the hallway** (the chat's pick): the flat page grid bends back into the floor, walls and
+    ceiling, and the camera walks in.
+  - **B. A clean cut** along one grid line.
+  - **C. Into one square:** the camera pushes into a single grid square that opens into the hallway.
+- **Five frames, in the "backwards" order** (the chat's order), each with a story line (the chat's drafts, flagged):
+  1. **Where customers give up.** "We walk every step your customers take, find the one that loses them, and fix it."
+  2. **Design that understands people** (NEW: design services; the drawing goes from who the customers are → what
+     they need to feel → the requirements → a colour palette and type; method, never results). "First we learn what
+     your customers need to feel. Then every colour, shape and word is chosen for it."
+  3. **Your way of deciding, built in.** "The rules you carry in your head, turned into a system that decides like
+     you, every time."
+  4. **Speed.** "Every second of waiting costs you a customer. We find the slow parts and cut them."
+  5. **On every phone they carry.** "One app, at home on iPhone and Android." (The rotating iPhone 18 and S26.)
+- **No frames, no paper** (Wajih: "the paper with the frame feels cheap"): the moulding, mat and glass go. Three
+  treatments as live candidates on the asset sheet, **A on the page until Wajih picks**:
+  - **A. Printed on the wall** (the chat's pick): each blueprint is printed straight onto the hallway's wall (blue,
+    white lines, crisp edges on the wall's grid). At each rest the camera turns to face it squarely, so it reads at
+    its true proportions.
+  - **B. Bare sheet:** a blueprint sheet with no frame swings off the wall to face you (round 4's hinge, frameless).
+  - **C. Pinned sheet:** a bare sheet flat on the wall with a hairline shadow; the camera turns to face it as in A.
+  - Every round 4 rule stays: true proportions at rest (0.000% stretch), the lens, nothing near the screen edge.
+- **Labels on a soft frosted backing** (Wajih: "a blurry background that fits seamlessly"): the hallway blurred
+  behind the label, no border, edges fading out. Readable at a glance. Measure the S23 frame rate with it.
+- **Hallway clarity: nothing overlaps.** Page 2's preview at the hallway's end stays hidden until the last frame has
+  gone (in round 6 it sat on frame 3's title); no text over a drawing or over other text; the hallway's detail steps
+  back behind the labels.
+- **The rotating phones must be seen:** once frame 5 settles, the turn plays in full by itself (timed, not tied to
+  the scroll), so a quick swipe can't skip it. Check Wajih's S23: if "Remove animations" is on (reduced motion), the
+  still is correct by design; report what you find.
+- **Bell's drawing on page 1, straight on the page** (Wajih: the sheet feels cheap): the scan's paper is removed and
+  its ink lines sit directly on our grid, aligned to it, true to the scan (not redrawn). Those same lines morph into
+  the phone as before.
+- **Page 2: a sixth row,** "A look that fits my business" (draft), carried onto the slip.
+- **Scrolling** (the chat's reading of Wajih's note): the page always follows the thumb (no speed changes).
+  - **Soft snap:** when the thumb lets go, the page settles on the nearest scene, so a flick moves one scene and
+    nothing is skipped.
+  - **Timed reveals:** once a scene starts, it plays out smoothly instead of popping in.
+  - **The verb drum:** more room (it turns slower) and a heavier click (a longer buzz or a double pulse; a web page
+    can't set vibration strength).
+  - **No "keep scrolling" cue** (Wajih: no).
+- **Real measurements:** the dimension lines (WE, the verb window, the drawings' dimension marks) show their live
+  measured sizes in faint grey mono: readable, never loud.
+- **Fixes:** page 2's empty boxes show half a tick stroke before any tap (seen on the real S23): an empty box must be
+  empty. The word "us" gets overlapped (the "YOU gave us the task" → WE moment): nothing overlaps. The top strip and
+  title block show 02 on page 1 after scrolling back from page 2.
+- **Most phones in use:** the checks add 360×800, 375×667, 393×852, 412×915 and 430×932 to the 9 sizes.
+- **Asset sheet:** a contents list at the top with jump links (Wajih couldn't find B and C); page 2's call-to-action
+  demos A, B and C sit on the sheet itself.
+- **Still open:** page 2's call-to-action pick; the transition and hallway-treatment picks; the drafts (the opening
+  line, the five story lines, the page 2–3 wording, "Next: your slip", the new row); the two phone licences.
+- **Drawings in proportion to the hallway on every screen** (Wajih, 25 Nov: on the laptop the drawings are small and
+  out of proportion with the hallway). At rest, each drawing fills the same share of the screen on phones and
+  laptops alike (the chat's suggestion: about 60% of the screen height, capped by width), so it never reads as a
+  small stamp in a big hallway. Check it hardest at 1280×720, 1366×768 and Wajih's 2160×1147 @1.333.
+- **Flickering** (Wajih, 25 Nov: "a lot of flickering", on the laptop). Reproduce it in a real Chrome window on this
+  laptop at Wajih's setup (Windows at 200%, Chrome at 67% zoom: devicePixelRatio 1.333), not only in emulation.
+  The chat's first suspect: 1 px lines and grid lines landing between device pixels at 1.333, so they shimmer as they
+  move (also check the WebGL canvas resolution, the frosted blur and any layer that repaints every frame). Find
+  every source, fix it, and prove it with frame-by-frame captures before and after.
