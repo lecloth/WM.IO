@@ -25,10 +25,10 @@ Take 1's history below.
 | 2 | The hallway | The grid folds into it; it dresses up as you walk; "We design backwards…" (draft); scrolling is walking; five drawings hang on hinges and swing out 40° as you pass, one hairline frame each (1 property app's enquiry path, 2 the property app's listing screen in its design layers, 3 delivery tracker, 4 website loading, 5 booking app on the real iPhone 18 and S26), frosted labels under them turning with them (story lines drafts); the shut door, its lock at eye level; the walk ends with the lock filling the screen | 4.9 (inside page 1's section) | **round 8b built** |
 | 3 | Into the lock | Starts on the hallway's last frame (the lock in X-ray); into the keyhole past the pins; out to the same lock on every crossing point of a grid in every direction; they unlock in a wave and fold back into one. Two lines (drafts) | 4.6 (overlapping page 1's last screen) | **round 9 built** |
 | 4 | How we work | The lock turns side-on into a 2D cutaway; "First, the obvious key." / "It fails. Most people stop here." / "We don't." (drafts); the wrong key fails; seven pins picked in the drum's order, each verb on a leader, the newest meaning under the lock on a leader; it turns on Delivered | 4 (inside page 3's section) | **round 10 built** |
-| 5 | Lighter trips | AI, websites, apps | ~9 | stub |
-| 6 | Team | Three placeholder cards (nothing invented) | ~1 | stub |
+| 5 | Lighter trips | Three rooms, scrubbed: AI (the property app's enquiries: the AI drafts, a person approves, then it's sent), websites (the booking app's site, drawn on the grid then real), apps (the delivery tracker live on the real iPhone 18 and S26). Lines and content drafts | 7.2 | **round 11 built** |
+| 6 | Team | "The three of us." (draft); three cards, clearly placeholders (a crossed picture box, "Name to come", a bio placeholder) | ~1 | **round 11 built** |
 | 7 | The final room | "What's the task list? Tick everything that fits." (Wajih's, signed off, no flag), then one slip on plain paper: the six needs as small boxes, the details, "Send it by", Send (a box with a 3 px hard ink shadow; fields at half), CTA A (pick open), every way to reach us (switches in settings.js) | ~3.1 | **round 8b built** (needs, answers, slip wording: drafts) |
-| 8 | Spec sheet | One screen of live numbers, then the loop back | ~1 | stub |
+| 8 | Spec sheet | "This page, measured as you read it." (draft): page weight and files loaded so far, ready in, fps now, grid, screen, fonts, page 3's locks (all measured live), the outside assets and their licences (the site's list); "Back to the start ↑" (the hyperdrive to the top) | ~1 | **round 11 built** |
 
 "Cut to the chase" (strip, always): the hyperdrive into the final room; the strip's last square and 07 do the same.
 
@@ -259,7 +259,31 @@ Take 1's history below.
   leaders over their pins once set; the newest verb and meaning under the lock on a leader (`.p4m`). Reduced motion:
   the finished cutaway (all set, turned) and the three lines.
 
+### Round 11 structure notes (25 Nov, stage 11)
+- **Page 5** (`src/parts/stubs.html` `#page-05`, `site/js/page05/trips.js`, `site/css/page-05.css`): one pinned section,
+  820lvh (3 rooms x 2.4 screens + its own), a lagged scrub; rooms cross-fade (`--op`). AI: the reply's words revealed
+  by count, `is-approved` / `is-pressed` / `is-sent`. Websites: `--grid`, `--wire`, each block `is-real` at its moment
+  (its wireframe name or its real self, never both); the picture is the booking app's real screen (`drawBooking`);
+  phones: one column, the picture small at the bottom right (gone on short phones). Apps: `PhonePair` (the real phones,
+  local only; loaded in the first quiet pause from page 3 on, at once a screen away) with `site/js/apps/tracker.js` as
+  its screen (48 steps along the route, no mipmaps: an upload only when the dot moves); without the models, the flat
+  screens in outlines (`.no-phones`). The scene stops drawing when the section is off screen. `window.__p5.yAt(s)`;
+  `__t2stops` adds T00..T10.
+- **Page 6** (`#page-06`): three placeholder cards. **Page 8** (`src/parts/stub-08.html`, `site/js/page08/spec.js`):
+  measured live (Resource and Navigation Timing, rAF, the grid, `document.fonts`, page 3's lattice stats); `ASSETS`:
+  the site's list of outside assets and licences; "Back to the start" runs `backToStart()` (main.js: the hyperdrive to
+  the top; a plain jump with reduced motion).
+- `tools/typecheck.py`: weekdays added to the proper names; `typecheck.js`: measurements may carry thousands commas.
+
 ### Take 2 log
+- **Round 11 (25 Nov, stage 11, lighter trips, team, spec sheet).** Built as above (all new wording drafts, flagged).
+  Checks: typecheck 0 machine failures (page 5's 11 stops, P06, ROOM, SEND, P08; 384 x 734, 1440 x 900, 2160 x 1147;
+  light and dark; plus 375 x 667 and 360 x 800 on the websites room). S23: AI 59.3-60, websites 57-60, apps 59-60,
+  team 60, spec sheet 60 fps; fixed on the way: the trips scene rendered the 3D phones on every scroll event off screen
+  (team and spec dropped to 56 fps), the tracker re-uploaded a 720 x 1,560 screen with mipmaps each frame (43 fps), the
+  phones loaded three screens early (mid-scroll stalls). Left: one 167 ms frame on the websites room's first pass when
+  the test jumps straight to page 5 (the phones' parsing; a visitor's pause on pages 3-4 loads them first). 8 real
+  swipes, no pull-back; 0 errors; reduced motion shots. Shots: `tools/shots/r11/`.
 - **Round 10 (25 Nov, stage 10, how we work).** Built as above. Checks: typecheck 0 machine failures (page 4's 15
   stops + L10 + P05; 384 x 734, 1440 x 900, 2160 x 1147; light and dark; 102 frames). S23: 60 fps in both segments on
   both passes (worst frame 17.1 ms); 8 real swipes, no pull-back; 0 errors; reduced motion shots. Shots: `tools/shots/r10/`.

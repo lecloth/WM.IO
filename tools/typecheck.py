@@ -53,7 +53,8 @@ RULES = ["crossings", "clearance", "scale", "wording", "breaks"]
 
 # rule 4: words that may start with a capital mid-sentence (proper names, the deliberate YOU / WE, the Draft flag)
 PROPER = ["Bell", "Edison", "Yale", "Babbage", "Lovelace", "Leonardo", "iPhone", "Android", "Galaxy", "WhatsApp", "AI", "US",
-          "A.", "G.", "A", "G", "YOU", "WE", "Draft", "I", "Patent", "Fig", "Fig.", "No.", "Tunis"]
+          "A.", "G.", "A", "G", "YOU", "WE", "Draft", "I", "Patent", "Fig", "Fig.", "No.", "Tunis",
+          "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]   # round 8b: days are proper names
 # rule 4: signed-off lines (never flagged)
 SIGNED = ["Now, how can we serve you?", "What’s the task list? Tick everything that fits.", "Cut to the chase", "Glad you’re finally here."]
 

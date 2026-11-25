@@ -8,6 +8,8 @@ import { runEnter } from './enter.js';
 import { initPage01 } from './page01/page.js';
 import { initPages23 } from './page02/page.js';
 import { initPage03 } from './page03/page.js';
+import { initTrips } from './page05/trips.js';
+import { initSpec } from './page08/spec.js';
 
 window.__wm.done('app');
 Promise.all(['420 1em Newsreader', '400 1em Newsreader', '300 1em "DM Mono"', '400 1em "DM Mono"', '500 1em "DM Mono"'].map((f) => document.fonts.load(f)))
@@ -24,6 +26,7 @@ try { p1 = initPage01(engine); } catch (e) { console.error('[page 01]', e); }
 try { p23 = initPages23(engine); } catch (e) { console.error('[pages 02-03]', e); }
 let p3 = null;
 try { p3 = initPage03(engine); } catch (e) { console.error('[page 03]', e); }
+try { initTrips(engine); } catch (e) { console.error('[page 05]', e); }
 
 // ---------- timeline strip + title block: one segment per page (round 8: eight pages; the hallway is page 2) ----------
 const segs = [...document.querySelectorAll('.strip__seg')];
@@ -84,6 +87,15 @@ async function cutToChase() {
   room.querySelector('#p2-h')?.focus({ preventScroll: true });
 }
 cutA?.addEventListener('click', (e) => { e.preventDefault(); cutToChase(); });
+// ---------- stage 11: the spec sheet's loop back to the start (the hyperdrive again; a plain jump with reduced motion) ----------
+async function backToStart() {
+  if (chasing) return; chasing = true;
+  const jump = () => { if (engine.lenis) engine.lenis.scrollTo(0, { immediate: true, force: true }); else scrollTo(0, 0); ScrollTrigger.update(); track(); };
+  try { const { playHyperdrive } = await import('./engine/hyperdrive.js'); await playHyperdrive({ jump, reduced: engine.reduced, engine }); } catch (e) { jump(); }
+  chasing = false;
+}
+try { initSpec(engine, { onBack: backToStart }); } catch (e) { console.error('[page 08]', e); }
+window.__backToStart = backToStart;
 segs.forEach((seg) => seg.querySelector('a').addEventListener('click', (e) => {
   e.preventDefault();
   if (document.documentElement.dataset.phase !== 'ready') return;
@@ -100,6 +112,7 @@ window.__t2stops = () => {
   else if (document.getElementById('page-01')) out.push({ name: 'P1', y: 0 });
   if (engine.reduced) { const h = document.querySelector('.p1-hall'); if (h) out.push({ name: 'HALL', y: docTop(h) }); }
   if (window.__p3 && !engine.reduced) [0, 0.1, 0.7, 1.2, 1.5, 2.2, 2.6, 3.1, 3.5, 4.0, 4.6].forEach((s, i) => out.push({ name: `L${String(i).padStart(2, '0')}`, y: Math.round(window.__p3.yAt(s)) }));
+  if (window.__p5 && !engine.reduced) [0.2, 0.9, 1.4, 1.9, 2.6, 3.4, 3.9, 4.4, 5.0, 5.8, 6.6].forEach((t, i) => out.push({ name: `T${String(i).padStart(2, '0')}`, y: Math.round(window.__p5.yAt(t)) }));
   if (window.__p4 && !engine.reduced) [0, 0.4, 0.75, 1.1, 1.5, 1.85, 2.2, 2.5, 2.7, 2.9, 3.1, 3.3, 3.5, 3.75, 3.98].forEach((t, i) => out.push({ name: `W${String(i).padStart(2, '0')}`, y: Math.round(window.__p4.yAt(t)) }));
   ['page-03', 'page-04', 'page-05', 'page-06'].forEach((id) => { const el = document.getElementById(id); if (el) out.push({ name: id.replace('page-', 'P'), y: docTop(el) }); });
   const room = document.getElementById('page-07'), slipEl = document.getElementById('slip-when'), spec = document.getElementById('page-08');

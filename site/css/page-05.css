@@ -1,0 +1,138 @@
+/* Take 2 · stage 11: page 5 (the lighter trips), page 6 (the team), page 8 (the spec sheet). On the grid (1rem = one cell),
+   ink on paper with the grid behind (pages 5 and 6), hairlines, mono keys. */
+
+/* ---------- page 5: three rooms in one pinned scene (trips.js), 7.2 screens of scroll + its own ---------- */
+.t5 { position: relative; height: 820vh; height: 820lvh; background-color: var(--paper); background-image: var(--grid-img); background-size: var(--grid-size); box-shadow: inset 0 1px 0 rgba(var(--ink-rgb), .2); }
+.t5__stage { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; }
+.t5r { position: absolute; inset: 0; padding: var(--t5-top, 4rem) var(--gut) 0; opacity: var(--op, 0); visibility: hidden; }
+.t5r.on { visibility: visible; }
+.t5l p { margin: 0; }
+.t5l__k { color: var(--graphite); font-size: .5rem; line-height: .5rem; }
+.t5l__k .ph { color: var(--graphite); }
+.t5l__t { margin-top: 1rem !important; font-family: var(--f-display); font-weight: 420; font-size: 1.5rem; line-height: 2rem; letter-spacing: -.012em; max-width: 22ch; text-wrap: balance; }
+.t5flag { position: absolute; right: var(--gut); top: var(--t5-top, 4rem); margin: 0; color: var(--graphite); font-size: .4375rem; line-height: .5rem; }
+.t5fig { position: relative; margin-top: 2rem; height: var(--t5-fig-h, 24rem); }
+.t5k { margin: 0; color: var(--graphite); font-size: .5rem; line-height: .5rem; }
+@media (min-width: 1024px) {
+  .t5r { padding-left: 5rem; padding-right: 5rem; }
+  .t5l__t { font-size: 2rem; line-height: 3rem; max-width: 26ch; }
+  .t5flag { right: 5rem; }
+}
+
+/* AI: the inbox, the customer's question, the AI's draft (word by word), approve, send, sent */
+.t5ai { max-width: 30rem; display: flex; flex-direction: column; gap: 1rem; height: auto; }
+.t5ai__box { padding: 1rem; box-shadow: inset 0 0 0 1px rgba(var(--ink-rgb), .55); }
+.t5ai__box p { margin: 0; }
+.t5ai__q, .t5ai__a { margin-top: 1rem !important; font-size: 1rem; line-height: 1.5rem; text-wrap: pretty; }
+.t5ai__draft { box-shadow: inset 0 0 0 1px var(--prus); }
+.t5ai__a .w { opacity: 0; transition: opacity .12s linear; }
+.t5ai__a .w.on { opacity: 1; }
+.t5ai__wait { color: var(--prus); }
+.t5ai.is-approved .t5ai__wait { visibility: hidden; }
+.t5ai__row { display: flex; align-items: center; gap: 2rem; min-height: 3rem; }
+.t5ai__ok { display: inline-flex; align-items: center; gap: 1rem; font-size: 1rem; line-height: 1.5rem; }
+.t5ai__ok .mark { width: 1rem; height: 1rem; }
+.t5ai.is-approved .t5ai__ok .mark path { stroke-dashoffset: 0; }
+.t5ai__send { --sh: 3px; display: inline-block; padding: 1rem; font-family: var(--f-display); font-size: 1.25rem; line-height: 1.5rem; box-shadow: inset 0 0 0 1px rgba(var(--ink-rgb), .35); color: var(--graphite); transition: transform .12s, box-shadow .12s; }
+.t5ai.is-approved .t5ai__send { color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink), var(--sh) var(--sh) 0 0 var(--ink); }
+.t5ai.is-pressed .t5ai__send { transform: translate(var(--sh), var(--sh)); box-shadow: inset 0 0 0 1px var(--ink); }
+.t5ai__sent { font-size: .5rem; line-height: .5rem; color: var(--prus); opacity: 0; transition: opacity .2s; }
+.t5ai.is-sent .t5ai__sent { opacity: 1; }
+
+/* websites: a page on the drafting grid; each block a blue wireframe with its mono name, then real */
+.t5web { max-width: 32rem; }
+.t5web__page { position: relative; margin-top: 1rem; box-shadow: inset 0 0 0 1px rgba(var(--ink-rgb), .55); background: var(--paper); overflow: hidden;
+  display: flex; flex-direction: column; gap: .5rem; padding: 1rem; height: calc(var(--t5-fig-h, 24rem) - 1.5rem); }
+.t5web__grid { position: absolute; inset: 0; opacity: var(--grid, 1); pointer-events: none;
+  background-image: linear-gradient(to right, rgba(23, 63, 115, .35) 1px, transparent 1px); background-size: calc((100% - 2rem) / 6) 100%; background-position: 1rem 0; }
+.t5b { position: relative; min-height: 2rem; line-height: 1rem; }
+.t5b::before { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 0 1px rgba(23, 63, 115, .85); opacity: var(--wire, 0); transition: opacity .2s linear; }
+.t5b.is-real::before { opacity: 0; }
+.t5b__w { position: absolute; left: .5rem; top: .5rem; color: var(--prus); font-size: .4375rem; line-height: .5rem; opacity: var(--wire, 0); }
+.t5b.is-real .t5b__w { visibility: hidden; }
+.t5b__r { opacity: 0; margin: 0; transition: opacity .25s linear; }   /* drawn already, at 0 (so the picture is rasterised before it shows) */
+.t5b.is-real .t5b__r { opacity: 1; }
+.t5b--nav { flex: none; min-height: 2rem; display: flex; align-items: center; justify-content: flex-end; padding: 0 1rem; }
+.t5b--nav .t5b__r { font-size: .5rem; line-height: .5rem; }
+.t5b--h { padding: .5rem 6rem .5rem 1rem; flex: none; }
+.t5b--h .t5b__r { font-family: var(--f-display); font-weight: 420; font-size: 1.5rem; line-height: 2rem; letter-spacing: -.012em; text-wrap: balance; }
+.t5b--img { position: absolute; right: 2rem; bottom: 2rem; width: 4rem; height: 8rem; }
+.t5b--img .t5b__r { display: block; width: 100%; height: 100%; object-fit: contain; }
+.t5b--img { overflow: hidden; }
+.t5b--p { padding: 0 1rem; flex: none; max-width: calc(100% - 6rem); }
+.t5b--p .t5b__r { font-size: 1rem; line-height: 1.5rem; text-wrap: pretty; }
+.t5b--btn { margin-top: auto; align-self: flex-start; min-width: 9rem; min-height: 3rem; flex: none; }
+.t5web__btn { display: inline-block; padding: 1rem; font-family: var(--f-display); font-size: 1rem; line-height: 1.5rem; box-shadow: inset 0 0 0 1px var(--ink), 3px 3px 0 0 var(--ink); }
+
+@media (min-width: 1024px) {
+  .t5web__page { padding-right: calc(50% + 1rem); }
+  .t5b--img { right: 2rem; top: 4rem; bottom: 2rem; width: calc(50% - 3rem); height: auto; }
+  .t5b--p { max-width: none; } .t5b--h { padding-right: 1rem; }
+}
+
+/* apps: the two real phones (WebGL), or their flat screens in outlines */
+.t5app { width: 100%; }
+.t5app__gl, .t5app__flat { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.t5app__flat { display: none; }
+.t5.no-phones .t5app__flat { display: block; }
+.t5.no-phones .t5app__gl { display: none; }
+
+/* reduced motion: the rooms one under the other, finished */
+.t5.is-static { height: auto; }
+.t5.is-static .t5__stage { position: relative; height: auto; overflow: visible; }
+.t5.is-static .t5r { position: relative; inset: auto; opacity: 1; visibility: visible; min-height: 100vh; padding-bottom: 6rem; }
+.t5.is-static .t5flag { position: relative; bottom: auto; right: auto; padding: 0 var(--gut) 6rem; }
+html[data-motion="reduce"] .t5ai__a .w { opacity: 1; transition: none; }
+
+/* ---------- page 6: the team, three placeholder cards ---------- */
+.t6 { position: relative; min-height: 100vh; min-height: 100lvh; background-color: var(--paper); background-image: var(--grid-img); background-size: var(--grid-size); box-shadow: inset 0 1px 0 rgba(var(--ink-rgb), .2); }
+.t6__in { padding: 5rem var(--gut) 8rem; }
+.t6__in p { margin: 0; }
+.t6__flag { color: var(--graphite); font-size: .5rem; line-height: .5rem; }
+.t6__h { margin-top: 1rem; font-size: 2.5rem; line-height: 3rem; letter-spacing: -.02em; }
+.t6__cards { display: grid; grid-template-columns: 1fr; gap: 2rem; margin-top: 2rem; }
+.t6c__img { position: relative; height: 10rem; box-shadow: inset 0 0 0 1px rgba(var(--ink-rgb), .55);
+  background: linear-gradient(to top right, transparent calc(50% - .5px), rgba(var(--ink-rgb), .35) 50%, transparent calc(50% + .5px)), linear-gradient(to top left, transparent calc(50% - .5px), rgba(var(--ink-rgb), .35) 50%, transparent calc(50% + .5px)); }
+.t6c__k { margin-top: 1rem !important; color: var(--graphite); font-size: .5rem; line-height: .5rem; }
+.t6c__n { margin-top: 1rem !important; font-size: 1.5rem; line-height: 2rem; color: var(--graphite); }
+.t6c__b { margin-top: .5rem !important; font-size: 1rem; line-height: 1.5rem; color: var(--graphite); text-wrap: pretty; }
+@media (min-width: 1024px) {
+  .t6__in { padding: 7rem 5rem 8rem; }
+  .t6__h { font-size: 3.5rem; line-height: 4rem; }
+  .t6__cards { grid-template-columns: repeat(3, 1fr); gap: 3rem; max-width: 60rem; }
+  .t6c__img { height: 14rem; }
+}
+
+/* ---------- page 8: the spec sheet ---------- */
+.t8 { position: relative; min-height: 100vh; min-height: 100lvh; background: var(--paper); box-shadow: inset 0 1px 0 rgba(var(--ink-rgb), .2); }
+.t8__in { padding: 5rem var(--gut) 9rem; }
+.t8__in p { margin: 0; }
+.t8__flag { color: var(--graphite); font-size: .5rem; line-height: .5rem; }
+.t8__h { margin-top: 1rem; font-size: 2rem; line-height: 3rem; letter-spacing: -.02em; max-width: 20ch; text-wrap: balance; }
+.t8__grid { margin: 2rem 0 0; max-width: 46rem; }
+.t8r { display: grid; grid-template-columns: 1fr; padding: .5rem 0 1rem; box-shadow: inset 0 1px 0 rgba(var(--ink-rgb), .35); }
+.t8r dt { color: var(--graphite); font-size: .4375rem; line-height: 1rem; }
+.t8r dd { margin: 0; font-size: .625rem; line-height: 1rem; }
+.t8__back { display: inline-flex; align-items: center; gap: 1rem; margin-top: 3rem; color: var(--ink); text-decoration: none; }
+.t8__back-t { font-family: var(--f-display); font-size: 1.25rem; line-height: 1.5rem; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; }
+.t8__back-t { white-space: nowrap; }
+.t8__back-t i { font-style: normal; }
+.t8__dot { position: relative; width: 2rem; height: 2rem; }
+.t8__dot i { position: absolute; left: calc(50% - 5px); top: calc(50% - 5px); width: 10px; height: 10px; border-radius: 50%; background: currentColor; animation: breathe 1.6s ease-in-out infinite alternate; }
+.t8__back:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+@media (min-width: 1024px) {
+  .t8__in { padding: 7rem 5rem 8rem; }
+  .t8__h { font-size: 3.5rem; line-height: 4rem; }
+  .t8r { grid-template-columns: 18rem 1fr; }
+  .t8r dt { font-size: .375rem; }
+  .t8r dd { font-size: .5rem; }
+}
+html[data-motion="reduce"] .t8__dot i { animation: none; }
+/* short phones: the website's small picture steps out, so its words take the whole width */
+@media (max-width: 640px) and (max-height: 700px) {
+  .t5b--img { display: none; }
+  .t5b--h { padding-right: 1rem; }
+  .t5b--p { max-width: none; }
+  .t5b--h .t5b__r { font-size: 1.25rem; line-height: 1.5rem; }
+  .t5l__t { font-size: 1.25rem; line-height: 1.5rem; }
+}

@@ -1,8 +1,54 @@
-    <!-- PAGES 03-06 (round 8 running order): stubs at their planned length, so the order and the scroll length show.
-         Page 3 is the security showpiece (round 9), page 4 how we work (round 10). The hallway's door leads here. -->
-    <section id="page-05" class="stub" data-sheet="05" data-title="Lighter trips" data-drawn="Design" data-checked="Engineering" data-approved="Strategy" style="--vh: 9">
-      <div class="stub__in"><p class="stub__no display gt" aria-hidden="true">05</p><h2 class="stub__name display gt">Lighter trips</h2><p class="stub__line gt" data-draft><span class="ph">Draft</span>Coming: AI, websites and apps, one short trip each.</p><p class="stub__tag mono gt">Stub · about 9 screens</p></div>
+    <!-- PAGE 05: LIGHTER TRIPS (stage 11; site/js/page05/trips.js). Three short rooms in one pinned scene, scrubbed by scroll:
+         AI (the property app's enquiries: the AI drafts the reply, nothing goes out until a person approves it), websites
+         (the booking app's site builds itself from the drafting grid into the finished page), apps (the delivery tracker
+         running live on the two real phones). Every line is a DRAFT (data-draft), flagged. -->
+    <section id="page-05" class="t5" data-sheet="05" data-title="Trips" data-drawn="Design" data-checked="Engineering" data-approved="Strategy" aria-labelledby="t5-h">
+      <h2 id="t5-h" class="sr-only">Lighter trips: AI, websites, apps</h2>
+      <div class="t5__stage">
+        <!-- room 1 · AI -->
+        <div class="t5r" data-room="0">
+          <div class="t5l"><p class="t5l__k mono gt gt-h"><span class="ph">Draft</span> · 01 / 03 · AI</p><p class="t5l__t display gt" data-draft>AI drafts the reply. Nothing goes out until a person says yes.</p></div>
+          <div class="t5fig t5ai">
+            <p class="t5k mono gt gt-h" data-draft>Property app · enquiries</p>
+            <div class="t5ai__box"><p class="t5k mono gt gt-h" data-draft>From a customer</p><p class="t5ai__q gt" data-draft>Is the villa by the park still free? Could I see it on Saturday?</p></div>
+            <div class="t5ai__box t5ai__draft"><p class="t5k mono gt gt-h"><span data-draft>Drafted by AI</span> <span class="t5ai__wait" data-draft>· waiting for you</span></p><p class="t5ai__a gt" data-draft>Yes, it’s still free. Would Saturday at 11:00 or 15:00 suit you?</p></div>
+            <div class="t5ai__row"><span class="t5ai__ok"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x=".5" y=".5" width="23" height="23"/><path d="M4.5 19.5 19.5 4.5"/></svg><span class="gt gt-h" data-draft>Approve</span></span><span class="t5ai__send" data-draft>Send</span><span class="t5ai__sent mono gt gt-h" data-draft>Sent</span></div>
+          </div>
+        </div>
+        <!-- room 2 · websites -->
+        <div class="t5r" data-room="1">
+          <div class="t5l"><p class="t5l__k mono gt gt-h"><span class="ph">Draft</span> · 02 / 03 · Websites</p><p class="t5l__t display gt" data-draft>We draw it on the grid first. Then it becomes real.</p></div>
+          <div class="t5fig t5web">
+            <p class="t5k mono gt gt-h" data-draft>Booking app · its website</p>
+            <div class="t5web__page">
+              <div class="t5web__grid" aria-hidden="true"></div>
+              <div class="t5b t5b--nav"><span class="t5b__w mono">Nav</span><span class="t5b__r mono" data-draft>Book a table</span></div>
+              <div class="t5b t5b--h"><span class="t5b__w mono">Headline</span><p class="t5b__r display" data-draft>A table for tonight, in two taps.</p></div>
+              <div class="t5b t5b--img"><span class="t5b__w mono">Picture</span><canvas class="t5b__r t5web__app" aria-hidden="true"></canvas></div>
+              <div class="t5b t5b--p"><span class="t5b__w mono">Text</span><p class="t5b__r" data-draft>Pick a day, pick a time. We hold your table.</p></div>
+              <div class="t5b t5b--btn"><span class="t5b__w mono">Button</span><span class="t5b__r t5web__btn" data-draft>Book a table</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- room 3 · apps -->
+        <div class="t5r" data-room="2">
+          <div class="t5l"><p class="t5l__k mono gt gt-h"><span class="ph">Draft</span> · 03 / 03 · Apps</p><p class="t5l__t display gt" data-draft>Your customers watch their order move, live.</p></div>
+          <div class="t5fig t5app"><canvas class="t5app__gl" aria-hidden="true"></canvas><canvas class="t5app__flat" aria-hidden="true"></canvas></div>
+        </div>
+        <p class="t5flag mono gt gt-h" data-draft-flag>Draft wording · pending Wajih</p>
+      </div>
+      <div class="sr-only"><p>AI: on our property app, an AI drafts the reply to a customer’s enquiry, and nothing is sent until a person approves it.</p><p>Websites: our booking app’s website, drawn on the grid first, then made real.</p><p>Apps: our delivery tracker, running live on an iPhone and an Android phone.</p></div>
     </section>
-    <section id="page-06" class="stub" data-sheet="06" data-title="Team" data-drawn="Strategy" data-checked="Design" data-approved="Engineering" style="--vh: 1">
-      <div class="stub__in"><p class="stub__no display gt" aria-hidden="true">06</p><h2 class="stub__name display gt">Team</h2><p class="stub__line gt" data-draft><span class="ph">Draft</span>Coming: three cards, one for each of us. Placeholders until the real people go in.</p><p class="stub__tag mono gt">Stub · about 1 screen</p></div>
+    <!-- PAGE 06: THE TEAM (stage 11): three cards, clearly placeholders. Nothing invented: no names, faces or bios until the
+         real people go in. -->
+    <section id="page-06" class="t6" data-sheet="06" data-title="Team" data-drawn="Strategy" data-checked="Design" data-approved="Engineering" aria-labelledby="t6-h">
+      <div class="t6__in">
+        <p class="t6__flag mono gt gt-h" data-draft-flag>Placeholders · the real people go in before launch</p>
+        <h2 id="t6-h" class="t6__h display gt" data-draft>The three of us.</h2>
+        <div class="t6__cards">
+          <article class="t6c"><div class="t6c__img" role="img" aria-label="Placeholder for a picture"></div><p class="t6c__k mono gt gt-h">Placeholder · 01</p><p class="t6c__n display gt" data-draft>Name to come</p><p class="t6c__b gt" data-draft>A short bio goes here, written by the person it’s about.</p></article>
+          <article class="t6c"><div class="t6c__img" role="img" aria-label="Placeholder for a picture"></div><p class="t6c__k mono gt gt-h">Placeholder · 02</p><p class="t6c__n display gt" data-draft>Name to come</p><p class="t6c__b gt" data-draft>A short bio goes here, written by the person it’s about.</p></article>
+          <article class="t6c"><div class="t6c__img" role="img" aria-label="Placeholder for a picture"></div><p class="t6c__k mono gt gt-h">Placeholder · 03</p><p class="t6c__n display gt" data-draft>Name to come</p><p class="t6c__b gt" data-draft>A short bio goes here, written by the person it’s about.</p></article>
+        </div>
+      </div>
     </section>

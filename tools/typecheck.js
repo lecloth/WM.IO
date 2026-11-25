@@ -368,7 +368,7 @@
     if (/\.\.\./.test(t)) F.wording.push({ text: name, what: 'three dots (use …)' });
     if (/\d-\d/.test(t.replace(/\b\d{6}\s*[-‐‑]\s*\d{4}\b/g, ''))) F.wording.push({ text: name, what: 'hyphen in a range (use –)' });
     const big = t.replace(/#[0-9A-Fa-f]{6}\b/g, '').match(/\b\d{4,}\b/g)?.filter((n) => !(+n >= 1000 && +n <= 2099) && !/\d{6}-\d{4}/.test(t)); if (big?.length) F.wording.push({ text: name, what: `number without thousands comma: ${big.join(', ')}` });
-    const ms = t.match(/[\d.,]+\s*(PX|px)\b/g); if (ms) ms.forEach((m) => { if (!/^\d+\.\d (PX|px)$/.test(m.trim())) F.wording.push({ text: name, what: `measurement style "${m}"` }); });
+    const ms = t.match(/[\d.,]+\s*(PX|px)\b/g); if (ms) ms.forEach((m) => { if (!/^\d{1,3}(,\d{3})*\.\d (PX|px)$/.test(m.trim())) F.wording.push({ text: name, what: `measurement style "${m}"` }); });
     if (/Newsreader/.test(B.fam || '')) {
       const toks = t.split(/\s+/); let start = true;
       toks.forEach((tok, i) => {
