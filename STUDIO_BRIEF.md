@@ -895,3 +895,61 @@ three.js; Lenis with light settings.
   The chat's first suspect: 1 px lines and grid lines landing between device pixels at 1.333, so they shimmer as they
   move (also check the WebGL canvas resolution, the frosted blur and any layer that repaints every frame). Find
   every source, fix it, and prove it with frame-by-frame captures before and after.
+
+### Round 8 (25 Nov, Wajih's review of round 7): the new running order. Overrides the above where they differ.
+- **The site shows first and asks last** (Wajih): instead of telling visitors what we can do, they experience it;
+  the call to action moves to the very end. **The rule for every scene:** the visitor keeps scrolling because it's
+  fun and they can't wait for what's next.
+- **The new running order:**
+  1. **Page 1** (story unchanged). Its last line becomes **"Now, how can we serve you?"** (Wajih's pick, signed off;
+     replaces "Now, what do you need?"). The hallway's "We design backwards…" answers it.
+  2. **The hallway** (details below), ending at a door with a lock.
+  3. **Into the lock: the security showpiece** (round 9). The lock multiplies into endless locks, like the tesseract
+     in Interstellar, and they unlock in a wave (the old "room of locks" idea).
+  4. **How we work** (round 10). We talk to the visitor in short lines as they scroll (Wajih's voice; the chat
+     drafts). The wrong key goes in and fails; then the lock is picked, seen as a 2D cutaway that turns to face you.
+  5. **Lighter trips:** AI, websites, apps (kept; "we'll see").
+  6. **Team** (placeholders, nothing invented).
+  7. **The final room:** **"What's the task list? Tick everything that fits."** (Wajih's wording: "tick", and a
+     callback to "YOU gave us the task."), then the work slip (old pages 2–3 move here) and every way to reach us.
+  8. **Spec sheet**, then the loop back.
+  - The old page 6 ("Work", a corridor of doorways) is merged into the hallway (below).
+- **What round 8 builds:** the new order's skeleton (stubs in the new order; pages 2–3 moved into the final room's
+  place), the hallway's finish, the door, "Cut to the chase", the scrolling, the rulebook and the fixes below. The
+  security showpiece is round 9; how we work is round 10.
+- **The hallway's finish:**
+  - **Way in:** keep A (the grid folds into the hallway). The hallway **dresses up as you walk**: grid lines first,
+    fully dressed within the first few seconds of scrolling. Ways in B and C go.
+  - **Calm, no camera turns:** the camera walks straight at a calm pace (Wajih: the left/right turns cause dizziness
+    and don't fit a museum). The drawings **swing out like museum portraits on a revolving door** (treatment B,
+    Wajih's pick); treatments A and C go.
+  - **Label backing:** frosted, with softly rounded corners, only as wide as the drawing, right under it, turning
+    with it. Never full width.
+  - **Products merged in** (the chat's mapping, Wajih agreed): each canvas shows its point on one of our made-up
+    products: 1 the property app's enquiry path; 2 a watch face (from the customer to the palette); 3 the delivery
+    tracker ("which driver gets this delivery"); 4 the website loading; 5 the booking app on the iPhone 18 and S26.
+  - **The end:** no page 2 preview anymore. The hallway ends at a **door with a lock**, faint from the start and
+    clearer as you walk towards it. Until round 9, the door leads to the security stub.
+  - The opening line and the five story lines stay flagged drafts.
+- **"Cut to the chase"** (Wajih): always available at the top (in the strip), quiet. Tapping it jumps to the final
+  room with a hyperdrive: pages flash past, the page wraps into a tunnel, the grid's crossing points stream past like
+  stars ("wormhole vibes"), then they align and settle into the final room's grid. Our own visual (the star motif is
+  inspired by OpenAI's GPT-6 Astra launch, never copied); hairlines, no glow. Reduced motion: a plain jump. The
+  strip's last square also leads to the final room.
+- **Scrolling: no snap, held scenes** (Wajih: the snap goes too fast, skips or pulls back). Each scene holds still
+  for a stretch of scroll, and animations follow the thumb with a smooth lag, so nothing pops and nothing jumps on
+  release. No custom scroll control (no gear), no cue.
+- **The type and wording rulebook** (Wajih: "this site has to be flawless, it's the first showcase"). A new file,
+  **`TYPE_RULES.md`**, holds a checklist every run must pass, checked automatically where possible; a run that fails
+  it doesn't commit:
+  - no drawn line ever crosses a word (leader lines, dimension lines, hallway edges, rules); only the background
+    grid may sit behind text;
+  - at least half a grid cell of clearance between text and any drawn line or shape;
+  - one fixed type scale (sizes and weights from a set list);
+  - sentence case, the same punctuation everywhere, numbers styled the same way, drafts always flagged;
+  - every word placed elegantly and in proportion: aligned to the grid, balanced line breaks, no lone words.
+- **Measurements:** the live measurements on the dimension lines switch to **DM Mono Light (300)** (add the font,
+  OFL, credited). They sit along their lines like a CAD drawing and never touch a letter (the WE marks overlapped).
+- **Page 1's exploded phone:** BATTERY and BOARD both point at the board. Each name's leader must point at its own
+  piece; spread the pieces further apart; give "Screen" clear room on 360-wide phones too.
+- **Still open:** the final room's call-to-action pick (A, B or C); the drafts; the two phone licences.
