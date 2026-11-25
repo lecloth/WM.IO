@@ -34,6 +34,17 @@ STAGES = {
     "segs": [["how we work: the cutaway turns, the wrong key", "#page-04", 0, 1.4], ["the pick: seven pins", "#page-04", 1.4, 3.6]],
     "swipe_from": ["#page-04", 0.2], "stops": [["#page-04", x] for x in [0, 0.5, 1.0, 1.4, 1.8, 2.2, 2.6, 3.0, 3.4, 3.8]], "reduced": ["#page-04"],
   },
+  "all": {
+    "segs": [["page 1: plate, morph, names", "p", 0.0, 1.44], ["page 1: assembly, real", "p", 1.44, 2.6], ["page 1: YOU, task, WE, drum", "p", 2.6, 4.62],
+             ["hallway: way in, opening", "p", 4.62, 5.6], ["hallway: frames 1-2", "p", 5.6, 6.95], ["hallway: frames 3-4", "p", 6.95, 8.1], ["hallway: frame 5", "p", 8.1, 8.95], ["hallway: to the lock, X-ray", "p", 8.95, 9.84],
+             ["page 3: keyhole, pins", "#page-03", 0, 1.6], ["page 3: the lattice", "#page-03", 1.6, 3.2], ["page 3: wave, fold", "#page-03", 3.2, 4.6],
+             ["page 4: turn, wrong key", "#page-04", 0, 2.0], ["page 4: the pick", "#page-04", 2.0, 4.0],
+             ["page 5: AI", "#page-05", 0, 2.4], ["page 5: websites", "#page-05", 2.4, 4.8], ["page 5: apps", "#page-05", 4.8, 7.2],
+             ["page 6: team", "#page-06", 0, 1], ["page 7: the final room", "#page-07", 0, 2.4], ["page 8: spec sheet", "#page-08", 0, 0.8]],
+    "swipe_from": ["p", 5.9], "swipe_more": [["p", 0.5], ["#page-03", 1.2], ["#page-05", 3.0], ["#page-07", 0.3]],
+    "stops": [["p", k] for k in ["S0", "S1", "kin", "REAL", "WE", "DRUM", "END", "OPEN", "F2", "F5", "LOCK"]] + [["#page-03", x] for x in [0, 1.0, 2.4, 3.4]] + [["#page-04", x] for x in [1.0, 2.8, 3.9]] + [["#page-05", x] for x in [1.8, 4.4, 6.0]] + [["#page-06", 0], ["#page-07", 0], ["#page-07", 1.5], ["#page-08", 0]],
+    "reduced": ["#page-01", "#page-02", "#page-03", "#page-04", "#page-05", "#page-07", "#page-08"], "cut": True,
+  },
   "11": {
     "segs": [["trips: AI", "#page-05", 0, 2.4], ["trips: websites", "#page-05", 2.4, 4.8], ["trips: apps", "#page-05", 4.8, 7.2], ["team", "#page-06", 0, 1], ["spec sheet", "#page-08", 0, 1]],
     "swipe_from": ["#page-05", 0.2], "stops": [["#page-05", x] for x in [0, 0.6, 1.2, 1.8, 2.6, 3.2, 3.8, 4.4, 5.0, 5.6, 6.2, 6.8]] + [["#page-06", 0], ["#page-08", 0], ["#page-08", 0.6]],
@@ -94,7 +105,8 @@ async def main(a):
             for k, v in cfg["stops"]:
                 y = await ypos(k, v); await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.1); await shot(f"stop_{k.strip('#')}_{v}")
             # real swipes
-            k, v = cfg["swipe_from"]; y = await ypos(k, v); await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.2)
+            starts = [cfg["swipe_from"]] + cfg.get("swipe_more", [])
+            k, v = starts[0]; y = await ypos(k, v); await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.2)
             X = str(round(g["w"] / 2 * g["dpr"])); Y = lambda f: top_px + round(g["h"] * f * g["dpr"])
             for kind, ms, up, (fa, fb) in [("flick", 70, True, (0.62, 0.48))] * 4 + [("long slow drag", 900, True, (0.75, 0.3))] * 2 + [("flick back", 70, False, (0.62, 0.48))] * 2:
                 await c.eval(f"({TRACE})(3.0)")
@@ -110,6 +122,28 @@ async def main(a):
                 rec = {"kind": kind, "moved_px": round(ys[-1] - ys[0], 1), "reversals_px": [round(dys[i], 2) for i in rev][:6], "scroll_stopped_ms": tr[stop_i][0] if tr else None,
                        "scene_settled_ms": lag_end, "biggest_scene_step_per_frame": round(pjump, 4), "fps": round(1000 * len(dts) / max(1, sum(dts)), 1), "worst_frame_ms": round(max(dts or [0]), 1)}
                 rep["swipes"].append(rec); print(rec, flush=True)
+            for k2, v2 in cfg.get("swipe_more", []):
+                y = await ypos(k2, v2); await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.2)
+                for kind, ms, up, (fa, fb) in [("flick", 70, True, (0.62, 0.48)), ("long slow drag", 900, True, (0.75, 0.3)), ("flick back", 70, False, (0.62, 0.48))]:
+                    await c.eval(f"({TRACE})(3.0)"); adb(S, "shell", "input", "swipe", X, str(Y(fa) if up else Y(fb)), X, str(Y(fb) if up else Y(fa)), str(ms)); await asyncio.sleep(3.2)
+                    tr = json.loads(await J("window.__trace")); ys = [p[1] for p in tr]; dys = [ys[i + 1] - ys[i] for i in range(len(ys) - 1)]; sgn = 1 if (ys[-1] - ys[0]) >= 0 else -1
+                    dts = [tr[i + 1][0] - tr[i][0] for i in range(len(tr) - 1)]
+                    rec = {"from": f"{k2} {v2}", "kind": kind, "moved_px": round(ys[-1] - ys[0], 1), "reversals_px": [round(d, 2) for d in dys if d * sgn < -0.6][:6], "fps": round(1000 * len(dts) / max(1, sum(dts)), 1), "worst_frame_ms": round(max(dts or [0]), 1)}
+                    rep["swipes"].append(rec); print(rec, flush=True)
+            if cfg.get("cut"):
+                # Cut to the chase: a real tap on the strip's link, from page 1's drum; then the loop back from the spec sheet
+                y = await ypos("p", 3.9); await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.0)
+                link = json.loads(await J("(() => { const r = document.querySelector('.strip__cut a').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()"))
+                await c.eval("window.__hyperT = []; (function f(now) { window.__hyperT.push(now); if (window.__hyperT.length < 400) requestAnimationFrame(f); })(performance.now()); true")
+                adb(S, "shell", "input", "tap", *dev(link["x"], link["y"])); await asyncio.sleep(0.75); await shot("cut_mid"); await asyncio.sleep(2.2)
+                t = json.loads(await J("window.__hyperT")); d = [t[i + 1] - t[i] for i in range(len(t) - 1)][:120]; so = sorted(d)
+                rep["fps"]["cut to the chase (2 s after the tap)"] = {"fps": round(1000 * len(d) / sum(d), 1), "p95": round(so[int(len(so) * .95)], 1), "worst": round(so[-1], 1), "over20": sum(1 for x in d if x > 20)}
+                rep["cut_landing"] = json.loads(await J("(() => ({ roomTop: +document.getElementById('page-07').getBoundingClientRect().top.toFixed(1), title: document.querySelector('.tb__title').textContent }))()"))
+                print("cut", rep["cut_landing"], rep["fps"]["cut to the chase (2 s after the tap)"], flush=True); await shot("cut_landed")
+                y = await c.eval("(() => { const a = document.querySelector('.t8__back'); let y = 0; for (let n = a; n; n = n.offsetParent) y += n.offsetTop; return y - innerHeight * 0.4; })()"); await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.2)
+                b = json.loads(await J("(() => { const r = document.querySelector('.t8__back').getBoundingClientRect(); return { x: r.left + 20, y: r.top + r.height / 2 }; })()"))
+                adb(S, "shell", "input", "tap", *dev(b["x"], b["y"])); await asyncio.sleep(3.0)
+                rep["back_to_start"] = json.loads(await J("({ scrollY: scrollY, title: document.querySelector('.tb__title').textContent })")); print("back", rep["back_to_start"], flush=True); await shot("back_landed")
             await shot("after_swipes")
             rep["errors"] = json.loads(await J("window.__errs"))
             # reduced motion

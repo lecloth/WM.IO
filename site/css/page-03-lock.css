@@ -40,4 +40,4 @@ html[data-motion="reduce"] .p3l__line { transition: none; }
 .p4m__t { margin-top: .5rem !important; font-family: var(--f-display, Newsreader, Georgia, serif); font-size: 1rem; line-height: 1.5rem; text-wrap: pretty; }
 @media (min-width: 1024px) { .p4m__v { font-size: 2rem; line-height: 3rem; } .p4m__t { font-size: 1.25rem; line-height: 2rem; } }
 html[data-motion="reduce"] .p4v, html[data-motion="reduce"] .p4m { transition: none; }
-.p3l.is-static .p4w { position: relative; height: 70vh; height: 70lvh; }
+.p3l.is-static .p4w { position: relative; margin-top: 3rem; }   /* its height: page.js (the cutaway's own box) */

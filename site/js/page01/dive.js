@@ -747,7 +747,7 @@ export function createDive(root, top, { base = '' } = {}) {
     frames.forEach((f, i) => {
       const l = lay[i], D = camera.position.z + l.Zh, s = stateAt(l, D);
       pose(f, s);
-      const op = T >= 1 ? s.op : 0;
+      const op = T >= 1 ? s.op * span(q, OPEN_AT[1] - S_(0.02), OPEN_AT[1] + S_(0.1)) : 0;   // round 8b: the drawings come in once the opening line has gone
       f.pivot.visible = op > 0.002;
       f.mats.forEach((m) => { m.opacity = m.userData.base * op; });
       f.frameMat.opacity = op;
@@ -908,8 +908,18 @@ export function createDive(root, top, { base = '' } = {}) {
         D.shapes.push({ x: Math.min(A[0], B[0]), y: Math.min(A[1], B[1]), w: Math.abs(B[0] - A[0]), h: Math.abs(B[1] - A[1]), tag: `${g}:phones` });
       }
       if (nearer.length) {
-        const ls = D.lines.splice(L0); ls.forEach((l) => { if (!(hidden(l.x1, l.y1) && hidden(l.x2, l.y2) && hidden((l.x1 + l.x2) / 2, (l.y1 + l.y2) / 2))) D.lines.push(l); });
-        const ss = D.shapes.splice(S0); ss.forEach((sh) => { const q = sh.quad || [[sh.x, sh.y], [sh.x + sh.w, sh.y], [sh.x + sh.w, sh.y + sh.h], [sh.x, sh.y + sh.h]]; if (!q.every((p) => hidden(p[0], p[1]))) D.shapes.push(sh); });
+        // its lines: only the stretches outside every nearer (opaque) sheet
+        const ls = D.lines.splice(L0);
+        ls.forEach((l) => {
+          const ts = [0, 1], dx = l.x2 - l.x1, dy = l.y2 - l.y1;
+          for (const q of nearer) for (let k2 = 0; k2 < 4; k2++) { const p = q[k2], n2 = q[(k2 + 1) % 4], ex = n2[0] - p[0], ey = n2[1] - p[1], den = dx * ey - dy * ex;
+            if (Math.abs(den) < 1e-9) continue; const t = ((p[0] - l.x1) * ey - (p[1] - l.y1) * ex) / den, u2 = ((p[0] - l.x1) * dy - (p[1] - l.y1) * dx) / den; if (t > 0 && t < 1 && u2 >= 0 && u2 <= 1) ts.push(t); }
+          ts.sort((a2, b2) => a2 - b2);
+          for (let k2 = 0; k2 + 1 < ts.length; k2++) { const a2 = ts[k2], b2 = ts[k2 + 1]; if (b2 - a2 < 1e-5) continue; const m = (a2 + b2) / 2;
+            if (!hidden(l.x1 + dx * m, l.y1 + dy * m)) D.lines.push({ ...l, x1: l.x1 + dx * a2, y1: l.y1 + dy * a2, x2: l.x1 + dx * b2, y2: l.y1 + dy * b2 }); }
+        });
+        // its sheet and boxes: kept only where no nearer sheet covers any of them (a word on the nearer sheet sits over it)
+        const ss = D.shapes.splice(S0); ss.forEach((sh) => { const q = sh.quad || [[sh.x, sh.y], [sh.x + sh.w, sh.y], [sh.x + sh.w, sh.y + sh.h], [sh.x, sh.y + sh.h]]; if (!q.some((p) => hidden(p[0], p[1])) && !nearer.some((nq) => nq.some((p) => inQuad(q, p[0], p[1])))) D.shapes.push(sh); });
         const ts = D.texts.splice(T0); ts.forEach((t) => { if (!hidden(t.x + t.w / 2, t.y + t.h / 2)) D.texts.push(t); });
       }
     });

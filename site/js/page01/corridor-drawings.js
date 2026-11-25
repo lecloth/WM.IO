@@ -328,7 +328,9 @@ function layersSVG(d, { ground = '#173F73', pad = 0 } = {}) {
   const L = d.layers, f = (v) => +v.toFixed(2), out = [];
   layerPlaces(1).forEach((p) => {
     const it = layerItems(p.i), g = [];
-    g.push(`<rect x="0" y="0" width="${L.LW}" height="${L.LH}" fill="${it.screen ? '#F6F7F9' : ground}" stroke="${it.screen ? '#121212' : '#FFFFFF'}" stroke-width="1" vector-effect="non-scaling-stroke"/>`);
+    const vis = it.screen ? L.LH : p.strip;
+    g.push(`<rect x="0" y="0" width="${L.LW}" height="${L.LH}" fill="${it.screen ? '#F6F7F9' : ground}"/>`);
+    g.push(`<path d="${it.screen ? `M0 0H${L.LW}V${L.LH}H0Z` : `M0 ${f(vis)}V0H${L.LW}V${f(vis)}`}" fill="none" stroke="${it.screen ? '#121212' : '#FFFFFF'}" stroke-width="1" vector-effect="non-scaling-stroke"/>`);
     it.B.forEach((b) => g.push(`<rect x="${f(b.x)}" y="${f(b.y)}" width="${f(b.w)}" height="${f(b.h)}" fill="${b.fill}"${b.line ? ' stroke="#FFFFFF" stroke-width="1" vector-effect="non-scaling-stroke"' : ''}/>`));
     it.H.slice(4).forEach(([a, b, c, e]) => g.push(`<path d="M${f(a)} ${f(b)}L${f(c)} ${f(e)}" stroke="#121212" stroke-width="1" vector-effect="non-scaling-stroke"/>`));
     it.T.forEach((t) => g.push(`<text x="${f(t.x)}" y="${f(t.y)}" font-size="${t.size}" ${t.anchor === 'middle' ? 'text-anchor="middle" ' : ''}fill="${it.screen ? (t.faint ? '#66696E' : '#121212') : '#FFFFFF'}" ${t.serif ? 'font-family="Newsreader, serif" font-weight="420"' : 'font-family="DM Mono, monospace" font-weight="500" letter-spacing=".06em"'}>${t.t}</text>`));

@@ -276,6 +276,28 @@ Take 1's history below.
 - `tools/typecheck.py`: weekdays added to the proper names; `typecheck.js`: measurements may carry thousands commas.
 
 ### Take 2 log
+- **Final check (25 Nov, stopped early on Wajih's word).** Shots and outputs: `tools/shots/r9-final/`.
+  - **S23, whole page** (`phone_stage.py --stage all`, segments in visiting order, two passes): every segment 59.7-60 fps
+    on both passes except page 5's websites room on the first pass (one 200 ms frame) and its apps room on the second
+    (58.7, worst 67 ms); "Cut to the chase" 59.7 fps, landing on the final room (top -0.4 px); 20 real swipes on five
+    pages, no pull-back; 0 errors. "Back to the start" did not move on the phone: the tap landed off screen (the link
+    is below the fold on a phone); clicked in view in Chrome it lands on the top ("Enter"); not re-run on the phone.
+  - **Typecheck, 14 sizes, light and dark** (1,932 frames): 467 failures, every one on a short or unusual screen the
+    three-size stage checks don't cover. Fixed: page 4's three lines over the cutaway (the cutaway now sits under them
+    and shrinks to leave room for the meaning above the title block); the opening line over the first drawings (they
+    come in once it has gone); far drawings counted through a nearer opaque sheet (the type check's view now clips their
+    lines and drops covered shapes); the websites room past its page on short desktops and phones. The changed cases
+    re-checked: 0 (1280 x 720, 1366 x 768, 1440 x 765, 390 x 844, 360 x 800, 375 x 667 at the failing stops).
+  - **Typecheck, reduced motion, 14 sizes** (750 frames): 504 failures, from two causes, both fixed, NOT re-run: page 4's
+    cutaway laid out for a full screen spilled over page 5 (now laid out in its own box); canvas 2's still SVG stroked
+    each back layer's whole outline under the layers in front (now only its strip).
+  - **Readcheck, 14 sizes:** 0 failures (worst word 0.382 cells, worst sheet 0.499 of the screen).
+  - **Final gate:** typecheck at 384 x 734, 1440 x 900, 2160 x 1147, light and dark, on the final build: 0 machine
+    failures (414 frames).
+  - **Not run (stopped):** the full 14-size typecheck again on the final build; reduced motion again; on-grid (light run
+    finished, unread; dark stopped mid-run), overlap, geometry, axe, console errors per size, lengths; the flicker
+    comparison (round 8 staged, then deleted unused); the screenshot self-check and the design-ethos self-check; the
+    S23 re-run after the last fixes (`PhonePair` compiling off the main thread, the reduced-motion layouts).
 - **Round 11 (25 Nov, stage 11, lighter trips, team, spec sheet).** Built as above (all new wording drafts, flagged).
   Checks: typecheck 0 machine failures (page 5's 11 stops, P06, ROOM, SEND, P08; 384 x 734, 1440 x 900, 2160 x 1147;
   light and dark; plus 375 x 667 and 360 x 800 on the websites room). S23: AI 59.3-60, websites 57-60, apps 59-60,

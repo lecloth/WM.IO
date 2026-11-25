@@ -142,6 +142,13 @@ async def run_build(pw, b, a, out):
     rep["p2_shimmer"] = line_track(G, (int(W * 0.955), int(H * 0.08), int(W * 0.985), int(H * 0.8)))
     rep["p2_scroll_device_px"] = await page.evaluate("[scrollY * devicePixelRatio % 1]")
     rep["p2_flicker"] = flicker(G, (int(W * 0.9), 0, W, H))
+    # 5. (round 9, current build only) page 3: the lattice pulling back and the unlock wave, in small steps
+    if not b.endswith("old") and await page.evaluate("!!window.__p3", isolated_context=False):
+        for name, s0, s1 in [("lattice", 2.2, 2.5), ("wave", 3.0, 3.3)]:
+            ya = await page.evaluate(f"window.__p3.yAt({s0})", isolated_context=False); yb = await page.evaluate(f"window.__p3.yAt({s1})", isolated_context=False)
+            await page.evaluate(GOTO, ya, isolated_context=False); await page.wait_for_timeout(1500)
+            fr = await walk(page, [ya + (yb - ya) * k / n for k in range(n)], out, f"{b}_{name}")
+            G = [gray(f) for f in fr]; rep[f"p3_{name}_flicker"] = flicker(G)
     # 4. (round 8, current build only) the hyperdrive, frame by frame: its own drawing stepped at 60 fps over the stars and
     # the settle, on a full-window canvas in this same window (dev/hyper.html?full draws one frame per call)
     if not b.endswith("old"):

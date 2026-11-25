@@ -28,8 +28,14 @@ export function initPage03(engine) {
     // page 4's cutaway: as wide as the screen allows (phones) or about half of it (desktop), whole cells, its shear line a
     // little above the middle; the verbs above it, the newest meaning under it
     const W = stage.clientWidth || innerWidth, H = stage.clientHeight || innerHeight;
-    const width = desktop ? Math.min(54, Math.round(N * 0.6)) * u : (N - 2) * u, left = Math.round((W - width) / 2 / u) * u, kk = width / 108;
-    const cy = Math.round((H / 2 - 2 * u) / u) * u;
+    // the cutaway sits under the three lines (they share the screen while the key fails) and leaves room under it for the
+    // newest meaning, above the title block; on a short screen it gets smaller
+    const linesBottom = Math.max(...lines4.map((l) => parseFloat(l.style.top) + l.offsetHeight)) + 1.5 * u;
+    const blockH = desktop ? 8 * u : 9 * u, room = g.tbTop - u - (linesBottom + u) - 1.5 * u - blockH;
+    let width = desktop ? Math.min(54, Math.round(N * 0.6)) * u : (N - 2) * u;
+    width = Math.max(10 * u, Math.min(width, Math.floor(room / 47 * 108 / u) * u));
+    const left = Math.round((W - width) / 2 / u) * u, kk = width / 108;
+    const cy = Math.max(Math.round((H / 2 - 2 * u) / u) * u, Math.ceil((linesBottom + u + 21 * kk) / u) * u);
     world.setTurnTarget({ x: left + 43.5 * kk, y: cy - 3 * kk, w: 85 * kk });   // the cutaway's housing: its middle and length on screen
     cut.layout(W, H, { u, width, left, cy, labelBase: cy - 21 * kk - 2 * u, blockTop: Math.round((cy + 26 * kk + 1.5 * u) / u) * u, blockLeft: left, blockWidth: desktop ? Math.min(30, N - 10) * u : width });
   };
@@ -39,7 +45,17 @@ export function initPage03(engine) {
     sec.classList.add('is-static');
     world.load().then(() => { layout(); world.render(3.35); });
     lines.forEach((l) => l.classList.add('on')); lines4.forEach((l) => l.classList.add('on'));
-    requestAnimationFrame(() => { layout(); cut.update(LEN4); });
+    // the cutaway laid out in its own box: the verbs above it, the lock, the newest meaning under it
+    const staticCut = () => {
+      const u = grid.u, desktop = innerWidth >= 1024, N = Math.round(innerWidth / u), host = sec.querySelector('.p4w');
+      const width = desktop ? Math.min(40, Math.round(N * 0.5)) * u : (N - 2) * u, kk = width / 108, left = Math.round((innerWidth - width) / 2 / u) * u;
+      const top = 6 * u + 21 * kk, h = Math.ceil((top + 26 * kk + 1.5 * u + 9 * u) / u) * u;
+      host.style.height = `${h}px`;
+      cut.layout(innerWidth, h, { u, width, left, cy: Math.round(top / u) * u, labelBase: Math.round(top / u) * u - 21 * kk - 2 * u, blockTop: Math.round((Math.round(top / u) * u + 26 * kk + 1.5 * u) / u) * u, blockLeft: left, blockWidth: width });
+      cut.update(LEN4);
+    };
+    requestAnimationFrame(() => { layout(); staticCut(); });
+    addEventListener('resize', () => requestAnimationFrame(staticCut));
     addEventListener('resize', () => { layout(); world.render(3.35); });
     return { reduced: true };
   }

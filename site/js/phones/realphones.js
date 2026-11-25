@@ -115,8 +115,11 @@ export class PhonePair {
       let x = -total / 2;
       shown.forEach((p) => { p.pivot.position.set(x + p.size.x / 2, 0, 0); x += p.size.x + this.gap; });
       this.width = total; this.heightMM = Math.max(1, ...shown.map((p) => p.size.y));
-      try { this.renderer.compile(this.scene, this.camera); } catch (e) {}
       return this.items.filter((p) => p.missing).map((p) => p.key);
+    }).then(async (missing) => {
+      // round 11: compiled off the main thread where the browser can (a synchronous compile stalled page 5's scroll)
+      try { await this.renderer.compileAsync(this.scene, this.camera); } catch (e) { try { this.renderer.compile(this.scene, this.camera); } catch (e2) {} }
+      return missing;
     });
   }
   resize(w, h) { this.W = w; this.H = h; this.renderer.setSize(w, h, false); this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); this.frame(); }
