@@ -53,7 +53,7 @@ function sheet(w, h, size) {
     // round 8: dimensions are kept apart (d.dims) and drawn by the hallway once it knows the scale at rest: the measured
     // length sits ON the line in DM Mono Light, the line broken round it with half a grid cell clear (CAD style), so it
     // never touches a letter. ext: the extension stubs' half length.
-    dimH(x1, x2, y, o = {}) { (d.dims ||= []).push({ x1, x2, y, ext: o.ext ?? w / 90, size: size * 0.75, at: segs.length }); return d; },
+    dimH(x1, x2, y, o = {}) { (d.dims ||= []).push({ x1, x2, y, ext: o.ext ?? w / 90, size: size * 0.9, at: segs.length }); return d; },
     text(t, x, y, o = {}) { labels.push({ t, x, y, size: o.size || size, anchor: o.anchor || 'start', at: segs.length }); return d; },
     // a text box: hairline rect with its words centred (1 or 2 lines)
     box(x, y, bw, bh, words, o = {}) {
@@ -71,121 +71,182 @@ function sheet(w, h, size) {
   };
   return d;
 }
-const head = (d, fig, title) => { d.text(`FIG. ${fig} · ${title}`, 0, d.size * 0.9, { size: d.size * 0.86 }); d.text(`${fig} / 05`, d.w, d.size * 0.9, { size: d.size * 0.86, anchor: 'end' }); };
-// Round 8: every drawing keeps half a grid cell of clear space round its words at rest on a 360-wide phone (TYPE_RULES
-// rule 2): about 16 drawing units at these sizes. CLEAR is that space; label sizes are 14 (head 12).
-const CLEAR = 17, S = 14;
+// Round 8b: the drawings hang on the walls at an angle (about 40 degrees out), so they are read in perspective, never
+// square-on. Their words are bigger for it (TYPE_RULES rule 3: every word at least the scale's smallest step on screen
+// at the drawing's closest point), there is no head inside the drawing (its museum label names it), and the sheets are
+// portrait (a phone's hallway is tall and narrow). S: the label size, DIM: the live measurements (0.8 of S), CAP: a
+// capital's height, CLEAR: the clear space round every word (half a grid cell at the drawing's scale, at its centre,
+// at its closest point; dive.js checks it).
+const S = 22, DIM = 0.9 * S, CAP = 0.7 * S, CLEAR = 30;
+export const MOUNT = 0.09;   // the least blue margin round a drawing, as a share of its width (its words half a cell from the frame)
 
 // a phone screen as a wireframe (rounded outline, a status line), w x h at (x, y)
-function screenAt(d, x, y, w, h) { d.rrect(x, y, w, h, 7); d.line(x + 10, y + 12, x + w - 10, y + 12); return d; }
+function screenAt(d, x, y, w, h) { d.rrect(x, y, w, h, 10); d.line(x + 12, y + 16, x + w - 12, y + 16); return d; }
 
 // 1 · The property app's enquiry path: search, a listing, a long enquiry form where people give up; the fix drawn in
-// (ask about this home in one tap, straight from the listing)
+// (one tap, straight from the listing, and it's sent)
 function enquiry() {
-  const d = sheet(400, 384, S); head(d, '01', 'ENQUIRY PATH');
-  const sw = 64, sh = 88, X = [16, 168, 320], top = 76, nameY = 52;
-  [['SEARCH', 0], ['LISTING', 1], ['ENQUIRE', 2]].forEach(([n, i]) => d.text(n, X[i] + sw / 2, nameY, { anchor: 'middle' }));
+  const d = sheet(400, 556, S);
+  const sw = 100, sh = 140, XL = 16, XR = 284, top = 60, mid = top + sh / 2;
+  d.text('SEARCH', XL + sw / 2, top - CLEAR, { anchor: 'middle' });
+  d.text('LISTING', XR + sw / 2, top - CLEAR, { anchor: 'middle' });
   // search: a search bar and three result rows
-  screenAt(d, X[0], top, sw, sh); d.rect(X[0] + 9, top + 22, sw - 18, 11);
-  [44, 58, 72].forEach((yy) => d.line(X[0] + 9, top + yy, X[0] + sw - 9, top + yy));
+  screenAt(d, XL, top, sw, sh); d.rect(XL + 12, top + 30, sw - 24, 16);
+  [64, 84, 104].forEach((yy) => d.line(XL + 12, top + yy, XL + sw - 12, top + yy));
   // the listing: a photo, the price line, the details
-  screenAt(d, X[1], top, sw, sh); d.rect(X[1] + 9, top + 22, sw - 18, 26); d.line(X[1] + 9, top + 58, X[1] + 38, top + 58).line(X[1] + 9, top + 70, X[1] + sw - 9, top + 70);
-  // the enquiry form: field after field (where they give up)
-  screenAt(d, X[2], top, sw, sh); [24, 34, 44, 54, 64, 74].forEach((yy) => d.line(X[2] + 9, top + yy, X[2] + sw - 9, top + yy));
-  const mid = top + sh / 2;
-  d.arrow(X[0] + sw, mid, X[1], mid, 7).arrow(X[1] + sw, mid, X[2], mid, 7);
+  screenAt(d, XR, top, sw, sh); d.rect(XR + 12, top + 30, sw - 24, 44); d.line(XR + 12, top + 90, XR + 52, top + 90).line(XR + 12, top + 108, XR + sw - 12, top + 108);
+  d.arrow(XL + sw, mid, XR, mid, 9);
+  // down to the enquiry form: field after field (where they give up)
+  const cx = XR + sw / 2, eTop = 300;
+  d.arrow(cx, top + sh, cx, eTop, 9);
+  screenAt(d, XR, eTop, sw, sh); [36, 52, 68, 84, 100, 116].forEach((yy) => d.line(XR + 12, eTop + yy, XR + sw - 12, eTop + yy));
+  d.text('ENQUIRE', XR - CLEAR, eTop + sh / 2 + CAP / 2, { anchor: 'end' });
   // they leave: the path breaks off below the form, marked with a cross
-  const lx = X[2] + sw / 2, ly = top + sh + 44;
-  d.dash(lx, top + sh, lx, ly - 10);
-  d.line(lx - 7, ly - 7, lx + 7, ly + 7).line(lx - 7, ly + 7, lx + 7, ly - 7);
-  d.text('THEY LEAVE', lx - 7 - CLEAR, ly + 4.9, { anchor: 'end' });
-  // the fix: from the listing straight down to "sent"
-  const fx = X[1] + sw / 2, sy = 268;
-  d.arrow(fx, top + sh, fx, sy, 7);
-  d.text('ASK IN ONE TAP', fx - CLEAR, top + sh + 58, { anchor: 'end' });
-  screenAt(d, X[1], sy, sw, sh); d.circle(fx, sy + 46, 12); d.line(fx - 6, sy + 46, fx - 1, sy + 51).line(fx - 1, sy + 51, fx + 7, sy + 41);
-  d.text('SENT', fx, sy + sh + CLEAR + 9.8, { anchor: 'middle' });
+  const ly = eTop + sh + 62;
+  d.dash(cx, eTop + sh, cx, ly - 12);
+  d.line(cx - 9, ly - 9, cx + 9, ly + 9).line(cx - 9, ly + 9, cx + 9, ly - 9);
+  d.text('THEY LEAVE', cx - 9 - CLEAR - 6, ly + CAP / 2, { anchor: 'end' });
+  // the fix: a branch off the way down, one tap to "sent"
+  const by = 250, lx = XL + sw / 2;
+  d.line(cx, by, lx, by).arrow(lx, by, lx, eTop, 9);
+  d.text('ONE TAP', (lx + cx) / 2, by - CLEAR, { anchor: 'middle' });
+  screenAt(d, XL, eTop, sw, sh); d.circle(lx, eTop + 76, 18); d.line(lx - 9, eTop + 76, lx - 2, eTop + 84).line(lx - 2, eTop + 84, lx + 10, eTop + 66);
+  d.text('SENT', lx, eTop + sh + CLEAR + CAP, { anchor: 'middle' });
   return d;
 }
 
-// 2 · A watch face, from the customer to the palette: who wears it, what it must feel like, the palette and type, then
-// the face itself (method, never results)
-function watch() {
-  const d = sheet(400, 330, S); head(d, '02', 'FROM PEOPLE TO A PALETTE');
-  const lx = 0;
-  // 1 who: three people
-  d.text('1 · WHO', lx, 56);
-  [[22, 100, 1], [58, 96, 1.12], [94, 101, 0.94]].forEach(([cx, cy, k]) => d.circle(cx, cy - 10 * k, 8 * k).arc(cx, cy + 22 * k, 16 * k, Math.PI * 1.08, Math.PI * 1.92, 10));
-  // 2 feel: two scales with their marks
-  d.text('2 · FEEL', lx, 150);
-  [['CALM', 0.7, 178], ['EXACT', 0.86, 210]].forEach(([t, v, y]) => {
-    d.text(t, lx, y + 4.9);
-    const a = 74, b = 150; d.line(a, y, b, y).line(a, y - 4, a, y + 4).line(b, y - 4, b, y + 4);
-    const mx = a + (b - a) * v; d.line(mx, y - 8, mx, y + 8);
+// 2 · Design that understands people (round 8b, Wajih's pick: the watch goes). The property app's listing screen broken
+// into its design layers, bottom to top: who they are, what they must feel, the requirements, the palette and type,
+// then the finished screen. Each layer carries real content (notes, the hex values, the typefaces this site is set in).
+// Drawn as planes (dive.js spreads them apart as the frame swings out), not as segments. Units: one layer is LW x LH;
+// a back layer shows its top STRIP above the layer in front of it once spread.
+export const LAYERS = {
+  w: 432, h: 741, LW: 392, LH: 266, S: 24, CAP: 16.8, CLEAR: 28, IN: 36, TOP: 33, SP: 9, BG: 8, dz: 6,
+  colours: ['#173F73', '#F6F7F9', '#121212', '#66696E'],
+  // bottom to top; strip: how much of a back layer shows above the one in front of it once spread
+  list: [
+    { k: 'who', t: 'WHO: HOME BUYERS', strip: 91 },
+    { k: 'feel', t: 'FEEL: CALM, SURE', strip: 91 },
+    { k: 'req', t: 'NEEDS: PRICE FIRST', strip: 91 },
+    { k: 'type', t: 'PALETTE · TYPE', strip: 202, swatches: true, type: 'NEWSREADER, DM MONO' },
+    { k: 'screen', screen: true, title: 'A home with a garden', ask: 'ASK IN ONE TAP' },
+  ],
+};
+/** the layers' sizes from their spacing (TOP: room above a note, SP: under it, BG: above the screen's button) */
+export function sizeLayers(L = LAYERS) {
+  const C = L.CLEAR, cap = L.CAP;
+  L.list.forEach((l) => { if (!l.screen) l.strip = l.swatches ? L.TOP + cap + C + 8 + cap + 2 * (13 + cap) + C + L.SP : L.TOP + cap + C + L.SP; });
+  L.LH = Math.ceil(C + 44 + C + 24 + C + L.BG + 2 * (C + 8) + cap + C);
+  L.h = L.list.reduce((a, l) => a + (l.strip || 0), 0) + L.LH;
+  return L;
+}
+function layersPlan() {
+  const L = sizeLayers(), d = { w: L.w, h: L.h, size: S, segs: [], labels: [], layers: L };
+  return d;
+}
+/** each layer's place (units, y down from the drawing's top; z out of the sheet) at a spread 0..1 (0: all of them
+ *  behind the finished screen) */
+export function layerPlaces(spread = 1) {
+  const L = LAYERS, n = L.list.length, tops = []; let y = 0;
+  L.list.forEach((l) => { tops.push(y); y += l.strip || 0; });
+  const front = tops[n - 1];
+  return L.list.map((l, i) => ({ i, x: (L.w - L.LW) / 2, y: front + (tops[i] - front) * spread, z: -(n - 1 - i) * L.dz * spread, w: L.LW, h: L.LH, strip: l.strip || L.LH }));
+}
+/** a layer's contents (layer units, y down): its words (mono unless serif), its filled boxes, its hairlines */
+export function layerItems(i) {
+  const L = LAYERS, l = L.list[i], T = [], B = [], H = [], C = L.CLEAR, cap = L.CAP;
+  H.push([0, 0, L.LW, 0], [L.LW, 0, L.LW, L.LH], [L.LW, L.LH, 0, L.LH], [0, L.LH, 0, 0]);   // its outline
+  if (!l.screen) {
+    const t0 = L.TOP + cap;   // its first baseline (more room above: a layer high on the wall is seen at a slant)
+    T.push({ t: l.t, x: L.IN, y: t0, size: L.S });
+    if (l.swatches) {
+      // the four colours' hex values, then the two typefaces (the finished screen in front shows the colours in use)
+      T.push({ t: `${L.colours[0]} · ${L.colours[1]}`, x: L.IN, y: t0 + C + 8 + cap, size: L.S });
+      T.push({ t: `${L.colours[2]} · ${L.colours[3]}`, x: L.IN, y: t0 + C + 8 + cap + 13 + cap, size: L.S });
+      T.push({ t: l.type, x: L.IN, y: t0 + C + 8 + cap + 2 * (13 + cap), size: L.S });
+    }
+  } else {
+    const ph = 44;
+    B.push({ x: L.IN, y: C, w: L.LW - 2 * L.IN, h: ph, fill: L.colours[0], hatch: true });
+    T.push({ t: l.title, x: L.IN, y: C + ph + C + 24, size: 28, serif: true });
+    const by = C + ph + C + 24 + C + L.BG, bh = 2 * (C + 8) + cap;
+    const bx0 = L.IN, bx1 = L.LW - L.IN; H.push([bx0, by, bx1, by], [bx1, by, bx1, by + bh], [bx1, by + bh, bx0, by + bh], [bx0, by + bh, bx0, by]);
+    T.push({ t: l.ask, x: L.IN + C + 12, y: by + C + 8 + cap, size: L.S });   // from its near (hinge) side: the far side keeps the wider gap
+  }
+  return { T, B, H, screen: !!l.screen };
+}
+/** paint layer i at k px per unit (blueprint white on blue for the notes; the finished screen in its real colours) */
+export function paintLayer(ctx, i, k, { blue = '#173F73', paper = '#F6F7F9', ink = '#121212', graphite = '#66696E' } = {}) {
+  const L = LAYERS, it = layerItems(i), W = L.LW * k, Hh = L.LH * k;
+  ctx.save(); ctx.clearRect(0, 0, W, Hh);
+  ctx.fillStyle = it.screen ? paper : blue; ctx.fillRect(0, 0, W, Hh);
+  const lineC = it.screen ? ink : '#FFFFFF', lw = Math.max(1, Math.round(k * 1.1));
+  it.B.forEach((b) => {
+    ctx.fillStyle = b.fill; ctx.fillRect(b.x * k, b.y * k, b.w * k, b.h * k);
+    if (b.hatch) { ctx.save(); ctx.beginPath(); ctx.rect(b.x * k, b.y * k, b.w * k, b.h * k); ctx.clip(); ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = lw;
+      for (let t = -b.h; t < b.w; t += 14) { ctx.beginPath(); ctx.moveTo((b.x + t) * k, (b.y + b.h) * k); ctx.lineTo((b.x + t + b.h) * k, b.y * k); ctx.stroke(); } ctx.restore(); }
+    if (b.line) { ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = lw; ctx.strokeRect(b.x * k + lw / 2, b.y * k + lw / 2, b.w * k - lw, b.h * k - lw); }
   });
-  // 3 palette and type: four swatches told apart by hatching
-  d.text('3 · PALETTE', lx, 256);
-  [0, 3, 6, 11].forEach((n, i) => { const x = lx + i * 34, y = 274; d.rect(x, y, 24, 24); for (let k = 1; k <= n; k++) d.line(x, y + 24 * k / (n + 1), x + 24, y + 24 * k / (n + 1)); });
-  // the way through, to the face
-  d.arrow(166, 190, 206, 190, 7);
-  // 4 the face: case, bezel, twelve indices, two hands, the crown, lugs and strap
-  const cx = 300, cy = 196, R = 84;
-  d.text('4 · THE FACE', cx, 56, { anchor: 'middle' });
-  d.line(cx - 34, cy - R - 26, cx - 30, cy - R + 4).line(cx + 34, cy - R - 26, cx + 30, cy - R + 4);   // top lugs and strap
-  d.line(cx - 34, cy + R + 26, cx - 30, cy + R - 4).line(cx + 34, cy + R + 26, cx + 30, cy + R - 4);
-  d.circle(cx, cy, R).circle(cx, cy, R - 10);
-  for (let k = 0; k < 12; k++) { const a = k * Math.PI / 6, r0 = R - 22 - (k % 3 ? 0 : 6), r1 = R - 16; d.line(cx + r0 * Math.sin(a), cy - r0 * Math.cos(a), cx + r1 * Math.sin(a), cy - r1 * Math.cos(a)); }
-  d.line(cx, cy, cx + 30 * Math.sin(2.2), cy - 30 * Math.cos(2.2)).line(cx, cy, cx + 50 * Math.sin(-0.55), cy - 50 * Math.cos(-0.55));
-  d.circle(cx, cy, 3);
-  d.rect(cx + R, cy - 7, 9, 14);   // the crown
-  return d;
+  ctx.strokeStyle = lineC; ctx.lineWidth = lw;
+  it.H.forEach(([a, b, c, e]) => { const inset = (v, lim) => Math.min(Math.max(v * k, lw / 2), lim - lw / 2); ctx.beginPath(); ctx.moveTo(inset(a, W), inset(b, Hh)); ctx.lineTo(inset(c, W), inset(e, Hh)); ctx.stroke(); });
+  it.T.forEach((t) => {
+    ctx.font = t.serif ? `420 ${t.size * k}px Newsreader, Georgia, serif` : `500 ${t.size * k}px "DM Mono", ui-monospace, monospace`;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = t.serif ? '0px' : `${0.06 * t.size * k}px`;
+    ctx.fillStyle = it.screen ? (t.faint ? graphite : ink) : '#FFFFFF'; ctx.textBaseline = 'alphabetic';
+    let x = t.x * k; if (t.anchor === 'middle') x -= ctx.measureText(t.t).width / 2;
+    ctx.fillText(t.t, x, t.y * k);
+  });
+  ctx.restore();
 }
 
-// 3 · The delivery tracker: which driver gets this delivery (the rules, as steps a machine follows every time). Round 8:
-// two columns, so it stays wide enough on a phone for its words to keep their clear space
+// 3 · The delivery tracker: which driver gets this delivery (the rules, as steps a machine follows every time). One
+// column, so its words keep their size on a phone's narrow wall
 function dispatch() {
-  const d = sheet(480, 410, S); head(d, '03', 'WHICH DRIVER?');
-  const cx = 112, bh = 9.8 + 2 * CLEAR, bh2 = bh + 18.2;
-  d.box(cx - 86, 40, 172, bh, 'NEW DELIVERY');
-  d.arrow(cx, 40 + bh, cx, 118, 7);
-  d.box(cx - 110, 118, 220, bh2, ['FREE DRIVERS', 'NEAR THE PICKUP']);
-  d.arrow(cx, 118 + bh2, cx, 214, 7);
-  d.box(cx - 110, 214, 220, bh2, ['RANK BY TIME', 'TO THE PICKUP']);
-  const dx = 370, dy = 214 + bh2 / 2;
-  d.arrow(cx + 110, dy, dx - 110, dy, 7);
-  d.diamond(dx, dy, 220, 112, ['MAKES THE', 'TIME SLOT?']);
-  // no: look again, from the free drivers
-  d.path([[dx, dy - 56], [dx, 150], [cx + 110, 150]], 7);
-  d.text('NO', dx + CLEAR, 177);
-  // yes: assign and notify
-  d.arrow(dx, dy + 56, dx, 350, 7).text('YES', dx + CLEAR, 330);
-  d.box(dx - 98, 350, 196, bh, 'ASSIGN · NOTIFY');
+  const d = sheet(370, 556, S);
+  const cx = 150, bw = 280, b1 = CAP + 2 * (CLEAR + 5);
+  let y = 16;
+  d.box(cx - bw / 2, y, bw, b1, 'NEW ORDER'); y += b1;
+  d.arrow(cx, y, cx, y + 30, 9); y += 30;
+  const yFree = y;
+  d.box(cx - bw / 2, y, bw, b1, 'NEAREST DRIVER'); y += b1;
+  d.arrow(cx, y, cx, y + 30, 9); y += 30;
+  const dw = 272, dh = 144, dy = y + dh / 2;
+  d.diamond(cx, dy, dw, dh, 'ON TIME?');
+  // no: the next nearest, from the free drivers again
+  const rx = 350;
+  d.path([[cx + dw / 2, dy], [rx, dy], [rx, yFree + b1 / 2], [cx + bw / 2, yFree + b1 / 2]], 9);
+  d.text('NO', cx + dw / 2 + 4, dy + CLEAR + CAP);
+  // yes: assign
+  y += dh;
+  d.arrow(cx, y, cx, y + 64, 9).text('YES', cx + CLEAR + 12, y + 32 + CAP / 2); y += 64;
+  d.box(cx - bw / 2, y, bw, b1, 'ASSIGN');
   return d;
 }
 
 // 4 · The website loading: parts that load one after another, redrawn as parts that load side by side. Each timeline
-// carries its live measured length (on the visitor's screen at rest), never a claimed result.
+// carries its live measured length on the visitor's screen (dive.js measures it as you walk), never a claimed result.
 function website() {
-  const d = sheet(400, 400, S); head(d, '04', 'PAGE LOAD');
-  const x0 = 104, names = ['HTML', 'CSS', 'FONT', 'IMAGES', 'SCRIPT'], rh = 10, step = 22;
-  d.text('A · ONE AFTER ANOTHER', 0, 56);
-  const long = [34, 42, 32, 66, 52]; let x = x0;
-  names.forEach((n, i) => { const y = 74 + i * step; d.text(n, 0, y + rh / 2 + 4.9); d.rect(x, y, long[i], rh); x += long[i]; });
-  d.dimH(x0, x, 74 + 5 * step + 22);
-  d.text('B · SIDE BY SIDE', 0, 238);
-  const short = [22, 20, 16, 30, 22], start = [0, 4, 4, 8, 6];
-  names.forEach((n, i) => { const y = 256 + i * step; d.text(n, 0, y + rh / 2 + 4.9); d.rect(x0 + start[i], y, short[i], rh); });
-  d.dimH(x0, x0 + 38, 256 + 5 * step + 22);
+  const d = sheet(400, 560, S);
+  const x0 = 124, names = ['HTML', 'CSS', 'FONT', 'IMAGES', 'SCRIPT'], rh = 14, step = 36;
+  d.text('A · ONE AFTER ANOTHER', 0, CAP + 8);
+  const long = [34, 42, 32, 64, 54]; let x = x0, y0 = CAP + 8 + CLEAR + 6;
+  names.forEach((n, i) => { const y = y0 + i * step; d.text(n, 0, y + rh / 2 + CAP / 2); d.rect(x, y, long[i], rh); x += long[i]; });
+  d.dimH(x0, x, y0 + 5 * step + 18);
+  const yB = y0 + 5 * step + 18 + 30 + CLEAR + CAP;
+  d.text('B · SIDE BY SIDE', 0, yB);
+  const short = [22, 20, 16, 30, 22], start = [0, 4, 4, 8, 6], y1 = yB + CLEAR + 6;
+  names.forEach((n, i) => { const y = y1 + i * step; d.text(n, 0, y + rh / 2 + CAP / 2); d.rect(x0 + start[i], y, short[i], rh); });
+  d.dimH(x0, x0 + 38, y1 + 5 * step + 18);
   return d;
 }
 
 // 5 · On every phone they carry: the blueprint of our booking app's screen on the two phones (true outlines, mm); the
-// hallway then turns it real (the still of the real phones running the same app sits exactly on these lines)
+// hallway then turns it real (the real phones running the same app sit exactly on these lines)
 function phones() {
-  const R = PHONE_PAIR.region, m = 0, top = 16, w = (R.x1 - R.x0) + 2 * m, h = (R.y1 - R.y0) + top + 17;
-  const d = sheet(w, h, 5.6); head(d, '05', 'BOOKING APP');
-  const U = (x) => m + (x - R.x0), V = (y) => top + (R.y1 - y);   // mm (y up) -> drawing units (y down)
-  d.region = { u: m, v: top, w: R.x1 - R.x0, h: R.y1 - R.y0 };
+  const R = PHONE_PAIR.region, s5 = 10, c5 = 12, top = 4, w = R.x1 - R.x0, h = (R.y1 - R.y0) + top + c5 + s5 * 0.7 + 4;
+  const d = sheet(w, h, s5);
+  const U = (x) => x - R.x0, V = (y) => top + (R.y1 - y);   // mm (y up) -> drawing units (y down)
+  d.region = { u: 0, v: top, w: R.x1 - R.x0, h: R.y1 - R.y0 };
   PHONE_PAIR.phones.forEach((p) => {
     d.rrect(U(p.x), V(p.y + p.h), p.w, p.h, p.r);
     const s = p.screen; d.rrect(U(s.x), V(s.y + s.h), s.w, s.h, s.r);
@@ -204,31 +265,31 @@ function phones() {
       const [x0, y0] = P(x, t.y - t.size * 0.62), [x1, y1] = P(x + tw, t.y);
       if (t.size >= 30) d.rect(x0, y0, x1 - x0, y1 - y0); else d.line(x0, (y0 + y1) / 2, x1, (y0 + y1) / 2);
     });
-    d.text(p.label, U(p.x + p.w / 2), V(R.y0) + 12.5, { anchor: 'middle' });
+    d.text(p.label, U(p.x + p.w / 2), V(R.y0) + c5 + s5 * 0.7, { anchor: 'middle' });
   });
   return d;
 }
 
 // Round 8: the five canvases each show their point on one of our made-up products (named by what they are, never a
-// brand): 1 the property app's enquiry path, 2 a watch face (from the customer to the palette), 3 the delivery tracker
-// ("which driver gets this delivery"), 4 the website loading, 5 the booking app on the iPhone 18 and the S26. Each has
-// its label: the title (big, serif), a small mono line naming the drawing, one line of story (the chat's drafts,
-// flagged for Wajih). cells: the sheet's shape in whole grid cells (width : height); its blue margin takes up the
-// difference, so the sheet sits on the grid while the drawing inside keeps its true proportions.
+// brand): 1 the property app's enquiry path, 2 (round 8b) the property app's listing screen in its design layers, 3 the
+// delivery tracker ("which driver gets this delivery"), 4 the website loading, 5 the booking app on the iPhone 18 and
+// the S26. Each has its label: the title (big, serif), a small mono line naming the drawing, one line of story (the
+// chat's drafts, flagged for Wajih). Round 8b: the sheet's shape in whole grid cells is chosen at layout from the
+// drawing's own proportions (its blue margin takes the difference).
 export const FRAMES = [
-  { key: 'enquiry', side: 'l', cells: [6, 6], wide: [6, 5], caption: 'Where customers give up.', fig: 'Fig. 01 · Property app · enquiry path',
+  { key: 'enquiry', side: 'r', caption: 'Where customers give up.', fig: 'Fig. 01 · Property app',
     story: 'We walk every step your customers take, find the one that loses them, and fix it.',
-    alt: 'Blueprint: the property app’s enquiry path. Search, a listing, then a long enquiry form where people leave; the fix is drawn in: ask about the home in one tap, straight from the listing.', draw: enquiry() },
-  { key: 'watch', side: 'r', cells: [6, 5], caption: 'Design that understands people.', fig: 'Fig. 02 · Watch face',
-    story: 'First we learn what your customers need to feel. Then every colour, shape and word is chosen for it.',
-    alt: 'Blueprint: who wears the watch, what it must feel like (calm, exact), a palette, then the watch face itself with its indices, hands and crown.', draw: watch() },
-  { key: 'dispatch', side: 'l', cells: [6, 5], caption: 'Your way of deciding, built in.', fig: 'Fig. 03 · Delivery tracker',
+    alt: 'Blueprint: the property app’s enquiry path. Search, a listing, then a long enquiry form where people leave; the fix is drawn in: one tap, straight from the listing, and it’s sent.', draw: enquiry() },
+  { key: 'layers', side: 'l', caption: 'Design that understands people.', fig: 'Fig. 02 · Listing, in layers',
+    story: 'We learn what your customers need to feel, then choose every colour, shape and word for it.',
+    alt: 'The property app’s listing screen taken apart into its design layers, bottom to top: who they are (home buyers), what they must feel (calm, sure, nothing hidden), the requirements (price first, one tap to ask), the palette (blue #173F73, paper #F6F7F9, ink #121212, graphite #66696E) and type (Newsreader, DM Mono), then the finished screen.', draw: layersPlan() },
+  { key: 'dispatch', side: 'r', caption: 'Your way of deciding, built in.', fig: 'Fig. 03 · Delivery tracker',
     story: 'The rules you carry in your head, turned into a system that decides like you, every time.',
-    alt: 'Blueprint: the delivery tracker’s decision flow for which driver gets a delivery: free drivers near the pickup, ranked by time to the pickup; if the first can’t make the time slot, look again; then assign and notify.', draw: dispatch() },
-  { key: 'website', side: 'r', cells: [6, 5], caption: 'Speed.', fig: 'Fig. 04 · Website · page load',
+    alt: 'Blueprint: the delivery tracker’s decision flow for which driver gets a new order: the nearest driver; if they can’t make it on time, the next nearest; then assign.', draw: dispatch() },
+  { key: 'website', side: 'l', caption: 'Speed.', fig: 'Fig. 04 · Website loading',
     story: 'Every second of waiting costs you a customer. We find the slow parts and cut them.',
     alt: 'Blueprint: a website loading. Five parts loading one after another are redrawn as parts loading side by side; each timeline carries its measured length.', draw: website() },
-  { key: 'apps', side: 'l', cells: [1, 1], caption: 'On every phone they carry.', fig: 'Fig. 05 · Booking app',
+  { key: 'apps', side: 'r', caption: 'On every phone they carry.', fig: 'Fig. 05 · Booking app',
     story: 'One app, at home on iPhone and Android.',
     alt: 'Blueprint of our booking app’s screen on an iPhone and an Android phone, which turns into the app running on the real phones.', draw: phones(), real: 'media/phones-unverified/corridor-phones.webp' },
 ];
@@ -250,6 +311,7 @@ export function dimParts(dm, textW, clear) {
 
 /** a drawing as an SVG string (reduced motion: the still figures; the asset sheet) */
 export function toSVG(d, { ink = '#FFFFFF', ground = '#173F73', pad = 0 } = {}) {
+  if (d.layers) return layersSVG(d, { ground, pad });
   const f = (v) => +v.toFixed(2);
   const path = d.segs.map(([a, b, c, e]) => `M${f(a)} ${f(b)}L${f(c)} ${f(e)}`).join('');
   // dimensions: broken round a nominal clear space; the reduced-motion figure has no live measurement, so no words
@@ -259,4 +321,18 @@ export function toSVG(d, { ink = '#FFFFFF', ground = '#173F73', pad = 0 } = {}) 
     `<rect x="0" y="0" width="${f(d.w)}" height="${f(d.h)}" fill="${ground}"/>` +
     `<path d="${path}${dimPath}" fill="none" stroke="${ink}" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/>` +
     `<g fill="${ink}" font-family="DM Mono, monospace" font-weight="500" letter-spacing=".06em">${txt}</g></svg>`;
+}
+
+/** the layers as an SVG string, spread (reduced motion; the asset sheet) */
+function layersSVG(d, { ground = '#173F73', pad = 0 } = {}) {
+  const L = d.layers, f = (v) => +v.toFixed(2), out = [];
+  layerPlaces(1).forEach((p) => {
+    const it = layerItems(p.i), g = [];
+    g.push(`<rect x="0" y="0" width="${L.LW}" height="${L.LH}" fill="${it.screen ? '#F6F7F9' : ground}" stroke="${it.screen ? '#121212' : '#FFFFFF'}" stroke-width="1" vector-effect="non-scaling-stroke"/>`);
+    it.B.forEach((b) => g.push(`<rect x="${f(b.x)}" y="${f(b.y)}" width="${f(b.w)}" height="${f(b.h)}" fill="${b.fill}"${b.line ? ' stroke="#FFFFFF" stroke-width="1" vector-effect="non-scaling-stroke"' : ''}/>`));
+    it.H.slice(4).forEach(([a, b, c, e]) => g.push(`<path d="M${f(a)} ${f(b)}L${f(c)} ${f(e)}" stroke="#121212" stroke-width="1" vector-effect="non-scaling-stroke"/>`));
+    it.T.forEach((t) => g.push(`<text x="${f(t.x)}" y="${f(t.y)}" font-size="${t.size}" ${t.anchor === 'middle' ? 'text-anchor="middle" ' : ''}fill="${it.screen ? (t.faint ? '#66696E' : '#121212') : '#FFFFFF'}" ${t.serif ? 'font-family="Newsreader, serif" font-weight="420"' : 'font-family="DM Mono, monospace" font-weight="500" letter-spacing=".06em"'}>${t.t}</text>`));
+    out.push(`<g transform="translate(${f(p.x)} ${f(p.y)})">${g.join('')}</g>`);
+  });
+  return `<svg viewBox="${-pad} ${-pad} ${f(d.w + 2 * pad)} ${f(d.h + 2 * pad)}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="0" y="0" width="${f(d.w)}" height="${f(d.h)}" fill="${ground}"/>${out.join('')}</svg>`;
 }

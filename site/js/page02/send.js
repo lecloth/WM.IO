@@ -1,4 +1,4 @@
-// Page 3's Send and the five ways to reach us (Part 5 "Pages 2 and 3"):
+// The final room's Send and the five ways to reach us (Part 5 "Pages 2 and 3"):
 //   WhatsApp first, then email, phone call, send from the page, book a call slot.
 // WhatsApp and email open in the visitor's own app with the slip filled in (a real link, so a tap hands over natively).
 // Sending from the page and booking are built fully but switched off in settings.js; while off they hand over to the
@@ -72,7 +72,7 @@ export const rate = {
 /** wire the Send in `form` (page 3) */
 export function initSend(form, { reduced, haptics }) {
   const a = form.querySelector('.send'), say = form.querySelector('.slip__said');
-  const kEl = a.querySelector('.js-send-k'), wEl = a.querySelector('.js-send-w'), sayEl = a.querySelector('.js-send-say');
+  const kEl = a.querySelector('.js-send-k'), wEl = a.querySelector('.js-send-w'), sayEl = form.querySelector('.js-send-say');
   const hp = form.querySelector('.slip__hp input');
   const slots = form.querySelector('.slip__slots'), grid = form.querySelector('.slip__slots-grid');
   const shownAt = performance.now();
@@ -141,6 +141,11 @@ export function initSend(form, { reduced, haptics }) {
     if (way.post) { e.preventDefault(); post(way.post); }
     else if (e.pointerType || e.detail) haptics?.tap(12);
   });
+  // round 8b: pressed, Send slides into its hard shadow (also for a quick touch tap, which :active barely shows)
+  let pressT = 0, pressAt = 0;
+  a.addEventListener('pointerdown', () => { clearTimeout(pressT); pressAt = performance.now(); a.classList.add('is-pressed'); }, { passive: true });
+  const release = () => { clearTimeout(pressT); pressT = setTimeout(() => a.classList.remove('is-pressed'), Math.max(0, 140 - (performance.now() - pressAt))); };
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach((t) => a.addEventListener(t, release, { passive: true }));
   a.addEventListener('keydown', (e) => { if (e.key === ' ' && a.getAttribute('role') === 'button') { e.preventDefault(); a.click(); } });
   slip.on(update);
   grid.addEventListener('change', (e) => { if (e.target.name === 'slot') slip.set('slot', e.target.value); });

@@ -33,8 +33,10 @@ function hallCard(host, { tag, title, note }) {
   dive.onBeat(() => draw());
   return { dive, draw, layout, q: () => q, ready: document.fonts.ready.then(() => dive.load('../')).then(() => { layout(); return dive.loadPhones('../'); }).then(() => draw()) };
 }
-const hall = hallCard($('#rowC'), { tag: 'H', title: 'The hallway', note: 'The grid folds into the hallway, which dresses up as you walk; the camera walks straight; each drawing swings out like a museum portrait on a revolving door, its frosted label turning with it.' });
-const doorCard = hallCard($('#rowD'), { tag: 'D', title: 'The door, with the real lock', note: 'Faint from the start, clearer as you walk towards it; it opens and leads on (to the security page, round 9). The lock is the real “Cutaway Lock” (zbzzn, CC BY 4.0), in the hallway’s hairlines.' });
+const hall = hallCard($('#rowC'), { tag: 'H', title: 'The hallway', note: 'The grid folds into the hallway, which dresses up as you walk; scrolling is walking; each drawing swings out part way on its hinge as you pass, in one hairline frame, its frosted label turning with it.' });
+const doorCard = hallCard($('#rowD'), { tag: 'D', title: 'The shut door, with the real lock', note: 'Faint from the start, clearer as you walk towards it; it stays shut. The lock (the real “Cutaway Lock”, zbzzn, CC BY 4.0) sits at eye level; the walk ends with it filling the screen.' });
+// (1b) canvas 2's layers, spread (the same drawing as the hallway's, as an SVG)
+import('../js/page01/corridor-drawings.js').then(({ FRAMES, toSVG }) => { const f = FRAMES.find((x) => x.key === 'layers'); const host = $('#layers'); if (f && host) host.innerHTML = toSVG(f.draw); });
 const diveIn = $('#dive'), doorIn = $('#door');
 const D0 = DOOR.walk[0] - 0.02;
 const drawDives = () => { hall.draw(+diveIn.value / 1000); doorCard.draw(D0 + (1 - D0) * (+doorIn.value / 1000)); };
@@ -72,9 +74,9 @@ const dives = [hall, doorCard];
 
 // ---------- (3) page 2's calls to action, on this sheet ----------
 const CTA_NOTES = {
-  A: 'The beacon pulses on the first box until the first tap, then glides to “Next: your slip”.',
-  B: 'Page 2 opens on the line and the beacon alone; tapping the beacon reveals the rows (scrolling on does too).',
-  C: 'No beacon: the big line, and the boxes pulse once, one after another, when the rows come into view.',
+  A: 'The beacon pulses on the first box until the first tick, then glides to “Next: your details”.',
+  B: 'The room opens on the line and the beacon alone; tapping the beacon reveals the task list (scrolling on does too).',
+  C: 'No beacon: the big line, and the boxes pulse once, one after another, when the task list comes into view.',
 };
 (async () => {
   let html = '';

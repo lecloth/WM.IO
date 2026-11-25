@@ -48,7 +48,7 @@ MEASURE = r"""() => {
   }
   const host = (b) => { if (!b.classList?.contains('p1-fly')) return null; const st = b.dataset.state, w = b.dataset.w;
     return w === 'you' ? (st === 'a' ? 's2' : st === 'c' ? 'task' : null) : (st === 'a' ? 'task' : st === 'b' ? 'we' : null); };
-  for (const [b, rs] of groups) out.texts.push({ name: desc(b), rects: rs, chrome: !!b.closest('.titleblock, .strip, .slip-head.is-stuck'), page: !!b.closest('#page-07, #page-07b'),
+  for (const [b, rs] of groups) out.texts.push({ name: desc(b), rects: rs, chrome: !!b.closest('.titleblock, .strip'), page: !!b.closest('#page-07, #page-07b'),
     k: b.closest('[data-k]')?.dataset.k || host(b) });
   const pic = (name, l, t, r, b) => { if (r - l > 1 && b - t > 1) out.pics.push({ name, l, t, r, b }); };
   const p1 = window.__p1;

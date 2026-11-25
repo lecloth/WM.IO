@@ -97,9 +97,9 @@ window.__t2stops = () => {
   else if (document.getElementById('page-01')) out.push({ name: 'P1', y: 0 });
   if (engine.reduced) { const h = document.querySelector('.p1-hall'); if (h) out.push({ name: 'HALL', y: docTop(h) }); }
   ['page-03', 'page-04', 'page-05', 'page-06'].forEach((id) => { const el = document.getElementById(id); if (el) out.push({ name: id.replace('page-', 'P'), y: docTop(el) }); });
-  const room = document.getElementById('page-07'), slipEl = document.getElementById('page-07b'), spec = document.getElementById('page-08');
+  const room = document.getElementById('page-07'), slipEl = document.getElementById('slip-when'), spec = document.getElementById('page-08');
   if (room) { const y = docTop(room); out.push({ name: 'ROOM', y }); const rows = room.querySelector('.p2-rows'); if (rows) out.push({ name: 'ROWS', y: docTop(rows) - Math.round(innerHeight * 0.3) }); }
-  if (slipEl) { out.push({ name: 'SLIP', y: docTop(slipEl) - Math.round(innerHeight * 0.2) }); const s = slipEl.querySelector('.slip__send'); if (s) out.push({ name: 'SEND', y: docTop(s) - Math.round(innerHeight * 0.5) }); }
+  if (slipEl) { out.push({ name: 'SLIP', y: docTop(slipEl) - Math.round(innerHeight * 0.2) }); const s = document.querySelector('#slip .slip__send'); if (s) out.push({ name: 'SEND', y: docTop(s) - Math.round(innerHeight * 0.5) }); }
   if (spec) out.push({ name: 'P08', y: docTop(spec) });
   const max = document.documentElement.scrollHeight - innerHeight;
   return out.map((s) => ({ ...s, y: Math.max(0, Math.min(max, s.y)) }));

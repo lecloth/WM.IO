@@ -22,12 +22,12 @@ Take 1's history below.
 | # | Page | What happens | Viewports | Status |
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Page 1 | Beacon → Bell's ink on our grid → X-ray phone, six named pieces (each leader on its own piece) → kinetic line, real phone → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum → **"Now, how can we serve you?"** (signed off, round 8) | ~5.9 (with 2: 10.54) | **round 8 built (25 Nov): waiting for Wajih's review** |
-| 2 | The hallway | The grid folds into it; it dresses up as you walk; "We design backwards…" (draft); five drawings swing out (treatment B) on our made-up products (1 property app's enquiry path, 2 watch face, 3 delivery tracker, 4 website loading, 5 booking app on the real iPhone 18 and S26), frosted labels under them turning with them (story lines drafts); the camera walks straight; the door with the real lock, faint then clear; it opens and leads to page 3 | 4.6 (inside page 1's section) | **round 8 built** |
+| 2 | The hallway | The grid folds into it; it dresses up as you walk; "We design backwards…" (draft); scrolling is walking; five drawings hang on hinges and swing out 40° as you pass, one hairline frame each (1 property app's enquiry path, 2 the property app's listing screen in its design layers, 3 delivery tracker, 4 website loading, 5 booking app on the real iPhone 18 and S26), frosted labels under them turning with them (story lines drafts); the shut door, its lock at eye level; the walk ends with the lock filling the screen | 4.9 (inside page 1's section) | **round 8b built** |
 | 3 | Into the lock | Security showpiece: endless locks, unlocking in a wave | ~5 | stub (round 9) |
 | 4 | How we work | Short lines in Wajih's voice; the wrong key fails, then the pick, a 2D cutaway turning to face you | ~4 | stub (round 10) |
 | 5 | Lighter trips | AI, websites, apps | ~9 | stub |
 | 6 | Team | Three placeholder cards (nothing invented) | ~1 | stub |
-| 7 | The final room | "What's the task list? Tick everything that fits." (Wajih's, signed off), the six rows, CTA A (pick open), the work slip, Send A, every way to reach us (switches in settings.js) | ~3.4 | **moved here in round 8** (rows, answers, slip wording: drafts) |
+| 7 | The final room | "What's the task list? Tick everything that fits." (Wajih's, signed off, no flag), then one slip on plain paper: the six needs as small boxes, the details, "Send it by", Send (a box with a 3 px hard ink shadow; fields at half), CTA A (pick open), every way to reach us (switches in settings.js) | ~3.1 | **round 8b built** (needs, answers, slip wording: drafts) |
 | 8 | Spec sheet | One screen of live numbers, then the loop back | ~1 | stub |
 
 "Cut to the chase" (strip, always): the hyperdrive into the final room; the strip's last square and 07 do the same.
@@ -196,7 +196,55 @@ Take 1's history below.
   `flicker.py` now compares a staged `site/<name>old/` build and steps the hyperdrive; `gridcheck.py`/`overlap.py` know the
   final room.
 
+### Round 8b structure notes (25 Nov, "Finish the site")
+- **Page 1's section is 10.84 screens** (`SCROLL = 4.94 + DIVE`, `DIVE = 4.9`; `.p1` 1084lvh). Stops (`__p1.stops`): ... END 4.8,
+  TR 5.11, OPEN 5.5, F1 6.26, F2 6.84, F3 7.42, F4 8.0, F5 8.56, F5B 8.64, DOOR 9.3, LOCK 9.84 (SW1, OUT gone).
+- **`dive.js` (rewritten again):** scrolling is walking (`buildWalk`: a speed profile in screens, `SPEED` 1.5 P per screen,
+  never zero past the way in, slowing to the lock; a short screen stretches the last stretch so the camera reaches the
+  lock). Drawings: hinged at the near edge (`SWING` 40°), `stateAt(l, D)` by the camera's distance D from the hinge
+  (out between `Dopen` and `Dread`, held to `Dc` = its closest fully shown moment, back and faded by `Dg`). Layout per
+  drawing: of the sheets whose far edge stays 0.75 cell off the axis, whose sheet is at most half the screen's height
+  at `Dg`, whose far side is seen at half scale or more, with `Dc` set so sheet + label fit between the strip and the
+  title block, the one whose far words are largest. One hairline frame (`frame`, ink). Labels: words 1.5 cells under the
+  sheet, the backing a cell round them (`labLocal`, `backLocal`; CSS `inset: -1rem`). Canvas 2: `LAYERS` planes (canvas
+  textures painted by `paintLayer`), spread by the swing. The door: shut, its lock on the walking line at eye level,
+  framed at the end by `endFaceHeight()` (lock3d.js; page 3 starts on the same frame). The live measurement (website)
+  is re-measured as you walk. `readability()` = round 8b's stretch check (see readcheck.py). Label textures are drawn at
+  the size they reach on screen, anisotropic, and kept across relayouts (uploaded at layout, not on first sight).
+  The hallway's fixed layers hide (`.is-past`) once page 1's stage scrolls on.
+- **`corridor-drawings.js`:** no heads in the drawings; labels 22 units (canvas 2: 24), measurements 0.9 of them, clear
+  space 30; portrait sheets; walls swapped (left-aligned drawings on the left: their words on the near side);
+  `LAYERS` + `sizeLayers()` + `layerPlaces()` + `layerItems()` + `paintLayer()`; dispatch simplified (new order, nearest
+  driver, on time?, assign).
+- **`site/js/page03/lock3d.js` (new):** `loadLockParts()` reads `media/models/lock/lock-parts.bin` (`tools/lock_web.mjs`:
+  every part, edges chained and simplified, a light `lod` set for the lattice), `build({ inside })` → one lock (face
+  centred at the origin, facing +z; `setFaceHeight`, `setOpacity`, `colours`, `xray(t)`, parts `groups.plug/pins/drivers/key`),
+  `latticeSegments()`, `endFaceHeight()`. `door-lock.bin` deleted.
+- **The final room (fork, round 8b):** one section `#page-07` (`page-03.html` is empty; `#page-07b` gone): heading
+  (signed off), `form#slip`: `.slip__head` (No., date, Status: Draft = the slip's flag), needs `fieldset#p2-rows` (ticks,
+  answers kept), `a.p2-next` → `#slip-when`, when / name / note / send it by, `.slip__send > a.send` (box, `--sh` 3 px
+  shadow, `.is-pressed` slides it into its shadow; fields `--sh-f` half). No grid behind. Bottom padding clears the
+  title block. The sticky slip head, feed and printed list are gone.
+- **Checks:** `TYPE_RULES.md` (round 8b: backings and frames are drawn lines; things in perspective; the drawings'
+  words ≥ 0.375 cells at their closest). `tools/typecheck.js`: perspective words and sheets as true quads, `::before`
+  backings as lines, a drawing's own pairs left to readcheck. **`tools/readcheck.py` (new, part of the gate)**,
+  `tools/phone_stage.py` (new: one stage on the S23: fps per segment, real swipes, reduced motion, shots; `--fps-only`).
+
 ### Take 2 log
+- **Round 8b (25 Nov, stage 8b of "Finish the site").** Brief committed (`cd1e5eb`).
+  - **Built:** the hinged hallway (above), canvas 2 in layers (the watch is gone), the shut door with the lock at eye
+    level filling the screen at the end (the 100° opening and the walk through are removed), the opening line's box
+    sized to its words (it ran past its backing), the final room as one slip with real fields and a real Send, the
+    asset sheet (round 8b text, canvas 2's card, the shut door), TYPE_RULES and the checks.
+  - **Wording changed (drafts):** canvas 2's notes; dispatch's boxes; the fig lines shortened; frame 2's story tightened
+    ("We learn what your customers need to feel, then choose every colour, shape and word for it."); "Next: your details".
+  - **Checks:** typecheck 0 machine failures (192 frames: 384 x 734, 1440 x 900, 2160 x 1147; light and dark; every
+    stop). Readcheck 0 failures at all 14 sizes (worst word 0.382 cells against 0.375; worst sheet 0.499 of the screen's
+    height against 0.5). S23 (`phone_stage.py --stage 8b`): every hallway segment and the final room 60 fps on both
+    passes; the way in's first pass one 100 ms frame (the real phones loading because the test jumps straight there;
+    a visitor loads them in the X-ray pause); 8 real swipes, no pull-back, the scene settles 0.05-0.5 s after the
+    scroll stops; reduced motion shots; 0 errors. Found by the phone shots and fixed: the hallway's last frame stayed on
+    screen over later pages. Shots: `tools/shots/r8b/`.
 - **Round 8 (25 Nov).** Brief committed (round 8, `17429de`). Built to Part 5 "Round 8" (rounds 4-7 where not changed).
   - **Built:** `TYPE_RULES.md` first (five rules, the type scale, the wording status, eight screenshot self-checks, the gate)
     and `tools/typecheck.py`; the new running order (8 pages; the hallway is page 2; stubs 3-6 and 8; the final room = the

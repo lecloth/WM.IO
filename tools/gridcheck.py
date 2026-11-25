@@ -190,13 +190,13 @@ MEASURE_JS = r"""(args) => {
   }
   const bc = document.querySelector('.p2-beacon'); if (bc && visible(bc) && !inDive) {
     const r = bc.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2 - originY(bc);
-    for (const [w, v] of [['beacon centre x', x], ['beacon centre y', y]]) { out.pics++; const d = off(v, u); out.worst = Math.max(out.worst, d); if (d > tol) out.fails.push({ what: w, el: 'page 2 beacon', v: +v.toFixed(2), step: 1, dev: +d.toFixed(2) }); }
+    for (const [w, v] of [['beacon centre x', x], ['beacon centre y', y]]) { out.pics++; const d = off(v, u / 2); out.worst = Math.max(out.worst, d); if (d > tol) out.fails.push({ what: w, el: 'final room beacon (round 8b: the middle of a 1 x 1 box, a half-line crossing)', v: +v.toFixed(2), step: 0.5, dev: +d.toFixed(2) }); }
   }
   out.worst = +out.worst.toFixed(3);
   return out;
 }"""
 
-P23 = [("ROOM", "#page-07|0", None), ("ROOMT", "#page-07|0", "tick"), ("SLIP", "#page-07b|-8", None), ("SEND", ".slip__send|-14", None)]
+P23 = [("ROOM", "#page-07|0", None), ("ROOMT", "#page-07|0", "tick"), ("SLIP", "#slip-when|-8", None), ("SEND", ".slip__send|-14", None)]
 
 async def main(a):
     from patchright.async_api import async_playwright

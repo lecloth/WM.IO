@@ -1,9 +1,8 @@
-// The final room (round 8: the old pages 2 and 3, one move; Part 5 "Pages 2 and 3", heading per "Round 8"):
-//   page 2 (For you): six hairline rows (round 7 added "A look that fits my business"). A tap marks the row's box with one hairline stroke, shows its answer beneath,
-//     prints the line onto the work slip and gives a vibration tick on Android. The slip's head waits at the bottom of
-//     the screen (sticky) and types each new line in; when page 3 arrives, it docks as the top of the slip.
-//   page 3 (the work slip): live number and date, the printed needs, when, your name, anything else, how to send,
-//     Send (send.js). Round 8: the slip ends with Send; the spec sheet follows in plain scroll (callout.js is retired).
+// The final room (round 8b: ONE slip from top to bottom, on plain paper; Part 5 "Finish the site"):
+//   the heading (Wajih's, signed off), then the work slip: its head row (live number, date, status), the task list in the
+//   "Send it by" style (small boxes, no numbers: a tick marks the box with one hairline stroke, shows the need's answer
+//   beneath and gives a vibration tick on Android), when, your name, anything else, how to send, Send (send.js).
+//   The old sticky slip head, its feed and the separate printed list are gone: the ticks are the slip.
 // Reduced motion: every word shown, no stroke draws, no rise, no pin, no vibration.
 import { slip, NEEDS } from './slip.js';
 import { initSend } from './send.js';
@@ -13,14 +12,13 @@ import { settings } from '../settings.js';
 import { grid, snapHeights, seatText } from '../engine/grid.js';
 
 export function initPages23(engine) {
-  const p2 = document.getElementById('page-07'), p3 = document.getElementById('page-07b');   // round 8: the final room (the old pages 2 and 3)
-  if (!p2 || !p3) return null;
-  const { ScrollTrigger } = engine;
+  const room = document.getElementById('page-07');
+  if (!room) return null;
   const reduced = engine.reduced;
-  const stage = p2.querySelector('.p2__stage'), head = p2.querySelector('.slip-head'), feed = head.querySelector('.js-feed');
+  const stage = room.querySelector('.p2__stage');
   const said = document.getElementById('p2-said');
   const form = document.getElementById('slip');
-  const needsList = form.querySelector('.slip__needs'), empty = form.querySelector('.slip__empty');
+  const details = form.querySelector('.slip__sec--when');
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
   // ---------- words: the calm rise-and-straighten, once, when a line first comes into view ----------
@@ -30,14 +28,11 @@ export function initPages23(engine) {
     const s = new Split(el, { type: 'words', wordsClass: 'w', tag: 'span', aria: 'none' });
     s.words.forEach((w, i) => w.style.setProperty('--i', i));
   };
-  // the split keeps an accessible copy of the line (aria-label) only on block elements; SplitText's aria: 'none' leaves
-  // the words as plain text, which screen readers read normally
   const rvs = $$('.p23 .rv'); rvs.forEach(split);
   $$('.p2-ans__t').forEach(split);
   const show = (el) => el.classList.add('on');
   if (reduced) rvs.forEach(show);
   else {
-    // each line rises once, when it first comes into view
     const io = new IntersectionObserver((es) => es.forEach((e) => {
       if (!e.isIntersecting) return;
       show(e.target); io.unobserve(e.target);
@@ -45,49 +40,17 @@ export function initPages23(engine) {
     rvs.forEach((el) => io.observe(el));
   }
 
-  // ---------- the slip's head: number, date, count, and the paper coming out of it ----------
-  const noEls = $$('.js-slip-no'), dateEls = $$('.js-slip-date'), countEls = $$('.js-slip-count');
+  // ---------- the slip's head: its number and date, live ----------
+  const noEls = $$('.js-slip-no'), dateEls = $$('.js-slip-date');
   function paintClock() { noEls.forEach((e) => { e.textContent = slip.no; }); dateEls.forEach((e) => { e.textContent = slip.date; }); }
   paintClock();
   setInterval(() => slip.tickClock(), 10e3);
+  slip.on((what) => { if (what.clock) paintClock(); });
 
-  // the feed line: the printed needs so far, the newest typed in by the print head (stepped, like a dot-matrix head)
-  function printFeed(newest) {
-    feed.textContent = '';
-    slip.printed().forEach((t, i, all) => {
-      const id = slip.needs[i];
-      const s = document.createElement('span'); s.textContent = t;
-      if (id === newest && !reduced) { s.className = 'new'; s.style.setProperty('--print-n', Math.max(4, t.length)); s.style.setProperty('--print-ms', `${Math.min(700, 160 + t.length * 22)}ms`); }
-      feed.append(s);
-      if (i < all.length - 1) feed.append(document.createTextNode(' · '));
-    });
-    if (!slip.needs.length) feed.textContent = 'Nothing printed yet';
-  }
-
-  // the slip's printed needs (page 3), in the order they were ticked
-  function printList(newest) {
-    needsList.textContent = '';
-    slip.needs.forEach((id, i) => {
-      const li = document.createElement('li');
-      const n = document.createElement('span'); n.className = 'n mono'; n.textContent = String(i + 1).padStart(2, '0');
-      const t = document.createElement('span'); t.className = 't'; t.textContent = NEEDS[id];
-      if (id === newest && !reduced) { li.className = 'is-new'; li.style.setProperty('--print-n', Math.max(4, NEEDS[id].length)); li.style.setProperty('--print-ms', `${Math.min(700, 160 + NEEDS[id].length * 22)}ms`); }
-      li.append(n, t); needsList.append(li);
-    });
-    empty.hidden = slip.needs.length > 0;
-    countEls.forEach((e) => { e.textContent = String(slip.needs.length); });
-  }
-
-  slip.on((what) => {
-    if (what.clock) paintClock();
-    if (what.need) { printList(what.on ? what.need : null); printFeed(what.on ? what.need : null); }
-  });
-  printList(); printFeed();
-
-  // ---------- page 2's rows ----------
+  // ---------- the task list ----------
   let lastPointer = -1e9;
   const tapped = () => performance.now() - lastPointer < 900;   // a real pointer tap (keyboard ticks stay silent)
-  $$('.p2-row').forEach((row) => {
+  $$('.p2-row', room).forEach((row) => {
     const input = row.querySelector('input'), id = row.dataset.id, ans = row.querySelector('.p2-ans__t');
     row.addEventListener('pointerdown', () => { lastPointer = performance.now(); haptics.unlock(); }, { passive: true });
     input.addEventListener('change', () => {
@@ -96,12 +59,11 @@ export function initPages23(engine) {
       if (on) { ans.classList.remove('on'); void ans.offsetWidth; ans.classList.add('on'); }
       else ans.classList.remove('on');
       slip.setNeed(id, on);
-      head.classList.add('is-live');
-      said.textContent = on ? `${NEEDS[id]}: ${ans.textContent.trim()} Printed on your work slip.` : `${NEEDS[id]}: taken off your work slip.`;
+      said.textContent = on ? `${NEEDS[id]}: ${ans.textContent.trim()} Ticked on your work slip.` : `${NEEDS[id]}: taken off your work slip.`;
       if (tapped()) haptics.tap(12);
     });
   });
-  // the slip's own ticks (when, send by, slots) mark the same way, with the same tick
+  // the slip's other ticks (when, send by, slots) mark the same way, with the same tick
   form.addEventListener('pointerdown', (e) => { if (e.target.closest('.tick')) { lastPointer = performance.now(); haptics.unlock(); } }, { passive: true });
   form.addEventListener('change', (e) => {
     const t = e.target;
@@ -117,64 +79,21 @@ export function initPages23(engine) {
   form.addEventListener('submit', (e) => e.preventDefault());
   const send = initSend(form, { reduced, haptics });
 
-  // ---------- the head: stuck at the bottom while page 2 is on screen, docked as the slip's top after ----------
-  let stuck = null, raf = 0, p2h = 0;
-  // round 6: stuck, the head's bottom edge is a grid line of the screen (one cell above the title block on phones; level
-  // with its bottom on desktop, where the stuck head fits beside it, whole cells wide)
-  function layoutHead() {
-    const u = grid.u, tb = document.querySelector('.titleblock')?.getBoundingClientRect();
-    const hr = head.getBoundingClientRect();
-    let line = grid.floor(innerHeight) - u;
-    const desktop = innerWidth >= 1024, sl = stage.getBoundingClientRect().left + parseFloat(getComputedStyle(stage).paddingLeft);
-    if (tb && tb.width) {
-      if (desktop) { document.documentElement.style.setProperty('--feed-max', `${Math.max(14 * u, grid.floor(tb.left - sl - u))}px`); line = tb.bottom; }
-      else line = hr.right > tb.left - 8 ? tb.top - u : tb.bottom;
-    }
-    document.documentElement.style.setProperty('--feed-bottom', `${(innerHeight - line).toFixed(3)}px`);
-  }
-  function frame() {
-    raf = 0;
-    const sr = stage.getBoundingClientRect();
-    const fb = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--feed-bottom')) || 0;
-    const s = sr.top < innerHeight && sr.bottom > innerHeight - fb + 0.5;
-    if (s !== stuck) { stuck = s; head.classList.toggle('is-stuck', s); }
-  }
-  const schedule = () => { if (!raf) raf = requestAnimationFrame(frame); };
-  addEventListener('scroll', schedule, { passive: true });
-
-  // the slip's grid continues the rows' (page 2's stage is whole cells tall)
-  let refreshT = 0;
-  const ro = new ResizeObserver((es) => {
-    const h = es[0]?.borderBoxSize?.[0]?.blockSize ?? p2.getBoundingClientRect().height;   // whole cells (page 2's stage is snapped)
-    if (Math.abs(h - p2h) < 0.5) return;
-    const first = !p2h; p2h = h;
-    p2.style.setProperty('--p2-h', `${h}px`); p3.style.setProperty('--p2-h', `${h}px`);
-    if (!first) { clearTimeout(refreshT); refreshT = setTimeout(() => ScrollTrigger.refresh(), 450); }   // everything below moved
-    schedule();
-  });
-  ro.observe(p2);
-
-  // links within the move glide instead of jumping (the head to the slip, the empty slip back up)
+  // links within the slip glide instead of jumping
   const glide = (el, offset = 0) => {
     const y = scrollY + el.getBoundingClientRect().top + offset;
     if (engine.lenis) engine.lenis.scrollTo(y, { duration: 1.1 }); else scrollTo({ top: y, behavior: reduced ? 'auto' : 'smooth' });
   };
-  head.addEventListener('click', (e) => {
-    e.preventDefault();
-    const strip = document.getElementById('strip')?.offsetHeight || 40;
-    glide(p3, -head.offsetHeight - strip - 12);
-  });
-  empty.querySelector('a')?.addEventListener('click', (e) => { e.preventDefault(); glide(p2); });
+  const toDetails = () => { const strip = document.getElementById('strip')?.offsetHeight || 40; glide(details, -strip - grid.u); };
 
-  // round 5: the call to action (the beacon; cta.js, design A on the page)
-  const cta = initCta(stage, { reduced, inDive: () => false,
-    onNext: () => { const strip = document.getElementById('strip')?.offsetHeight || 40; glide(p3, -head.offsetHeight - strip - 12); } });
+  // round 5: the call to action (the beacon; cta.js, design A on the page): the first box, then "Next: your details"
+  const cta = initCta(stage, { reduced, inDive: () => false, details, onNext: toDetails });
 
-  snapHeights(document);   // page 2's stage, the answers and the slip's cells stay whole cells tall
+  snapHeights(document);   // the slip's sections, ticks and answers stay whole cells tall
 
   // the answers: their first baseline seated on the grid by measurement (split words: no trim, grid.js seatText)
   const seatAnswers = () => [...document.querySelectorAll('.p2-ans__t')].forEach((x) => seatText(x, 0.5));
-  const relayout = () => { seatAnswers(); layoutHead(); stuck = null; schedule(); };
+  const relayout = () => { seatAnswers(); };
   addEventListener('resize', relayout);
   grid.onChange(() => requestAnimationFrame(relayout));
   engine.on('theme', relayout);
@@ -183,9 +102,9 @@ export function initPages23(engine) {
   relayout();
 
   // for tests
-  window.__p23 = { slip, send, head, stuck: () => stuck, cta,
-    tick: (id, on = true) => { const i = p2.querySelector(`.p2-row[data-id="${id}"] input`); if (i.checked !== on) i.click(); },
+  window.__p23 = { slip, send, cta,
+    tick: (id, on = true) => { const i = room.querySelector(`.p2-row[data-id="${id}"] input`); if (i.checked !== on) i.click(); },
     setSwitch: (k, on, endpoint = 'https://example.invalid/slip') => { const o = k === 'page' ? settings.sendFromPage : settings.booking; o.on = on; o.endpoint = on ? endpoint : ''; send.update(); },
   };
-  return { length: () => ((document.getElementById('page-08')?.offsetTop ?? p3.offsetTop + p3.offsetHeight) - p2.offsetTop) / innerHeight };
+  return { length: () => ((document.getElementById('page-08')?.offsetTop ?? room.offsetTop + room.offsetHeight) - room.offsetTop) / innerHeight };
 }

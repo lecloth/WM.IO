@@ -1,5 +1,5 @@
-// Page 1 (Enter + hook) and page 2 (the hallway), rounds 3-8. Scroll-driven: the stage stays put while 9.54 screens of
-// scroll play the story, then it scrolls away and page 3 follows. Positions p are in screens of scroll (0..9.54):
+// Page 1 (Enter + hook) and page 2 (the hallway), rounds 3-8. Scroll-driven: the stage stays put while 9.84 screens of
+// scroll play the story, then it scrolls away and page 3 follows. Positions p are in screens of scroll (0..9.84):
 //   S0     Bell's 1877 sheet (his ink on our grid), headline and credit                                0.00 – 0.22
 //          eight clean outlines draw on exactly over the scan (DrawSVG); the scan fades and leaves them 0.12 – 0.36
 //          the ground turns blue (one timed beat); the outlines morph into the phone's (MorphSVG)       0.36 – 0.80
@@ -12,7 +12,7 @@
 //   WE     "us" becomes WE, pinned; the verb drum turns through the seven steps, each meaning beneath   3.02 – 4.62
 //   END    "Now, how can we serve you?" (round 8, signed off)                                          4.64 – 4.94
 //   HALL   page 2: the grid folds into the hallway, which dresses up as you walk; "We design backwards…";
-//          five drawings swing out and rest, each with its frosted label; the door, which opens        4.94 – 9.54
+//          five drawings swing out part way as you walk past; the shut door, its lock filling the screen 4.94 – 9.84
 // Round 8, held scenes: each scene holds still for a stretch of scroll, and the page renders from a lagged scroll
 // position that follows the real one smoothly (scrubbed, never timed), so nothing pops and nothing jumps when the thumb
 // lets go. Words still land on beats as short timed reveals (a paused frame always settles on whole, readable words);
@@ -49,7 +49,7 @@ const R = {
 };
 const HAND = 0.9;          // the handover: Bell's outlines -> X-ray, pose held until here
 // named stops for tests (a paused frame at each must be clean), including mid-morph, mid-drum and mid-dive
-export const STOPS = { S0: 0.1, draw: 0.24, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.9, END: 4.8, TR: 5.11, OPEN: 5.48, SW1: 5.97, F1: 6.2, F2: 6.77, F3: 7.34, F4: 7.91, F5: 8.54, F5B: 8.72, DOOR: 9.22, OUT: 9.5 };
+export const STOPS = { S0: 0.1, draw: 0.24, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.9, END: 4.8, TR: 5.11, OPEN: 5.5, F1: 6.26, F2: 6.84, F3: 7.42, F4: 8.0, F5: 8.56, F5B: 8.64, DOOR: 9.3, LOCK: 9.84 };
 const NAMES = ['Back', 'Battery', 'Board', 'Frame', 'Screen', 'Glass'];   // back to front
 const BLUE = [23, 63, 115];
 
@@ -414,7 +414,7 @@ export function initPage01(engine) {
   // the open door's view, scrolls away and page 3 follows)
   let diveNow = null, phonesT = 0;
   function renderDive(p) {
-    const q = span(p, ...R.dive), going = p > R.dive[0] && p < R.dive[1] - 1.5 / Math.max(1, H);
+    const q = span(p, ...R.dive), going = p > R.dive[0];   // round 8b: the hallway holds its last frame (the lock filling the screen) while page 3 takes over
     // the real phones load from the X-ray scene on (round 8; round 7: WE), in the first pause (300 ms without scrolling), so their parsing
     // never lands in a moving frame; once the hallway starts they load at once whatever happens
     if (p >= R.dive[0]) dive.loadPhones();
@@ -424,6 +424,11 @@ export function initPage01(engine) {
     const d = dive.render(q); if (!d) return;
     diveNow = { ...d, q };
   }
+
+  // the hallway's layers are fixed to the screen: once page 1's stage starts to scroll away (page 3 takes over there, on
+  // the same frame), they go
+  const past = () => { const off = sec.getBoundingClientRect().bottom < innerHeight - 1; diveEl.classList.toggle('is-past', off); diveTop.classList.toggle('is-past', off); };
+  addEventListener('scroll', past, { passive: true }); addEventListener('resize', past);
 
   // names beside each piece: a mono word on a hairline leader with a short shelf under it, alternating sides.
   // Round 8: each leader points at its own piece (a point on the piece's face that no other piece covers, on its name's
@@ -617,7 +622,8 @@ export function initPage01(engine) {
       const h = phone.partHull(k); h.forEach((a, j) => { const b = h[(j + 1) % h.length]; D.lines.push({ x1: a[0], y1: a[1], x2: b[0], y2: b[1], tag: `phoneA:${pt.name}` }); });
     });
     if (inR(P, R.s1)) leaderSegs.forEach((s) => D.lines.push(s));
-    if (diveTop.classList.contains('on')) { const dd = dive.drawn(); D.lines.push(...dd.lines); D.shapes.push(...dd.shapes); D.texts.push(...dd.texts); }
+    // the hallway only while page 1's stage is pinned on screen (after it, page 3 covers it and it scrolls away)
+    if (diveTop.classList.contains('on') && sec.getBoundingClientRect().bottom >= innerHeight - 1) { const dd = dive.drawn(); D.lines.push(...dd.lines); D.shapes.push(...dd.shapes); D.texts.push(...dd.texts); }
     return D;
   };
   return { length: () => sec.offsetHeight / innerHeight };

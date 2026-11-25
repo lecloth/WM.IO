@@ -83,6 +83,16 @@
     return el;
   }
 
+  // round 8b: a hallway label carried in perspective: map the word's own (untransformed) ink box through the label's matrix
+  function labQuad(lab, rg, cs, m) {
+    const tf = getComputedStyle(lab).transform; if (!tf || !/matrix3d/.test(tf)) return null;
+    const M = new DOMMatrix(tf), keep = lab.style.transform;
+    lab.style.transform = 'none'; const o = lab.getBoundingClientRect(), rr = [...rg.getClientRects()][0]; lab.style.transform = keep;
+    if (!rr) return null;
+    const k = rr.height / Math.max(1, m.fa + m.fd), sx = m.w ? rr.width / m.w : k, base = rr.top + m.fa * k;
+    const box = [[rr.left - m.al * sx, base - m.aa * k], [rr.left + m.ar * sx, base - m.aa * k], [rr.left + m.ar * sx, base + m.ad * k], [rr.left - m.al * sx, base + m.ad * k]];
+    return box.map(([x, y]) => { const p = M.transformPoint(new DOMPoint(x - o.left, y - o.top, 0, 1)); return [p.x / p.w, p.y / p.w]; });
+  }
   // ---------- words (rule 1, 2 targets; rule 5 lines) ----------
   const words = [];     // { l, t, r, b, base, text, block, el }
   const blocks = new Map();   // block -> { el, words: [], text: '', serif, size }
@@ -120,6 +130,8 @@
         const k = r.height / Math.max(1, m.fa + m.fd), sx = m.w ? r.width / m.w : k;
         const base = r.top + m.fa * k;
         const w = { l: r.left - m.al * sx, r: r.left + m.ar * sx, t: base - m.aa * k, b: base + m.ad * k, base, text: shown, block: blk, el, size: parseFloat(cs.fontSize) * k };
+        // round 8b: a word in a hallway label is seen in perspective (matrix3d): its true quad, not its inflated box
+        const lab = el.closest('.dive__lab'); if (lab) { const q = labQuad(lab, rg, cs, m); if (q) { w.quad = q; const xs = q.map((p) => p[0]), ys = q.map((p) => p[1]); Object.assign(w, { l: Math.min(...xs), r: Math.max(...xs), t: Math.min(...ys), b: Math.max(...ys) }); w.group = `hall${[...document.querySelectorAll('.dive__lab')].indexOf(lab) + 1}lab`; } }
         if (w.r <= clip.l || w.l >= clip.r || w.b <= clip.t || w.t >= clip.b) continue;
         if (w.r < 0 || w.l > W || w.b < 0 || w.t > H) continue;
         if (ghost) { B.ghosts.push(w); continue; }
@@ -137,7 +149,7 @@
   const shapes = [];   // { l, t, r, b, src, own? }
   // chrome: the opaque fixed strip, title block and stuck slip head. Words inside chrome are measured only against that
   // chrome's own lines (whatever scrolls under it is hidden there)
-  const CHROME = '.strip, .titleblock, .slip-head.is-stuck';
+  const CHROME = '.strip, .titleblock';
   let own = null;
   const seg = (x1, y1, x2, y2, src) => { if (Math.hypot(x2 - x1, y2 - y1) > 0.3) lines.push({ x1, y1, x2, y2, src, own }); };
   const isGridBg = (cs) => /linear-gradient/.test(cs.backgroundImage) && /repeat|px/.test(cs.backgroundSize) && cs.backgroundSize.split(',').length >= 2;
@@ -191,6 +203,20 @@
       const x0 = cx + (x - cx) * sx, x1 = cx + (x + pw - cx) * sx, y0 = cy + (y - cy) * sy, y1 = cy + (y + ph - cy) * sy;
       if (x1 - x0 <= y1 - y0) seg((x0 + x1) / 2, y0, (x0 + x1) / 2, y1, `${name}${pe}`); else seg(x0, (y0 + y1) / 2, x1, (y0 + y1) / 2, `${name}${pe}`);
     }
+    // round 8b: a backing (a pseudo-element box painted behind words: the hallway's frosted opening line) counts as drawn
+    // lines, its four sides, so words can't run past it. The perspective labels' backings come from __drawn.
+    if (!el.closest('.dive__lab')) {
+      const ps = getComputedStyle(el, '::before');
+      const ok = ps.content && ps.content !== 'none' && ps.display !== 'none' && +ps.opacity >= 0.05 && /absolute/.test(ps.position)
+        && ((ps.backdropFilter && ps.backdropFilter !== 'none') || (alpha(ps.backgroundColor) > 0.05 && parseFloat(ps.borderTopLeftRadius) > 0));
+      if (ok) {
+        const L0 = parseFloat(ps.left), T0 = parseFloat(ps.top), R0 = parseFloat(ps.right), B0 = parseFloat(ps.bottom);
+        if (![L0, T0, R0, B0].some(isNaN)) {
+          const x0 = r.left + L0, y0 = r.top + T0, x1 = r.right - R0, y1 = r.bottom - B0;
+          if (x1 - x0 >= 8 && y1 - y0 >= 8) { const nm = `${name}::before backing`; seg(x0, y0, x1, y0, nm); seg(x1, y0, x1, y1, nm); seg(x1, y1, x0, y1, nm); seg(x0, y1, x0, y0, nm); }
+        }
+      }
+    }
     // pictures as shapes (full-screen layers excluded: their content comes from __drawn)
     if ((el.tagName === 'IMG' || el.tagName === 'CANVAS' || el.tagName === 'VIDEO') && op > 0.05 && r.width * r.height < 0.9 * W * H && r.width > 2 && r.height > 2)
       shapes.push({ l: r.left, t: r.top, r: r.right, b: r.bottom, src: name });
@@ -235,8 +261,8 @@
   own = null;
   if (D) {
     (D.lines || []).forEach((l) => seg(l.x1, l.y1, l.x2, l.y2, `drawn:${l.tag || ''}`));
-    (D.shapes || []).forEach((s) => shapes.push({ l: s.x, t: s.y, r: s.x + s.w, b: s.y + s.h, src: `drawn:${s.tag || ''}`, group: (s.tag || '').split(':')[0] }));
-    (D.texts || []).forEach((t) => { const w = { l: t.x, t: t.y, r: t.x + t.w, b: t.y + t.h, base: t.y + t.h, text: t.t || '', block: `drawn:${t.tag || ''}`, el: null, size: t.size, group: (t.tag || '').split(':')[0], drawnTag: t.tag || '' };
+    (D.shapes || []).forEach((s) => shapes.push({ l: s.x, t: s.y, r: s.x + s.w, b: s.y + s.h, quad: s.quad, src: `drawn:${s.tag || ''}`, group: (s.tag || '').split(':')[0] }));
+    (D.texts || []).forEach((t) => { const w = { l: t.x, t: t.y, r: t.x + t.w, b: t.y + t.h, quad: t.quad, base: t.y + t.h, text: t.t || '', block: `drawn:${t.tag || ''}`, el: null, size: t.size, group: (t.tag || '').split(':')[0], drawnTag: t.tag || '' };
       if (w.r < 0 || w.l > W || w.b < 0 || w.t > H) return; words.push(w); dtexts.push(w); });
   }
   out.words = words.length; out.lines = lines.length; out.shapes = shapes.length; out.texts = dtexts.length;
@@ -255,7 +281,19 @@
   };
   const ptSeg = (px, py, s) => { const dx = s.x2 - s.x1, dy = s.y2 - s.y1, L = dx * dx + dy * dy; let k = L ? ((px - s.x1) * dx + (py - s.y1) * dy) / L : 0; k = Math.max(0, Math.min(1, k)); return Math.hypot(px - s.x1 - k * dx, py - s.y1 - k * dy); };
   const ptBox = (px, py, b) => Math.hypot(Math.max(b.l - px, 0, px - b.r), Math.max(b.t - py, 0, py - b.b));
-  const segDist = (s, b) => (segBox(s, b) ? 0 : Math.min(ptBox(s.x1, s.y1, b), ptBox(s.x2, s.y2, b), ptSeg(b.l, b.t, s), ptSeg(b.r, b.t, s), ptSeg(b.l, b.b, s), ptSeg(b.r, b.b, s)));
+  // round 8b: words and shapes seen in perspective carry their true quads
+  const inQ = (q, x, y) => { let pos = 0, neg = 0; for (let i = 0; i < 4; i++) { const p = q[i], n = q[(i + 1) % 4], c = (n[0] - p[0]) * (y - p[1]) - (n[1] - p[1]) * (x - p[0]); if (c > 0) pos++; else if (c < 0) neg++; } return !(pos && neg); };
+  const xSeg = (ax, ay, bx, by, cx, cy, dx, dy) => { const d1 = (bx - ax) * (cy - ay) - (by - ay) * (cx - ax), d2 = (bx - ax) * (dy - ay) - (by - ay) * (dx - ax), d3 = (dx - cx) * (ay - cy) - (dy - cy) * (ax - cx), d4 = (dx - cx) * (by - cy) - (dy - cy) * (bx - cx); return d1 * d2 < 0 && d3 * d4 < 0; };
+  const quadSeg = (q, s) => {
+    if (inQ(q, s.x1, s.y1) || inQ(q, s.x2, s.y2)) return 0; let d = Infinity;
+    for (let i = 0; i < 4; i++) { const a = q[i], b = q[(i + 1) % 4], e = { x1: a[0], y1: a[1], x2: b[0], y2: b[1] };
+      if (xSeg(s.x1, s.y1, s.x2, s.y2, a[0], a[1], b[0], b[1])) return 0;
+      d = Math.min(d, ptSeg(s.x1, s.y1, e), ptSeg(s.x2, s.y2, e), ptSeg(a[0], a[1], s)); }
+    return d;
+  };
+  const boxQ = (b) => [[b.l, b.t], [b.r, b.t], [b.r, b.b], [b.l, b.b]];
+  const quadQuad = (p, q) => { let d = Infinity; for (let i = 0; i < 4; i++) { const a = q[i], b = q[(i + 1) % 4]; d = Math.min(d, quadSeg(p, { x1: a[0], y1: a[1], x2: b[0], y2: b[1] })); if (!d) return 0; } return inQ(q, p[0][0], p[0][1]) ? 0 : d; };
+  const segDist = (s, b) => (b.quad ? quadSeg(b.quad, s) : segBox(s, b) ? 0 : Math.min(ptBox(s.x1, s.y1, b), ptBox(s.x2, s.y2, b), ptSeg(b.l, b.t, s), ptSeg(b.r, b.t, s), ptSeg(b.l, b.b, s), ptSeg(b.r, b.b, s)));
   const blockName = (w) => (w.el ? desc(w.block) : `${w.block} "${w.text.slice(0, 30)}"`);
   const pairs = new Map();   // (block | source) -> worst
   // one failure per (text block, drawn line): lines lying on the same screen row or column (a box's outline and its
@@ -277,17 +315,20 @@
       // the visitor's scroll, not the layout. The pinned scenes (page 1, the hallway) keep clear of it by design and stay checked
       if (s.own && !w.own && !w.drawnTag && w.el && (!w.el.closest('#page-01') || document.documentElement.dataset.motion === 'reduce')) continue;   // (reduced motion: page 1 scrolls too)
       const d = segDist(s, w);
-      if (d === 0) note('crossings', w, s.src, 0, s); else if (d < HALF) note('clearance', w, s.src, d, s);
+      const same = w.group && s.src.startsWith(`drawn:${w.group}:`);   // a drawing's own word and line, or a hallway label's words and its backing (one object in perspective)   // round 8b: a drawing's own word and line (its clear space: readcheck.py, in its plane)
+      if (d === 0) note('crossings', w, s.src, 0, s); else if (d < HALF && !same) note('clearance', w, s.src, d, s);
     }
     for (const sh of shapes) {
       if (w.own) break;
       if (sh.r < L || sh.l > R || sh.b < T || sh.t > Bm) continue;
       const inside = w.l >= sh.l && w.r <= sh.r && w.t >= sh.t && w.b <= sh.b;
+      if (w.drawnTag && w.group && sh.group && w.group === sh.group) continue;   // round 8b: its own drawing's sheet and boxes (readcheck.py, in its plane)
       if (inside && w.group && sh.group && w.group === sh.group) {   // a label on its own sheet: half a cell from the sheet's edges
         const d = Math.min(w.l - sh.l, sh.r - w.r, w.t - sh.t, sh.b - w.b); if (d < HALF) note('clearance', w, sh.src + ' (edge, inside)', d); continue;
       }
-      const ov = w.l < sh.r && w.r > sh.l && w.t < sh.b && w.b > sh.t;
-      const d = ov ? 0 : Math.hypot(Math.max(sh.l - w.r, 0, w.l - sh.r), Math.max(sh.t - w.b, 0, w.t - sh.b));
+      let d;
+      if (w.quad || sh.quad) d = quadQuad(w.quad || boxQ(w), sh.quad || boxQ(sh));
+      else { const ov = w.l < sh.r && w.r > sh.l && w.t < sh.b && w.b > sh.t; d = ov ? 0 : Math.hypot(Math.max(sh.l - w.r, 0, w.l - sh.r), Math.max(sh.t - w.b, 0, w.t - sh.b)); }
       if (d === 0) note('crossings', w, sh.src + ' (over a shape)', 0); else if (d < HALF) note('clearance', w, sh.src, d);
     }
   }
@@ -326,7 +367,7 @@
     if (/['"]/.test(t)) F.wording.push({ text: name, what: 'straight quote or apostrophe' });
     if (/\.\.\./.test(t)) F.wording.push({ text: name, what: 'three dots (use …)' });
     if (/\d-\d/.test(t.replace(/\b\d{6}\s*[-‐‑]\s*\d{4}\b/g, ''))) F.wording.push({ text: name, what: 'hyphen in a range (use –)' });
-    const big = t.match(/\b\d{4,}\b/g)?.filter((n) => !(+n >= 1000 && +n <= 2099) && !/\d{6}-\d{4}/.test(t)); if (big?.length) F.wording.push({ text: name, what: `number without thousands comma: ${big.join(', ')}` });
+    const big = t.replace(/#[0-9A-Fa-f]{6}\b/g, '').match(/\b\d{4,}\b/g)?.filter((n) => !(+n >= 1000 && +n <= 2099) && !/\d{6}-\d{4}/.test(t)); if (big?.length) F.wording.push({ text: name, what: `number without thousands comma: ${big.join(', ')}` });
     const ms = t.match(/[\d.,]+\s*(PX|px)\b/g); if (ms) ms.forEach((m) => { if (!/^\d+\.\d (PX|px)$/.test(m.trim())) F.wording.push({ text: name, what: `measurement style "${m}"` }); });
     if (/Newsreader/.test(B.fam || '')) {
       const toks = t.split(/\s+/); let start = true;

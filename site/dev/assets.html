@@ -10,9 +10,11 @@
 { "imports": { "three": "../vendor/three/three.module.min.js", "three/addons/": "../vendor/three/addons/" } }
 </script>
 <link rel="stylesheet" href="../css/page-00-grid.css?v=b84aeac290">
-<link rel="stylesheet" href="../css/page-01-dive.css?v=44bff83895">
-<link rel="stylesheet" href="../css/page-02.css?v=da3d2476e4">
-<link rel="stylesheet" href="../css/page-01.css?v=02db5bc39f">
+<link rel="stylesheet" href="../css/page-01-dive.css?v=e80d84cc88">
+<link rel="stylesheet" href="../css/page-02.css?v=e418050ed9">
+<link rel="stylesheet" href="../css/page-03.css?v=25c8941b4a">
+<link rel="stylesheet" href="../css/page-03-send.css?v=09357da7d8">
+<link rel="stylesheet" href="../css/page-01.css?v=1b23f07ef8">
 <link rel="preload" href="../fonts/newsreader-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../fonts/dm-mono-500.woff2" as="font" type="font/woff2" crossorigin>
 <style>
@@ -58,6 +60,7 @@
   a { color: inherit; text-underline-offset: 3px; }
   footer { max-width: 1240px; margin: 0 auto; padding: 0 16px 48px; color: var(--graphite); }
   /* the hallway at phone size: the real dive code; page 2's stand-in waits at its end */
+  .layercard { width: 100%; max-width: 384px; } .layercard svg { display: block; width: 100%; height: auto; }
   .divecard__stage { position: relative; height: 734px; max-height: 92vh; overflow: hidden; isolation: isolate; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); background-color: var(--paper); }
   .divecard__h { position: absolute; left: 1rem; right: 1rem; top: 3rem; font-weight: 420; font-size: 2.5rem; line-height: 3rem; letter-spacing: -.02em; margin: 0; }
   .divecard__page { position: absolute; inset: 0; background-color: var(--paper); background-image: var(--grid-img); background-size: var(--grid-size); }
@@ -66,7 +69,7 @@
   .toc a { font-size: 17px; text-decoration: underline; text-underline-offset: 3px; }
   .ctacard__stage { position: relative; height: 734px; max-height: 92vh; overflow: auto; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); }
   .ctacard__stage .p2 { margin-top: 0 !important; }
-  .ctacard__stage .slip-head, .ctacard__stage .p23-flag { display: none !important; }
+  .ctacard__stage .p2__stage { padding-bottom: 1rem; }
   .ctacard__stage .p2__stage { min-height: auto; }
   .divecard .p1-dive, .divecard .p1-dive-top { position: absolute; inset: 0; pointer-events: none; visibility: visible; opacity: 1; }
   .divecard .p1-dive { z-index: 2; } .divecard .p1-dive-top { z-index: 4; color: var(--ink); }
@@ -78,12 +81,13 @@
 </head>
 <body>
   <section class="block" aria-labelledby="h-0">
-    <p class="mono">Asset sheet · Take 2 · round 8</p>
-    <h1 id="h-0">Round 8</h1>
-    <p>Each piece is live, at phone size (384 × 734, the S23’s screen). The hallway now has one way in (the grid folds into it) and one treatment (the drawings swing out on their hinges); ways in B and C and treatments A and C are gone. New: the door with the real lock, and “Cut to the chase” (the hyperdrive). The final room’s call to action is still Wajih’s pick (A on the page).</p>
+    <p class="mono">Asset sheet · Take 2 · round 8b</p>
+    <h1 id="h-0">Round 8b</h1>
+    <p>Each piece is live, at phone size (384 × 734, the S23’s screen). Round 8b: in the hallway, scrolling is walking; each drawing hangs on its wall by a hinge and swings out part way (40°) as you pass, in one hairline frame, never facing you full on, never more than half the screen’s height; canvas 2 is now the property app’s listing screen in its design layers (the watch is gone); the end is a shut door, its lock at eye level, and the walk ends with the lock filling the screen. Gone: the door opening and the walk through it. The final room is one slip on plain paper (its call to action is still Wajih’s pick, A on the page).</p>
     <nav class="toc mono" aria-label="Contents">
       <a href="#h-c">1 · The hallway</a>
-      <a href="#h-d">2 · The door, with the lock</a>
+      <a href="#h-l">1b · Canvas 2: the listing screen in layers</a>
+      <a href="#h-d">2 · The shut door, with the lock</a>
       <a href="#h-h">3 · Cut to the chase: the hyperdrive</a>
       <a href="#h-t">4 · The final room’s call to action (A, B, C)</a>
       <a href="#h-a">5 · Phone A</a>
@@ -99,16 +103,23 @@
   <section class="block" aria-labelledby="h-c">
     <p class="mono">Asset sheet · page 2 · the hallway</p>
     <h2 id="h-c">1 · The hallway</h2>
-    <p>The real walk at phone size. The grid folds into the hallway and it dresses up as you walk; the camera walks straight, never turning; each drawing swings out on its hinge to face you, square-on and whole grid cells at rest, its frosted label right under it, as wide as it, turning with it. Each canvas shows one of our made-up products. Play runs the way in; Walk moves through it all.</p>
+    <p>The real walk at phone size. The grid folds into the hallway and it dresses up as you walk; past the way in the camera moves whenever you scroll and only then, straight, never turning. Each drawing hangs on its wall by a hinge at its near edge, swings out 40° as you approach and back as you pass, one hairline frame round it, its frosted label right under it, as wide as it, turning with it. Each canvas shows one of our made-up products. Play runs the way in; Walk moves through it all.</p>
     <button class="play mono" id="play" type="button">Play the way in</button>
     <label class="turn mono">Walk <input id="dive" type="range" min="0" max="1000" value="320" aria-label="Walk the hallway"></label>
     <div class="row" id="rowC"></div>
   </section>
 
+  <section class="block" aria-labelledby="h-l">
+    <p class="mono">Asset sheet · page 2 · canvas 2</p>
+    <h2 id="h-l">1b · Canvas 2: the listing screen in layers</h2>
+    <p>Wajih’s pick (round 8b): the watch goes. The property app’s listing screen broken into its design layers, bottom to top: who they are, what they must feel, the requirements, the palette (its real hex values) and type (the site’s own typefaces), then the finished screen. In the hallway the layers spread apart as the frame swings out; here they are spread. Every note is a draft.</p>
+    <div class="row"><article class="card"><div class="layercard" id="layers"></div><h3>L · Listing screen, in layers</h3><p class="mono on-page" style="margin-top:6px">On the page · frame 2</p></article></div>
+  </section>
+
   <section class="block" aria-labelledby="h-d">
     <p class="mono">Asset sheet · page 2 · the end of the hallway</p>
-    <h2 id="h-d">2 · The door, with the lock</h2>
-    <p>The hallway’s end: a door in the hallway’s hairlines, its lock the real “Cutaway Lock” (zbzzn, Printables 250197, CC BY 4.0), so rounds 9 and 10 continue from the same lock. Faint from the start, clearer as you walk towards it; it opens, and until round 9 leads to the security stub. Walk from the last drawing to the door and through it.</p>
+    <h2 id="h-d">2 · The shut door, with the lock</h2>
+    <p>The hallway’s end: a wall facing you with a door in it, in the hallway’s hairlines. The door stays shut. Its lock, the real “Cutaway Lock” (zbzzn, Printables 250197, CC BY 4.0), sits in it at eye level, face to you, big enough to read as a lock from the far end. Walk from the last drawing up to it: the walk ends with the lock filling the screen, the frame page 3 (into the lock) starts from.</p>
     <label class="turn mono">Walk <input id="door" type="range" min="0" max="1000" value="600" aria-label="Walk to the door"></label>
     <div class="row" id="rowD"></div>
   </section>
@@ -125,7 +136,7 @@
   <section class="block" aria-labelledby="h-t">
     <p class="mono">Asset sheet · page 7, the final room · the call to action · three demos, on this sheet</p>
     <h2 id="h-t">4 · “Tick everything that fits”</h2>
-    <p>The final room itself, three times. A: the beacon on the first box, then on “Next: your slip”. B: the beacon as a gate that reveals the rows. C: no beacon, the boxes pulse once in turn. Tap the boxes. The rows, answers and “Next: your slip” are draft wording; the heading is Wajih’s.</p>
+    <p>The final room itself, three times. A: the beacon on the first box, then on “Next: your details”. B: the beacon as a gate that reveals the task list. C: no beacon, the boxes pulse once in turn. Tap the boxes. Round 8b: one slip from top to bottom; its wording (the needs, answers, “Next: your details”, the slip) is draft; the heading is Wajih’s.</p>
     <div class="row" id="rowT"></div>
   </section>
 
@@ -150,6 +161,6 @@
     <div class="row frame384"><article class="card"><iframe src="send.html" title="Send, design A, Leader" loading="lazy"></iframe><h3>A · Leader</h3><p class="mono" style="color:var(--graphite);margin-top:6px">In the final room · Wajih’s pick</p></article></div>
   </section>
   <footer class="mono">Sources and licences: CREDITS.md</footer>
-<script type="module" src="../dist/assets.js?v=58a390b5ee"></script>
+<script type="module" src="../dist/assets.js?v=d968e9e208"></script>
 </body>
 </html>

@@ -3,7 +3,8 @@
 Wajih (25 Nov): "this site has to be flawless, it's the first showcase". Every run passes this file before it commits.
 
 **The gate.** `python -I tools/typecheck.py` reports **0 machine failures** at all 14 sizes, light and dark, at every
-stop; and every item of the screenshot self-check (below) is passed, each with its screenshot in the run's shot folder.
+stop; `python -I tools/readcheck.py` reports **0 failures** (round 8b: the hallway's drawings, below); and every item of
+the screenshot self-check (below) is passed, each with its screenshot in the run's shot folder.
 **A run that fails the gate does not commit.** It stops and reports what failed and why.
 
 `1 cell` = the grid unit `--u` (19.2 px on the S23; 20-24 px on wider screens). All sizes below are in cells.
@@ -20,6 +21,10 @@ request). Everything else is a drawn line.
 
 Where a drawn line must pass a label it stops short (a knockout, as on a map): the hallway's edges are cut around
 every label that is on screen, with the clearance of rule 2.
+
+**Round 8b: backings and frames are drawn lines.** A label's frosted backing (its four sides) and a drawing's hairline
+frame count as drawn lines: no word may run past or onto them, and every word keeps rule 2's half cell from them (the
+opening line "We design backwards." ran past its backing on Wajih's laptop; this is the rule that catches it).
 
 **Machine check:** `typecheck.py` collects every visible word's ink box (per word, from its rendered glyphs: cap or
 ascender top to baseline or descender bottom) and every drawn line and shape: DOM rules (borders and hairline inset
@@ -39,6 +44,13 @@ the box's edges (the box needs its padding). Lines behind an opaque sheet are hi
 chrome (strip, title block) floats over the pages that scroll freely (the final room, the stubs): where their words
 happen to pass under or beside it is the visitor's scroll, so those words are not checked against the chrome's
 rules; the pinned scenes (page 1, the hallway) keep clear of the chrome by layout and are checked against it.
+
+**Round 8b: things seen in perspective.** The hallway's drawings hang at an angle (40 degrees out from the wall) and are
+never seen square-on, so their words and lines are foreshortened and slanted on screen. Inside one such object (a
+drawing with its frame, its layers and its own words; a label with its backing) the clear space is measured in the
+object's own plane: the closest pair of points between a word and a line, projected to the screen, at least half a cell
+at the moment the drawing is read closest (`readcheck.py`). The type check measures every word against every *other*
+object in screen px as before, with words and sheets in perspective taken as their true quads (not their bounding boxes).
 
 ## 3. One fixed type scale
 
@@ -70,7 +82,12 @@ Two families, set weights, set sizes. Nothing else.
 | 11.5 | | ✓ | YOU, WE (large desktop) |
 
 Line heights are whole or half cells. Inside the blueprints (WebGL and SVG), each drawing uses at most three label
-sizes: its head, its labels, its measurements (0.75 of its labels, DM Mono Light).
+sizes (round 8b: its labels, its measurements at 0.9 of them in DM Mono Light, and on canvas 2's finished screen one serif
+title; the heads went: the museum label names each drawing).
+
+**Round 8b: the drawings' words on screen.** At the moment a drawing is read closest (fully out, about to swing back),
+every word in it is at least the scale's smallest step, **0.375 cells**, on screen (its font size projected at the word's
+own depth); its sheet is at most half the screen's height while it is visible. Machine check: `readcheck.py`.
 
 **Machine check:** every visible DOM text's computed family, weight, size (in cells, ±0.01) and line height (a
 multiple of 0.5 cell) is in the tables; each drawing's label sizes counted.
@@ -104,13 +121,14 @@ words' rects.
 
 ---
 
-## Wording status (round 8)
+## Wording status (round 8b)
 
 **Signed off (never flagged):** page 1 from "Glad you’re finally here." to "Now, how can we serve you?" (the verbs and
 meanings included); the final room's heading "What’s the task list? Tick everything that fits."; "Cut to the chase".
 
 **Drafts (always flagged):** the hallway's opening line ("We design backwards. …") and the five story lines; the
-final room's rows, answers, "Next: your slip", the work slip's wording; the stubs' lines; any new wording a run adds.
+words inside the drawings (canvas 2's notes included: "Who: home buyers" …); the final room's rows, answers, "Next:
+your details", the work slip's wording; the stubs' lines; any new wording a run adds.
 
 ---
 

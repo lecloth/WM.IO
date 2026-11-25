@@ -52,7 +52,7 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
 @media (min-width: 1024px) { .ph { font-size: .4375rem; } }
 
 /* ---------- page 1 (the design ethos: hairlines, ink, blue only for the drawing stage) ---------- */
-.p1 { position: relative; height: 1054vh; height: 1054lvh; }   /* round 8: 9.54 screens of scroll (page.js SCROLL) + one */
+.p1 { position: relative; height: 1084vh; height: 1084lvh; }   /* round 8b: 9.84 screens of scroll (page.js SCROLL) + one */
 /* the paper ground and its grid (the grid's origin is the stage's top left = the screen's, while page 1 plays) */
 .p1__stage { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; isolation: isolate;
   background-color: var(--paper); background-image: var(--grid-img); background-size: var(--grid-size); }
@@ -155,6 +155,7 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
 .p1-dive.on { opacity: 1; }
 .p1-dive-top { z-index: 4; color: var(--ink); visibility: visible; opacity: 0; }
 .p1-dive-top.on { opacity: 1; }
+.p1-dive.is-past, .p1-dive-top.is-past { visibility: hidden !important; }   /* round 8b: page 1's stage has scrolled on */
 .p1__stage.is-inv ~ .p1-dive-top { color: var(--blueprint-ink); }
 /* while the "?" dot is measured, the words stand settled (the reveal's rise and turn switched off for one read) */
 .p1 .is-measuring .w { transform: none !important; transition: none !important; }

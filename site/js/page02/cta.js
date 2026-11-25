@@ -1,8 +1,8 @@
 // Page 2's call to action (Part 5 "Round 5", item 3). "Tap everything that fits" was a tiny caption; it is now a big
 // line right under the question, and the site's one "tap here" signal, the beacon from the opening (a breathing dot
 // sending out slow fading rings), shows where to tap. Three designs; A on the page until Wajih picks:
-//   A · Beacon on the rows: the beacon pulses on the first box until the first tap, then glides to a "Next: your slip"
-//       line (draft wording) that takes the visitor down to page 3's work slip.
+//   A · Beacon on the rows: the beacon pulses on the first box until the first tap, then glides to a "Next: your
+//       details" line (draft wording) that takes the visitor down to the slip's details (round 8b: one slip).
 //   B · Beacon as a gate: page 2 opens on the line and the beacon alone; tapping the beacon reveals the rows (scrolling
 //       on reveals them too, so nothing ever stops the scroll).
 //   C · No beacon: the big line, and the six boxes pulse once, one after another, when the rows first come into view.
@@ -15,8 +15,9 @@ export function ctaPick() {
   return CTA_DESIGN;
 }
 
-/** stage: page 2's stage (.p2__stage). onNext: glide to the work slip. inDive(): page 1's dive still holds the stage. */
-export function initCta(stage, { design = ctaPick(), reduced = false, onNext = () => {}, inDive = () => false, slip = null } = {}) {
+/** stage: the final room's stage (.p2__stage). onNext: glide to the details. details: the slip's details (the first section
+ *  after the task list). inDive(): unused since round 8 (the room is no longer under the hallway). */
+export function initCta(stage, { design = ctaPick(), reduced = false, onNext = () => {}, inDive = () => false, details = null } = {}) {
   const rows = stage.querySelector('.p2-rows'), pick = stage.querySelector('.p2__pick'), next = stage.querySelector('.p2-next');
   const marks = [...stage.querySelectorAll('.p2-row .mark')];
   stage.dataset.cta = design;
@@ -56,12 +57,15 @@ export function initCta(stage, { design = ctaPick(), reduced = false, onNext = (
   }
 
   if (design === 'A') {
-    // the first tap sends the beacon on to "Next: your slip"
+    // the first tap sends the beacon on to "Next: your details"
     rows.addEventListener('change', (e) => { if (state === 'box' && e.target.checked) { next?.classList.add('on'); setState('next'); } });
     next?.addEventListener('click', (e) => { e.preventDefault(); setState('done'); onNext(); });
-    // once the slip is on screen, the beacon's job is done
-    const slipEl = document.getElementById('slip');
-    if (slipEl && slipEl !== stage) new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting && state === 'next') setState('done'); }), { threshold: 0.25 }).observe(slipEl);
+    // once the visitor starts on the details (a tick under "When", "Send it by", or a typed field), the beacon's job is done
+    if (details) {
+      const form = details.closest('form') || details.parentElement;
+      const done = (e) => { if (state === 'next' && !e.target.closest('.p2-rows')) setState('done'); };
+      form.addEventListener('change', done); form.addEventListener('focusin', (e) => { if (e.target.matches('input[type=text], textarea')) done(e); });
+    }
   }
   if (design === 'B') {
     pick?.classList.add('is-gated');

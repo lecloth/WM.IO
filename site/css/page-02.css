@@ -1,24 +1,25 @@
-/* Take 2 · the final room (round 8: the old pages 2 and 3, one move). Shared bits + the rows + the work slip's head.
-   The design ethos: hairlines, ink on paper, mono words for labels, no pills, no fills, no checkmark icons.
-   Round 6: on the grid (1rem = one cell). Page 2's grid starts at its own top (which is the screen's when the hallway
-   lands it); page 3's continues it (page 2 is whole cells tall). Hairlines are drawn inside boxes (inset shadows), so
-   no border moves anything off its line. */
+/* Take 2 · the final room (round 8b: ONE slip from top to bottom, on plain paper, no grid behind). Shared bits: the
+   ground, the word reveal, the marks, the call to action (the beacon), the heading. The slip itself: page-03.css; Send:
+   page-03-send.css. The design ethos: hairlines, ink on paper, mono words for labels, no pills, no checkmark icons;
+   Wajih's one exception (round 8b): the fields and Send cast a brutalist hard shadow (solid ink, no blur), so fields look
+   like fields and Send like a real button. On the grid: 1rem = one cell; hairlines are drawn inside boxes (inset shadows),
+   so no border moves anything off its line. */
 
-/* ---------- the ground: paper with the grid; page 3's grid continues page 2's (page.js sets --p2-h, whole cells) ---------- */
-.p23 { position: relative; background-color: var(--paper); background-image: var(--grid-img); background-size: var(--grid-size); }
-.p3 { background-position: 0 calc(-1 * var(--p2-h, 0px)); }
+/* ---------- the ground: plain paper (round 8b: no grid behind the slip) ---------- */
+.p23 { position: relative; background-color: var(--paper); background-image: none;
+  /* the hard shadows: Send 3 px (Wajih's pick, "medium"), the fields half of it; dark mode: the light ink (var(--ink)) */
+  --sh: 3px; --sh-f: calc(var(--sh) / 2); }
+@media (min-width: 1024px) {
+  /* on wide screens the offset scales with the grid cell (3 px at the phone's 19.2 px cell), whole device px where it can */
+  .p23 { --sh: max(3px, round(nearest, calc(var(--u) * .15625), var(--px1, 1px))); }
+}
 
 /* words: the calm rise-and-straighten (as page 1), played once when the line first comes into view */
 .p23 .w { display: inline-block; opacity: 0; transform: translateY(.34em) rotate(3deg); transform-origin: 0 100%; }
 .p23 .rv.on .w, .p23 .on > .w { opacity: 1; transform: none; transition: opacity .26s linear calc(var(--i, 0) * 45ms), transform .62s var(--ease-out) calc(var(--i, 0) * 45ms); }
 
-/* the draft flag: one mono line per page, on the right gutter; every line on pages 2-3 carries data-draft */
-.p23-flag { position: absolute; right: var(--gut); top: 3.5rem; color: var(--graphite); text-align: right; }
-.p2 .p23-flag { z-index: 1; }
-
-/* the mark: a hairline box, whole cells (2 x 2 on page 2, 1 x 1 on the slip); ticking it draws ONE hairline stroke
-   corner to corner (no checkmark icon) */
-.mark { flex: none; width: 2rem; height: 2rem; overflow: visible; color: var(--ink); }
+/* the mark: a hairline box, one cell; ticking it draws ONE hairline stroke corner to corner (no checkmark icon) */
+.mark { flex: none; width: 1rem; height: 1rem; overflow: visible; color: var(--ink); }
 .mark rect { fill: none; stroke: currentColor; stroke-width: 1px; vector-effect: non-scaling-stroke; shape-rendering: crispEdges; }
 /* round 7: an empty box is empty. The draw-on uses a dash far longer than the stroke (non-scaling strokes measure dashes
    on screen, so a dash of "1" with pathLength 1 left half a stroke showing on the S23) */
@@ -29,57 +30,47 @@ input:checked + .mark path, input:checked ~ .mark path { stroke-dashoffset: 0; t
 .p2-row__in:focus-visible ~ .mark rect, .tick input:focus-visible ~ .mark rect { stroke-width: 2px; }
 .p2-row__in:focus-visible ~ .p2-row__t, .tick input:focus-visible ~ span { text-decoration: underline; text-underline-offset: .18em; text-decoration-thickness: 1px; }
 
-/* ---------- page 2 ---------- */
-.p2__stage { position: relative; display: flex; flex-direction: column; min-height: round(up, 100vh, 1rem); min-height: round(up, 100lvh, 1rem); padding: 5rem var(--gut) var(--snap, 0px); }   /* round 8: the draft line above it, clear of the strip */
-/* the question sits where page 1's closing line stood */
+/* ---------- the heading (Wajih's, signed off), then the slip; the room keeps clear of the title block at its foot
+   (round 8b: nothing ever hides under it: its height plus a cell) ---------- */
+.p2__stage { position: relative; padding: 5rem var(--gut) 6rem; }
 .p2__h { font-size: 2.5rem; line-height: 3rem; letter-spacing: -.02em; max-width: 12ch; text-wrap: balance; }
-.p2__pick { margin-top: 1rem; }
-/* round 5: the call to action is a big line right under the question */
-.p2 .p2__sub { font-size: 1.5rem; line-height: 2rem; letter-spacing: -.015em; text-wrap: balance; color: var(--ink); }
-.p2-rows { border: 0; margin: 1rem 0 1rem; min-inline-size: 0; }
-.p2-row { box-shadow: inset 0 1px 0 rgba(var(--ink-rgb), .55); }
-.p2-row:last-child { box-shadow: inset 0 1px 0 rgba(var(--ink-rgb), .55), inset 0 -1px 0 rgba(var(--ink-rgb), .55); }
-/* a row: four cells tall; its number, its 2 x 2 box (one cell down) and its words, the words' baseline on the row's
-   line and a half (level with the box's middle) */
-.p2-row__hit { position: relative; display: grid; grid-template-columns: 2rem 2rem 1fr; align-items: start; column-gap: 0; min-height: 4rem; padding: 0 0 var(--snap, 0px); cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; }
-.p2-row__no { color: var(--graphite); margin-top: 2rem; }
-.p2-row .mark { margin-top: 1rem; }
-.p2-row__t { margin: 1.5rem 0 0 1rem; padding-bottom: 1rem; font-family: var(--f-display); font-weight: 420; font-size: 1.25rem; line-height: 1.5rem; letter-spacing: -.01em; text-wrap: balance; }
-/* the answer, beneath its row: the space opens (rows grid 0fr -> 1fr), then the words rise; whole cells tall */
+.p2 .p2__sub { margin-top: 1rem; font-size: 1.5rem; line-height: 2rem; letter-spacing: -.015em; text-wrap: balance; color: var(--ink); }
+
+/* ---------- the task list's answers: beneath the ticked need (phones: the space opens, then the words rise) ---------- */
 .p2-ans { display: grid; grid-template-rows: 0fr; visibility: hidden; transition: grid-template-rows .34s var(--ease-out), visibility 0s .34s; }
 .p2-ans__clip { overflow: hidden; min-height: 0; }
-.p2-ans__t { font-size: 1rem; line-height: 1.5rem; padding-left: 5rem; padding-bottom: calc(1rem + var(--snap, 0px)); color: var(--ink); }
+.p2-ans__t { font-size: 1rem; line-height: 1.5rem; padding-left: 2rem; padding-bottom: calc(.5rem + var(--snap, 0px)); color: var(--ink); text-wrap: pretty; }
 .p2-row.is-on .p2-ans { grid-template-rows: 1fr; visibility: visible; transition: grid-template-rows .34s var(--ease-out), visibility 0s; }
 
 /* ---------- round 5: the call to action (cta.js). The beacon is the opening's own: a breathing dot sending out slow
-   fading rings (one every 1.6 s), in ink, centred on a grid intersection (the middle of a 2 x 2 box). A: on the first
-   box until the first tap, then on "Next: your slip"; B: alone under the line, a button that reveals the rows; C: no
-   beacon, the boxes pulse once in turn. ---------- */
+   fading rings (one every 1.6 s), in ink, centred on the first need's box. A: on the first box until the first tick,
+   then on "Next: your details"; B: alone under the line, a button that reveals the task list; C: no beacon, the boxes
+   pulse once in turn. ---------- */
 .p2-beacon { position: absolute; z-index: 4; left: 0; top: 0; width: 0; height: 0; padding: 0; border: 0; background: none; color: var(--ink);
   pointer-events: none; transition: transform .62s var(--ease-out), opacity .3s linear; }
 .p2-beacon__dot, .p2-beacon__ring { position: absolute; left: -5px; top: -5px; width: 10px; height: 10px; border-radius: 50%; }
 .p2-beacon__dot { background: currentColor; animation: breathe 1.6s ease-in-out infinite alternate; }
 .p2-beacon__ring { border: 1px solid currentColor; opacity: 0; animation: p2ring 3.2s cubic-bezier(.2, .6, .3, 1) infinite; }
-/* round 8 (TYPE_RULES rule 2): the rings fade out half a cell short of the row's words */
-@keyframes p2ring { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(4.6); opacity: 0; } }
+/* (TYPE_RULES rule 2) the rings stay half a cell clear of the words round the one-cell box: the need's words a cell and a
+   half from its centre, the question's descenders above it (at most 2.8 x 10 px across) */
+@keyframes p2ring { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(2.8); opacity: 0; } }
 .p2-beacon__ring--2 { animation-delay: 1.6s; }
 .p2-beacon.is-off { opacity: 0; }
 .p2-beacon.is-off .p2-beacon__dot, .p2-beacon.is-off .p2-beacon__ring { animation: none; }
 /* reduced motion: no pulse, a still ring */
 .p2-beacon.is-still .p2-beacon__dot, .p2-beacon.is-still .p2-beacon__ring { animation: none; }
-.p2-beacon.is-still .p2-beacon__ring--1, .p2-beacon.is-still .p2-beacon__ring:not(.p2-beacon__ring--2) { opacity: .45; transform: scale(3); }
-[data-cta="A"] .p2-beacon { transition: transform .62s var(--ease-out), opacity .3s linear; }
-/* "Next: your slip": on the rows' grid (the beacon's slot in the box column), shown from the first tap on */
-.p2-next { display: grid; grid-template-columns: 2rem 2rem 1fr; align-items: start; column-gap: 0; min-height: 4rem; margin: 0 0 1rem; color: var(--ink);
+.p2-beacon.is-still .p2-beacon__ring--1, .p2-beacon.is-still .p2-beacon__ring:not(.p2-beacon__ring--2) { opacity: .45; transform: scale(2.2); }
+/* "Next: your details": a row of the task list (the beacon's slot in the box column), shown from the first tick on */
+.p2-next { display: grid; grid-template-columns: 1rem 1fr; column-gap: 1rem; align-items: start; min-height: 3rem; margin: 0 0 0 2rem; color: var(--ink);
   visibility: hidden; opacity: 0; transition: opacity .3s linear .3s, visibility 0s .6s; -webkit-tap-highlight-color: transparent; }
 .p2-next.on { visibility: visible; opacity: 1; transition: opacity .3s linear .3s, visibility 0s; }
-.p2-next__no { margin: 2rem 0 0; color: var(--graphite); --cap: var(--cap-mono); }
-.p2-next__slot { width: 2rem; height: 2rem; margin-top: 1rem; }
-.p2-next__t { margin: 1.5rem 0 0 1rem; font-family: var(--f-display); font-weight: 420; font-size: 1.25rem; line-height: 1.5rem; letter-spacing: -.01em; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; }
+.p2-next__slot { width: 1rem; height: 1rem; margin-top: 1rem; }
+.p2-next__t { margin-top: 1rem; font-size: 1rem; line-height: 1.5rem; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em;
+  text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-serif)), .5rem); }
 .p2-next__t i { display: inline; font-style: normal; }
 .p2-next:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-:not([data-cta="A"]) > .p2__pick .p2-next { display: none; }
-/* B: the gate. The rows wait hidden (their space kept, so nothing jumps) until the beacon is tapped or the page scrolls on */
+:not([data-cta="A"]) > .slip .p2-next { display: none; }
+/* B: the gate. The task list waits hidden (its space kept, so nothing jumps) until the beacon is tapped or the page scrolls on */
 .p2__pick.is-gated .p2-rows { visibility: hidden; opacity: 0; }
 [data-cta="B"] .p2-beacon { pointer-events: auto; cursor: pointer; width: 4rem; height: 4rem; margin: -2rem 0 0 -2rem; border-radius: 50%; -webkit-tap-highlight-color: transparent; }
 [data-cta="B"] .p2-beacon > i { left: calc(2rem - 5px); top: calc(2rem - 5px); }
@@ -89,81 +80,30 @@ input:checked + .mark path, input:checked ~ .mark path { stroke-dashoffset: 0; t
 .p2__pick.is-opening .p2-row:nth-child(4) { animation-delay: .18s; } .p2__pick.is-opening .p2-row:nth-child(5) { animation-delay: .24s; } .p2__pick.is-opening .p2-row:nth-child(6) { animation-delay: .3s; }
 @keyframes rowIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 /* C: each box sends out one ring, in turn */
-.p2-pulse { position: absolute; left: 2rem; top: 1rem; width: 2rem; height: 2rem; box-shadow: inset 0 0 0 1px var(--ink); opacity: 0; pointer-events: none; }
+.p2-pulse { position: absolute; left: 0; top: 1rem; width: 1rem; height: 1rem; box-shadow: inset 0 0 0 1px var(--ink); opacity: 0; pointer-events: none; }
 .p2-rows.is-pulse .p2-pulse { animation: boxPulse .9s cubic-bezier(.2, .6, .3, 1) calc(var(--i) * .14s) 1 both; }
 @keyframes boxPulse { 0% { transform: scale(1); opacity: .75; } 100% { transform: scale(2.1); opacity: 0; } }
 html[data-motion="reduce"] .p2-pulse, html[data-motion="reduce"] .p2__pick.is-opening .p2-row { animation: none !important; }
 
-/* ---------- the work slip's head: waits at the bottom while page 2 is on screen, docks as the slip's top. Its cells are
-   two cells tall, as the title block's (the key on the half line, the value on the line and a half) ---------- */
-.slip-head { position: sticky; z-index: 6; bottom: var(--feed-bottom, 6rem); display: block; margin-top: auto; background: var(--paper);
-  box-shadow: inset 0 0 0 1px var(--ink); color: var(--ink); -webkit-tap-highlight-color: transparent;
-  transition: transform .34s var(--ease-out), opacity .22s linear; }
-.slip-head__cells { display: grid; grid-template-columns: 8rem 6rem 1fr; }
-.slip-cell { display: flow-root; height: 3rem; padding: 0 0 0 1rem; min-width: 0; box-shadow: inset 1px 0 0 rgba(var(--ink-rgb), .35); }
-.slip-cell:first-child { box-shadow: none; }
-.slip-cell__k, .slip-cell__v { display: block; white-space: nowrap; overflow: hidden; line-height: .5rem; text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-mono)), .5rem); }
-.slip-cell__k { font-size: .4375rem; color: var(--graphite); margin-top: .5rem; }
-.slip-cell__v { font-size: .625rem; margin-top: .5rem; }
-.slip-cell__v b { font-weight: 500; }
-.slip-cell--n { text-align: right; padding: 0 1rem 0 0; }
-.slip-head__go { display: inline; font-style: normal; }
-/* the paper coming out of the head: the needs printed so far, the newest typed in by the print head; its baseline level
-   with the values' */
-.slip-head__feed { display: none; height: 3rem; padding: calc(2rem - 1em * var(--cap-mono)) 0 0 1rem; font-size: .625rem; line-height: .5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  text-box: trim-both cap alphabetic; }
-.slip-head__feed .new { display: inline-block; vertical-align: bottom; clip-path: inset(0 100% 0 0); animation: print var(--print-ms, .5s) steps(var(--print-n, 10), end) forwards; }
-@keyframes print { to { clip-path: inset(0 0 0 0); } }
-/* stuck (page 2 on screen, page 3 not yet): it rises with the first tap (before that it would only cover the last row) */
-.slip-head.is-stuck:not(.is-live) { transform: translateY(calc(100% + var(--feed-bottom, 6rem))); opacity: 0; pointer-events: none; }
-/* stuck, it slims to one row: the printed needs, then the count with its arrow down to the slip */
-.slip-head.is-stuck { display: flex; flex-direction: row-reverse; }
-.slip-head.is-stuck .slip-head__cells { flex: none; display: block; width: 5rem; }
-.slip-head.is-stuck .slip-cell:not(.slip-cell--n) { display: none; }
-.slip-head.is-stuck .slip-cell--n { box-shadow: inset 1px 0 0 rgba(var(--ink-rgb), .35); }
-.slip-head.is-stuck .slip-head__feed { display: block; flex: 1; min-width: 0; }
-.slip-head__lbl { color: var(--graphite); }
-.slip-head:not(.is-stuck) .slip-head__go { display: none; }
-.slip-head:not(.is-stuck) { pointer-events: none; }
-.slip-head:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
-
-@media (hover: hover) and (pointer: fine) {
-  .p2-row__hit:hover .p2-row__t { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .16em; }
-  .p2-row__hit:hover .mark rect { stroke-width: 1.5px; }
-}
-
 @media (min-width: 1024px) {
-  .p2__stage { padding: 7rem var(--gut) var(--snap, 0px); }
+  .p2__stage { padding: 7rem var(--gut) 10rem; }
   .p2__h { font-size: 3.5rem; line-height: 4rem; max-width: none; }
   .p2 .p2__sub { font-size: 2rem; line-height: 3rem; }
-  .p2-rows { margin: 1rem 0 1rem; }
-  /* desktop: the answer sits on its row's right, its baseline level with the row's words, joined by a hairline leader
-     on the row's middle line, drawn on as you tick */
-  .p2-row { display: grid; grid-template-columns: 22rem 1fr; align-items: start; }
-  .p2-row__t { font-size: 1.25rem; line-height: 1.5rem; }
-  .p2-row__hit::after { content: ""; position: absolute; right: 1rem; top: 2rem; width: 3rem; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: 0 50%; transition: transform .26s cubic-bezier(.4, 0, .2, 1); }
-  .p2-row.is-on .p2-row__hit::after { transform: none; transition-delay: .1s; }
+  /* desktop: the answer sits on its need's right, its baseline level with the need's words */
+  .p2-row { display: grid; grid-template-columns: 18rem 1fr; align-items: start; }
   .p2-ans { grid-template-rows: none; display: block; visibility: hidden; transition: visibility 0s .3s; }
   .p2-ans__clip { overflow: visible; }
   .p2-row.is-on .p2-ans { visibility: visible; transition: none; }
-  .p2-ans__t { margin-top: 1.5rem; padding-left: 0; padding-bottom: var(--snap, 0px); max-width: 34ch; --snap-off: .5; }
-  .p2-next__t { font-size: 1.25rem; line-height: 1.5rem; }
-  .slip-head { max-width: 50rem; bottom: var(--feed-bottom, 2rem); }
-  .slip-head.is-stuck { max-width: min(50rem, var(--feed-max, 50rem)); }
-  .slip-head__cells { grid-template-columns: 7rem 6rem 1fr; }
-  .slip-cell__k { font-size: .375rem; }
-  .slip-cell__v, .slip-head__feed { font-size: .5rem; }
+  .p2-ans__t { margin-top: 1rem; padding-left: 0; padding-bottom: var(--snap, 0px); max-width: 34ch; }
 }
+/* short desktop windows: the title block is one row */
+@media (min-width: 1024px) and (max-height: 860px) { .p2__stage { padding-bottom: 7rem; } }
 @media (min-width: 1800px) and (min-height: 1000px) {
   .p2__stage { padding-top: 8rem; }
   .p2__h { font-size: 4.5rem; line-height: 5rem; }
   .p2 .p2__sub { font-size: 2.5rem; line-height: 3rem; }
-  .p2-rows { margin-top: 2rem; }   /* its descenders a full half cell clear of the first row's rule */
-  .p2-row__t, .p2-next__t { font-size: 1.25rem; }
-  .p2-ans__t { font-size: 1.25rem; }
 }
 
 /* reduced motion: still, every word shown, no stroke draw, no rise */
 html[data-motion="reduce"] .p23 .w { opacity: 1; transform: none; transition: none; }
-html[data-motion="reduce"] .mark path, html[data-motion="reduce"] .p2-ans, html[data-motion="reduce"] .slip-head, html[data-motion="reduce"] .p2-row__hit::after { transition: none !important; }
-html[data-motion="reduce"] .slip-head__feed .new { animation: none; clip-path: none; }
+html[data-motion="reduce"] .mark path, html[data-motion="reduce"] .p2-ans { transition: none !important; }

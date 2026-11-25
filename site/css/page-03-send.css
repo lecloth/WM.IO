@@ -1,8 +1,12 @@
-/* Take 2 · Send, design A "Leader" (Wajih's pick, 24 Nov): "Send" with a drafting arrow run out to the slip's edge (a
-   leader line with a slender head). Big and unmissable; never a filled or pill button. (B Cell and C Bubble retired.)
-   Round 6: on the grid. The word's baseline on a line; the leader on the line above it (the middle of the x-height). */
+/* Take 2 · Send (round 8b): a real button. Wajih's exception to the flat-hairline ethos: a box with a brutalist hard
+   shadow, solid ink, no blur, 3 px (his pick, "medium"; --sh, set in page-02.css, scales with the cell on wide screens).
+   Pressing it slides it down into its shadow. Inside: the way it sends (mono), "Send" big, and round 4's drafting arrow
+   (Leader, his pick then) run out to the box's inner edge. Dark mode: the shadow is the light ink.
+   On the grid: the box's top on a line; the key's baseline on the half line, the word's on a line; whole cells tall. */
 
-.send { position: relative; display: block; color: var(--ink); text-decoration: none; -webkit-tap-highlight-color: transparent; cursor: pointer; }
+.send { position: relative; display: block; padding: 1rem 1rem 1rem; background: var(--paper); color: var(--ink); text-decoration: none;
+  box-shadow: inset 0 0 0 1px var(--ink), var(--sh) var(--sh) 0 0 var(--ink);
+  -webkit-tap-highlight-color: transparent; cursor: pointer; transition: transform .09s var(--ease-out), box-shadow .09s var(--ease-out); }
 .send__k { display: block; color: var(--graphite); font-size: .5rem; line-height: .5rem; }
 .send__row { position: relative; display: flex; align-items: flex-end; gap: 0; margin-top: .5rem; }
 .send__w { display: block; font-size: 4rem; line-height: 4rem; letter-spacing: -.025em; white-space: nowrap; margin-right: 1rem; }
@@ -10,23 +14,19 @@
 .send__shaft { stroke: currentColor; stroke-width: 1px; vector-effect: non-scaling-stroke; shape-rendering: crispEdges; }
 .send__head { flex: none; width: 1.5rem; height: 1rem; margin: 0 0 .5rem -.5rem; overflow: visible; }
 .send__head path { fill: currentColor; stroke: currentColor; stroke-width: 1px; vector-effect: non-scaling-stroke; stroke-linejoin: miter; }
-.send__say { display: block; font-size: 1rem; line-height: 1.5rem; margin-top: .5rem; }
-.send:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
-/* pressed / hovered: the arrow runs on a few pixels and the shaft thickens, nothing fills */
+/* the line under it: what Send will do (outside the box, a cell clear of its shadow) */
+.send__say { display: block; font-size: 1rem; line-height: 1.5rem; margin-top: 1rem; text-wrap: balance; }
+.send:focus-visible { outline: 2px solid var(--ink); outline-offset: calc(var(--sh) + 3px); }
+/* pressed: it slides into its shadow */
+.send:active, .send.is-pressed { transform: translate(var(--sh), var(--sh)); box-shadow: inset 0 0 0 1px var(--ink), 0 0 0 0 var(--ink); }
 .send__head, .send__arrow { transition: transform .22s var(--ease-out); }
-.send:active .send__head { transform: translateX(6px); }
-.send:active .send__arrow { transform: scaleX(1.02); transform-origin: 0 50%; }
 .send.is-busy { pointer-events: none; opacity: .55; }
 
 @media (min-width: 1024px) {
   .send__k { font-size: .4375rem; }
-  .send__w { font-size: 4rem; }
-  .send__say { font-size: 1rem; }
 }
 @media (hover: hover) and (pointer: fine) {
   .send:hover .send__head { transform: translateX(6px); }
   .send:hover .send__shaft { stroke-width: 1.5px; }
 }
-html[data-motion="reduce"] .send__head, html[data-motion="reduce"] .send__arrow { transition: none; }
-/* round 8 (TYPE_RULES rule 5): balanced, no lone word */
-.send__say { text-wrap: balance; }
+html[data-motion="reduce"] .send, html[data-motion="reduce"] .send__head, html[data-motion="reduce"] .send__arrow { transition: none; }

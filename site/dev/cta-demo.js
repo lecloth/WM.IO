@@ -12,10 +12,10 @@ for (let n = 0; n < 5 && !html; n++) { try { html = await (await fetch(n ? `../i
 const sec = new DOMParser().parseFromString(html, 'text/html').getElementById('page-07');
 document.getElementById('host').append(document.importNode(sec, true));
 const stage = document.querySelector('.p2__stage');
-stage.style.minHeight = 'auto';
+stage.style.paddingBottom = '1rem';
 snapHeights(document);
 document.querySelectorAll('.p2-row').forEach((row) => row.querySelector('input').addEventListener('change', (e) => {
   row.classList.toggle('is-on', e.target.checked);
   row.querySelector('.p2-ans__t').classList.toggle('on', e.target.checked);
 }));
-window.__cta = initCta(stage, { design, reduced, onNext: () => { said.textContent = 'Would glide down to the work slip (page 3).'; } });
+window.__cta = initCta(stage, { design, reduced, onNext: () => { said.textContent = 'Would glide down to the details.'; } });
