@@ -185,6 +185,7 @@ both models, and credit them here and on the site.
 - The phone history drawings (c. 1900 to 2007): generic forms drawn in code (`site/js/sheet01/eras.js`); no logos, no
   brand names, no copy of any one maker's design. Facts: STATE.md "Phone history: sources" and `tools/notes/sweep-truth.md`.
 - The hero phone (six layers, edges, materials), the cyanotype shader, labels and dimensions: three.js and GLSL.
+- **Take 2, round 9:** page 3's scene (`site/js/page03/lockworld.js`): the X-ray, the flight through the keyway, the lattice of locks (the real lock's simplified edges drawn many times by one instanced shader), the unlock wave, the fold. No outside asset beyond the Cutaway Lock above.
 - **Take 2, round 8b:** the hinged drawings (40° swing, one hairline frame), the walk (scrolling is walking), canvas 2's listing screen in layers (its notes, the property app's screen; the hex values and typefaces are the site's own), the shut door and its framing of the lock, the readability check (`tools/readcheck.py`); the final room as one slip with its hard-shadow fields and Send (`site/js/page02/`, `site/css/page-02.css`, `page-03.css`, `page-03-send.css`). No outside asset.
 - **Take 2, round 8:** the hallway's dress (its flat paper-and-grid surfaces under the lit card), the swing, the labels
   carried in the sheet's perspective (CSS `matrix3d`) on their rounded frosted backing, the knockout of the hallway's

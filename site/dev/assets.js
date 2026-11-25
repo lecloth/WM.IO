@@ -164,3 +164,11 @@ const divesReady = () => Promise.all(dives.map((d) => d.ready));
 $('#print-v').textContent = isDark() ? 'Dark' : 'Light';
 ready(); draw();
 window.__assets = { ready, draw, turn, live, dive: diveIn, door: doorIn, drawDives, divesReady, pair, phoneA, dives, hall, doorCard, diveApi: hall.dive, paintTheme, STOPS, DOOR };
+
+// ---------- (2b) page 3, into the lock: the real scene at phone size ----------
+import('../js/page03/lockworld.js').then(({ createLockWorld }) => {
+  const cv = document.getElementById('lockC'), sl = document.getElementById('lockS'); if (!cv) return;
+  const w = createLockWorld(cv, { base: '../' }), st = cv.parentElement;
+  const lay = () => { const r = st.getBoundingClientRect(), u = r.width / 20; w.layout(r.width, r.height, { u, strip: 2 * u, tbTop: r.height }); w.render(+sl.value / 1000); };
+  w.load().then(lay); sl.addEventListener('input', () => w.render(+sl.value / 1000)); addEventListener('resize', lay);
+});

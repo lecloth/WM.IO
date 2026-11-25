@@ -7,6 +7,7 @@ import { initTheme } from './engine/theme.js';
 import { runEnter } from './enter.js';
 import { initPage01 } from './page01/page.js';
 import { initPages23 } from './page02/page.js';
+import { initPage03 } from './page03/page.js';
 
 window.__wm.done('app');
 Promise.all(['420 1em Newsreader', '400 1em Newsreader', '300 1em "DM Mono"', '400 1em "DM Mono"', '500 1em "DM Mono"'].map((f) => document.fonts.load(f)))
@@ -21,6 +22,8 @@ initTheme(engine);
 let p1 = null, p23 = null;
 try { p1 = initPage01(engine); } catch (e) { console.error('[page 01]', e); }
 try { p23 = initPages23(engine); } catch (e) { console.error('[pages 02-03]', e); }
+let p3 = null;
+try { p3 = initPage03(engine); } catch (e) { console.error('[page 03]', e); }
 
 // ---------- timeline strip + title block: one segment per page (round 8: eight pages; the hallway is page 2) ----------
 const segs = [...document.querySelectorAll('.strip__seg')];
@@ -96,6 +99,7 @@ window.__t2stops = () => {
   if (p1 && !engine.reduced) Object.entries(p1.stops).forEach(([name, p]) => out.push({ name, y: Math.round(p1.yAt(p)) }));
   else if (document.getElementById('page-01')) out.push({ name: 'P1', y: 0 });
   if (engine.reduced) { const h = document.querySelector('.p1-hall'); if (h) out.push({ name: 'HALL', y: docTop(h) }); }
+  if (window.__p3 && !engine.reduced) [0, 0.1, 0.7, 1.2, 1.5, 2.2, 2.6, 3.1, 3.5, 4.0, 4.6].forEach((s, i) => out.push({ name: `L${String(i).padStart(2, '0')}`, y: Math.round(window.__p3.yAt(s)) }));
   ['page-03', 'page-04', 'page-05', 'page-06'].forEach((id) => { const el = document.getElementById(id); if (el) out.push({ name: id.replace('page-', 'P'), y: docTop(el) }); });
   const room = document.getElementById('page-07'), slipEl = document.getElementById('slip-when'), spec = document.getElementById('page-08');
   if (room) { const y = docTop(room); out.push({ name: 'ROOM', y }); const rows = room.querySelector('.p2-rows'); if (rows) out.push({ name: 'ROWS', y: docTop(rows) - Math.round(innerHeight * 0.3) }); }

@@ -23,7 +23,7 @@ Take 1's history below.
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Page 1 | Beacon → Bell's ink on our grid → X-ray phone, six named pieces (each leader on its own piece) → kinetic line, real phone → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum → **"Now, how can we serve you?"** (signed off, round 8) | ~5.9 (with 2: 10.54) | **round 8 built (25 Nov): waiting for Wajih's review** |
 | 2 | The hallway | The grid folds into it; it dresses up as you walk; "We design backwards…" (draft); scrolling is walking; five drawings hang on hinges and swing out 40° as you pass, one hairline frame each (1 property app's enquiry path, 2 the property app's listing screen in its design layers, 3 delivery tracker, 4 website loading, 5 booking app on the real iPhone 18 and S26), frosted labels under them turning with them (story lines drafts); the shut door, its lock at eye level; the walk ends with the lock filling the screen | 4.9 (inside page 1's section) | **round 8b built** |
-| 3 | Into the lock | Security showpiece: endless locks, unlocking in a wave | ~5 | stub (round 9) |
+| 3 | Into the lock | Starts on the hallway's last frame (the lock in X-ray); into the keyhole past the pins; out to the same lock on every crossing point of a grid in every direction; they unlock in a wave and fold back into one. Two lines (drafts) | 4.6 (overlapping page 1's last screen) | **round 9 built** |
 | 4 | How we work | Short lines in Wajih's voice; the wrong key fails, then the pick, a 2D cutaway turning to face you | ~4 | stub (round 10) |
 | 5 | Lighter trips | AI, websites, apps | ~9 | stub |
 | 6 | Team | Three placeholder cards (nothing invented) | ~1 | stub |
@@ -230,7 +230,33 @@ Take 1's history below.
   backings as lines, a drawing's own pairs left to readcheck. **`tools/readcheck.py` (new, part of the gate)**,
   `tools/phone_stage.py` (new: one stage on the S23: fps per segment, real swipes, reduced motion, shots; `--fps-only`).
 
+### Round 9 structure notes (25 Nov, stage 9)
+- **The seam:** the hallway's last 0.2 screens (`dive.js` `XRAY`) draw a blue screen (#173F73 straight to the canvas) and a
+  second copy of the lock, lines only, no depth test, over the hallway: the lock in X-ray. `#page-03` (`src/parts/page-03-lock.html`,
+  `site/css/page-03-lock.css`) overlaps page 1's last screen (`margin-top: -100lvh`, 560lvh tall); its sticky stage is
+  hidden until its top reaches the screen's top (`.is-on`), then draws the same frame (`lockworld.js`: the same lens,
+  `endFaceHeight` framing, the same lines). Page 1's fixed hallway layers hide as its stage scrolls on (`.is-past`).
+- **`site/js/page03/lockworld.js`:** `createLockWorld(canvas)` → `load`, `layout(W, H, { u, strip, tbTop })`, `render(s)`
+  (s in screens, 0 .. `LEN` 4.6). `BEATS`: hold, keyhole (into the keyway at y = KEY_Y, pins overhead), turn, pull (back
+  out to `Dfar`), lattice (fades in), wave (the plugs turn by distance from ours), fold (in to ours, relocked; `Dend`:
+  one lock under half the screen, where page 4 starts). The lattice: `THREE.LineSegments` over an
+  `InstancedBufferGeometry` (the lock's simplified edges, `latticeSegments`), one draw call, plug rotation and fold in
+  the vertex shader; as many columns and rows as the screen's shape asks (`setOffsets`), five deep.
+- **`site/js/page03/page.js`:** `initPage03`: a lagged scrub (0.1 s, as page 1), the two lines (`.p3l__line`, opaque
+  blue backing), `window.__p3` (`yAt(s)`, `S()`, `out()`), page 3's lock box added to `window.__drawn`. Reduced
+  motion: one still frame (the lattice mid-wave) and both lines in the flow. `main.js` `__t2stops` adds L00..L10.
+- **Tools:** `tools/pshot.py` (shots at positions in a later page: `--api __p3 --ss ...` or `--sel #id`; `--reduced`).
+
 ### Take 2 log
+- **Round 9 (25 Nov, stage 9, into the lock).** Built as above. Lines (drafts): "Your business runs on thousands of
+  locks." / "We make sure only the right keys turn them."
+  - **Checks:** typecheck 0 machine failures (page 3's 11 stops, the hallway's DOOR and LOCK, P04; 384 x 734, 1440 x 900,
+    2160 x 1147; light and dark; 84 frames). The seam: the frames either side of the hand-over show the same lock and
+    framing (mean difference 6 grey levels on the phone, 1.5 on the laptop; only the page number changes). S23
+    (`phone_stage.py --stage 9`): 59.7-60 fps in all three segments on both passes (worst frame 33 ms, one each);
+    8 real swipes, no pull-back; 0 errors. The lattice: about 455 locks of 761 segments each in one draw call.
+    Reduced motion: the still lattice and both lines (fixed on the way: the second line sat under the title block).
+    Shots: `tools/shots/r9/`.
 - **Round 8b (25 Nov, stage 8b of "Finish the site").** Brief committed (`cd1e5eb`).
   - **Built:** the hinged hallway (above), canvas 2 in layers (the watch is gone), the shut door with the lock at eye
     level filling the screen at the end (the 100° opening and the walk through are removed), the opening line's box

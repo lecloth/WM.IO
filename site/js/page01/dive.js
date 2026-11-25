@@ -52,6 +52,9 @@ const SPEED = 1.5;                                               // a screen of 
 const SWING = 40 * Math.PI / 180;                                // how far a drawing swings out from its wall
 export const STOPS = CLOSE.map((c) => [S_(c - 0.2), S_(c)]);     // per drawing: [fully out, closest] (for the tests)
 export const DOOR = { walk: [S_(3.9), 1], near: [S_(4.5), 1] };   // the walk up to the lock; it fills the screen at q = 1
+// stage 9 (round 9): once the lock fills the screen, its body goes see-through: the ground turns blue and every part shows
+// as white hairlines (page 1's X-ray). Page 3 starts on exactly that frame (lockworld.js draws the same lines)
+export const XRAY = [S_(4.66), S_(4.86)];
 const BLUE = '#173F73', WHITE = '#FFFFFF';
 const ZS = 0.4;       // the sheet's offset from its panel (off the hinge)
 
@@ -248,6 +251,13 @@ export function createDive(root, top, { base = '' } = {}) {
   door.leaf = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), leafMat); door.leaf.receiveShadow = true; door.group.add(door.leaf);
   door.group.add(door.lock);
   let lockParts = null;
+  // the X-ray pass: a blue screen, then the whole lock's hairlines (a second copy, lines only, no depth test) on it
+  const xScene = new THREE.Scene(), xHolder = new THREE.Group(); xHolder.matrixAutoUpdate = false; xScene.add(xHolder);
+  const xQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({ uniforms: { uC: { value: new THREE.Vector3(23 / 255, 63 / 255, 115 / 255) }, uA: { value: 0 } },   // #173F73 as it is (sRGB, straight to the canvas)
+    transparent: true, depthTest: false, depthWrite: false,
+    vertexShader: 'void main(){ gl_Position = vec4(position.xy, 0.0, 1.0); }', fragmentShader: 'uniform vec3 uC; uniform float uA; void main(){ gl_FragColor = vec4(uC, uA); }' }));
+  xQuad.frustumCulled = false; const xQuadScene = new THREE.Scene(); xQuadScene.add(xQuad);
+  let xLock = null;
   /** the real "Cutaway Lock" (lock3d.js: the same parts, look and size rule as page 3 uses, so page 3 starts on this
    *  exact frame). In the door its face is to you, the body inside the door (hidden by the leaf). */
   async function loadLock(b = base) {
@@ -258,6 +268,10 @@ export function createDive(root, top, { base = '' } = {}) {
       const obj = lockParts.build({ inside: false });
       obj.lineMats.forEach((m) => { m.resolution.set(Math.round(W * dpr), Math.round(H * dpr)); m.linewidth = Math.max(1, Math.round(dpr)); lineMats.push(m); });
       door.lockObj = obj; door.lock.add(obj.root);
+      xLock = lockParts.build({ inside: true });
+      xLock.solids.forEach((m) => { m.visible = false; });
+      xLock.lineMats.forEach((m) => { m.resolution.set(Math.round(W * dpr), Math.round(H * dpr)); m.linewidth = Math.max(1, Math.round(dpr)); m.depthTest = false; lineMats.push(m); });
+      xLock.xray(1); xLock.setKey(0); xHolder.add(xLock.root);
       placeLock(); colours();
       try { await renderer.compileAsync(scene, camera); } catch (e) { try { renderer.compile(scene, camera); } catch (e2) {} }
       door.lockState = 'ready'; render(lastQ, true);
@@ -265,7 +279,7 @@ export function createDive(root, top, { base = '' } = {}) {
   }
   function placeLock() {
     const o = door.lockObj; if (!o) return;
-    o.setFaceHeight(door.hL);
+    o.setFaceHeight(door.hL); xLock?.setFaceHeight(door.hL);
     // the face a hair proud of the leaf, the body behind it, inside the door; at eye level on the walking line
     door.lock.position.set(-door.group.position.x, -door.group.position.y, 0.9);
   }
@@ -496,7 +510,7 @@ export function createDive(root, top, { base = '' } = {}) {
   }
   const walkAt = (s) => { if (!walkTab) return 0; const n = walkTab.length - 1, x = clamp(s / DIVE) * n, i = Math.min(n - 1, Math.floor(x)); return lerp(walkTab[i], walkTab[i + 1], x - i); };
 
-  let lay = null, tEnd = 0;
+  let lay = null, tEnd = 0, lastStrip = 0, lastTb = 0;
   /** opts: u (the cell), strip (its height), noTitleblock */
   function layout(w, h, opts = {}) {
     W = w; H = h;
@@ -578,6 +592,7 @@ export function createDive(root, top, { base = '' } = {}) {
     tEnd = walkAt(DIVE);
     door.Hd = 0.78 * H; door.Wd = Math.min(0.6 * W, door.Hd / 2.1, (half - u) / 0.87);
     door.hL = 0.16 * door.Hd;
+    lastStrip = strip; lastTb = tbTop;
     const Dend = door.hL * P / endFaceHeight(H, { strip, tbTop, u });
     door.zFace = P - tEnd - Dend; const zFace = door.zFace;
     const lastFar = Math.max(...lay.map((l, i) => l.Zh + lay[i].wS + u));
@@ -805,6 +820,12 @@ export function createDive(root, top, { base = '' } = {}) {
     knockout(rects);
     renderer.autoClear = true;
     renderer.render(scene, camera);
+    const xt = xLock ? ease2(span(q, ...XRAY)) : 0;
+    if (xt > 0.001) {
+      xQuad.material.uniforms.uA.value = xt; xLock.setOpacity(xt);
+      door.lock.updateMatrixWorld(true); xHolder.matrix.copy(door.lock.matrixWorld); xHolder.matrixWorldNeedsUpdate = true;
+      renderer.autoClear = false; renderer.render(xQuadScene, camera); renderer.render(xScene, camera); renderer.autoClear = true;
+    }
     const warmDraw = phones.warmNow && !phones.root.visible && f5;
     if (warmDraw) { phones.root.visible = true; phones.mats.forEach((m) => { m.opacity = 0.002; }); }
     if (phones.warm && phones.root.visible) phones.warm = false;
@@ -815,7 +836,7 @@ export function createDive(root, top, { base = '' } = {}) {
     if (warmDraw) phones.root.visible = false;
     const ph = { state: phones.state, mix: phones.mix, yaw: phones.yaw, visible: phones.root.visible };
     const lockBox = door.lockObj ? screenBox(door.lockObj.root) : null;
-    const o = { info, q, t, phones: ph, open: T >= 1, tr: T, dress, door: { alpha: door.alpha, lock: door.lockState, box: lockBox, fill: lockBox ? lockBox.h / H : 0 }, labels: labQuads };
+    const o = { info, q, t, phones: ph, open: T >= 1, tr: T, dress, door: { alpha: door.alpha, lock: door.lockState, box: lockBox, fill: lockBox ? lockBox.h / H : 0 }, xray: xLock ? ease2(span(q, ...XRAY)) : 0, labels: labQuads };
     if (!again) out = o; else if (out) Object.assign(out, o);
     if (again) onAgain?.(out);
     return out;
@@ -835,6 +856,7 @@ export function createDive(root, top, { base = '' } = {}) {
   function drawn() {
     const D = { lines: [], shapes: [], texts: [], fails: [] };
     if (!lay || !out) return D;
+    if (out.xray > 0.5) { if (door.lockObj) { const b = screenBox(door.lockObj.root); if (b) D.shapes.push({ ...b, tag: 'lock:xray' }); } return D; }
     const segIn = (A, B) => A[2] > camera.near && B[2] > camera.near;
     const occ = [];
     frames.forEach((f) => { if (!f.pivot.visible || f.sheet.material.opacity < 0.9) return; f.pivot.updateMatrixWorld(true);
@@ -1013,5 +1035,5 @@ export function createDive(root, top, { base = '' } = {}) {
   }
   function reset() {}
   return { layout, render, load, warm, reset, theme, sizeLayers, LAYERS, loadPhones, loadLock, drawn, readability, look: LOOK.id, stops: STOPS, close: CLOSE.map(S_), phones: () => phones.state, frames: () => frames, lay: () => lay, P: () => P, L: () => L,
-    door: () => ({ ...door, tEnd }), camera: () => camera, renderer: () => renderer, lockParts: () => lockParts, onBeat: (fn) => { onAgain = fn; } };
+    door: () => ({ ...door, tEnd }), endFrame: () => ({ P, hL: door.hL, Dend: door.hL * P / Math.max(1, endFaceHeight(H, { strip: lastStrip, tbTop: lastTb, u: gu })) }), camera: () => camera, renderer: () => renderer, lockParts: () => lockParts, onBeat: (fn) => { onAgain = fn; } };
 }

@@ -1,0 +1,22 @@
+/* Take 2 · page 3, into the lock (stage 9; site/js/page03/). The section overlaps page 1's last screen; its stage is
+   see-through until its top reaches the screen's top (.is-on), then shows the hallway's last frame (the lock in X-ray on
+   the blue ground) and carries on. 4.6 screens of scroll (lockworld.js LEN) + its own screen. */
+.p3l { position: relative; z-index: 3; height: 560vh; height: 560lvh; margin-top: -100vh; margin-top: -100lvh; pointer-events: none; }
+.p3l__stage { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; visibility: hidden; background: var(--prus); color: var(--blueprint-ink); }
+.p3l__stage.is-on { visibility: visible; }
+.p3l__gl { position: absolute; inset: 0; display: block; }
+/* the two lines: on an opaque blue backing (the lattice's lines stop behind it), a cell round the words */
+.p3l__line { position: absolute; left: 0; top: 0; margin: 0; isolation: isolate; opacity: 0; transform: translateY(.5rem); transition: opacity .2s linear, transform .3s var(--ease-out, ease-out); }
+.p3l__line::before { content: ""; position: absolute; inset: -1rem -1rem -1.5rem; z-index: -1;   /* the trimmed text box ends at the baseline: half a cell more under the descenders */ border-radius: .5rem; background: var(--prus); }
+.p3l__line.on { opacity: 1; transform: none; transition: opacity .3s linear .05s, transform .5s var(--ease-out, ease-out); }
+.p3l__line p { margin: 0; }
+.p3l__f { display: block; margin: 0 0 .5rem !important; color: rgba(236, 241, 246, .72); line-height: .5rem; }
+.p3l__t { font-family: var(--f-display, Newsreader, Georgia, serif); font-weight: 420; font-size: 1.5rem; line-height: 2rem; letter-spacing: -.012em; text-wrap: balance; }
+@media (min-width: 1024px) { .p3l__t { font-size: 2rem; line-height: 3rem; } }
+@media (min-width: 1800px) and (min-height: 1000px) { .p3l__t { font-size: 2.5rem; line-height: 3rem; } }
+/* reduced motion: the still lattice, then both lines in the flow under it (clear of the title block) */
+.p3l.is-static { height: auto; margin-top: 0; pointer-events: auto; }
+.p3l.is-static .p3l__stage { position: relative; visibility: visible; height: auto; overflow: visible; padding: 0 var(--gut) 9rem; }
+.p3l.is-static .p3l__gl { position: relative; margin: 0 calc(-1 * var(--gut)); height: 100vh; height: 100lvh; }
+.p3l.is-static .p3l__line { position: relative; left: auto !important; top: auto !important; width: auto !important; max-width: 40rem; margin-top: 3rem; opacity: 1; transform: none; transition: none; }
+html[data-motion="reduce"] .p3l__line { transition: none; }
