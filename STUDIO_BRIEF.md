@@ -953,3 +953,65 @@ three.js; Lenis with light settings.
 - **Page 1's exploded phone:** BATTERY and BOARD both point at the board. Each name's leader must point at its own
   piece; spread the pieces further apart; give "Screen" clear room on 360-wide phones too.
 - **Still open:** the final room's call-to-action pick (A, B or C); the drafts; the two phone licences.
+
+### Finish the site (25 Nov, Wajih after round 8): round 8b, round 9, round 10, round 11. Overrides the above where they differ.
+- **The goal (Wajih):** one run delivers a finished site that he judges as a whole. It is built in four stages, each
+  committed when it works: **8b** (round 8's fixes), **9** (into the lock), **10** (how we work), **11** (lighter trips,
+  team, spec sheet). Light checks after each stage; one full, rigorous check at the end (his standing rule).
+- **Stage 8b, the hallway:**
+  - **Each drawing hangs on its wall by a hinge** and swings out part way as you approach (about 40°, the chat's number),
+    just far enough to read while you walk. It never floats in the middle of the corridor, never turns to face you
+    full on and never fills the screen (at its closest, at most about half the screen's height). The stretch check
+    changes with it: instead of "0% stretch at rest", every word in a drawing is at least the type scale's smallest size
+    on screen at the drawing's closest point.
+  - **Each drawing gets one hairline frame** on the grid (no moulding, mat or glass; those caused round 6's flicker).
+  - **Drawings render sharp** at every size (round 8's looked blurry on Wajih's laptop).
+  - **In the hallway, scrolling is walking:** the camera moves whenever you scroll and only then; no held stretches
+    inside the hallway. To linger, you stop scrolling. Page 1's lines keep their short holds.
+  - **The end: a wall facing you, with the door in it. The door stays shut and never opens** (round 8 opened it 100° and
+    walked through: remove that). Its lock sits at eye level, big enough to read as a lock from a distance (round 8's
+    was tiny and far). The camera walks up to it, the lock fills the screen, and round 9 starts from it.
+  - **Canvas 2 (Wajih's pick from the chat's two options): the watch goes.** In its place, a screen broken into its
+    design layers, bottom to top: who they are → what they must feel → requirements → palette and type → the finished
+    screen. The layers spread apart as the frame swings out. The screen comes from one of the hallway's own products (no
+    new product). Each layer carries real content: actual notes, actual hex values, the actual typeface.
+  - **Bug:** "We design backwards." ran past its frosted backing on the laptop. Fix it, and make `TYPE_RULES.md` and
+    `tools/typecheck.py` count a backing's edges and a frame's edges as drawn lines, so this can't pass again.
+- **Stage 8b, the final room:**
+  - **One slip from top to bottom, on plain paper, no grid behind** (Wajih: the task list and the send list must match).
+    The task list uses the "Send it by" list's style: small boxes, no numbers. Then the details, "Send it by", Send.
+  - **Fields look like fields and Send is a real button** (Wajih's exception to the flat-hairline ethos, like the frosted
+    backing): a **brutalist hard shadow**, solid ink, no blur. Send: a box with a **3 px** offset shadow (Wajih's pick,
+    "medium"); fields and text areas: half of it. Pressing Send slides it down into its shadow. Dark mode: the shadow
+    uses the light ink. On wide screens the offset may scale with the grid cell.
+  - **Nothing ever hides under the title block** (on phones it covered the last task row and the line under Send).
+  - The heading "What's the task list? Tick everything that fits." is signed off: no draft flag.
+  - The call to action stays A (the beacon on the first box) until Wajih picks.
+- **Stage 9, into the lock (the security showpiece, about 4-5 screens, scrubbed by scroll):**
+  1. The shut door's lock fills the screen; its body goes see-through (X-ray hairlines, like page 1's phone).
+  2. We go in through the keyhole, past the pins.
+  3. We come out and pull back: the lock has multiplied. A lock sits on every crossing point of the grid, rows going
+     in every direction, like Interstellar's tesseract (a feeling reference only; never copy a frame).
+  4. **They unlock in a wave** (Wajih: the normal wave).
+  5. They fold back into one lock, which carries into page 4.
+  The same real lock throughout (the Cutaway Lock). At most two short lines, flagged drafts. 60 fps on the S23.
+- **Stage 10, how we work (about 4 screens):**
+  - The one lock turns into a 2D cutaway that turns to face you.
+  - The wrong key goes in; the pins sit at the wrong heights; it fails.
+  - Then the lock is picked pin by pin. **Seven pins, one per verb of page 1's drum, in the drum's order** (the chat's
+    suggestion; Wajih judges it in the build). As each pin sets on the line, its verb and its signed-off meaning from the
+    drum appear beside it on a leader. The lock turns on the last pin.
+  - Lines in Wajih's voice before the picking (the chat's drafts, flagged): "First, the obvious key." / "It fails. Most
+    people stop here." / "We don't."
+- **Stage 11, the rest:**
+  - **Lighter trips (page 5): AI, websites, apps.** Three short rooms (2-3 screens each) in the same hairline language,
+    each on one of our made-up products, never repeating a hallway canvas's point. The chat's ideas (Wajih judges them in
+    the build): **AI** — an assistant drafts the reply to a customer's enquiry and nothing goes out until a person
+    approves it; **websites** — a page builds itself from the drafting grid into the finished site, drawn → real like
+    page 1's phone; **apps** — the delivery tracker running live on the two real phones. New lines are flagged drafts.
+  - **Team (page 6):** three placeholder cards (picture + short bio), clearly marked as placeholders. Nothing invented.
+  - **Spec sheet (page 8):** one screen of the page's own real numbers, measured live in the browser where possible
+    (page weight, load time, frames per second, grid cells, fonts, assets and their licences). Never an invented
+    number. Then the loop back to the start.
+- **Still open for Wajih:** the final room's call to action (A, B or C); every flagged draft; the seven-pin idea; the
+  lighter trips' ideas; the two phone licences (before any hosting).
