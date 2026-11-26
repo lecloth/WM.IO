@@ -14,7 +14,7 @@ GOTO_JS = """async (p) => { const e = window.__t2.engine; const y = window.__p1.
   const t0 = performance.now(); while (!window.__p1.settled() && performance.now() - t0 < 3000) await new Promise(r => requestAnimationFrame(r));
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); return scrollY; }"""
 INFO_JS = """() => { const d = window.__p1.dive(); if (!d) return null; const api = window.__p1.diveApi;
-  return { q: +d.q.toFixed(4), cam: d.cam.map(v => +v.toFixed(3)), dress: +d.dress.toFixed(2), lights: +d.lights.toFixed(2), band: d.band ? { i: d.band.i, op: +d.band.op.toFixed(2) } : null,
+  return { q: +d.q.toFixed(4), cam: d.cam.map(v => +v.toFixed(3)), eye: +d.eye.toFixed(3), phones: d.phones, dress: +d.dress.toFixed(2), lights: +d.lights.toFixed(2), band: d.band ? { i: d.band.i, op: +d.band.op.toFixed(2) } : null,
     open: d.info.filter(f => f.swing > 0.01).map(f => ({ i: f.i + 1, swing: +f.swing.toFixed(2), lab: +f.lab.toFixed(2), w: +f.widthShare.toFixed(3), h: +(f.share / innerHeight).toFixed(3) })),
     lock: d.door, chrome: document.documentElement.classList.contains('hall-dark') }; }"""
 
@@ -48,7 +48,7 @@ async def main(a):
             r = await page.evaluate("() => window.__p1.diveApi.readability()", isolated_context=False)
             for f in r["frames"]:
                 print("read", f["i"], f["key"], "cells", f["cells"], "plaque", f["plaque"], "Dc", f["Dc"], "slide", f["slide"], "minSize", round(f["closest"]["minSize"] or 0, 3),
-                      "w", round(f["closest"]["widthShare"], 3), "h", round(f["closest"]["share"], 3), "inPlane", f["inPlane"]["worst"], "/", f["inPlane"]["need"], f["inPlane"]["what"])
+                      "w", round(f["closest"]["widthShare"], 3), "h", round(f["closest"]["share"], 3), "off", f["closest"].get("off"), "inPlane", f["inPlane"]["worst"], "/", f["inPlane"]["need"], f["inPlane"]["what"])
         print("errors:", errs or "none")
         await b.close()
 

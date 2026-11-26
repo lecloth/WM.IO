@@ -98,15 +98,15 @@ async def run_build(pw, b, a, out):
     base = "http://127.0.0.1:8109/" + (f"{b}/" if b.endswith("old") else "")
     await page.goto(base + "?first", wait_until="load")
     await page.bring_to_front(); await page.wait_for_timeout(800)
-    # Ctrl+minus, one step at a time, until the zoom is 67% (devicePixelRatio 2 x 0.667 = 1.333)
-    res = None
-    for _ in range(14):
-        dpr = await page.evaluate("devicePixelRatio")
-        if 1.32 < dpr < 1.34: break
-        await page.bring_to_front(); await page.wait_for_timeout(250)
-        res = zoom_out("Wajih Mansouri", 1) if dpr > 1.34 else subprocess.run(["powershell", "-NoProfile", "-Command",
-            "$ws = New-Object -ComObject WScript.Shell; $ws.AppActivate('Wajih Mansouri') | Out-Null; Start-Sleep -Milliseconds 300; $ws.SendKeys('^{+}')"], capture_output=True, text=True).stdout
-        await page.wait_for_timeout(800)
+    # hallway pass 3: Wajih's setup (200% Windows scaling, Chrome at 67%: devicePixelRatio 1.333, about 2160 x 1147 CSS
+    # px) set on this window only, through its own DevTools session. (Before, it sent real Ctrl+minus key presses to the
+    # window titled "Wajih Mansouri"; when Windows refused to bring it forward the presses went to whatever window had
+    # the focus: never again.)
+    cdp0 = await page.context.new_cdp_session(page)
+    await cdp0.send("Emulation.setDeviceMetricsOverride", {"width": a.width, "height": a.height, "deviceScaleFactor": a.dpr, "mobile": False})
+    CDPS[id(page)] = cdp0
+    res = "cdp"
+    await page.wait_for_timeout(800)
     env = await page.evaluate("({ dpr: devicePixelRatio, w: innerWidth, h: innerHeight, sw: screen.width, sh: screen.height })")
     print(b, "AppActivate:", res, "env:", env, flush=True)
     await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
@@ -151,7 +151,8 @@ async def run_build(pw, b, a, out):
             G = [gray(f) for f in fr]; rep[f"p3_{name}_flicker"] = flicker(G)
     # 4. (round 8, current build only) the hyperdrive, frame by frame: its own drawing stepped at 60 fps over the stars and
     # the settle, on a full-window canvas in this same window (dev/hyper.html?full draws one frame per call)
-    if not b.endswith("old"):
+    if not b.endswith("old") and not a.no_hyper:
+      try:
         await page.goto("http://127.0.0.1:8109/dev/hyper.html?full&t=0.3", wait_until="load"); await page.wait_for_timeout(1500)
         cdp = CDPS.get(id(page)) or await page.context.new_cdp_session(page); CDPS[id(page)] = cdp
         import base64
@@ -162,6 +163,7 @@ async def run_build(pw, b, a, out):
         G = [gray(f) for f in files]
         rep["hyper_flicker"] = flicker(G)
         rep["hyper_dpr"] = await page.evaluate("devicePixelRatio")
+      except Exception as e: rep["hyper_error"] = str(e)[:160]   # (outside the hallway: never lose the rest)
     await ctx.close()
     return rep
 
@@ -176,5 +178,6 @@ async def main(a):
     (out / "flicker.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
 
 ap = argparse.ArgumentParser(); ap.add_argument("--builds", default="r7old,current"); ap.add_argument("--out", default="tools/shots/r8/flicker"); ap.add_argument("--frames", type=int, default=36)
+ap.add_argument("--width", type=int, default=2160); ap.add_argument("--height", type=int, default=1147); ap.add_argument("--dpr", type=float, default=1.333); ap.add_argument("--no-hyper", action="store_true")
 with BrowserLock():
     asyncio.run(main(ap.parse_args()))

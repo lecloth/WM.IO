@@ -57,6 +57,8 @@ MEASURE_JS = r"""(stop) => {
     // own caption) and the captions (text)
     (dv.info || []).forEach((f) => { if (f.quad && f.op > 0.9 && f.swing > 0.98) { const xs = f.quad.map((c) => c[0]), ys = f.quad.map((c) => c[1]); items.push({ name: `frame ${f.i + 1}`, kind: 'frame', l: Math.min(...xs), t: Math.min(...ys), r: Math.max(...xs), b: Math.max(...ys) }); } });
     document.querySelectorAll('.dive__lab.on').forEach((c, k) => add(`label ${[...c.parentNode.children].indexOf(c) + 1}`, c, 'text'));
+    // hallway pass 3: the caption band (dark, opaque) must not cover a frame, a plaque or the chrome
+    document.querySelectorAll('.dive__band.on').forEach((c) => { if (+getComputedStyle(c).getPropertyValue('--op') > 0.5) add('caption band', c, 'text'); });
   }
   // page 1's band is in stage coordinates (the stage is 100lvh; on a real phone that is taller than the visible screen)
   const SH = document.querySelector('.p1__stage')?.clientHeight || H;

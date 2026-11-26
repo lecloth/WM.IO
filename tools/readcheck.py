@@ -1,11 +1,14 @@
-"""The hallway's readability check (round 8b, replaces round 4's stretch check). The drawings hang at an angle now, so
-"0% stretch at rest" no longer applies. For each drawing, at every size, at its closest fully shown moment:
+"""The hallway's readability check (round 8b; hallway pass 3: it measures what the fixed hall now shows, the open
+frames square to you with their plaques, the eye at one height). For each frame, at every size, read closest:
   - every word in it is at least the type scale's smallest step on screen (0.375 cells), measured as its font size
     projected at the word's own depth;
-  - its words keep half a cell from its own lines, frame and layers (measured in its plane, projected: dive.js inPlane);
-  - its sheet is at most half the screen's height at the last moment it is still visible;
-  - its hinge stays inside the screen while it is fully shown (edge);
-  - its label's backing reaches at least half a cell past its words in its own plane, seen at the label's least scale.
+  - its words keep half a cell from its own lines, its sheet's edge and its dots (in its plane, projected: inPlane);
+  - the frame with its plaque (the block) lies between the strip and the caption band / title block: its top no higher
+    than half a cell under the strip's cell margin, its foot no lower than half a cell past the band's (block);
+  - the block's middle within half a cell of the room's middle (centred; the eye is one height for the whole walk);
+  - the frame inside the screen's sides (edge);
+  - its plaque's words at least half a cell inside the plate (label pad).
+(Round 8b's "sheet at most half the screen's height" is gone: an open frame is now meant to fill the room.)
   python -I tools/readcheck.py [--sizes ...] [--out tools/shots/r8b/readcheck.json]
 Last line: READCHECK failures: N"""
 import argparse, asyncio, json, sys
@@ -32,22 +35,26 @@ async def main(a):
             r = await page.evaluate(JS, isolated_context=False)
             for f in r["frames"]:
                 c, l, ip = f["closest"], f["lastVisible"], f["inPlane"]
+                lim, u = r["limits"], r["u"]
                 row = dict(size=sz, frame=f["i"], key=f["key"], cells=f["cells"], minSize=round(c["minSize"], 3) if c["minSize"] is not None else None,
-                           share=round(l["share"], 3), edge=round(c["edge"], 1), clear=ip["worst"], need=ip["need"], what=ip["what"], labelPad=ip.get("labelPad"))
+                           share=round(l["share"], 3), width=round(c["widthShare"], 3), top=c["top"], bottom=c["bottom"], off=c["off"], eye=r["eye"],
+                           edge=round(c["edge"], 1), clear=ip["worst"], need=ip["need"], what=ip["what"], labelPad=ip.get("labelPad"))
                 rows.append(row)
                 if row["minSize"] is not None and row["minSize"] < 0.375: fails.append(("size", row))
-                if row["share"] > 0.5 + 1e-3: fails.append(("share", row))
+                if row["top"] < lim["top"] - 0.5 * u or row["bottom"] > lim["bottom"] + 0.5 * u: fails.append(("block", row))
+                if abs(row["off"]) > 0.5: fails.append(("centre", row))
                 if row["clear"] < row["need"]: fails.append(("clear", row))
                 if row["edge"] < 0: fails.append(("edge", row))
                 if row["labelPad"] is not None and row["labelPad"] < 0.5: fails.append(("label pad", row))
-            print(sz, " ".join(f"{x['key']}:{x['minSize']}/{x['share']}/{x['clear']}" for x in rows if x["size"] == sz), flush=True)
+            print(sz, "eye", r["eye"], " ".join(f"{x['key']}:{x['minSize']}/w{x['width']}/off{x['off']}/{x['clear']}" for x in rows if x["size"] == sz), flush=True)
             await ctx.close()
         await b.close()
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps({"rows": rows, "fails": fails}, indent=1), encoding="utf-8")
     for k, r in fails: print("FAIL", k, r)
     ws = min(x["minSize"] for x in rows if x["minSize"] is not None); wsh = max(x["share"] for x in rows); wc = min(x["clear"] - x["need"] for x in rows)
-    print(f"worst word size {ws} cells (rule 0.375), worst sheet share {wsh} (rule 0.5), worst clear space margin {wc:.2f} px")
+    wo = max(abs(x["off"]) for x in rows)
+    print(f"worst word size {ws} cells (rule 0.375), largest frame share of the height {wsh}, worst centring {wo} cells (rule 0.5), worst clear space margin {wc:.2f} px")
     print(f"READCHECK failures: {len(fails)}")
 
 ap = argparse.ArgumentParser(); ap.add_argument("--sizes", default=SIZES); ap.add_argument("--out", default="tools/shots/r8b/readcheck.json")

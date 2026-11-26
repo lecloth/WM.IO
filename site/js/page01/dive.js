@@ -9,17 +9,18 @@
 //   appear, lit -> you walk, and each frame opens as you reach it. The sketch's grid stays faintly on the dressed walls.
 // - The dark hall (hall-looks.js): light and shine are painted into the surfaces once (paintHall), no live lights or
 //   shadows. Pass 2's lighting order: the lit art is the brightest thing on screen, then its plaque; the ceiling's strip
-//   is a soft line. The only live light is the studio environment on the door's brass lock.
-// - Scrolling is walking: the camera moves along the hall only while you scroll, at one steady pace. Pass 2: as a frame
-//   opens, the camera slides (never turns) towards it, so the frame, its plaque and the caption band sit between the
-//   strip and the title block; on portrait screens sideways too, so the open frame is centred and about two thirds of
-//   the screen's width. As the frame folds back, the camera slides back to the middle.
+//   is a soft line. The only live light is the studio environment, on frame 5's real phones and the door's brass lock.
+// - Scrolling is walking: the camera moves along the hall only while you scroll, at one steady pace. Pass 3: the camera
+//   is pre-ducked: one fixed eye height for the whole walk (per screen, a little under the frames' middles), chosen so
+//   each open frame with its plaque sits centred between the strip and the caption band. It never moves up or down; on
+//   portrait screens it slides gently sideways to the open frame (centred, about two thirds of the width) and back.
 // - Each frame (pass 2: a real black float frame: a thin black moulding with depth, its top edge catching the light, the
 //   blueprint floating inside it with a dark shadow gap all round, a soft shadow on the wall) hangs on its wall by a
 //   hinge at its near edge, swings out fully to 90 degrees (square to you) as you reach it, is held open while you come
 //   closer, then folds back to the wall as you pass. About a third of the hall's height. Under each, a small light
-//   plaque exactly as wide as the frame (the title and the FIG line); the open frame's title and story line show in a
-//   dark caption band at the bottom of the screen.
+//   plaque exactly as wide as the frame (the title and the FIG line); the open frame's story line shows in a dark
+//   caption band at the bottom of the screen. Pass 3: frame 5's blueprint of the two phones dresses into the real 3D
+//   iPhone 18 and Galaxy S26 (local only, realphones.js), which turn slowly in the frame's spotlight.
 // - The end: a wall facing you, the door centred in it (about 0.9 x 2.1), two panels, shut. Its lock (pass 2): the real
 //   Cutaway Lock in polished brass (the site's one warm tone), on the door's right edge strip at handle height. The walk
 //   ends standing in front of the shut door; the hallway hands over to page 3 as before: the screen turns blue and page
@@ -29,7 +30,7 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
-import { FRAMES, OPENING, dimParts, MOUNT } from './corridor-drawings.js';
+import { FRAMES, OPENING, dimParts, MOUNT, PHONE_PAIR } from './corridor-drawings.js';
 import { LOOKS, HALL as LOOK_ID } from './hall-looks.js';
 import { grid } from '../engine/grid.js';
 import { studio } from '../phones/studio.js';
@@ -86,7 +87,7 @@ export const STOPS = [];                         // per frame [fully open, close
 const SWING = Math.PI / 2;                       // fully open: square to you
 const OPEN_LEN = 1.0, HOLD_LEN = 0.8, FOLD_LEN = 1.0;   // hall units walked while a frame swings out, is held open, folds back
 const BLUE = '#173F73', WHITE = '#FFFFFF';
-const PLAQUE = '#A8ACB2';                        // the plaques' light plate (the same in light and dark mode)
+const PLAQUE = '#EDEEF0';                        // the plaques' plate: light paper (pass 3), the same in light and dark mode
 // offsets off the frame's back, in drawing units: the sheet, its lines, its words (the moulding is deeper: FD)
 const ZS = 8, ZL = ZS + 3, ZT = ZS + 4;
 
@@ -156,9 +157,8 @@ function quadMatrix(w, h, q) {
 
 /** a frame's plaque (pass 2): only the title and the FIG line; its light plate is drawn in WebGL, as wide as the frame */
 export const labelHTML = (f) => `<div class="dive__lab"><p class="dive__lab-t display gt">${f.caption}</p><p class="dive__lab-k mono gt gt-h">${f.fig}</p></div>`;
-/** the caption band's line for a frame: its title and its story line (a draft, flagged) */
-export const bandHTML = (f) => `<div class="dive__band"><p class="dive__band-t display gt">${f.caption}</p>` +
-  `<p class="dive__band-s gt gt-h"><span class="ph" data-draft>Draft</span>${f.story}</p></div>`;
+/** the caption band's line for a frame (pass 3): only its story line (a draft, flagged); the title is on the plaque */
+export const bandHTML = (f) => `<div class="dive__band"><p class="dive__band-s gt gt-h"><span class="ph" data-draft>Draft</span>${f.story}</p></div>`;
 /** reduced motion: the plaque's words and the story line under the still drawing */
 export const captionHTML = (f) => `<div class="dive__lab"><p class="dive__lab-t display gt">${f.caption}</p><p class="dive__lab-k mono gt gt-h">${f.fig}</p>` +
   `<p class="dive__lab-s gt gt-h"><span class="ph" data-draft>Draft</span>${f.story}</p></div>`;
@@ -208,6 +208,11 @@ export function createDive(root, top, { base = '' } = {}) {
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(50, 1, 1, 1e5);
   camera.rotation.order = 'YXZ';
   const xCam = new THREE.PerspectiveCamera(50, 1, 1, 1e5);   // the hand-over's camera: page 3's lens
+  const phoneScene = new THREE.Scene();   // frame 5's real phones (their own pass: physical materials, the studio light)
+  // lit by the frame's own spotlight, from above and a little in front: a bright top edge, darker towards the foot; the
+  // studio's soft boxes only as a fill (pass 3)
+  { const key = new THREE.DirectionalLight(0xffffff, 3.2); key.position.set(0, 1, 0.28); phoneScene.add(key); phoneScene.add(key.target);
+    phoneScene.environmentIntensity = 0.38; }
   const lineMats = [];
   const lmat = (o) => { const m = new LineMaterial({ linewidth: Math.max(1, Math.round(dpr)), worldUnits: false, transparent: true, toneMapped: false, ...o }); lineMats.push(m); return m; };
   const segGeo = (arr) => { const g = new LineSegmentsGeometry(); g.setPositions(arr.length ? arr : [0, 0, 0, 0, 0, 0]); return g; };
@@ -215,7 +220,7 @@ export function createDive(root, top, { base = '' } = {}) {
 
   // world units are CSS px at the screen plane (the hall's mouth, z = 0); K px to one hall unit (layout)
   let W = 1, H = 1, P = 1, K = 1, X = 1, FY = -1, CY = 1, L = 1, ink = '#121212', paper = '#F6F7F9', dark = false, gu = 20;
-  let z0 = 1, zEnd = 0, Dend = 1, hX = 1, Dx = 1, portrait = false, bandR = null;
+  let z0 = 1, zEnd = 0, Dend = 1, hX = 1, Dx = 1, portrait = false, bandR = null, E = HALL.eye, limits = null;
 
   // ---------- the painted light: each surface's light (R) and shade (B), in the hall's own units, painted once ----------
   function paintHall() {
@@ -419,16 +424,16 @@ export function createDive(root, top, { base = '' } = {}) {
     const bars = [0, 1, 2, 3].map((k) => mesh(new THREE.BoxGeometry(1, 1, 1), [sideMat, sideMat, k === 1 ? innerMat : sideMat, k === 0 ? innerMat : sideMat, sideMat, sideMat], 5));
     const plateMat = own(basic(PLAQUE));
     const plate = mesh(new THREE.PlaneGeometry(1, 1), plateMat, 3);
-    const drawMat = lmat({ opacity: 1 });
+    const drawMat = lmat({ opacity: 1, depthWrite: false });   // (no depth: a faded line must never cut the real phones drawn after it)
     const drawing = new LineSegments2(segGeo([]), drawMat); drawing.geometry.instanceCount = 0; drawing.renderOrder = 4; panel.add(drawing);
-    const dimMat = lmat({ opacity: 1 });
+    const dimMat = lmat({ opacity: 1, depthWrite: false });
     const dims_ = new LineSegments2(segGeo([]), dimMat); dims_.visible = false; dims_.renderOrder = 4; panel.add(dims_);
     const fills = (d.fills || []).map((c) => { const m = own(new THREE.MeshBasicMaterial({ color: 0xffffff, depthWrite: false, toneMapped: false }), c.alpha); const o = mesh(new THREE.CircleGeometry(c.r, 24), m, 5); o.userData = c; return o; });
     // its soft shadow on the wall: where it hangs, narrowing to the hinge as it opens
     const wsMat = new THREE.MeshBasicMaterial({ color: 0x000000, alphaMap: blobMap, transparent: true, depthWrite: false, toneMapped: false, opacity: 0 });
     const wshadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), wsMat); wshadow.renderOrder = -1; scene.add(wshadow);
     return { F, d, i, left, dims, MW: dims.MW, MH: dims.MH, mgx: dims.mg, mgy: dims.mg, k: 1, pivot, panel, backing, shadow, sheet, ring, bars, plate, drawing, dims_, dimSegs: [], dimAt: Infinity, labels: [], fills, wshadow, wsMat,
-      drawMat, dimMat, mats, sheetMat, plateMat, FD: 1, OX: 1, OY: 1 };
+      drawMat, dimMat, mats, sheetMat, plateMat, FD: 1, OX: 1, OY: 1, real: 0, blobs: null };
   });
   const U = (f, u) => -f.MW / 2 + f.mgx + u, V = (f, v) => f.MH / 2 - f.mgy - v;
   /** the frame at its size (drawing units): the drawing's segments, the sheet, the shadow gap, the moulding, the plate */
@@ -453,7 +458,182 @@ export function createDive(root, top, { base = '' } = {}) {
     [[0, oy - m / 2, 2 * ox, m], [0, -oy + m / 2, 2 * ox, m], [-ox + m / 2, 0, m, 2 * iy], [ox - m / 2, 0, m, 2 * iy]].forEach(([x, y, w, h], k) => { f.bars[k].scale.set(w, h, bd); f.bars[k].position.set(x, y, bd / 2); });
     // the plaque's plate: right under the frame, exactly as wide, at the frame's front
     const pt = -oy - l.plateGap, ph = l.plateH;
-    f.plate.scale.set(2 * ox, ph, 1); f.plate.position.set(0, pt - ph / 2, FD * 0.5);
+    // (rounded on all four sides, half a cell at its reading distance, like its words' CSS plate over it)
+    { const r = Math.min(0.5 * l.c, ph / 2), w2 = ox, h2 = ph / 2, sh2 = new THREE.Shape();
+      sh2.moveTo(-w2 + r, -h2); sh2.lineTo(w2 - r, -h2); sh2.absarc(w2 - r, -h2 + r, r, -Math.PI / 2, 0); sh2.lineTo(w2, h2 - r); sh2.absarc(w2 - r, h2 - r, r, 0, Math.PI / 2);
+      sh2.lineTo(-w2 + r, h2); sh2.absarc(-w2 + r, h2 - r, r, Math.PI / 2, Math.PI); sh2.lineTo(-w2, -h2 + r); sh2.absarc(-w2 + r, -h2 + r, r, Math.PI, 1.5 * Math.PI);
+      f.plate.geometry.dispose(); f.plate.geometry = new THREE.ShapeGeometry(sh2, 8); }
+    f.plate.scale.set(1, 1, 1); f.plate.position.set(0, pt - ph / 2, FD * 0.5);
+  }
+
+  // ---------- frame 5 (pass 3): the real phones, live, on their own blueprint outlines (realphones.js; local only) ----------
+  const f5 = frames.find((f) => f.d.region);
+  const phones = { state: 'idle', list: [], root: new THREE.Group(), mix: 0, yaw: 0, yaws: [0, 0], lift: 0, liftF: 0.1, mats: [], off: new THREE.Vector3() };
+  phones.root.matrixAutoUpdate = false; phones.root.visible = false; phoneScene.add(phones.root);
+  if (f5) f5.blobs = PHONE_PAIR.phones.map(() => { const m = new THREE.MeshBasicMaterial({ color: 0x000000, alphaMap: blobMap, transparent: true, depthWrite: false, toneMapped: false, opacity: 0 }); const b = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), m); b.renderOrder = 4; b.visible = false; f5.panel.add(b); return b; });
+  let phonesP = null;
+  /** the phones load early (page.js: from page 1's X-ray on, in a pause; at once when the hallway starts), parse off the
+   *  main thread, upload their textures one per frame and compile, so the walk never stalls on them */
+  function loadPhones(b = base) {
+    if (phonesP || !f5) return phonesP || Promise.resolve(phones.state);
+    phones.state = 'loading';
+    phonesP = (async () => {
+      try {
+        const mark = (n) => { try { performance.mark(`phones:${n}`); } catch (e) {} };
+        mark('start');
+        const R = await import('../phones/realphones.js'); mark('code');
+        R.offThread?.();
+        const list = await Promise.all(PHONE_PAIR.phones.map((p) => R.loadPhone(p.key, { base: b })));
+        mark('parsed');
+        if (list.some((p) => p.missing)) { phones.state = 'missing'; return phones.state; }
+        const app = R.appTexture();
+        // the iPhone's back: its logo was flattened into a plain grey panel; it gets a frosted glass back instead (matte
+        // glass with a fine grain under a clear coat)
+        const grain = canvasTex(256, 256, (x, w, h) => { const im = x.createImageData(w, h); for (let i = 0; i < im.data.length; i += 4) { const v = 120 + Math.random() * 60; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; } x.putImageData(im, 0, 0); });
+        grain.wrapS = grain.wrapT = THREE.RepeatWrapping; grain.repeat.set(6, 12);
+        const frosted = new THREE.MeshPhysicalMaterial({ name: 'frosted-back', color: new THREE.Color('#CFCDC6'), metalness: 0, roughness: 0.42, roughnessMap: grain,
+          clearcoat: 1, clearcoatRoughness: 0.16, ior: 1.5, specularIntensity: 1, sheen: 0.25, sheenRoughness: 0.6, sheenColor: new THREE.Color('#ffffff'), envMapIntensity: 1.2 });
+        const glassBacks = [];
+        list.forEach((p) => p.obj.traverse((m) => {
+          if (!m.isMesh || m.material?.name !== 'COLOUR_Silver_Backpanel') return;
+          m.material = frosted;
+          if (/logo/i.test(m.name) || /logo/i.test(m.parent?.name || '') || m.name !== 'Back_Panel' && !/back_panel/i.test(m.parent?.name || '')) return;
+          // a real glass back: one frosted sheet laid just proud of the whole panel (so the seam where the logo was
+          // flattened in never shows); the camera plateau stands higher and stays on top of it
+          const g = m.geometry; g.computeBoundingBox(); const bb = g.boundingBox, w2 = (bb.max.x - bb.min.x) / 2, h2 = (bb.max.y - bb.min.y) / 2, r = Math.min(w2, h2) * 0.34;
+          const sh = new THREE.Shape(); sh.moveTo(-w2 + r, -h2); sh.lineTo(w2 - r, -h2); sh.absarc(w2 - r, -h2 + r, r, -Math.PI / 2, 0); sh.lineTo(w2, h2 - r); sh.absarc(w2 - r, h2 - r, r, 0, Math.PI / 2);
+          sh.lineTo(-w2 + r, h2); sh.absarc(-w2 + r, h2 - r, r, Math.PI / 2, Math.PI); sh.lineTo(-w2, -h2 + r); sh.absarc(-w2 + r, -h2 + r, r, Math.PI, 1.5 * Math.PI);
+          const sheet = new THREE.Mesh(new THREE.ShapeGeometry(sh, 10), frosted.clone());
+          sheet.material.side = THREE.DoubleSide; sheet.name = 'glass-back';
+          const c = bb.getCenter(new THREE.Vector3()), out = (bb.max.z - bb.min.z) * 0.02 + 0.03;
+          sheet.position.set(c.x, c.y, bb.min.z - out); sheet.rotation.y = Math.PI;   // the back faces -z
+          glassBacks.push([m, sheet]);
+        }));
+        glassBacks.forEach(([m, sheet]) => m.add(sheet));
+        list.forEach((p, k) => {
+          p.obj.traverse((m) => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = true; m.material.userData.base = m.material.opacity; phones.mats.push(m.material); } });
+          R.setScreen(p, app);
+          if (p.screen) { p.screen.material.transparent = true; p.screen.material.userData.base = 1; phones.mats.push(p.screen.material); }
+          const pv = new THREE.Group(); pv.add(p.obj); phones.root.add(pv);
+          phones.list.push({ ...p, pivot: pv, spec: PHONE_PAIR.phones[k] });
+        });
+        await envP;
+        const texs = new Set(); phones.root.traverse((m) => { if (m.isMesh) ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'emissiveMap', 'aoMap', 'clearcoatNormalMap'].forEach((k) => m.material[k] && texs.add(m.material[k])); });
+        for (const t of texs) { renderer.initTexture(t); await new Promise((r) => requestAnimationFrame(r)); }
+        mark('textures');
+        phones.root.visible = true;
+        try { await renderer.compileAsync(phoneScene, camera); } catch (e) { try { renderer.compile(phoneScene, camera); } catch (e2) {} }
+        phones.root.visible = false; mark('compiled');
+        placePhones();
+        phones.state = 'ready';
+        phones.warm = true; idleWarm();
+        if (f5.real > 0.001) liveTo(1); else phones.mix = 1;
+        render(lastQ, true);
+      } catch (e) { console.warn('[dive] phones', e); phones.state = 'missing'; }
+      return phones.state;
+    })();
+    return phonesP;
+  }
+  /** each phone over its own blueprint outline on frame 5's sheet (the drawing is in millimetres x M) */
+  function placePhones() {
+    if (!f5 || !phones.list.length) return;
+    const R = PHONE_PAIR.region, rg = f5.d.region, M = rg.M;
+    phones.list.forEach((p) => {
+      const sp = p.spec, cx = sp.x + sp.w / 2, cy = sp.y + sp.h / 2;
+      const u_ = U(f5, rg.u + (cx - R.x0) * M), v_ = V(f5, rg.v + (R.y1 - cy) * M);
+      p.pivot.position.set(u_, v_, ZT + 4 + (p.size?.z || 8) * M / 2); p.pivot.scale.setScalar(M);
+      p.home = { u: u_, v: v_ };
+    });
+  }
+  let warmT = 0, lastScrollRender = 0;
+  function idleWarm() {
+    clearTimeout(warmT);
+    if (!phones.warm) return;
+    if (performance.now() - lastScrollRender < 220) { warmT = setTimeout(idleWarm, 120); return; }
+    phones.warmNow = true; render(lastQ, true); phones.warmNow = false; phones.warm = false;
+    try { performance.mark('phones:warmed'); } catch (e) {}
+  }
+  // the phones' first appearance if they finish loading while frame 5 is open: a short cross-fade (a load event)
+  let liveRaf = 0;
+  function liveTo(t) {
+    cancelAnimationFrame(liveRaf); const from = phones.mix, t0 = performance.now();
+    const step = () => { const k = clamp((performance.now() - t0) / 420); phones.mix = lerp(from, t, ease2(k)); render(lastQ, true); if (k < 1) liveRaf = requestAnimationFrame(step); };
+    liveRaf = requestAnimationFrame(step);
+  }
+  // frame 5's show (Wajih, pass 3): the scribble draws on as the frame opens; once it is fully open the phones turn real
+  // and lift OUT of the frame towards you (along your line of sight, so they grow without drifting: past the frame's
+  // front, breaking it on purpose), a soft shadow left on the sheet; then each makes ONE slow full turn, the iPhone first,
+  // the Android a beat later, ending on its front with the booking app. Timed (seconds from fully open), it plays once;
+  // walking back before the frame opens, or on past it, resets it; folding the frame takes them back in. Reduced motion:
+  // no turn (they stand out, front on). One render per frame: when the scroll has drawn this frame, the timer only reads.
+  const SEQ = { real: [0, 0.6], lift: [0.15, 1.35], turn: [[1.4, 7.4], [2.0, 8.0]], end: 8.05 };
+  const motionQ = matchMedia('(prefers-reduced-motion: reduce)');
+  let seqT0 = null, seqRaf = 0, seqOn = false, forced = false, seqHold = null;   // seqHold: the tests hold the clock at a moment
+  // (one loop only: the handle stays set while its own render runs, or that render would start a second loop, which
+  // would start a third, every frame: the renders per frame doubled and the hall stalled)
+  const seqStep = (now) => {
+    if (!seqOn || motionQ.matches) { seqRaf = 0; render(lastQ, true); return; }
+    if (now - lastScrollRender > 12) render(lastQ, true);
+    if (seqOn) seqRaf = requestAnimationFrame(seqStep); else { seqRaf = 0; render(lastQ, true); }
+  };
+  function seqRun() {
+    if (seqRaf || !seqOn) return;
+    seqRaf = requestAnimationFrame(seqStep);
+  }
+  /** frame 5 as you walk (see SEQ) */
+  function phoneFrame(f, l, D, op, st) {
+    const live = phones.state === 'ready' && !st;
+    const fold = 1 - ease2(span(D, l.Dc, l.Dc - 0.6 * (l.Dc - l.Dg)));   // folding the frame takes them back in
+    let e = 0;
+    if (forced) e = SEQ.end;
+    else if (live) {
+      if (D > l.Dread + 0.05 * K || D < l.Dg) seqT0 = null;
+      else if (seqT0 === null && D <= l.Dread) seqT0 = performance.now();
+      e = seqT0 === null ? 0 : (performance.now() - seqT0) / 1000;
+      if (seqT0 !== null && motionQ.matches) e = SEQ.end;   // reduced motion: straight to the end, front on, no turn
+      if (seqHold !== null) e = seqHold;
+    } else seqT0 = null;
+    seqOn = live && !forced && seqT0 !== null && e < SEQ.end && !motionQ.matches;
+    if (seqOn) seqRun();
+    f.real = live || forced ? ease2(span(e, ...SEQ.real)) * (forced ? 1 : fold) : 0;
+    phones.lift = live || forced ? ease2(span(e, ...SEQ.lift)) * (forced ? 1 : fold) : 0;
+    phones.yaws = SEQ.turn.map(([t0, t1]) => 2 * Math.PI * ease(span(e, t0, t1)));
+    phones.yaw = phones.yaws[0];
+    const a = live || forced ? f.real * phones.mix * op : 0;
+    phones.root.visible = a > 0.002 && f.pivot.visible;
+    if (live || forced) {
+      phones.mats.forEach((m) => { m.opacity = m.userData.base * a; });
+      phones.list.forEach((p, k) => {
+        const yaw = phones.yaws[k]; p.pivot.rotation.y = yaw;
+        p.pivot.position.x = p.home.u + (k ? 1 : -1) * (phones.spread || 0) * phones.lift;   // the iPhone out to the left, the Android to the right
+        // their soft shadow on the sheet: further down and wider, softer, as they lift away from it
+        const b = f.blobs[k], sz = p.size || { x: 78, y: 163, z: 8 }, M = f.d.region.M, wv = (sz.x * Math.abs(Math.cos(yaw)) + sz.z * Math.abs(Math.sin(yaw))) * M, L = phones.lift;
+        b.visible = phones.root.visible; b.material.opacity = (0.36 - 0.12 * L) * a;
+        b.position.set(p.pivot.position.x + 4 + 10 * L, p.home.v - 8 - 26 * L, ZS + 1.5); b.scale.set(wv * (1 + 0.3 * L) * 256 / 136, sz.y * M * (1 + 0.12 * L) * 512 / 392, 1);
+      });
+    }
+    f.blobs.forEach((b) => { if (!(live || forced)) b.visible = false; });
+  }
+  /** where the lifted phones are: the offset that carries them towards the camera (a share of the way, liftF at full) */
+  function phoneOffset() {
+    if (!f5) return phones.off.set(0, 0, 0);
+    const rg = f5.d.region, c = new THREE.Vector3(U(f5, rg.u + rg.w / 2), V(f5, rg.v + rg.h / 2), ZT).applyMatrix4(f5.panel.matrixWorld);
+    return phones.off.copy(camera.position).sub(c).multiplyScalar(phones.lift * phones.liftF);
+  }
+  /** reduced motion: frame 5 still, the real phones standing out of it, front on (a JPEG of the frame and a little of the
+   *  hall round it); null without the phone files */
+  async function frameStill(i, w, h, opts = {}) {
+    await load();
+    if ((await loadPhones()) !== 'ready') return null;
+    layout(w, h, { strip: 0, noTitleblock: true, ...opts });
+    const l = lay[i], f = frames[i];
+    forced = true; f.plate.visible = false; render(qAtD(l, l.Dc));
+    const q4 = visiblePoly(f) || [[0, 0], [w, h]], xs = q4.map((p) => p[0]), ys = q4.map((p) => p[1]);
+    const m = 0.1 * (Math.max(...xs) - Math.min(...xs)), x0 = Math.max(0, Math.min(...xs) - m), y0 = Math.max(0, Math.min(...ys) - m), x1 = Math.min(w, Math.max(...xs) + m), y1 = Math.min(h, Math.max(...ys) + m);
+    const c = document.createElement('canvas'); c.width = Math.round((x1 - x0) * dpr); c.height = Math.round((y1 - y0) * dpr);
+    c.getContext('2d').drawImage(canvas, x0 * dpr, y0 * dpr, c.width, c.height, 0, 0, c.width, c.height);
+    forced = false; f.plate.visible = true;
+    return { url: c.toDataURL('image/jpeg', 0.9), w: x1 - x0, h: y1 - y0 };
   }
 
   /** the drawings' own labels (and dimension lines, if a drawing has them) */
@@ -496,7 +676,7 @@ export function createDive(root, top, { base = '' } = {}) {
   const load = (b = base) => loaded || (loaded = (async () => {
     try { await Promise.all([document.fonts.load('500 56px "DM Mono"'), document.fonts.load('420 56px Newsreader')]); } catch (e) {}
     rebuildLabels();
-    envP = studio(renderer, b).then((e) => { if (e) { brass.envMap = e; brass.needsUpdate = true; } }).catch(() => {});
+    envP = studio(renderer, b).then((e) => { if (e) { brass.envMap = e; brass.needsUpdate = true; phoneScene.environment = e; } }).catch(() => {});
     await envP;
     frames.forEach((f) => f.labels.forEach((m) => renderer.initTexture(m.material.map)));
     [...Object.values(PT), spotMap, mouldMap, blobMap, shadowMap].forEach((t) => { try { renderer.initTexture(t); } catch (e) {} });
@@ -522,15 +702,11 @@ export function createDive(root, top, { base = '' } = {}) {
     const u = opts.u || grid.u; gu = u;
     portrait = H > W;
     P = hallP(W, H);
-    // the hall's mouth covers the screen: one hall unit is K px there; the eye in the middle of its height
-    K = Math.max(W / HALL.w, H / HALL.h); X = HALL.w / 2 * K; FY = -HALL.eye * K; CY = (HALL.h - HALL.eye) * K; L = HALL.len * K;
     renderer.setPixelRatio(dpr); renderer.setSize(W, H, false);
     // the canvas exactly as large as its drawing buffer in device pixels (a resampled buffer shimmers)
     canvas.style.width = `${(Math.round(W * dpr) / dpr).toFixed(4)}px`; canvas.style.height = `${(Math.round(H * dpr) / dpr).toFixed(4)}px`;
     lineMats.forEach((m) => { m.resolution.set(Math.round(W * dpr), Math.round(H * dpr)); m.linewidth = Math.max(1, Math.round(dpr)); });
-    camera.fov = 2 * Math.atan(H / 2 / P) * 180 / Math.PI; camera.aspect = W / H; camera.near = 0.05 * K; camera.far = L + P + 2 * K; camera.updateProjectionMatrix();
     const P3l = lensP(W, H);
-    xCam.fov = 2 * Math.atan(H / 2 / P3l) * 180 / Math.PI; xCam.aspect = W / H; xCam.near = camera.near; xCam.far = camera.far; xCam.updateProjectionMatrix();
     const desktop = W >= 1024, N = Math.round(W / u);
     const strip_ = opts.strip ?? (document.getElementById('strip')?.offsetHeight || 2 * u);
     const tb = document.querySelector('.titleblock'), tbr = !opts.noTitleblock && tb?.getClientRects().length ? tb.getBoundingClientRect() : null;
@@ -558,44 +734,66 @@ export function createDive(root, top, { base = '' } = {}) {
       bandR = { l: l0, r: r0, t: bottom - rows * u, b: bottom };
     }
     const topLim = (rT) * u, botLim = Math.min(bandR.t, tbTop) - u;   // a cell under the strip, a cell over the band and the title block
-    makeGrid(); placeSurfaces();
 
-    // each frame at its fixed place. Read closest (Dc: fully open, square to you, the camera Dc from its hinge's plane),
-    // the camera has slid so the frame, the plaque under it and the gap between them sit in the middle of the room
-    // between the strip and the band (on a portrait screen sideways too: the frame centred, about two thirds of the
-    // screen's width, n whole cells). Desktop: the camera stays on the middle line across, the frame's wall edge 1.5
-    // cells inside the screen, the frame at most 0.6 of the screen's height.
-    const yc = (HALL.hang - HALL.eye) * K, avail = botLim - topLim;
+    // the pre-ducked camera (pass 3). Each frame is read closest (Dc: fully open, square to you, d hall units from its
+    // hinge's plane) with the frame, half a cell, and its plaque centred between the strip and the band. Everything on
+    // screen here depends only on d and on a, how far the eye is under the frames' middles (hall units), so this is
+    // solved before the hall's scale K: a is chosen once for the whole walk (from the reference frame), then each
+    // frame's d centres its own block (its plaque may be one or two lines). Portrait: the widest frame n cells wide
+    // (two thirds of the width, fewer if a block won't fit). Wide screens: the frame's wall edge 1.5 cells inside the
+    // screen, the frame at most 0.6 of the screen's height.
+    const avail = botLim - topLim, mid = (topLim + botLim) / 2, gap = 0.5 * u, PAD = 0.75 * u;
+    const plateAt = (i, d) => { const el = labEls[i], wpx = DIMS[i].ow * P / d; el.style.width = `${Math.max(2 * u, wpx - 2 * PAD)}px`; const wh = el.offsetHeight; return { wpx, wh, hpx: wh + 2 * PAD }; };
+    const frameH = (i, d) => DIMS[i].oh * 1.03 * P / d;   // (its front face is a little nearer than its hinge)
+    // every frame is read at the same distance d, so each lands on the same place on the screen; the eye (a under the
+    // frames' middles) centres a block whose plaque is midway between the shortest and the tallest (a one-line and a
+    // two-line title differ by 1.5 cells, so every block is within 0.4 cell of the middle)
+    const ref = DIMS.reduce((b, x, i) => (x.ow > DIMS[b].ow ? i : b), 0), hallX = HALL.w / 2;
+    let n = 0, a = 0, ds = [];
+    const solve = (d) => {
+      const ps = DIMS.map((_, i) => plateAt(i, d).hpx), pm = (Math.min(...ps) + Math.max(...ps)) / 2, Hf = DIMS[ref].oh * P / d, Hf3 = Hf * 1.03;
+      // the block's middle (from the frame's middle): its front face's top to the plaque's foot
+      const ycOff = (-Hf3 / 2 + Hf / 2 + gap + pm) / 2;
+      a = clamp((H / 2 - (mid - ycOff)) * d / P, HALL.hang - 2.2, HALL.hang - 0.7);
+      ds = DIMS.map(() => d);
+      const yc = H / 2 - a * P / d;
+      return DIMS.every((dm, i) => yc - dm.oh * 1.03 * P / d / 2 >= topLim - 0.5 && yc + dm.oh * P / d / 2 + gap + ps[i] <= botLim + 0.5) && (portrait || hallX * P / d <= W / 2 - 1.5 * u + 0.5);
+    };
+    if (portrait) { for (n = Math.round(N * 2 / 3); n >= 6; n--) if (solve(DIMS[ref].ow * P / (n * u))) break; }
+    else { let dRef = Math.max(hallX * P / Math.max(1, W / 2 - 1.5 * u), DIMS[ref].oh * P / (0.6 * H)); for (let k = 0; k < 300 && !solve(dRef); k++) dRef *= 1.02; }
+    E = HALL.hang - a;
+    // the hall's mouth covers the screen with the eye at E: one hall unit is K px there (the shape never changes)
+    K = Math.max(W / HALL.w, H / (2 * Math.min(E, HALL.h - E))); X = HALL.w / 2 * K; FY = -E * K; CY = (HALL.h - E) * K; L = HALL.len * K;
+    camera.fov = 2 * Math.atan(H / 2 / P) * 180 / Math.PI; camera.aspect = W / H; camera.near = 0.05 * K; camera.far = L + P + 2 * K; camera.updateProjectionMatrix();
+    xCam.fov = 2 * Math.atan(H / 2 / P3l) * 180 / Math.PI; xCam.aspect = W / H; xCam.near = camera.near; xCam.far = camera.far; xCam.updateProjectionMatrix();
+    limits = { top: topLim, bottom: botLim, mid };
+    makeGrid(); placeSurfaces();
+    const yc = (HALL.hang - E) * K;
     lay = frames.map((f, i) => {
       const el = labEls[i], dm = f.dims;
       const Ws = dm.ow * K, Hs = dm.oh * K; f.k = dm.sw * K / f.MW;
       const hd = HALL.at[i] * K - Ws / 2;   // the hinge's depth from the mouth (its near edge)
-      // the plaque at distance D: its words three quarters of a cell in from the plate's sides, top and foot
-      const PAD = 0.75 * u;
-      const plateAt = (D) => { const wpx = Ws * P / D; el.style.width = `${Math.max(2 * u, wpx - 2 * PAD)}px`; const wh = el.offsetHeight; return { wpx, rows: wh / u, wh, hpx: wh + 2 * PAD }; };
-      const block = (D) => { const pa = plateAt(D); return { pa, h: Hs * 1.03 * P / D + 0.5 * u + pa.hpx }; };   // (its front face is a little nearer than its hinge)
-      let Dc, n = 0;
-      if (portrait) {
-        for (n = Math.round(N * 2 / 3); n >= 6; n--) { Dc = Ws * P / (n * u); if (block(Dc).h <= avail) break; }
-      } else {
-        Dc = Math.max(X * P / Math.max(1, W / 2 - 1.5 * u), Hs * P / (0.6 * H));   // its wall edge 1.5 cells inside the screen, at most 0.6 of its height
-        for (let k = 0; k < 400 && block(Dc).h > avail; k++) Dc *= 1.02;
-      }
-      const B = block(Dc);
-      // where the camera slides to: the block's top on a grid line in the middle of the room
-      const bTop = Math.max(topLim, Math.round((topLim + (avail - B.h) / 2) / u) * u);
-      const ys = bTop + Hs * 1.03 * P / Dc / 2;   // the frame's middle on screen
-      const cy = clamp(yc - (H / 2 - ys) * Dc / P, FY + 0.45 * K, CY - 0.45 * K);
+      const Dc = ds[i] * K, pa = plateAt(i, ds[i]);
       const cx = portrait ? (f.left ? -1 : 1) * (X - Ws / 2) : 0;
-      el.style.width = `${Math.max(2 * u, B.pa.wpx - 2 * PAD)}px`;
+      el.style.width = `${Math.max(2 * u, pa.wpx - 2 * PAD)}px`;
       const Dg = Math.max(0.35 * K, Dc - FOLD_LEN * K);
       const kMax = f.k * P / Math.max(Dg, 0.7 * Dc), kMid = f.k * P / Dc;
       const c = u * Dc / P / f.k;   // one cell in the frame's units, read closest
-      return { Ws, Hs, hd, zc: HALL.at[i] * K, Dc, Dread: Dc + HOLD_LEN * K, Dopen: Dc + (HOLD_LEN + OPEN_LEN) * K, Dg, kMax, kMid, n, cx, cy, c,
-        rows: B.pa.rows, pad: 0.75 * c, plateGap: 0.5 * c, plateH: B.pa.hpx * Dc / P / f.k, label: { width: B.pa.wpx - 2 * PAD, height: B.pa.wh } };
+      return { Ws, Hs, hd, zc: HALL.at[i] * K, Dc, Dread: Dc + HOLD_LEN * K, Dopen: Dc + (HOLD_LEN + OPEN_LEN) * K, Dg, kMax, kMid, n, cx, c,
+        rows: pa.wh / u, pad: 0.75 * c, plateGap: 0.5 * c, plateH: pa.hpx * Dc / P / f.k, label: { width: pa.wpx - 2 * PAD, height: pa.wh } };
     });
     frames.forEach((f, i) => {
       const l = lay[i];
+      if (f === f5) {
+        // how far frame 5's phones lift towards you: as far as keeps them (with a margin for the near edge of a phone
+        // turned side on) half a cell inside the frame's top edge, so never over the plaque or the band either
+        const rg = f.d.region, dm = DIMS[i], s_ = K / f.k, OY = f.MH / 2 + (HALL.frame.gap + HALL.frame.mould) * s_, OX = f.MW / 2 + (HALL.frame.gap + HALL.frame.mould) * s_;
+        const near = (PHONE_PAIR.phones[0].w * rg.M / 2) / (l.Dc / f.k);   // a side-on phone's near edge, as a share of the distance
+        const k1 = (rg.h / 2) * (1 + near) / (OY - 0.5 * l.c), k2 = (rg.w / 2) / (OX - 0.25 * l.c);
+        phones.liftF = clamp(1 - k1, 0, 0.35);
+        // as they lift they also spread apart so their outer edges pass over the frame's sides (by 0.6 cell): out of it
+        const grow = 1 / (1 - phones.liftF); phones.spread = Math.max(0, (OX + 0.6 * l.c) / grow - rg.w / 2); void k2;
+      }
       f.pivot.position.set((f.left ? -1 : 1) * X, yc, -l.hd);
       f.panel.position.set((f.left ? 1 : -1) * l.Ws / 2, 0, 1.5); f.panel.scale.setScalar(f.k); f.pivot.rotation.set(0, (f.left ? 1 : -1) * Math.PI / 2, 0);
       buildFrame(f, l);
@@ -614,8 +812,8 @@ export function createDive(root, top, { base = '' } = {}) {
     // has folded back
     lastStrip = strip_; lastTb = tbTop;
     const dr = HALL.door;
-    const Dtop = (dr.h - HALL.eye) * K * P / Math.max(1, H / 2 - strip_ - u), Dwide = (dr.w / 2 + dr.arch) * K * P / Math.max(1, W / 2 - u);
-    const DfootTb = HALL.eye * K * P / Math.max(1, tbTop - u - H / 2), DfootScr = HALL.eye * K * P / (H / 2);
+    const Dtop = (dr.h - E) * K * P / Math.max(1, H / 2 - strip_ - u), Dwide = (dr.w / 2 + dr.arch) * K * P / Math.max(1, W / 2 - u);
+    const DfootTb = E * K * P / Math.max(1, tbTop - u - H / 2), DfootScr = E * K * P / (H / 2);
     const l5 = lay[lay.length - 1], Dcap = L - (l5.hd - l5.Dg) - 0.1 * K;
     const want = Math.max(Dtop, Dwide, DfootTb), fall = Math.max(Dtop, Dwide, DfootScr);
     Dend = Math.min(Dcap, want <= Dcap ? want : fall);
@@ -626,6 +824,7 @@ export function createDive(root, top, { base = '' } = {}) {
     STOPS.length = 0; lay.forEach((l) => STOPS.push([qAtD(l, l.Dread), qAtD(l, l.Dc)]));
     lock.scale.setScalar(K);
     rebuildLabels();
+    placePhones();
     depthNow = -1; sizeHall(Math.max(0.0001, ease(span(lastQ, ...WAY_IN))), true);
     theme();
   }
@@ -722,7 +921,7 @@ export function createDive(root, top, { base = '' } = {}) {
   const cA = new THREE.Color(), cB = new THREE.Color();
   function render(q, again = false) {
     if (!lay) return null;
-    lastQ = q;
+    lastQ = q; if (!again) lastScrollRender = performance.now();
     const st = stillMode;
     const T = st ? 1 : ease(span(q, ...WAY_IN));
     const dress = st ? 1 : ease2(span(q, ...DRESS)), lights = st ? 1 : ease2(span(q, ...LIGHTS)), fin = st ? 1 : ease2(span(q, ...FRAMES_IN));
@@ -740,10 +939,10 @@ export function createDive(root, top, { base = '' } = {}) {
     lock.visible = dress > 0.004 && !!doorLock; brass.opacity = dress; brass.envMapIntensity = lerp(0.25, 0.75, lights);
     // the camera: along the hall as you walk; towards the open frame (a slide, never a turn)
     const t = camZ(q);
-    let sx = 0, sy = 0, sw = 0;
-    const states = frames.map((f, i) => { const l = lay[i], D = t + l.hd, s = st ? { swing: 1, op: 1, drawn: 1, lab: 0 } : stateAt(l, D); if (!st && s.swing > 0) { sx += s.swing * l.cx; sy += s.swing * l.cy; sw += s.swing; } return { D, s }; });
-    if (sw > 1) { sx /= sw; sy /= sw; }
-    camera.position.set(sx, sy, st ? z0 : t); camera.rotation.set(0, 0, 0); camera.updateMatrixWorld();
+    let sx = 0, sw = 0;
+    const states = frames.map((f, i) => { const l = lay[i], D = t + l.hd, s = st ? { swing: 1, op: 1, drawn: 1, lab: 0 } : stateAt(l, D); if (!st && s.swing > 0) { sx += s.swing * l.cx; sw += s.swing; } return { D, s }; });
+    if (sw > 1) sx /= sw;
+    camera.position.set(sx, 0, st ? z0 : t); camera.rotation.set(0, 0, 0); camera.updateMatrixWorld();   // the eye's height never changes
     const info = [], rects = [];
     labQuads = [];
     let bandI = -1, bandA = 0;
@@ -756,12 +955,14 @@ export function createDive(root, top, { base = '' } = {}) {
       // the light falls on the art: the sheet brightens as it comes out into its spotlight
       const lit = lights * (0.7 + 0.3 * s.swing);
       f.sheetMat.color.copy(cBlue).multiplyScalar(0.55 + 0.45 * lit);
-      f.plateMat.color.copy(cPlaque).multiplyScalar(lights * (0.42 + 0.5 * s.swing));   // dim on the wall, lit as it comes out into the light (under the art)
+      f.plateMat.color.copy(cPlaque).multiplyScalar(lights * (0.5 + 0.5 * s.swing));   // dim on the wall, lit as it comes out into the light (open: exactly #EDEEF0, as its CSS plate)
       f.wshadow.visible = f.pivot.visible && dress > 0.01; f.wsMat.opacity = 0.6 * op * (1 - 0.8 * s.swing);
       { const k = 1 - 0.7 * s.swing, wb = f.wsBase.w * k; f.wshadow.scale.set(wb, f.wsBase.h, 1); f.wshadow.position.z = -(l.hd + wb / 2 - 0.04 * l.Ws); }
       const n = Math.round(s.drawn * f.d.segs.length); f.drawing.geometry.instanceCount = n; f.drawing.visible = n > 0 && f.pivot.visible;
-      f.drawMat.opacity = op;
+      if (f === f5) phoneFrame(f, l, D, op, st);
+      f.drawMat.opacity = op * (1 - f.real); if (f.real > 0.99) f.drawing.visible = false;   // (the blue sheet stays behind the phones)
       f.fills.forEach((o) => { o.visible = f.pivot.visible && n > 0 && n >= Math.min(o.userData.at, f.d.segs.length); });
+      f.fills.forEach((o) => { o.material.opacity *= 1 - f.real; });
       const dimsOn = f.pivot.visible && f.d.dims && n >= Math.min(f.dimAt, f.d.segs.length);
       f.dims_.visible = !!dimsOn; f.dimMat.opacity = op * 0.62;
       f.labels.forEach((m) => { m.visible = f.pivot.visible && n >= Math.min(m.userData.at, f.d.segs.length) && n > 0; m.material.opacity = op * (m.userData.alpha ?? 1); });
@@ -786,8 +987,8 @@ export function createDive(root, top, { base = '' } = {}) {
         } else el.classList.remove('on');
       }
       if (f.pivot.visible) {
-        const q4 = (x0, y0, x1, y1) => [[x0, y0], [x1, y0], [x1, y1], [x0, y1]].map(([x, y]) => P3(f, x, y, f.FD).slice(0, 2));
-        const quad = q4(-f.OX, f.OY, f.OX, -f.OY);
+        const quad = visiblePoly(f);
+        if (!quad) { info.push({ i, swing: s.swing, op, drawn: s.drawn, lab: s.lab, quad: null, D, ratio: f.d.w / f.d.h, share: 0, widthShare: 0 }); return; }
         info.push({ i, swing: s.swing, op, drawn: s.drawn, lab: s.lab, quad, D, ratio: f.d.w / f.d.h, share: Math.max(...quad.map((p) => p[1])) - Math.min(...quad.map((p) => p[1])), widthShare: (Math.max(...quad.map((p) => p[0])) - Math.min(...quad.map((p) => p[0]))) / W });
       } else info.push({ i, swing: 0, op: 0, drawn: s.drawn, lab: 0, quad: null, D, ratio: f.d.w / f.d.h, share: 0, widthShare: 0 });
     });
@@ -803,10 +1004,11 @@ export function createDive(root, top, { base = '' } = {}) {
       f.hide = 0; const q4 = info[i].quad; if (!q4 || !labQuads.length) return;
       const xs = q4.map((p) => p[0]), ys = q4.map((p) => p[1]);
       const h = under({ x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) }, i);
-      if (h <= 0) return; f.hide = h; const k = 1 - h;
+      if (h <= 0) return; f.hide = h; info[i].hide = h; const k = 1 - h;
       f.mats.forEach((m) => { m.opacity *= k; }); [f.drawMat, f.dimMat].forEach((m) => { m.opacity *= k; }); f.labels.forEach((m) => { m.material.opacity *= k; });
       f.wsMat.opacity *= k;
-      if (h > 0.98) { f.pivot.visible = false; f.wshadow.visible = false; }
+      if (f === f5 && phones.root.visible) phones.mats.forEach((m) => { m.opacity *= k; });
+      if (h > 0.98) { f.pivot.visible = false; f.wshadow.visible = false; if (f === f5) phones.root.visible = false; }
     });
     fixtures.forEach((g) => { if (!g.visible) return; const h = under(screenBox(g)); if (h > 0) { g.userData.fixMat.opacity *= 1 - h; g.userData.lensMat.opacity *= 1 - h; if (h > 0.98) g.visible = false; } g.userData.hide = h; });
     // the lock steps back wherever a plaque's words would come within a cell of it (TYPE_RULES: no shape under a word)
@@ -823,6 +1025,13 @@ export function createDive(root, top, { base = '' } = {}) {
     knockout(rects); cutStrip(rects);
     renderer.autoClear = true;
     renderer.render(scene, camera);
+    const warmDraw = phones.warmNow && !phones.root.visible && f5;
+    if (warmDraw) { phones.root.visible = true; phones.mats.forEach((m) => { m.opacity = 0.002; }); }
+    if (phones.root.visible) {
+      f5.panel.updateMatrixWorld(true); phoneOffset(); phones.root.matrix.makeTranslation(phones.off.x, phones.off.y, phones.off.z).multiply(f5.panel.matrixWorld); phones.root.matrixWorldNeedsUpdate = true;
+      renderer.autoClear = false; renderer.render(phoneScene, camera); renderer.autoClear = true;
+    }
+    if (warmDraw) phones.root.visible = false;
     const xt = xLock && !st ? ease2(span(q, ...XRAY)) : 0;
     if (xt > 0.001) {
       xQuad.material.uniforms.uA.value = xt; xLock.setOpacity(xt);
@@ -831,13 +1040,36 @@ export function createDive(root, top, { base = '' } = {}) {
       renderer.autoClear = false; renderer.render(xQuadScene, xCam); renderer.render(xScene, xCam); renderer.autoClear = true;
     }
     const lockBox = lock.visible ? screenBox(lock) : null;
-    const o = { info, q, t, cam: [camera.position.x / K, camera.position.y / K], open: T >= 1, tr: T, dress, lights, frames: fin, walked: span(q, ...WALK),
+    const o = { info, q, t, cam: [camera.position.x / K, camera.position.y / K], eye: E, phones: { state: phones.state, mix: phones.mix, real: f5 ? f5.real : 0, yaw: phones.yaw, yaws: phones.yaws, lift: phones.lift, visible: phones.root.visible }, open: T >= 1, tr: T, dress, lights, frames: fin, walked: span(q, ...WALK),
       door: { lock: door.lockState, box: lockBox, distance: (camera.position.z + L) / K }, xray: xt, labels: labQuads, band: bandShown ? { i: bandI, op: bandA, rect: bandR } : null };
     if (!again) out = o; else if (out) Object.assign(out, o);
     if (again) onAgain?.(out);
     return out;
   }
   let onAgain = null;
+  /** the real phones' box on the screen, lifted (their blueprint region carried towards the camera) */
+  function phonesBox() {
+    if (!f5) return null;
+    phoneOffset();
+    const rg = f5.d.region, sp = (phones.spread || 0) * phones.lift, pts = [[rg.u - sp, rg.v], [rg.u + rg.w + sp, rg.v], [rg.u + rg.w + sp, rg.v + rg.h], [rg.u - sp, rg.v + rg.h]].map(([x, y]) => { const w3 = new THREE.Vector3(U(f5, x), V(f5, y), ZT).applyMatrix4(f5.panel.matrixWorld).add(phones.off); return proj(w3.x, w3.y, w3.z); });
+    const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+    return { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) };
+  }
+  /** a frame's outline on the screen: only the part in front of the camera (clipped at the near plane), so a frame
+   *  folding back beside or behind you is not reported as a huge, inverted shape (for the checks) */
+  const cTmpV = new THREE.Vector3();
+  function visiblePoly(f) {
+    const near = camera.near * 1.01;
+    const pts = [[-1, 1], [1, 1], [1, -1], [-1, -1]].map(([sx, sy]) => { cTmpV.set(sx * f.OX, sy * f.OY, f.FD).applyMatrix4(f.panel.matrixWorld); const w = cTmpV.clone(); const c = cTmpV.applyMatrix4(camera.matrixWorldInverse); return { w, z: -c.z }; });
+    const out = [];
+    for (let k = 0; k < 4; k++) {
+      const A = pts[k], B = pts[(k + 1) % 4];
+      if (A.z >= near) out.push(A.w);
+      if ((A.z >= near) !== (B.z >= near)) { const t = (near - A.z) / (B.z - A.z); out.push(A.w.clone().lerp(B.w, t)); }
+    }
+    if (out.length < 3) return null;
+    return out.map((p) => proj(p.x, p.y, p.z).slice(0, 2));
+  }
   function screenBox(obj) {
     const bx = new THREE.Box3().setFromObject(obj), cs = [];
     if (bx.isEmpty()) return null;
@@ -897,10 +1129,11 @@ export function createDive(root, top, { base = '' } = {}) {
       const xs = c.map((p) => p[0]), ys = c.map((p) => p[1]);
       D.shapes.push({ x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys), quad: c.map((p) => [p[0], p[1]]), tag: `${g}:sheet` });
       for (let k = 0; k < 4; k++) { const A = c[k], B = c[(k + 1) % 4]; D.lines.push({ x1: A[0], y1: A[1], x2: B[0], y2: B[1], tag: `${g}:frame` }); }
-      const n = f.drawing.geometry.instanceCount;
+      const n = f.real >= 0.5 ? 0 : f.drawing.geometry.instanceCount;
+      if (f.real >= 0.5) { const b = phonesBox(); if (b) D.shapes.push({ ...b, tag: `${g}:phones` }); }
       for (let k = 0; k < n; k++) { const [a, b, cc, e] = f.d.segs[k], A = P3(f, U(f, a), V(f, b)), B = P3(f, U(f, cc), V(f, e)); D.lines.push({ x1: A[0], y1: A[1], x2: B[0], y2: B[1], tag: `${g}:seg` }); }
       if (f.dims_.visible) for (let k = 0; k < f.dimSegs.length; k += 6) { const s3 = f.dimSegs, A = P3(f, s3[k], s3[k + 1]), B = P3(f, s3[k + 3], s3[k + 4]); D.lines.push({ x1: A[0], y1: A[1], x2: B[0], y2: B[1], tag: `${g}:dim` }); }
-      f.fills.forEach((o) => { if (!o.visible) return; const fc = o.userData, A = P3(f, U(f, fc.cx - fc.r), V(f, fc.cy - fc.r)), B = P3(f, U(f, fc.cx + fc.r), V(f, fc.cy + fc.r));
+      f.fills.forEach((o) => { if (!o.visible || f.real >= 0.5) return; const fc = o.userData, A = P3(f, U(f, fc.cx - fc.r), V(f, fc.cy - fc.r)), B = P3(f, U(f, fc.cx + fc.r), V(f, fc.cy + fc.r));
         D.shapes.push({ x: Math.min(A[0], B[0]), y: Math.min(A[1], B[1]), w: Math.abs(B[0] - A[0]), h: Math.abs(B[1] - A[1]), tag: `${g}:fill` }); });
       f.labels.forEach((m, k) => {
         if (!m.visible || m.material.opacity < 0.05) return;
@@ -935,9 +1168,11 @@ export function createDive(root, top, { base = '' } = {}) {
     return D;
   }
 
-  /** the drawings' readability (readcheck.py): for each frame at its closest fully open moment, every word's size on
-   *  screen in cells (the type scale's smallest step is 0.375), the frame's height and width as shares of the screen,
-   *  its closest approach to the screen's edge, and its words' clear space in its own plane */
+  /** the open frames' readability (readcheck.py, pass 3: what the fixed hall now shows). For each frame at its closest
+   *  fully open moment: every word's size on screen in cells (the type scale's smallest step is 0.375); the frame with
+   *  its plaque (the block) between the strip and the band (top, bottom against the limits a cell inside them), how far
+   *  its middle is from the room's middle (centring), its width as a share of the screen, its closest approach to the
+   *  screen's sides; its words' clear space in its own plane; the eye height (one for the whole walk) */
   function readability() {
     if (!lay) return null;
     const keep = lastQ, res = [];
@@ -945,21 +1180,29 @@ export function createDive(root, top, { base = '' } = {}) {
       const l = lay[i];
       const at = (D) => {
         const s = stateAt(l, D);
-        camera.position.set(l.cx * s.swing, l.cy * s.swing, D - l.hd); camera.updateMatrixWorld();
+        camera.position.set(l.cx * s.swing, 0, D - l.hd); camera.updateMatrixWorld();
         pose(f, s);
         const c = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([sx, sy]) => P3(f, sx * f.OX, sy * f.OY, f.FD));
-        const ys = c.map((p) => p[1]), xs = c.map((p) => p[0]);
+        const plate = l.backLocal.map((v) => { const w3 = v.clone().applyMatrix4(f.panel.matrixWorld); return proj(w3.x, w3.y, w3.z); });
+        const ys = c.map((p) => p[1]), xs = c.map((p) => p[0]), top = Math.min(...ys), bottom = Math.max(...plate.map((p) => p[1]));
         const sizes = [];
         f.d.labels.filter((x) => x.t).forEach((lb) => {
           const b = inkBox(lb); for (const x of [b.x0, b.x1]) sizes.push(Math.abs(P3(f, U(f, x), V(f, lb.y))[1] - P3(f, U(f, x), V(f, lb.y - lb.size))[1]) / gu);
         });
-        return { minSize: sizes.length ? Math.min(...sizes) : null, share: (Math.max(...ys) - Math.min(...ys)) / H, widthShare: (Math.max(...xs) - Math.min(...xs)) / W, edge: Math.min(...xs.map((x) => Math.min(x, W - x))), op: s.op, swing: s.swing };
+        return { minSize: sizes.length ? Math.min(...sizes) : null, share: (Math.max(...ys) - top) / H, widthShare: (Math.max(...xs) - Math.min(...xs)) / W, edge: Math.min(...xs.map((x) => Math.min(x, W - x))),
+          top: +top.toFixed(1), bottom: +bottom.toFixed(1), off: +(((top + bottom) / 2 - limits.mid) / gu).toFixed(2), op: s.op, swing: s.swing };
       };
       const close = at(l.Dc), clear = inPlane(f);
-      res.push({ i: i + 1, key: f.F.key, cells: [+(l.Ws * P / l.Dc / gu).toFixed(1), +(l.Hs * P / l.Dc / gu).toFixed(1)], size: [+(l.Ws / K).toFixed(3), +(l.Hs / K).toFixed(3)], plaque: [l.rows, +(l.label.width / gu).toFixed(2)], Dc: +(l.Dc / K).toFixed(3), slide: [+(l.cx / K).toFixed(3), +(l.cy / K).toFixed(3)], closest: close, lastVisible: close, inPlane: clear });
+      if (f === f5 && phones.state === 'ready') {
+        const keep2 = phones.lift; phones.lift = 1; const b = phonesBox(); phones.lift = keep2;
+        const c = [[-1, 1], [1, 1]].map(([sx, sy]) => P3(f, sx * f.OX, sy * f.OY, f.FD)), plate = l.backLocal.map((v) => { const w3 = v.clone().applyMatrix4(f.panel.matrixWorld); return proj(w3.x, w3.y, w3.z); });
+        close.phones = { top: +b.y.toFixed(1), bottom: +(b.y + b.h).toFixed(1), frameTop: +Math.min(...c.map((p) => p[1])).toFixed(1), plaqueTop: +Math.min(...plate.map((p) => p[1])).toFixed(1), grow: +(1 / (1 - phones.liftF)).toFixed(3) };
+      }
+      clear.labelPad = +(l.pad / l.c).toFixed(3);
+      res.push({ i: i + 1, key: f.F.key, cells: [+(l.Ws * P / l.Dc / gu).toFixed(1), +(l.Hs * P / l.Dc / gu).toFixed(1)], size: [+(l.Ws / K).toFixed(3), +(l.Hs / K).toFixed(3)], plaque: [+l.rows.toFixed(2), +(l.label.width / gu).toFixed(2)], Dc: +(l.Dc / K).toFixed(3), slide: +(l.cx / K).toFixed(3), closest: close, lastVisible: close, inPlane: clear });
     });
     render(keep, true);
-    return { W, H, u: gu, P, K, smallest: 0.375, frames: res, worstSize: Math.min(...res.map((r) => r.closest.minSize ?? 9)), worstShare: Math.max(...res.map((r) => r.closest.share)) };
+    return { W, H, u: gu, P, K, eye: +E.toFixed(3), limits, smallest: 0.375, frames: res, worstSize: Math.min(...res.map((r) => r.closest.minSize ?? 9)), worstShare: Math.max(...res.map((r) => r.closest.share)) };
   }
   /** a drawing's words against its own lines (and its sheet's edges), in screen px at the moment it is read closest: at
    *  least half a cell (TYPE_RULES rule 2) */
@@ -1008,12 +1251,10 @@ export function createDive(root, top, { base = '' } = {}) {
     return url;
   }
   function reset() {}
-  // frame 5's real phones are gone (pass 2: a blueprint); kept as no-ops for the asset sheet's and the tools' calls
-  const loadPhones = () => Promise.resolve('none');
   return { layout, render, load, warm, still, reset, theme, loadPhones, loadLock, drawn, readability, look: LOOK.id, stops: STOPS,
     closeAt: () => (lay ? lay.map((l) => qAtD(l, l.Dc) * DIVE) : null), openAt: () => (lay ? lay.map((l) => qAtD(l, l.Dread) * DIVE) : null),
-    phones: () => 'none', frames: () => frames, lay: () => lay, P: () => P, L: () => L, K: () => K, hall: () => ({ W, H, P, K, X, L, z0, zEnd, Dend: Dend / K, Dx, portrait, band: bandR }),
+    phones: () => phones.state, frames: () => frames, lay: () => lay, P: () => P, L: () => L, K: () => K, hall: () => ({ W, H, P, K, X, L, z0, zEnd, Dend: Dend / K, Dx, portrait, band: bandR, eye: E, limits }),
     band: () => ({ i: bandOn, op: bandOp, rect: bandR }),
-    brass: () => brass, doorLock: () => doorLock,
+    brass: () => brass, doorLock: () => doorLock, yaw: () => phones.yaw, yaws: () => phones.yaws.slice(), seqAt: (e) => { seqHold = e; render(lastQ, true); }, seq: () => ({ t0: seqT0, e: seqT0 === null ? null : (performance.now() - seqT0) / 1000, on: seqOn, lift: phones.lift, liftF: phones.liftF }), frameStill,
     door: () => ({ lockState: door.lockState, Dend, zEnd }), endFrame: () => ({ P: lensP(W, H), hL: hX, Dend: Dx }), camera: () => camera, renderer: () => renderer, lockParts: () => lockParts, onBeat: (fn) => { onAgain = fn; } };
 }

@@ -4,12 +4,16 @@
 /* the hallway itself is WebGL (dive.js): walls, floor, ceiling, end wall, the door and the drawings in one perspective */
 .dive__gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
-/* ---------- the plaques (hallway pass 2): a small light plate under each frame, exactly as wide as the frame (drawn in
-   WebGL by dive.js), with only the title and the FIG line. The element is the words' box (a cell in from the plate's
+/* ---------- the plaques (hallway pass 2; pass 3: light paper, #EDEEF0, dark ink): a small plate under each frame, exactly
+   as wide as the frame (drawn in WebGL by dive.js), with only the title and the FIG line. The element is the words' box (a cell in from the plate's
    sides and top); dive.js carries it in the frame's own perspective (transform: matrix3d). The plate is light in light
    and dark mode, so the words are dark in both. --op fades the words in as the frame comes open. ---------- */
-.dive__lab { position: absolute; left: 0; top: 0; margin: 0; color: #0F1012; pointer-events: none; transform-origin: 0 0;
-  visibility: hidden; --op: 0; backface-visibility: hidden; }
+.dive__lab { position: absolute; left: 0; top: 0; margin: 0; color: #121212; pointer-events: none; transform-origin: 0 0;
+  visibility: hidden; --op: 0; backface-visibility: hidden; isolation: isolate; }
+/* pass 3 (Wajih: "rounded, never a hard cut"): the open plaque's plate is drawn here, in CSS, at the screen's own pixel
+   density (the WebGL plate under it has the same rounded outline): three quarters of a cell round the words (dive.js's
+   pad), its corners half a cell, the colour of the lit plate */
+.dive__labs .dive__lab::before { content: ""; position: absolute; inset: -.75rem; z-index: -1; border-radius: .5rem; background: #EDEEF0; opacity: var(--op); }
 .dive__lab.on { visibility: visible; }
 .dive__lab > * { opacity: var(--op); }
 /* the line that opens the hallway (on a frosted backing that fades out at its edges; it stands still) */
@@ -24,18 +28,18 @@
 .dive__labs { position: absolute; inset: 0; pointer-events: none; }
 .dive__lab p, .dive__open p, .dive__band p { margin: 0; }
 .dive__lab-t { font-family: var(--f-display, Newsreader, Georgia, serif); font-weight: 420; font-size: 1rem; line-height: 1.5rem; letter-spacing: -.005em; text-wrap: balance; }
-.dive__lab-k { margin-top: 1rem !important; color: #34373C; font-size: .5rem; line-height: 1rem; text-wrap: balance; }
+.dive__lab-k { margin-top: 1rem !important; color: #4E5156; font-size: .5rem; line-height: 1rem; text-wrap: balance; }
 .dive__lab-s { margin-top: .5rem !important; font-family: var(--f-display, Newsreader, Georgia, serif); font-size: 1rem; line-height: 1.5rem; text-wrap: pretty; }
 .dive__lab .ph, .dive__open .ph, .dive__band .ph { vertical-align: 0; line-height: 0; }
 .dive__open .ph { color: var(--graphite); }
 /* ---------- the caption band (hallway pass 2): dark, quiet, at the bottom of the screen (beside the title block on wide
-   screens, over it on phones; dive.js places it): the open frame's title and its story line (a draft, flagged) ---------- */
+   screens, over it on phones; dive.js places it). Pass 3: only the open frame's story line (a draft, flagged); its
+   title is on the plaque ---------- */
 .dive__bands { position: absolute; left: 0; top: 0; pointer-events: none; }
-.dive__band { position: absolute; left: 0; top: 0; box-sizing: border-box; padding: 1rem; background: #0C0D0F; border-radius: .25rem;
-  color: #EDEEF0; visibility: hidden; opacity: var(--op, 0); }
+.dive__band { position: absolute; left: 0; top: 0; box-sizing: border-box; padding: 1rem; background: #0C0D0F;
+  color: #EDEEF0; visibility: hidden; opacity: var(--op, 0); border-radius: .5rem; }
 .dive__band.on { visibility: visible; }
-.dive__band-t { font-family: var(--f-display, Newsreader, Georgia, serif); font-weight: 420; font-size: 1rem; line-height: 1.5rem; }
-.dive__band-s { margin-top: .5rem !important; font-family: var(--f-display, Newsreader, Georgia, serif); font-size: 1rem; line-height: 1.5rem; color: #BFC3C9; text-wrap: pretty; }
+.dive__band-s { font-family: var(--f-display, Newsreader, Georgia, serif); font-size: 1rem; line-height: 1.5rem; color: #DADDE1; text-wrap: pretty; }
 .dive__band .ph { color: #8C8F94; }
 /* the line that opens the hallway (round 7; draft): its lead as a headline, the rest under it */
 .dive__open-l { font-family: var(--f-display, Newsreader, Georgia, serif); font-weight: 420; font-size: 2rem; line-height: 3rem; letter-spacing: -.02em; white-space: nowrap; }

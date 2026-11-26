@@ -22,7 +22,7 @@ Take 1's history below.
 | # | Page | What happens | Viewports | Status |
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Page 1 | Beacon → Bell's ink on our grid → X-ray phone, six named pieces (each leader on its own piece) → kinetic line, real phone → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum → **"Now, how can we serve you?"** (signed off, round 8) | ~5.9 (with 2: 10.54) | **round 8 built (25 Nov): waiting for Wajih's review** |
-| 2 | The hallway | Hallway pass 1 (26 Nov): fixed proportions (about 2.6 x 3 x 19, frames at 4, 7, 10, 13, 16, left/right alternating); a white sketch drawn into depth dresses into the dark hall, the spotlights and the ceiling strip come on, the frames appear; scrolling is walking at one steady pace; each frame swings out fully (90 degrees) as you reach it and folds back as you pass; pass 2: black float frames lit in their spotlights, a light plaque under each (title, FIG line), the open frame's title and story line in a dark caption band, the camera slides (never turns) to each open frame (portrait: a narrower lens, the frame about two thirds of the width), dark chrome in the hall, five new blueprints; the walk ends in front of the centred, shut door with its brass Cutaway Lock; then page 3 as before | 5.4 (inside page 1's section) | **pass 2 built; pass 3 (the polish) next** |
+| 2 | The hallway | Hallway pass 1 (26 Nov): fixed proportions (about 2.6 x 3 x 19, frames at 4, 7, 10, 13, 16, left/right alternating); a white sketch drawn into depth dresses into the dark hall, the spotlights and the ceiling strip come on, the frames appear; scrolling is walking at one steady pace; each frame swings out fully (90 degrees) as you reach it and folds back as you pass; pass 2: black float frames lit in their spotlights, a light plaque under each (title, FIG line), the open frame's title and story line in a dark caption band, the camera slides (never turns) to each open frame (portrait: a narrower lens, the frame about two thirds of the width), dark chrome in the hall, five new blueprints; the walk ends in front of the centred, shut door with its brass Cutaway Lock; then page 3 as before; pass 3: the eye one height for the whole walk, the title on the plaque only (light paper, rounded), the band the story line only, no stock icons, frame 5's blueprint dresses into the real phones, which lift out of the frame and turn once each | 5.4 (inside page 1's section) | **pass 3 built (pre-ducked camera, light rounded plaques, no icons, frame 5's real phones lift out and turn); pending: the real-phone run** |
 | 3 | Into the lock | Starts on the hallway's last frame (the lock in X-ray); into the keyhole past the pins; out to the same lock on every crossing point of a grid in every direction; they unlock in a wave and fold back into one. Two lines (drafts) | 4.6 (overlapping page 1's last screen) | **round 9 built** |
 | 4 | How we work | The lock turns side-on into a 2D cutaway; "First, the obvious key." / "It fails. Most people stop here." / "We don't." (drafts); the wrong key fails; seven pins picked in the drum's order, each verb on a leader, the newest meaning under the lock on a leader; it turns on Delivered | 4 (inside page 3's section) | **round 10 built** |
 | 5 | Lighter trips | Three rooms, scrubbed: AI (the property app's enquiries: the AI drafts, a person approves, then it's sent), websites (the booking app's site, drawn on the grid then real), apps (the delivery tracker live on the real iPhone 18 and S26). Lines and content drafts | 7.2 | **round 11 built** |
@@ -359,7 +359,125 @@ Take 1's history below.
 - **Asset sheet:** sections 1 and 2's text updated; 1b is now the five drawings, flat.
 - **Tools:** `tools/hall2probe.py` (shots at named stops, what the hallway reports, `--read`), `phone_stage.py --stage hall2`.
 
+### Hallway pass 3 structure notes (26 Nov, Part 5 "Hallway pass 3": fixes and polish)
+- **The pre-ducked camera (`dive.js` `layout`):** the eye has one height `E` for the whole walk (per screen; was
+  `HALL.eye` 1.5), and the camera never moves up or down (`camera.position.y` stays 0; only the walk and, on portrait
+  screens, the sideways slide `cx`). The framing is solved before the hall's scale `K`, in hall units: every frame is
+  read at the same distance `d` from its hinge (so each lands on the same place on the screen); `a` = how far the eye is
+  under the frames' middles (`HALL.hang` 1.55) is chosen so a block (frame + half a cell + plaque) whose plaque is midway
+  between the shortest and the tallest is centred between a cell under the strip and a cell over the band and title
+  block (`limits`); every block is then within 0.43 cell of the middle. Portrait: `d` from the widest frame at `n`
+  cells (`round(2N / 3)` down until every block fits); wide screens: the frame's wall edge 1.5 cells inside the screen,
+  at most 0.6 of the height, larger `d` until every block fits. `E = hang - a` (clamped 0.7-2.2); then
+  `K = max(W / 2.6, H / (2 min(E, 3 - E)))` so the mouth still covers the screen with the eye at `E` (the hall's shape
+  never changes; `FY = -E K`, `CY = (3 - E) K`). The eye: about 1.0 on phones (0.88 on a 375 x 667), 1.24-1.42 on
+  laptops and desktops. The door's framing uses `E`.
+- **Plaques:** `PLAQUE` `#EDEEF0` (light paper) x lights x (0.5 dim on the wall .. 1.0 open); ink `#121212`, the FIG line
+  `#4E5156`. Rounded on all four sides (Wajih: "rounded, never a hard cut"): the open plaque's plate is drawn in CSS
+  (`.dive__labs .dive__lab::before`, 0.75 cell round the words, corners half a cell, `#EDEEF0`, fading with `--op`), at
+  the screen's own pixel density, so its edges are as clean on the S23 (dpr 2.8125; the WebGL canvas is capped at 2) as
+  on a laptop; the WebGL plate under it (seen while the frame is closed) has the same rounded outline
+  (`ShapeGeometry`, radius half a cell at the reading distance). **The caption band:** only the story line
+  (`bandHTML`; `.dive__band-t` is gone), `#DADDE1` on `#0C0D0F`, corners half a cell.
+- **Drawings (`corridor-drawings.js`, design ethos):** no tick, smiley, person or phone glyph, no checklist icon, no pill
+  boxes, no rounded database outline, no browser dots, no spinner. Frame 1: "3 ONE TAP" and "4 SENT" in plain boxes;
+  frame 2: the five layers carry only their words, the palette layer its three dots (layers 78 tall, 20 apart); frame 3:
+  a square database outline, a little more room round its two-line heading; frame 4: before = every part a dashed
+  outline, after = the parts drawn (a drafting picture box, lines, a plain button box). Frame 5: `d.region` (where the
+  real phones lie, with `M` 2.4).
+- **Frame 5's real phones (`dive.js`, from pass 1, reworked; Wajih's last change of the pass):** `loadPhones()` (page.js
+  calls it from page 1's X-ray scene on, after 300 ms of quiet; at once when the hallway starts): `realphones.js`
+  `loadPhone` (meshopt, off the main thread), our booking app on their screens (`appTexture`, `setScreen`), the studio
+  light at 0.38 as a fill (`phoneScene.environmentIntensity`) under the frame's own spotlight (a `DirectionalLight` 3.2
+  from above and a little in front: a bright top edge, darker towards the foot), textures uploaded one per frame,
+  `compileAsync`, then one hidden warm draw in the first pause (`idleWarm`). The iPhone's back (its logo flattened into a
+  plain grey panel) gets a real frosted glass back: one `MeshPhysicalMaterial` sheet (satin, fine grain, clear coat)
+  laid just proud of the whole `Back_Panel`, so the logo's seam never shows; the camera plateau stands above it. The
+  phones sit on their own blueprint outlines (`placePhones`, pivot scale `M`), drawn in their own pass after the hall.
+  **The show (`SEQ`, `phoneFrame`):** the scribble draws on as the frame opens (the walk); once it is fully open (D <=
+  `Dread`) a timed sequence plays once: 0-0.6 s the phones turn real (the blueprint's lines fade; the blue sheet stays
+  behind them the whole time), 0.15-1.35 s they lift OUT of the frame towards you (`phoneOffset`: carried along the line
+  of sight a share `liftF` of the way to the camera, so they grow on screen without drifting; past the frame's front)
+  and spread apart (`spread`) so their outer edges pass over the frame's sides by 0.6 cell (the frame broken on
+  purpose), a soft shadow left on the sheet (`blobs`, further and softer as they lift); then each makes ONE full 360
+  degree turn, the iPhone 1.4-7.4 s, the Android 2.0-8.0 s, ending on its front with the booking app. `liftF` per screen
+  (layout): as far as keeps them, with a margin for the near edge of a phone turned side on, half a cell under the
+  frame's top edge (so never over the plaque or the band): 1.16 x on a 384 x 734 phone. Walking back before the frame
+  opens, or on past it, resets the show; folding the frame takes them back in. One render per frame (`seqStep`; the
+  loop's handle stays set while its own render runs: clearing it first made each render start another loop, and the
+  renders per frame doubled until the hall stalled, found in real Chrome). Reduced motion: no turn; the page's still
+  list shows frame 5 as a still of the real phones standing out of the frame, front on (`frameStill`, page.js), or its
+  blueprint without the files. No IPHONE / ANDROID words (the plaque names them). Tests: `seqAt(e)` holds the clock,
+  `seq()`, `yaws()`.
+- **Checks:** `readability()` (and `tools/readcheck.py`) now measure the fixed hall: words >= 0.375 cells, the block
+  between the limits, centring within half a cell, in-plane clear space, the plaque's pad; round 8b's "half the screen's
+  height" rule is gone. `tools/geom.py` also measures the caption band. `info[].quad` is each frame's visible outline,
+  clipped at the camera's near plane (`visiblePoly`: a frame folding back beside you was reported as a huge inverted
+  box), and `info[].hide` says when a frame steps back behind a plaque; `tools/overlap.py` uses both, ignores the
+  hallway once it has scrolled away, and counts a closed frame on the wall passing under the fixed chrome (strip, title
+  block, caption band) apart, by design, like page text under the chrome. `tools/hall2probe.py` prints the eye and the
+  phones' state. `tools/phone_stage.py --stage hall2` covers frame 5's phones, their turn standing still (fps, two shots, reduced
+  motion stops it) and a plaque close up.
+
 ### Take 2 log
+- **Hallway pass 3, fixes and polish (26 Nov).** Brief committed (`33ccc5a`). Built as in "Hallway pass 3 structure
+  notes": the pre-ducked camera, the title on the plaque only, light paper plaques, no stock icons in the drawings, the
+  real phones back in frame 5; then Wajih's three changes during the pass: the phones turn by themselves (later
+  replaced), the plaques and the band rounded on all four sides, and frame 5's final show (the phones lift out of the
+  frame and make one full turn each; the blue sheet stays; a frosted glass back; no IPHONE / ANDROID words). Shots:
+  `tools/shots/hall-p3/` (probe, phone, phone-run1, f5, typecheck-*, grid, overlap*, geom*, readcheck*, axe_*,
+  reduced, flicker, selfcheck/items).
+  - **The real S23 (SM-S918N, 384 x 719 @2.8125), run during the pass, before frame 5's final show:** 60 fps in all 10
+    hallway segments on both passes; the phones turning by themselves (the interim version) 60.1 fps standing still,
+    stopped by reduced motion; the rounded plaques' close-up clean; 8 real swipes, no pull-back, worst frames 92 and
+    100 ms (the first flick each way); 0 errors. Found there and fixed: the blueprint's faded lines still wrote depth
+    and cut notches into the phones' edges. **Pending: the real-phone run** of the final code (frame 5's lift and turn,
+    the frosted back, fps through the hallway, real swipes, reduced motion, shots of every frame open and the door):
+    Wajih took the phone back for another project before it.
+  - **Laptop, real (headed) Chrome, Radeon 780M, a 120 Hz screen (`tools/hall3chrome.py`):** frame 5's whole show
+    (lift and two turns, 8.3 s, standing still) 119.3 fps at 2160 x 1147 @1.333 (2 frames over 20 ms, worst 25 ms),
+    120 fps at 1440 x 900 (worst 16.7 ms), 119.3 fps at 384 x 734 @2.8125 emulated (1 over 20 ms); LIT and the
+    scribble 120 fps. Found in real Chrome and fixed: the show's frame loop started a second loop on each of its own
+    renders, so the renders per frame doubled until the hall stalled (5 fps, a 6.4 s frame, headless crashes).
+  - **Type check** (the gate; the hallway's 11 stops TR-LOCK; all 14 sizes, light and dark; 308 frames; final code):
+    **0 machine failures**. Reduced motion (3 sizes): the hallway clean; 102 failures, all page 4's cutaway over page 5's
+    website room (edges).
+  - **Readability** (`readcheck.py`, adjusted to the fixed hall; 14 sizes; final code): **0 failures**. Smallest word
+    0.42 cells (rule 0.375), every frame with its plaque within 0.43 cell of the room's middle (rule 0.5), the drawings'
+    clear space at least 0.18 px over the half cell. The eye: 0.88 (375 x 667) to 1.0 on phones, 1.24-1.42 on laptops.
+    Frame 5's lifted phones: 1.16 x on a 384 x 734 (20 px under the frame's top edge, 27 px over the plaque), 1.22 x at
+    2160 x 1147 (38 px, 44 px). Fixed on the way: frames 2 and 3 were 0.2 px short of their clear space on a 375 x 667.
+  - **On-grid** (`gridcheck.py`, 14 sizes, the hallway's stops): 0 off the grid (3,030 edges, 2,622 baselines; worst
+    0.066 px). (Run before frame 5's final show, which adds no grid-bound text.)
+  - **Geometry** (`geom.py`, 14 sizes, light and dark, every stop, the band added; final code): **0 problems**.
+  - **Overlap** (`overlap.py`, 14 sizes, final code): the hallway 0. 15 outside it (edges): the spec sheet's heading over
+    the title block at the final room's last stop on five phones. Fixed on the way (the tool and the hallway's report):
+    a frame folding back beside you was reported as a huge inverted box (now clipped at the near plane), frames hidden
+    behind a plaque were counted, the hallway's last state was read after it scrolled away, and a closed frame on the
+    wall passing under the fixed chrome is now counted apart, like page text under the chrome.
+  - **Axe** (`axe8.py`, 14 sizes, light and dark, 70 stops each; reduced motion at 2 sizes): 0 violations. Console: 0
+    errors from the page (two `ERR_CONNECTION_TIMED_OUT` at 2160 x 1147 dark: the plain local server dropping a
+    request under load). Real Chrome logs a 404 for `/favicon.ico` (the site has none: edges).
+  - **Length:** page 1 with the hallway 11.34 screens at every size (the hallway 5.4); the whole page 31.6-34.9.
+  - **Reduced motion:** the dressed hall still, then each drawing with its caption; frame 5 a still of the real phones
+    standing out of their frame, front on (4 shots: 384 x 734 and 1440 x 900, light and dark).
+  - **Screenshot self-check and design ethos** (`selfcheck/items/`, 384 x 734 and 2160 x 1147): rhythm, breaks, the
+    drawings' words at a glance (emulated; the real S23: pending the real-phone run), the plaques (as wide as their
+    frames, rounded, crisp at rest), drafts flagged; hairlines only, no stock icons, blue only for the drawings, brass
+    the one warm tone, real material. Passed.
+  - **Flicker** (`flicker.py`, real Chrome, 2160 x 1147 @1.333 set through its own DevTools session; pass 1 `32869f5`
+    staged at `site/p1old/` and deleted again): the hallway walk (between frames 1 and 2) flicker
+    energy 0.31 (pass 1) -> 0.37 now, pixels over the threshold 0.13% -> 0.09%; plain wall, floor and ceiling 0.22-0.29
+    both builds, 0.0% over the threshold (no new shimmer). Its lower-left patch (0.51 -> 1.25) now holds frame 1 and its
+    plaque sliding past (the lower eye puts them there): motion, not flicker. The tool's hyperdrive step (a dev page,
+    outside the hallway) fails on both: `window.__draw` is gone from `dev/hyper.html` (edges).
+  - **My calls:** the block (frame + plaque) is what is centred, every frame at one reading distance so each lands on
+    the same place (the eye is one height; plaques of one and two lines differ, so the blocks are within 0.43 cell); the
+    eye goes about 0.5 lower on phones than "slightly" (the band and the plaque need the frame above the middle); the
+    phones spread over the frame's sides as they lift, so "out of the frame" reads face on; the open plaque's plate is
+    CSS (crisp on the S23), the closed one WebGL with the same outline; frame 2's layers carry only their words.
+  - **The flicker tool** no longer sends Ctrl+minus key presses (they could reach whatever window had the focus).
+  - Not run: the real-phone run (pending).
 - **Hallway pass 2, the frames and the phone framing (26 Nov).** Brief committed (`91042c5`). Built as in "Hallway pass 2
   structure notes". Shots: `tools/shots/hall-p2/` (before, probe, typecheck, phone, reduced, assets).
   - **Type check** (`typecheck.py`, the hallway's 11 stops TR-LOCK; 384 x 734 @2.8125, 1440 x 900, 2160 x 1147 @1.333;

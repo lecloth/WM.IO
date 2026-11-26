@@ -32,7 +32,7 @@ STAGES = {
              ["frame 1: open, slide, band, fold", "p", "F1-0.45", "F1+0.3"], ["frame 2: open, slide, band, fold", "p", "F2-0.45", "F2+0.3"], ["frame 3: open, slide, band, fold", "p", "F3-0.45", "F3+0.3"],
              ["frame 4: open, slide, band, fold", "p", "F4-0.45", "F4+0.3"], ["frame 5: open, slide, band, fold", "p", "F5-0.45", "F5+0.3"], ["the walk to the shut door (brass lock)", "p", "F5+0.3", "DOOR"], ["hand-over to page 3", "p", "DOOR", "LOCK"]],
     "swipe_from": ["p", 6.3], "stops": [["p", k] for k in ["LIT", "F1-0.25", "F1", "F2", "F3", "F4", "F5", "F5B", "DOOR", "LOCK"]],
-    "reduced": ["#page-02"],
+    "reduced": ["#page-02"], "spin": True, "plaque": "F1",   # hallway pass 3: frame 5's phones turning by themselves; a plaque close up
   },
   "8b": {
     "segs": [["the way in, dress, opening line", "p", 4.62, 5.6], ["the walk: frames 1-2", "p", 5.6, 6.95], ["the walk: frames 3-4", "p", 6.95, 8.1],
@@ -121,6 +121,40 @@ async def main(a):
                 (out / 'report_fps.json').write_text(json.dumps(rep, indent=1), encoding='utf-8'); print('FPS', json.dumps({k: (v.get('fps'), v.get('worst')) for k, v in rep['fps'].items()})); return
             for k, v in cfg["stops"]:
                 y = await ypos(k, v); await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.1); await shot(f"stop_{k.strip('#')}_{v}")
+            if cfg.get("spin"):
+                # hallway pass 3: frame 5's show, in real time, standing still: the scribble drawing on, the phones lifting out,
+                # mid-turn, their fronts; fps while they turn (no screenshot during it: a capture stalls the phone's frames);
+                # then reduced motion: straight to the fronts, no turn
+                y = await ypos("p", "F5-0.25"); await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.2); await shot("f5_1_scribble")
+                y = await ypos("p", "F5"); await c.eval(f"{GOTO_Y}({y})")
+                async def until(e):
+                    for _ in range(200):
+                        v = await c.eval("(window.__p1.diveApi.seq().e || 0)")
+                        if v >= e: return v
+                        await asyncio.sleep(0.05)
+                ea = await until(0.75); await shot("f5_2_lifting")
+                await until(1.6)
+                await c.eval("window.__spinT = []; (function f(now) { window.__spinT.push(now); if (window.__spinT.length < 181) requestAnimationFrame(f); })(performance.now()); true")
+                await asyncio.sleep(3.1)
+                t = json.loads(await J("window.__spinT")); d = [t[i + 1] - t[i] for i in range(len(t) - 1)]; so = sorted(d)
+                eb = await until(4.3); yb = json.loads(await J("window.__p1.diveApi.yaws()")); await shot("f5_3_midturn")
+                ec = await until(8.4); yc = json.loads(await J("window.__p1.diveApi.yaws()")); await shot("f5_4_fronts")
+                sq = json.loads(await J("window.__p1.diveApi.seq()"))
+                # reduced motion: walk back before it opens, switch it on, come back: no turn, straight to the fronts
+                y0 = await ypos("p", "F5-0.6"); await c.eval(f"{GOTO_Y}({y0})"); await asyncio.sleep(0.8)
+                await c.call("Emulation.setEmulatedMedia", {"features": [{"name": "prefers-reduced-motion", "value": "reduce"}]})
+                await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.2)
+                yr = json.loads(await J("window.__p1.diveApi.yaws()")); await shot("f5_5_reduced")
+                await c.call("Emulation.setEmulatedMedia", {"features": [{"name": "prefers-reduced-motion", "value": ""}]})
+                rep["spin"] = {"e_shots": [ea, eb, ec], "yaws_midturn": yb, "yaws_end": yc, "seq": sq, "fps_turning": round(1000 * len(d) / max(1, sum(d)), 1), "p95": round(so[int(len(so) * .95)], 1) if so else None,
+                               "worst": round(so[-1], 1) if so else None, "over20": sum(1 for x in d if x > 20), "reduced_yaws": yr}
+                print("spin", rep["spin"], flush=True)
+            if cfg.get("plaque"):
+                y = await ypos("p", cfg["plaque"]); await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.5)
+                b = json.loads(await J("(() => { const L = window.__p1.dive().labels[0]; if (!L) return null; const xs = L.back.map(p => p[0]), ys = L.back.map(p => p[1]); return { x: Math.min(...xs) - 12, y: Math.min(...ys) - 12, w: Math.max(...xs) - Math.min(...xs) + 24, h: Math.max(...ys) - Math.min(...ys) + 24 }; })()"))
+                if b:
+                    r = await c.call("Page.captureScreenshot", {"format": "png", "clip": {"x": b["x"], "y": b["y"], "width": b["w"], "height": b["h"], "scale": 1}})
+                    (out / "plaque_closeup.png").write_bytes(base64.b64decode(r["data"])); print("shot plaque_closeup", b, flush=True)
             # real swipes
             starts = [cfg["swipe_from"]] + cfg.get("swipe_more", [])
             k, v = starts[0]; y = await ypos(k, v); await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.2)

@@ -48,18 +48,21 @@ MEASURE = r"""() => {
   }
   const host = (b) => { if (!b.classList?.contains('p1-fly')) return null; const st = b.dataset.state, w = b.dataset.w;
     return w === 'you' ? (st === 'a' ? 's2' : st === 'c' ? 'task' : null) : (st === 'a' ? 'task' : st === 'b' ? 'we' : null); };
-  for (const [b, rs] of groups) out.texts.push({ name: desc(b), rects: rs, chrome: !!b.closest('.titleblock, .strip'), page: !!b.closest('#page-07, #page-07b'),
+  for (const [b, rs] of groups) out.texts.push({ name: desc(b), rects: rs, chrome: !!b.closest('.titleblock, .strip, .dive__band'), page: !!b.closest('#page-07, #page-07b'),
     k: b.closest('[data-k]')?.dataset.k || host(b) });
   const pic = (name, l, t, r, b) => { if (r - l > 1 && b - t > 1) out.pics.push({ name, l, t, r, b }); };
   const p1 = window.__p1;
   const pf = document.querySelector('.p1__plate'); if (pf && visible(pf) && +getComputedStyle(pf).opacity > 0.05) { const r = pf.getBoundingClientRect(); pic("Bell's drawing", r.left, r.top, r.right, r.bottom); }
   const cv = document.querySelector('.p1__canvas');
   if (p1 && cv && !cv.classList.contains('is-off') && +getComputedStyle(cv).opacity > 0.5) p1.phone.parts.forEach((pt) => { const b = p1.phone.partBox(pt); pic(`phone A ${pt.name}`, b.left, b.top, b.right, b.bottom); });
-  const dv = p1?.dive?.(); out.shares = [];
+  // hallway pass 3: only while the hallway is on screen (its last state is kept after it scrolls away); a frame hidden
+  // behind a plaque is not seen; a closed frame on the wall passing under the fixed chrome is by design (counted apart)
+  const hallOn = !!document.querySelector('.p1-dive-top.on:not(.is-past)');
+  const dv = hallOn ? p1?.dive?.() : null; out.shares = [];
   if (dv && dv.info) dv.info.forEach((f) => {
-    if (!f.quad || f.op < 0.5) return;
+    if (!f.quad || f.op < 0.5 || f.hide > 0.5) return;
     const xs = f.quad.map((c) => c[0]), ys = f.quad.map((c) => c[1]);
-    pic(`hallway drawing ${f.i + 1}`, Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys));
+    pic(`hallway drawing ${f.i + 1}${f.swing > 0.98 ? ' (open)' : ''}`, Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys));
     if (f.rest) out.shares.push({ i: f.i + 1, share: +((Math.max(...ys) - Math.min(...ys)) / H).toFixed(3), width: +((Math.max(...xs) - Math.min(...xs)) / W).toFixed(3) });
   });
   if (!inDive) document.querySelectorAll('#page-07 .p2-row .mark').forEach((m, k) => { if (visible(m)) { const r = m.getBoundingClientRect(); pic(`tick box ${k + 1}`, r.left, r.top, r.right, r.bottom); } });
@@ -80,6 +83,7 @@ def check(m, under):
         for p in m["pics"]:
             if any(hit(x, p) for x in a["rects"]):
                 if a.get("chrome") and p["name"].startswith("tick box"): under.append(f"{a['name']} / {p['name']}")
+                elif a.get("chrome") and p["name"].startswith("hallway drawing") and "(open)" not in p["name"]: under.append(f"{a['name']} / {p['name']}")   # a closed frame on the wall passing under the fixed chrome
                 else: bad.append(f"text {a['name']} x {p['name']}")
     return bad
 

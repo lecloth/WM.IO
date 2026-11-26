@@ -420,11 +420,15 @@ export function initPage01(engine) {
 
   // page 2, the hallway: on from its first scroll position until page 1's last (then the stage, plain paper and grid like
   // the open door's view, scrolls away and page 3 follows)
-  let diveNow = null, hallDark = false;
+  let diveNow = null, hallDark = false, phonesT = 0;
   // hallway pass 2: the strip and the title block wear their dark version while you are in the dark hall
   const setHallDark = (on) => { if (on === hallDark) return; hallDark = on; document.documentElement.classList.toggle('hall-dark', on); };
   function renderDive(p) {
     const q = span(p, ...R.dive), going = p > R.dive[0];   // round 8b: the hallway holds its last frame (the lock filling the screen) while page 3 takes over
+    // frame 5's real phones (pass 3) load from page 1's X-ray scene on, in the first pause (300 ms without scrolling), so
+    // their parsing never lands in a moving frame; once the hallway starts they load at once whatever happens
+    if (p >= R.dive[0]) dive.loadPhones();
+    else if (p >= R.s1[0]) { clearTimeout(phonesT); phonesT = setTimeout(() => dive.loadPhones(), 300); }
     diveEl.classList.toggle('on', going); diveTop.classList.toggle('on', going);
     if (!going) { diveNow = null; setHallDark(false); return; }
     const d = dive.render(q); if (!d) return;
@@ -549,7 +553,14 @@ export function initPage01(engine) {
       const himg = new Image(); himg.alt = 'The hallway, dressed: dark walls, a light strip down the ceiling, a spotlight over each of five drawings open on their hinges, and a shut door at the end.';
       hall.append(himg); list.querySelector('.p1-hall__open').after(hall);
       requestAnimationFrame(() => { const w = Math.round(list.getBoundingClientRect().width) || 320, h = Math.round(Math.min(innerHeight * 0.75, w * 1.25));
-        himg.width = w; himg.height = h; dive.still(w, h, { u: grid.u }).then((url) => { himg.src = url; }).catch((e) => console.warn('[page 01] hall still', e)); });
+        himg.width = w; himg.height = h;
+        // then (pass 3) frame 5 still: the real phones standing out of their frame, front on, no turn (local files only;
+        // without them its blueprint stays)
+        dive.still(w, h, { u: grid.u }).then((url) => { himg.src = url; return dive.frameStill(FRAMES.length - 1, w, Math.round(w * 1.45), { u: grid.u }); })
+          .then((r) => { if (!r) return; const d5 = list.querySelectorAll('.p1-hall__d')[FRAMES.length - 1]; if (!d5) return;
+            const img = new Image(); img.className = 'p1-hall__real'; img.alt = 'Our booking app on the real iPhone and Android phone, standing out of their frame.'; img.width = Math.round(r.w); img.height = Math.round(r.h); img.src = r.url;
+            d5.replaceWith(img); })
+          .catch((e) => console.warn('[page 01] hall still', e)); });
       FRAMES.forEach((F) => {
         const fig = document.createElement('figure'); fig.className = 'p1-hall__f';
         fig.innerHTML = `<div class="p1-hall__d" role="img" aria-label="${F.alt}">${toSVG(F.draw, { pad: Math.round(F.draw.w * MOUNT) })}</div><figcaption>${captionHTML(F)}</figcaption>`;
