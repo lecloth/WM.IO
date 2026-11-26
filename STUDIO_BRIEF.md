@@ -1093,3 +1093,24 @@ three.js; Lenis with light settings.
      - **A2, real brass: your view.** Polished, closed, it just works.
   5. **"Locked."** and on to page 4, how we work.
   All words are placeholders. The real lock and the lab's looks (A1-A3, B1, B3) are the material; 60 fps on the S23.
+
+### Hallway pass 3: fixes and polish (26 Nov, Wajih after pass 2, agreed on a demo in the chat). Overrides the above where they differ.
+- **Pass 2 is in** (`2cef000`): the frames, drawings and phone framing work. Four fixes, then the polish. Nothing new.
+- **The camera is pre-ducked:** one fixed, slightly lower eye height for the whole walk (on every screen), chosen so each
+  open frame sits centred in the space between the top strip and the caption band. The camera never moves up or down;
+  the only motion is the walk and the gentle sideways slide on phones. (Pass 2's slide also went down: Wajih, "it's
+  like you're ducking in a video game".)
+- **The title once only:** it stays on the plaque (as in a museum); the caption band carries only the story line
+  (flagged Draft).
+- **Light plaques:** the plaques read as light paper (about `#EDEEF0` with dark ink), not mid-grey.
+- **No stock icons in the drawings:** remove the checkmark (frame 1, "Sent"), the smiley and the person icon (frame 2)
+  and any other premade UI icon; use drafting marks, words or hairline shapes instead (design ethos).
+- **The real 3D phones come back in frame 5** (pass 2 dropped them: the chat's "not the white photo" meant only the flat
+  picture, never the 3D phones): frame 5 starts as the blueprint of the two phones, then dresses into the real 3D iPhone
+  18 and Galaxy S26 (drawn → real, like page 1's phone), which turn slowly under the frame's own spotlight, inside the
+  black float frame. The existing loaders in `site/js/phones/realphones.js`; the model files stay local and out of git;
+  60 fps on the S23, loaded early enough that the hallway never stalls.
+- **The polish (the hallway only):** all 14 sizes, light and dark: TYPE_RULES (tools/typecheck.py plus the screenshot
+  self-check), on-grid, the readability check (adjust it for the fixed hall and the open frames, so it measures what we
+  now show), overlap, geometry, axe, console errors, reduced motion, length in viewports, the design-ethos self-check,
+  and flicker in real Chrome at Wajih's laptop settings against pass 1 (`32869f5`). Fix what they find in the hallway.
