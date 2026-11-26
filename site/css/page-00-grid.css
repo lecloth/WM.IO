@@ -114,6 +114,10 @@ html .strip { background: var(--paper); mix-blend-mode: normal; color: var(--ink
   .titleblock .tb__v { font-size: .5rem; }
 }
 
+/* hallway pass 2: in the dark hall the strip and the title block wear their dark version (page.js sets html.hall-dark) */
+html.hall-dark .strip, html.hall-dark .titleblock { --paper: #0E0E0E; --paper-rgb: 14, 14, 14; --ink: #EDEEF0; --ink-rgb: 237, 238, 240; --graphite: #8C8F94;
+  --hair: rgba(237, 238, 240, .8); }
+
 /* ---------- the gate: the beacon on the grid intersection nearest the screen's centre; the curtain parts there ---------- */
 :root { --gx: round(nearest, 50vw, 1rem); --gy: round(nearest, 50dvh, 1rem); }
 .sing { top: var(--gy); }

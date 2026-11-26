@@ -22,7 +22,7 @@ Take 1's history below.
 | # | Page | What happens | Viewports | Status |
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Page 1 | Beacon → Bell's ink on our grid → X-ray phone, six named pieces (each leader on its own piece) → kinetic line, real phone → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum → **"Now, how can we serve you?"** (signed off, round 8) | ~5.9 (with 2: 10.54) | **round 8 built (25 Nov): waiting for Wajih's review** |
-| 2 | The hallway | Hallway pass 1 (26 Nov): fixed proportions (about 2.6 x 3 x 19, frames at 4, 7, 10, 13, 16, left/right alternating); a white sketch drawn into depth dresses into the dark hall, the spotlights and the ceiling strip come on, the frames appear; scrolling is walking at one steady pace; each frame swings out fully (90 degrees) as you reach it and folds back as you pass (round 8b's drawings and labels until pass 2); the walk ends in front of the centred, shut door (plate, lever above keyhole); then page 3 as before | 5.4 (inside page 1's section) | **pass 1 built; pass 2 (the frames) next** |
+| 2 | The hallway | Hallway pass 1 (26 Nov): fixed proportions (about 2.6 x 3 x 19, frames at 4, 7, 10, 13, 16, left/right alternating); a white sketch drawn into depth dresses into the dark hall, the spotlights and the ceiling strip come on, the frames appear; scrolling is walking at one steady pace; each frame swings out fully (90 degrees) as you reach it and folds back as you pass; pass 2: black float frames lit in their spotlights, a light plaque under each (title, FIG line), the open frame's title and story line in a dark caption band, the camera slides (never turns) to each open frame (portrait: a narrower lens, the frame about two thirds of the width), dark chrome in the hall, five new blueprints; the walk ends in front of the centred, shut door with its brass Cutaway Lock; then page 3 as before | 5.4 (inside page 1's section) | **pass 2 built; pass 3 (the polish) next** |
 | 3 | Into the lock | Starts on the hallway's last frame (the lock in X-ray); into the keyhole past the pins; out to the same lock on every crossing point of a grid in every direction; they unlock in a wave and fold back into one. Two lines (drafts) | 4.6 (overlapping page 1's last screen) | **round 9 built** |
 | 4 | How we work | The lock turns side-on into a 2D cutaway; "First, the obvious key." / "It fails. Most people stop here." / "We don't." (drafts); the wrong key fails; seven pins picked in the drum's order, each verb on a leader, the newest meaning under the lock on a leader; it turns on Delivered | 4 (inside page 3's section) | **round 10 built** |
 | 5 | Lighter trips | Three rooms, scrubbed: AI (the property app's enquiries: the AI drafts, a person approves, then it's sent), websites (the booking app's site, drawn on the grid then real), apps (the delivery tracker live on the real iPhone 18 and S26). Lines and content drafts | 7.2 | **round 11 built** |
@@ -311,7 +311,71 @@ Take 1's history below.
   the shut door. **Tools:** `phone_stage.py --stage hall1` (stop names with offsets, e.g. `F1-0.4`); `readability()`
   returns `cells` again for readcheck.py.
 
+### Hallway pass 2 structure notes (26 Nov, Part 5 "Hallway pass 2": the frames and the phone framing)
+- **`corridor-drawings.js` (rewritten):** five square-ish blueprints in walking order (`FRAMES`: `giveup`, `understand`,
+  `oneplace`, `speed`, `phones`), every word at one size (`S` 24 units, DM Mono 500), `CLEAR` 26 round every word, `BOX`
+  a one-line box, `MOUNT` 0.07 (even blue margin). New: `d.disc(cx, cy, r, alpha)` (solid dots: frame 2's palette, solid
+  and faint; `d.fills`, drawn in WebGL as circles, in `toSVG` as `<circle>`). No dimension lines ("no numbers"; `dimParts`
+  kept). Frame 5 is a blueprint only (the phones' true outlines scaled by 2.4); `real`, `LAYERS` and canvas 2's layer
+  planes are gone. Story lines are drafts (frame 3's is new: "WhatsApp, spreadsheets, paper and the register, brought
+  together into one system you can trust.").
+- **`dive.js` (frames, lens, camera, lock):**
+  - **Lens:** `hallP(W, H)`: portrait screens 36 degrees across the width (`HALL_LENS`), else the site's `lensP` (page 3
+    keeps `lensP`; the X-ray hand-over is drawn through `xCam` with page 3's lens, so the seam is exact). The hall's
+    shape and `K` are unchanged.
+  - **Frames:** `frameDims(d)` (hall units): the frame's outer size `ow` x `oh` (1.0 tall, at most 1.0 wide) and the
+    sheet inside it; `HALL.frame` = moulding 0.032, depth 0.05, shadow gap 0.026. Per frame (`buildFrame`, drawing units
+    in the panel): a backing in the gap (`#060708`), a soft shadow under the sheet, the sheet at `ZS` (map `spotMap`: the
+    spot, brightest a little above its middle; colour = blue x lit, lit = lights x (0.7 + 0.3 swing)), the drawing's lines
+    and words, `fills`, the moulding's face (`ring`, map `mouldMap`: near-black, its top edge catching the light) and four
+    bars (its depth), the plaque's plate (`#A8ACB2`, dim on the wall, lit as the frame opens). A soft wall shadow
+    (`wshadow`, in the scene) where it hangs, narrowing to the hinge as it opens. The hairline frame is gone.
+  - **Light:** `paintHall` puts each spotlight's pool on the floor under the frame's open place and a soft halo round it on
+    the wall; the strip's glow and sheen are about halved, the strip 0.035 wide and `#5E636B` (hall-looks.js); the
+    fixtures hang over each frame's open place (0.3 in front of its hinge).
+  - **Plaques:** DOM words only (`.dive__lab`: title serif 1 cell 420, FIG mono 0.5 cell, a cell between them), quad-mapped
+    onto the GL plate (`labLocal`: 0.75 cell in from the plate's sides, top and foot; `backLocal` = the plate, its sides
+    the backing lines for the type check). Shown while the frame is open (`lab`).
+  - **Caption band:** `.dive__bands` / `.dive__band` (one per frame, the open one shown): dark `#0C0D0F`, 1 cell padding,
+    the title and the Draft-flagged story line; beside the title block on wide screens (24 cells or more free), else a
+    cell over it; whole cells tall (the tallest line). Opaque: hall lines are cut round it and `drawn()` hides what lies
+    under it.
+  - **Framing and the slide (`layout`):** read closest (`Dc`), frame + half a cell + plaque sit in the middle of the room
+    between a cell under the strip and a cell over the band and title block (`bTop` on a grid line). Portrait: the frame
+    `n` cells wide (`round(2N / 3)` down until it fits: 13 of 20 on the S23, 0.666 of the width), the camera slid to its
+    middle (`cx`, `cy`). Wide screens: the camera slides only up and down (`cy`), the frame's wall edge 1.5 cells inside
+    the screen, the frame at most 0.6 of the screen's height. In `render` the camera position is the open frames'
+    targets weighted by their swing (a slide, never a turn: its rotation stays 0).
+  - **The lock:** `lockParts.build({ inside: false })` on the leaf's right edge strip at 1.0 (handle height), face 0.13
+    tall, its solids `toCreasedNormals` in `brass` (MeshStandardMaterial, metalness 1, roughness 0.26, the studio HDRI,
+    `envMapRotation` y 1.5 pi so the face catches the soft boxes), edges hidden. The old plate, lever and keyhole are gone.
+  - **Gone:** frame 5's real phones (`loadPhones` and `phones()` stay as no-ops for the asset sheet), `LAYERS`, the
+    labels' frosted backing. `drawn()` treats a fixture behind an open frame as hidden. `readability()` reports each
+    frame's cells, plaque, `Dc`, slide, smallest word, width and height shares and in-plane clearance.
+- **Dark chrome:** page.js toggles `html.hall-dark` (dress past half, before the X-ray, until the stage scrolls on);
+  page-00-grid.css gives `.strip` and `.titleblock` the dark tokens under it.
+- **Reduced motion:** the still hall (frames open, plates, no words), then each drawing (`toSVG` with a `MOUNT` pad) and
+  `captionHTML` (title, FIG line, flagged story line).
+- **Asset sheet:** sections 1 and 2's text updated; 1b is now the five drawings, flat.
+- **Tools:** `tools/hall2probe.py` (shots at named stops, what the hallway reports, `--read`), `phone_stage.py --stage hall2`.
+
 ### Take 2 log
+- **Hallway pass 2, the frames and the phone framing (26 Nov).** Brief committed (`91042c5`). Built as in "Hallway pass 2
+  structure notes". Shots: `tools/shots/hall-p2/` (before, probe, typecheck, phone, reduced, assets).
+  - **Type check** (`typecheck.py`, the hallway's 11 stops TR-LOCK; 384 x 734 @2.8125, 1440 x 900, 2160 x 1147 @1.333;
+    light and dark; 66 frames): **0 machine failures**. Fixed on the way (2 -> 0): a ceiling fixture hidden behind frame 2
+    was counted against its words.
+  - **S23** (`phone_stage.py --stage hall2`, 384 x 719 @2.8125): 60 fps in all 10 segments on both passes (each frame
+    opening with the slide, the caption band and the fold; the walk to the brass lock; the hand-over); 8 real swipes, no
+    pull-back, worst frames 108 ms (the first flick each way); reduced motion: the still hall, then the five drawings with
+    their captions; 0 errors. (The first runs found the screen asleep, then the tab caught in landscape: woken, re-run.)
+  - **Framing** (`hall2probe.py --read`): S23 every open frame 13 of 20 cells (0.666 of the width), the drawings' words
+    0.53-0.55 cells (rule 0.375); 1440 x 900 frames 0.31-0.36 of the width and 0.61 of the height, words about 0.8 cells.
+  - **My calls:** on a phone the slide is sideways and a little down (the plaque and band need the frame above the
+    middle; still a slide, never a turn); on wide screens up and down only. The plaque's plate is drawn in WebGL (always
+    there, dim on the wall, lit as the frame opens); its words appear as it opens. Frame 3's story line is new (draft).
+    The brass reflection is turned (`envMapRotation`) so the flat face reads as brass, not near-black.
+  - Not run (pass 3): the other 11 sizes, gridcheck, overlap, flicker, axe, readcheck.
 - **Hallway pass 1, the space (26 Nov).** Brief committed (`d25e804`). Built as in "Hallway pass 1 structure notes".
   Shots: `tools/shots/hall-p1/` (probe, typecheck, phone, reduced, assets).
   - **Type check** (`typecheck.py`, the hallway's 11 stops TR-LOCK; 384 x 734 @2.8125, 1440 x 900, 2160 x 1147 @1.333;

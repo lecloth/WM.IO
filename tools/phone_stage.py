@@ -27,6 +27,13 @@ STAGES = {
     "swipe_from": ["p", 6.3], "stops": [["p", k] for k in ["TR", "OPEN", "LIT", "F1", "F2", "F3", "F4", "F5", "F5B", "DOOR", "LOCK"]],
     "reduced": ["#page-02"],
   },
+  "hall2": {   # hallway pass 2 (the frames, the phone framing): each frame opening, the camera's slide to it and back, the caption band
+    "segs": [["the sketch drawn into depth", "p", 4.94, 5.28], ["dress up, go dark (opening line)", "p", 5.28, 5.9], ["spotlights, frames appear", "p", 5.9, 6.24],
+             ["frame 1: open, slide, band, fold", "p", "F1-0.45", "F1+0.3"], ["frame 2: open, slide, band, fold", "p", "F2-0.45", "F2+0.3"], ["frame 3: open, slide, band, fold", "p", "F3-0.45", "F3+0.3"],
+             ["frame 4: open, slide, band, fold", "p", "F4-0.45", "F4+0.3"], ["frame 5: open, slide, band, fold", "p", "F5-0.45", "F5+0.3"], ["the walk to the shut door (brass lock)", "p", "F5+0.3", "DOOR"], ["hand-over to page 3", "p", "DOOR", "LOCK"]],
+    "swipe_from": ["p", 6.3], "stops": [["p", k] for k in ["LIT", "F1-0.25", "F1", "F2", "F3", "F4", "F5", "F5B", "DOOR", "LOCK"]],
+    "reduced": ["#page-02"],
+  },
   "8b": {
     "segs": [["the way in, dress, opening line", "p", 4.62, 5.6], ["the walk: frames 1-2", "p", 5.6, 6.95], ["the walk: frames 3-4", "p", 6.95, 8.1],
              ["the walk: frame 5, the phones turn", "p", 8.1, 8.95], ["the walk up to the lock", "p", 8.95, 9.84], ["the final room", "#page-07", 0, 2.2]],

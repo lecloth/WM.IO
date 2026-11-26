@@ -36,7 +36,7 @@ function hallCard(host, { tag, title, note }) {
 const hall = hallCard($('#rowC'), { tag: 'H', title: 'The hallway', note: 'A white sketch drawn into depth dresses into the dark hall; the spotlights come on and the frames appear; scrolling is walking; each frame swings out fully on its hinge as you reach it and folds back as you pass.' });
 const doorCard = hallCard($('#rowD'), { tag: 'D', title: 'The shut door, with its lock', note: 'Centred in the end wall, two panels, shut. Its lock: a back plate, a lever above a keyhole, on the right edge strip between the panels, at handle height. The walk ends in front of it.' });
 // (1b) canvas 2's layers, spread (the same drawing as the hallway's, as an SVG)
-import('../js/page01/corridor-drawings.js').then(({ FRAMES, toSVG }) => { const f = FRAMES.find((x) => x.key === 'layers'); const host = $('#layers'); if (f && host) host.innerHTML = toSVG(f.draw); });
+import('../js/page01/corridor-drawings.js').then(({ FRAMES, toSVG }) => { const host = $('#layers'); if (host) host.innerHTML = FRAMES.map((f, i) => `<article class="card"><div class="layercard">${toSVG(f.draw, { pad: 24 })}</div><h3>${i + 1} · ${f.caption}</h3><p class="mono on-page" style="margin-top:6px">On the page · frame ${i + 1} · ${f.fig}</p></article>`).join(''); });
 const diveIn = $('#dive'), doorIn = $('#door');
 const D0 = DOOR.walk[0] - 0.02;
 const drawDives = () => { hall.draw(+diveIn.value / 1000); doorCard.draw(D0 + (DOOR.end - D0) * (+doorIn.value / 1000)); };   // the door's walk ends in front of the shut door

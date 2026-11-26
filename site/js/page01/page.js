@@ -22,7 +22,7 @@
 import { Phone } from './phone.js';
 import { BellMorph } from './morph.js';
 import { createLive } from './live.js';
-import { createDive, labelHTML, openingHTML, DIVE } from './dive.js';
+import { createDive, captionHTML, openingHTML, DIVE } from './dive.js';
 import { FRAMES, OPENING } from './corridor-drawings.js';
 const OPENING_TXT = `${OPENING.lead} ${OPENING.rest}`;
 import { haptics } from '../engine/haptics.js';
@@ -420,22 +420,21 @@ export function initPage01(engine) {
 
   // page 2, the hallway: on from its first scroll position until page 1's last (then the stage, plain paper and grid like
   // the open door's view, scrolls away and page 3 follows)
-  let diveNow = null, phonesT = 0;
+  let diveNow = null, hallDark = false;
+  // hallway pass 2: the strip and the title block wear their dark version while you are in the dark hall
+  const setHallDark = (on) => { if (on === hallDark) return; hallDark = on; document.documentElement.classList.toggle('hall-dark', on); };
   function renderDive(p) {
     const q = span(p, ...R.dive), going = p > R.dive[0];   // round 8b: the hallway holds its last frame (the lock filling the screen) while page 3 takes over
-    // the real phones load from the X-ray scene on (round 8; round 7: WE), in the first pause (300 ms without scrolling), so their parsing
-    // never lands in a moving frame; once the hallway starts they load at once whatever happens
-    if (p >= R.dive[0]) dive.loadPhones();
-    else if (p >= R.s1[0]) { clearTimeout(phonesT); phonesT = setTimeout(() => dive.loadPhones(), 300); }   // round 8: from the X-ray on (they were still loading at the way in on a first visit)
     diveEl.classList.toggle('on', going); diveTop.classList.toggle('on', going);
-    if (!going) { diveNow = null; return; }
+    if (!going) { diveNow = null; setHallDark(false); return; }
     const d = dive.render(q); if (!d) return;
+    setHallDark(d.dress > 0.5 && d.xray < 0.5 && !diveTop.classList.contains('is-past'));
     diveNow = { ...d, q };
   }
 
   // the hallway's layers are fixed to the screen: once page 1's stage starts to scroll away (page 3 takes over there, on
   // the same frame), they go
-  const past = () => { const off = sec.getBoundingClientRect().bottom < innerHeight - 1; diveEl.classList.toggle('is-past', off); diveTop.classList.toggle('is-past', off); };
+  const past = () => { const off = sec.getBoundingClientRect().bottom < innerHeight - 1; diveEl.classList.toggle('is-past', off); diveTop.classList.toggle('is-past', off); if (off) setHallDark(false); };
   addEventListener('scroll', past, { passive: true }); addEventListener('resize', past);
 
   // names beside each piece: a mono word on a hairline leader with a short shelf under it, alternating sides.
@@ -541,7 +540,7 @@ export function initPage01(engine) {
     stage.append(T.s0, plateFig, credit, f1, T.kin, f2, T.s2, T.task, weEl, T.end);   // reading order
     // the corridor's four frames, still: each blueprint with its line (frame 4 also shows the real phones, if the
     // local-only still is there)
-    import('./corridor-drawings.js').then(({ FRAMES, toSVG }) => {
+    import('./corridor-drawings.js').then(({ FRAMES, toSVG, MOUNT }) => {
       const list = document.createElement('div'); list.className = 'p1-hall';
       // round 7: the line that opens the hallway, then (hallway pass 1) the dressed hall, still, every frame open, then the
       // five drawings with their labels
@@ -553,11 +552,7 @@ export function initPage01(engine) {
         himg.width = w; himg.height = h; dive.still(w, h, { u: grid.u }).then((url) => { himg.src = url; }).catch((e) => console.warn('[page 01] hall still', e)); });
       FRAMES.forEach((F) => {
         const fig = document.createElement('figure'); fig.className = 'p1-hall__f';
-        fig.innerHTML = `<div class="p1-hall__d" role="img" aria-label="${F.alt}">${toSVG(F.draw)}</div><figcaption>${labelHTML(F)}</figcaption>`;
-        if (F.real) {
-          const img = new Image(); img.alt = 'Our booking app running on an iPhone and an Android phone.'; img.className = 'p1-hall__real';
-          img.onload = () => fig.querySelector('.p1-hall__d').after(img); img.src = F.real;
-        }
+        fig.innerHTML = `<div class="p1-hall__d" role="img" aria-label="${F.alt}">${toSVG(F.draw, { pad: Math.round(F.draw.w * MOUNT) })}</div><figcaption>${captionHTML(F)}</figcaption>`;
         list.append(fig);
       });
       T.end.after(list);

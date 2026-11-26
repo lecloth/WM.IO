@@ -3,7 +3,7 @@
 // walls about #1C1E22, floor about #111215 with a soft polished sheen, ceiling about #16181B with one light strip down
 // its middle, a spotlight pool and a small fixture above each frame, a skirting line. No warm tones. Light and shine are
 // painted into the surfaces once (dive.js paintHall: no live lights, shadows or reflections), so the hall costs about
-// what the sketch costs.
+// what the sketch costs. Pass 2: the lit art is the brightest thing, then the plaques; the strip is a soft line.
 export const HALL = 'D';
 export const LOOKS = {
   D: {
@@ -12,10 +12,10 @@ export const LOOKS = {
     light: [0.93, 0.96, 1.0],          // the light's colour (cool neutral, never warm)
     gain: 0.82,                         // how bright the painted light is at full
     shade: 0.62,                        // how dark the painted shade (corners, gaps, skirting) is at full
-    strip: ['#1A1C20', '#EEF1F5'],      // the ceiling's light strip: off, on
-    fixture: '#2C2F35', lens: ['#2C2F35', '#F4F6F9'],
+    strip: ['#1A1C20', '#5E636B'],      // the ceiling's light strip: off, on (pass 2: dimmed to a soft line)
+    fixture: '#2C2F35', lens: ['#2C2F35', '#C9CDD3'],
     edges: { sketch: 0.42, dressed: 0.16, dressedColor: '#C3C7CD' },   // the hairlines: ink in the sketch, faint once dressed
     grid: { sketch: 0.1, dressed: 0.045, dressedColor: '#D9DCE1' },    // the grid: the page's own in the sketch, faint once dressed
-    exposure: 1.08,                     // for the real phones on frame 5 (their studio light is the only live light)
+    exposure: 1.08,                     // for the door's brass lock (the studio light is the hall's only live light)
   },
 };
