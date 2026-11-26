@@ -110,7 +110,7 @@ async def run_build(pw, b, a, out):
     env = await page.evaluate("({ dpr: devicePixelRatio, w: innerWidth, h: innerHeight, sw: screen.width, sh: screen.height })")
     print(b, "AppActivate:", res, "env:", env, flush=True)
     await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
-    await page.keyboard.press("Enter")
+    await page.keyboard.press("Enter"); await page.wait_for_timeout(250); await page.keyboard.press("Enter")
     await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
     await page.wait_for_timeout(1500)
     stops = await page.evaluate("window.__p1.stops", isolated_context=False)

@@ -75,7 +75,7 @@ async def main():
             await ctx.add_init_script(f"try {{ localStorage.setItem('wm:theme', '{THEME}'); }} catch (e) {{}}")
             await pg.goto("http://127.0.0.1:8109/?first", wait_until="load")
             await pg.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=30000)
-            await pg.keyboard.press("Enter")
+            await pg.keyboard.press("Enter"); await pg.wait_for_timeout(250); await pg.keyboard.press("Enter")
             await pg.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=30000)
             await pg.wait_for_timeout(1200)
             rep["env"] = await pg.evaluate("({ dpr: devicePixelRatio, w: innerWidth, h: innerHeight, theme: document.documentElement.dataset.theme })")

@@ -56,7 +56,7 @@ PROPER = ["Bell", "Edison", "Yale", "Babbage", "Lovelace", "Leonardo", "iPhone",
           "A.", "G.", "A", "G", "YOU", "WE", "Draft", "I", "Patent", "Fig", "Fig.", "No.", "Tunis",
           "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]   # round 8b: days are proper names
 # rule 4: signed-off lines (never flagged)
-SIGNED = ["Now, how can we serve you?", "What’s the task list? Tick everything that fits.", "Cut to the chase", "Glad you’re finally here."]
+SIGNED = ["Now, how can we serve you?", "What’s the task list? Tick everything that fits.", "Take a shortcut →", "Cutting to the chase.", "Glad you’re finally here."]   # (26 Nov: "Cut to the chase" -> "Take a shortcut →")
 
 JS = (Path(__file__).resolve().parent / "typecheck.js").read_text(encoding="utf-8")
 
@@ -99,7 +99,7 @@ OVERLAY_JS = r"""(fs) => {
 async def enter(page, reduced):
     await page.goto(URL, wait_until="load")
     await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=30000)
-    await page.keyboard.press("Enter")
+    await page.keyboard.press("Enter"); await page.wait_for_timeout(250); await page.keyboard.press("Enter")
     if reduced: await page.wait_for_timeout(1200)
     else:
         await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=30000)

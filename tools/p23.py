@@ -112,7 +112,7 @@ async def run(pw, a, size, theme, out):
     ev = lambda js, arg=None: page.evaluate(js, arg, isolated_context=False)
     await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
     await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
-    await page.keyboard.press("Enter")
+    await page.keyboard.press("Enter"); await page.wait_for_timeout(250); await page.keyboard.press("Enter")
     await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
     await page.wait_for_timeout(700)
     total = 0; tag = f"{size}_{theme}{'_rm' if a.reduced else ''}"

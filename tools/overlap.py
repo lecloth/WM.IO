@@ -100,7 +100,7 @@ async def main(a):
             ctx = await b.new_context(**opts); page = await ctx.new_page()
             await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
             await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
-            await page.keyboard.press("Enter"); await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
+            await page.keyboard.press("Enter"); await page.wait_for_timeout(250); await page.keyboard.press("Enter"); await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
             await page.wait_for_timeout(600)
             stops = await page.evaluate("window.__p1.stops", isolated_context=False)
             seq = [(k, "p1", v) for k, v in stops.items()] + [(k, "y", (q, act)) for k, q, act in P23]

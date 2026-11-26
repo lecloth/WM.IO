@@ -9,7 +9,8 @@
 //   d) the camera slows, the streaks shrink to small hairline crosses, the crosses align on the flat grid's crossing
 //      points, the grid's lines draw between them, and the overlay fades over the final room, whose grid is the same
 //      pixel for pixel (so the hand-over shows no jump).
-// No words in it (TYPE_RULES rule 1). Reduced motion: a plain jump.
+// No words in the drawing (TYPE_RULES rule 1); the shortcut's jump carries our words over it, "Cutting to the chase."
+// (Part 5 "The name, the top bar and the title block"), on a paper backing. Reduced motion: a plain jump.
 // playHyperdrive({ jump, reduced, engine }) plays it full screen; drawHyperdrive(ctx, w, h, t, opts) draws one frame
 // (the asset sheet's Play control uses it at phone size).
 
@@ -215,7 +216,7 @@ export function drawHyperdrive(ctx, w, h, t, opts = {}) {
 // ---------- full screen ----------
 let current = null;
 /** jump(): moves the page to the final room (called once, while the overlay covers the page). Resolves when done. */
-export function playHyperdrive({ jump = () => {}, reduced = false, engine = null } = {}) {
+export function playHyperdrive({ jump = () => {}, reduced = false, engine = null, words = '' } = {}) {
   if (current) return current;
   if (reduced || matchMedia('(prefers-reduced-motion: reduce)').matches) { try { jump(); } catch (e) { console.error('[hyperdrive] jump', e); } return Promise.resolve(); }
   current = new Promise((resolve) => {
@@ -226,6 +227,8 @@ export function playHyperdrive({ jump = () => {}, reduced = false, engine = null
     c.width = W; c.height = H; c.setAttribute('aria-hidden', 'true'); c.className = 'hyperdrive';
     c.style.cssText = `position:fixed;left:0;top:0;width:${W / dpr}px;height:${H / dpr}px;z-index:60;pointer-events:none;`;
     document.body.append(c);
+    let wEl = null;
+    if (words) { wEl = document.createElement('p'); wEl.className = 'hyper__words'; wEl.textContent = words; wEl.setAttribute('role', 'status'); document.body.append(wEl); }
     const ctx = c.getContext('2d', { alpha: true });
     const opts = { u: (window.__grid?.u || innerWidth / 20) * dpr, px1: Math.max(1, Math.round(dpr)), dpr,
       paper: cs.getPropertyValue('--paper').trim() || '#F6F7F9', inkRgb: cs.getPropertyValue('--ink-rgb').trim() || '18, 18, 18', dark: d.dataset.theme === 'dark' };
@@ -237,9 +240,10 @@ export function playHyperdrive({ jump = () => {}, reduced = false, engine = null
       const t = clamp((performance.now() - t0) / HYPER_MS);
       drawHyperdrive(ctx, W, H, Math.min(t, T.fade[0]), opts);
       c.style.opacity = String(1 - ease(span(t, ...T.fade)));
+      if (wEl) wEl.style.opacity = String(span(t, 0.06, 0.16) * (1 - span(t, 0.78, 0.9)));
       if (t >= T.jump) doJump();
       if (t < 1) requestAnimationFrame(step);
-      else { doJump(); c.remove(); lock(false); current = null; resolve(); }
+      else { doJump(); c.remove(); wEl?.remove(); lock(false); current = null; resolve(); }
     };
     requestAnimationFrame(() => { t0 = performance.now(); step(); });
   });

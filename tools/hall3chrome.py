@@ -18,7 +18,7 @@ async def main():
         ctx = await b.new_context(viewport={"width": w, "height": h}, device_scale_factor=dpr, is_mobile=w < 1024, has_touch=w < 1024)
         pg = await ctx.new_page(); errs = []
         pg.on("pageerror", lambda e: errs.append(str(e)[:200])); pg.on("console", lambda m: m.type in ("error",) and errs.append(m.text[:200]))
-        await pg.goto("http://127.0.0.1:8109/?first"); await pg.wait_for_function("document.documentElement.dataset.phase === 'gate'"); await pg.keyboard.press("Enter")
+        await pg.goto("http://127.0.0.1:8109/?first"); await pg.wait_for_function("document.documentElement.dataset.phase === 'gate'"); await pg.keyboard.press("Enter"); await pg.wait_for_timeout(250); await pg.keyboard.press("Enter")
         await pg.wait_for_function("document.documentElement.dataset.phase === 'ready'"); await pg.wait_for_timeout(800)
         gpu = await pg.evaluate("() => { const gl = window.__p1.diveApi.renderer().getContext(); const x = gl.getExtension('WEBGL_debug_renderer_info'); return x ? gl.getParameter(x.UNMASKED_RENDERER_WEBGL) : ''; }", isolated_context=False)
         st = await pg.evaluate("() => window.__p1.stops", isolated_context=False)

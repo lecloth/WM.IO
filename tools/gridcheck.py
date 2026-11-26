@@ -219,7 +219,7 @@ async def main(a):
                 await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
                 gate = await page.evaluate("(() => { const p = document.querySelector('.sing__point').getBoundingClientRect(); const u = window.__grid.u; const x = p.left + p.width / 2, y = p.top + p.height / 2; return { x, y, dx: Math.abs(x - Math.round(x / u) * u), dy: Math.abs(y - Math.round(y / u) * u) }; })()", isolated_context=False)
                 gfail = [f"gate beacon off its intersection by {gate['dx']:.2f}, {gate['dy']:.2f}"] if max(gate["dx"], gate["dy"]) > a.tol + 0.01 else []
-                await page.keyboard.press("Enter")
+                await page.keyboard.press("Enter"); await page.wait_for_timeout(250); await page.keyboard.press("Enter")
                 await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
                 await page.wait_for_timeout(600)
                 stops = await page.evaluate("window.__p1.stops", isolated_context=False)

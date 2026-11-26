@@ -33,7 +33,7 @@ async def main(a):
         page.on("pageerror", lambda e: errs.append(f"pageerror: {str(e)[:300]}"))
         await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
         await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
-        await page.keyboard.press("Enter")
+        await page.keyboard.press("Enter"); await page.wait_for_timeout(250); await page.keyboard.press("Enter")
         await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
         await page.wait_for_timeout(800)
         stops = await page.evaluate("() => window.__p1.stops", isolated_context=False)

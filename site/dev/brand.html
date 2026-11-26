@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WM.IO mark</title>
+<link rel="icon" href="../media/brand/wmio-favicon.svg" type="image/svg+xml">
+<style>
+  /* WM.IO's mark (Part 5 "The name, the top bar and the title block"): the hero and small versions, on paper and on
+     black, and the favicon at tab sizes. The files: site/media/brand/ (tools/brand.py). */
+  body { margin: 0; font: 14px/1.5 "DM Mono", ui-monospace, monospace; color: #121212; background: #F6F7F9; }
+  section { padding: 48px 32px; display: grid; gap: 32px; }
+  .ink { background: #000; color: #EDEEF0; }
+  .ink img { filter: invert(1); }
+  h2 { font: 500 12px/1 "DM Mono", ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; margin: 0; opacity: .7; }
+  .hero { width: min(720px, 92vw); } .small { height: 22px; } .small2 { height: 12px; }
+  .fav { display: flex; gap: 16px; align-items: end; } .fav img:nth-child(1) { width: 16px; } .fav img:nth-child(2) { width: 32px; } .fav img:nth-child(3) { width: 64px; }
+</style>
+</head>
+<body>
+<section><h2>Hero version · with its measurements</h2><img class="hero" src="../media/brand/wmio-mark-hero.svg" alt="WM.IO's mark with its measurements: λ 50.0, A 65.0, reset W to M"></section>
+<section><h2>Small version</h2><img class="small" src="../media/brand/wmio-mark.svg" alt="WM.IO's mark"><img class="small2" src="../media/brand/wmio-mark.svg" alt="WM.IO's mark, title block size"></section>
+<section class="ink"><h2>On black</h2><img class="hero" src="../media/brand/wmio-mark-hero.svg" alt=""><img class="small" src="../media/brand/wmio-mark.svg" alt=""></section>
+<section><h2>Favicon · 16, 32, 64 px</h2><div class="fav"><img src="../media/brand/wmio-favicon.svg" alt=""><img src="../media/brand/wmio-favicon.svg" alt=""><img src="../media/brand/wmio-favicon.svg" alt=""></div></section>
+</body>
+</html>

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Wajih Mansouri — studio, Tunis</title>
   <meta name="description" content="Websites, apps, platforms, security and AI. Drawn, built, real.">
+  <link rel="icon" href="media/brand/wmio-favicon.svg" type="image/svg+xml">
   <script>
     /* Runs before first paint: reduced motion, return visit,
        and the real load-progress counter that the timeline strip draws itself with. */
@@ -75,9 +76,9 @@
   <link rel="preload" href="fonts/newsreader-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/dm-mono-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/site.css?v=c23da05b4e" onload="__wm.done('css')">
-  <link rel="stylesheet" href="css/page-00-grid.css?v=6a2f97d032">
+  <link rel="stylesheet" href="css/page-00-grid.css?v=c8b512d906">
   <link rel="stylesheet" href="css/page-01-dive.css?v=9c4f27901b">
-  <link rel="stylesheet" href="css/page-01.css?v=a78eae5650">
+  <link rel="stylesheet" href="css/page-01.css?v=a404c60cbb">
   <link rel="stylesheet" href="css/page-02.css?v=e418050ed9">
   <link rel="stylesheet" href="css/page-03-lock.css?v=771865b875">
   <link rel="stylesheet" href="css/page-03-send.css?v=09357da7d8">
@@ -102,7 +103,7 @@
         else { var c = el.cloneNode(); el.parentNode.insertBefore(c, el.nextSibling); el.remove(); } }, 150 * (n + 1));
     }, true);
   </script>
-  <script type="module" src="dist/main.js?v=604a15abc2" onerror="(function(s){var n=+(s.dataset.r||0);if(n<5){var c=document.createElement('script');c.type='module';c.src='dist/main.js?r='+(n+1);c.dataset.r=n+1;c.onerror=s.onerror;setTimeout(function(){document.head.appendChild(c)},200*(n+1));}})(this)"></script>
+  <script type="module" src="dist/main.js?v=c5cf3316a0" onerror="(function(s){var n=+(s.dataset.r||0);if(n<5){var c=document.createElement('script');c.type='module';c.src='dist/main.js?r='+(n+1);c.dataset.r=n+1;c.onerror=s.onerror;setTimeout(function(){document.head.appendChild(c)},200*(n+1));}})(this)"></script>
 </head>
 <body>
 
@@ -110,6 +111,8 @@
 <nav id="strip" class="strip" aria-label="Pages">
   <div class="strip__base" aria-hidden="true"></div>
   <ol class="strip__list">
+    <!-- the name (Part 5 "The name, the top bar and the title block"): WM.IO's mark starts here on arrival, then leaves for good -->
+    <li class="strip__mark" aria-hidden="true"><svg class="strip__mark-svg" viewBox="-5.5 -5.5 317.0 76.0" aria-hidden="true" focusable="false"><g fill="none"><path d="M0 0 C9.105 0.0 15.895 65.0 25.0 65.0 C34.105 65.0 40.895 0.0 50.0 0.0 C59.105 0.0 65.895 65.0 75.0 65.0 C84.105 65.0 90.895 0.0 100.0 0.0 L100.0 65.0 C109.105 65.0 115.895 0.0 125.0 0.0 C134.105 0.0 140.895 65.0 150.0 65.0 C159.105 65.0 165.895 0.0 175.0 0.0 C184.105 0.0 190.895 65.0 200.0 65.0" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linejoin="miter" stroke-miterlimit="10"/><circle cx="217.5" cy="60.5" r="4.5" fill="currentColor"/><path d="M235.0 0V65.0" stroke="currentColor" stroke-width="5.5"/><ellipse cx="278.0" cy="32.5" rx="28.0" ry="32.5" fill="none" stroke="currentColor" stroke-width="5.5"/></g></svg></li>
     <li class="strip__seg" style="--i:0"><a href="#page-01"><span class="strip__no">01</span><span class="strip__name">Enter</span></a><i class="strip__fill"></i></li>
     <li class="strip__seg" style="--i:1"><a href="#page-02"><span class="strip__no">02</span><span class="strip__name">Hallway</span></a><i class="strip__fill"></i></li>
     <li class="strip__seg" style="--i:2"><a href="#page-03"><span class="strip__no">03</span><span class="strip__name">The lock</span></a><i class="strip__fill"></i></li>
@@ -118,8 +121,8 @@
     <li class="strip__seg" style="--i:5"><a href="#page-06"><span class="strip__no">06</span><span class="strip__name">Team</span></a><i class="strip__fill"></i></li>
     <li class="strip__seg" style="--i:6"><a href="#page-07"><span class="strip__no">07</span><span class="strip__name">Final room</span></a><i class="strip__fill"></i></li>
     <li class="strip__seg" style="--i:7"><a href="#page-08"><span class="strip__no">08</span><span class="strip__name">Spec</span></a><i class="strip__fill"></i></li>
-    <!-- round 8: "Cut to the chase" (Wajih's wording): quiet, always here; jumps to the final room with the hyperdrive -->
-    <li class="strip__cut"><a href="#page-07" class="strip__cut-a"><span>Cut to the chase</span></a></li>
+    <!-- "Take a shortcut →" (Wajih, 26 Nov; was "Cut to the chase"): quiet, always here; jumps to the final room with the hyperdrive -->
+    <li class="strip__cut"><a href="#page-07" class="strip__cut-a"><span>Take a shortcut →</span></a></li>
   </ol>
 </nav>
 <script>
@@ -416,6 +419,7 @@
 
 <!-- TITLE BLOCK: a real drawing title block, updates as sheets pass -->
 <aside id="titleblock" class="titleblock mono reveal-late" aria-label="Title block">
+  <div class="tb__cell tb__cell--mark" role="img" aria-label="WM.IO, a design and engineering studio"><svg class="tb__mark" viewBox="-5.5 -5.5 317.0 76.0" aria-hidden="true" focusable="false"><g fill="none"><path d="M0 0 C9.105 0.0 15.895 65.0 25.0 65.0 C34.105 65.0 40.895 0.0 50.0 0.0 C59.105 0.0 65.895 65.0 75.0 65.0 C84.105 65.0 90.895 0.0 100.0 0.0 L100.0 65.0 C109.105 65.0 115.895 0.0 125.0 0.0 C134.105 0.0 140.895 65.0 150.0 65.0 C159.105 65.0 165.895 0.0 175.0 0.0 C184.105 0.0 190.895 65.0 200.0 65.0" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linejoin="miter" stroke-miterlimit="10"/><circle cx="217.5" cy="60.5" r="4.5" fill="currentColor"/><path d="M235.0 0V65.0" stroke="currentColor" stroke-width="5.5"/><ellipse cx="278.0" cy="32.5" rx="28.0" ry="32.5" fill="none" stroke="currentColor" stroke-width="5.5"/></g></svg></div>
   <div class="tb__cell tb__cell--wide"><span class="tb__k">Project</span><span class="tb__v">Wajih Mansouri · Studio</span></div>
   <div class="tb__cell"><span class="tb__k">Page</span><span class="tb__v"><b class="tb__sheet">01</b> / 08</span></div>
   <div class="tb__cell tb__cell--title"><span class="tb__k">Title</span><span class="tb__v tb__title">Enter</span></div>
@@ -428,7 +432,7 @@
 </aside>
 
 <!-- THE SINGULARITY / CURTAIN (difference blend: whatever it covers flips black/white) -->
-<button id="enter" class="enter" type="button"><span class="enter__hello">Glad you’re finally here.</span><span class="enter__hint">Tap to start</span></button>
+<button id="enter" class="enter" type="button"><span class="enter__hello">Glad you’re finally here<span class="enter__stop">.</span></span><span class="enter__hint" data-draft><span class="ph">Draft</span>Tap, and we’ll take you on a journey.</span></button>
 <div id="curtain" class="curtain" aria-hidden="true">
   <div class="curtain__panel curtain__panel--top"><i class="curtain__edge"></i></div>
   <div class="curtain__panel curtain__panel--bottom"><i class="curtain__edge"></i></div>

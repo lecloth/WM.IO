@@ -20,7 +20,7 @@ async def main(a):
         if w < 1024: kw.update(is_mobile=True, has_touch=True, device_scale_factor=2.8125)
         page = await (await b.new_context(**kw)).new_page()
         await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
-        await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000); await page.keyboard.press("Enter")
+        await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000); await page.keyboard.press("Enter"); await page.wait_for_timeout(250); await page.keyboard.press("Enter")
         await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000); await page.wait_for_timeout(1500)
         print(a.size, json.dumps(await page.evaluate(RUN, a.secs, isolated_context=False))); await b.close()
 ap = argparse.ArgumentParser(); ap.add_argument("--size", default="384x734"); ap.add_argument("--secs", type=float, default=8)

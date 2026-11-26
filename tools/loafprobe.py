@@ -18,7 +18,7 @@ async def main():
             if len(sys.argv) > 6: await ctx.add_init_script("document.addEventListener('DOMContentLoaded', () => { const s = document.createElement('style'); s.textContent = " + json.dumps(sys.argv[6]) + "; document.head.append(s); })")
             await pg.goto("http://127.0.0.1:8109/?first", wait_until="load")
             await pg.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=30000)
-            await pg.keyboard.press("Enter")
+            await pg.keyboard.press("Enter"); await pg.wait_for_timeout(250); await pg.keyboard.press("Enter")
             await pg.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=30000)
             await pg.wait_for_timeout(1500)
             await pg.evaluate("window.__p1.diveApi.loadPhones()", isolated_context=False); await pg.wait_for_timeout(1500)

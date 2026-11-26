@@ -44,7 +44,7 @@ async def main(a):
                 page = await ctx.new_page()
                 await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
                 await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
-                await page.keyboard.press("Enter"); await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
+                await page.keyboard.press("Enter"); await page.wait_for_timeout(250); await page.keyboard.press("Enter"); await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
                 await page.wait_for_timeout(500)
                 # the glyph alone, just before the dive; then the dive's ink dot just after it starts (the window is
                 # exactly the dot, under the ink): both must sit on what page 1 measured, and on each other

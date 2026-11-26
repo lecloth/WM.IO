@@ -30,7 +30,7 @@ Take 1's history below.
 | 7 | The final room | "What's the task list? Tick everything that fits." (Wajih's, signed off, no flag), then one slip on plain paper: the six needs as small boxes, the details, "Send it by", Send (a box with a 3 px hard ink shadow; fields at half), CTA A (pick open), every way to reach us (switches in settings.js) | ~3.1 | **round 8b built** (needs, answers, slip wording: drafts) |
 | 8 | Spec sheet | "This page, measured as you read it." (draft): page weight and files loaded so far, ready in, fps now, grid, screen, fonts, page 3's locks (all measured live), the outside assets and their licences (the site's list); "Back to the start ↑" (the hyperdrive to the top) | ~1 | **round 11 built** |
 
-"Cut to the chase" (strip, always): the hyperdrive into the final room; the strip's last square and 07 do the same.
+"Take a shortcut →" (strip, always; was "Cut to the chase"): the hyperdrive into the final room, with "Cutting to the chase." over it; the strip's last square and 07 do the same. Page 1's first screen is the arrival (WM.IO's mark, Part 5 "The name, the top bar and the title block").
 
 ### Page structure (Take 2)
 - `src/index.template.html` + `src/parts/page-01.html` + `page-02.html` + `page-03.html` + `src/parts/stubs.html` (pages 4-9) → `python -I tools/build.py` → `site/index.html`.
@@ -453,7 +453,86 @@ Take 1's history below.
   ways, shots); `tools/loafprobe.py` (long animation frames between two positions, optional CSS); `phone_stage.py
   --stage hall2` scrubs the show (shots at its stops, fps both ways); `hall3chrome.py` is superseded.
 
+### The name, the top bar and the title block: structure notes (26 Nov, Part 5)
+- **The mark (WM.IO):** `site/js/brand/mark.js` (`MARK`: half-wave 25 x 65, W from the top, the reset at x 100, M from
+  the bottom, the dot r 4.5 on the baseline at 217.5, the I at 235, the O 56 x 65 centred at 278; stroke 5.5; `markSVG`,
+  `wavePoints` for morphing, `WAVE_LEN` 673 units). `tools/brand.py` writes the same mark to `site/media/brand/`:
+  `wmio-mark.svg` (small), `wmio-mark-hero.svg` (λ 50.0 over one wavelength, A 65.0 beside the height, RESET · W → M
+  under the reset; DM Mono Light embedded), `wmio-favicon.svg` (the favicon, ink on paper, paper on ink in a dark tab);
+  and `site/js/brand/lettering.js` (Hershey Sans 1-stroke, the glyphs of the sentence only, from
+  `tools/sources/singleline/`, git-ignored). Preview: `site/dev/brand.html`.
+- **The arrival (`site/js/enter.js`, rewritten; beats `B`, seconds):** one SVG layer (`.arrive`, z 53, over the curtain,
+  difference-blended) draws everything. 0-0.4 the strip's mark morphs into a straight line as long as its wave, on the
+  strip's bottom line (2 cells); 0.35-1.1 it snakes along the grid at right angles (`toText`: along the strip's bottom
+  line, down a column, along a row above the sentence if it must, down the column a cell left of the sentence, along the
+  baseline), each straight run lighting its whole grid line (2 px, 0.55) from when its head enters until its tail
+  leaves, then fading over 0.9 s; 0.4-0.95 the strip's boxes slide over (`engine/strip.js` `layoutStrip(k)`: each edge
+  moves between its column beside the mark and its column without it); 1.05-2.25 it pours into the pen and writes the
+  sentence in Hershey strokes, fitted to the real sentence's width and cap height; 2.0-2.4 they settle into Newsreader;
+  2.3-2.48 the full stop drops (the mark's dot), then the real stop; 2.45-3.0 the line snakes on (`toBeacon`: along the
+  baseline, down, along a row, down the column a cell right of the beacon) and coils clockwise into a ring of one cell
+  round the beacon (the O); 3.0-3.15 an I shrinks into the beacon's dot; 3.1-3.5 the second line (serif, 1 cell, flagged
+  Draft). Return visits run it at 1.25x. A tap (click, Enter, Space) skips to the end; a scroll, swipe, Arrow Down,
+  Page Down or End enters at once. `html[data-arrive]`: wait, run, dot, done, home.
+- **Going home (`HB`, 1.3 s):** the ring unwinds into the column a cell right of the beacon, down to the title block's top
+  line, along it over the mark's cell (`home()`; a detour above the block when that column falls inside the line's
+  length), and morphs back into the mark in the cell, while the curtain opens (from 0.12 s) and the title block fades in
+  (0.25-0.65 s); then the cell's own SVG takes over (`.tb__mark`).
+- **Scrolling back to the very top** (`watchTop`): at scrollY 0 for 320 ms, having been more than half a screen down,
+  not during a hyperdrive: the scroll locks, the curtain closes (0.6 s), and the arrival runs from the title block
+  (`toText('tb')`); a tap sends the mark home again. Not with reduced motion.
+- **The top bar:** `.strip__mark` (the small mark, 0.6 cell tall, in the first 4 columns on phones, 5 on desktop) only
+  until the arrival starts; the boxes are placed absolutely on `--c0`/`--c1` (whole columns at rest). "Take a shortcut
+  →" (signed off), its jump shows "Cutting to the chase." over the hyperdrive on a paper backing (`hyper__words`,
+  `playHyperdrive({ words })`; not on "Back to the start").
+- **The title block:** a new first cell, `.tb__cell--mark` (`role="img"`, the name as its label). Phones: mark 3 (the mark
+  0.45 cell tall, the values' cap height), page 5, title 6 (it gave up two), print 4 (18 cells; a 4-cell page cell left
+  "01 / 08" 4.5 px from its line, under the half cell); desktop, two
+  rows: the mark's cell 6 x 6 cells spanning both rows (the mark 1 cell tall); short desktop windows (one row): 5 x 3
+  cells (0.8 cell tall).
+- **Dark mode's gate is black now:** the difference curtain came out light grey over the dark page and the gate's words
+  (light in both themes) vanished on it; in dark mode the curtain is plain black under the (dark) top bar.
+- **First paints, out of the motion:** the mark holds still for 0.15 s before it moves (the gate's own first paint, about
+  100 ms in real Chrome, lands on a still frame); the real sentence, its stop and the second line are painted from the
+  start at opacity 0.002. (Tried and reverted: page 1 painted under the gate at opacity 0.002 moved the curtain-opening
+  cost into every frame of the arrival: 96 fps, a 317 ms frame at 2160 x 1147.)
+- **Reduced motion:** the gate shows its end state at once (the sentence, the beacon's ring and dot, the second line),
+  the top bar at full width, the mark in the title block; any input enters at once; no replay at the top.
+- **Every tool that enters the page presses Enter twice** (the first now skips the arrival; 28 tools patched).
+- **Tools:** `tools/gateaxe.py` (axe on the gate's end state, light and dark, reduced motion); `tools/topbarshot.py` (headless or `--real` Chrome; shots through the arrival, a tap mid-arrival, entered,
+  the replay and home, the jump; fps during the arrival and going home; what the arrival reports: grid-line offsets of
+  every run, the strip's share, the title block's cells and the strip's boxes in cells and whether any text is clipped).
+
 ### Take 2 log
+- **The name, the top bar and the title block (26 Nov).** Built as in "The name, the top bar and the title block:
+  structure notes". Shots: `tools/shots/topbar/` (`real/`: real Chrome at 2160 x 1147 @1.333, 1440 x 900, 384 x 734
+  @2.8125 and 360 x 800 @3 emulated; `dark/`, `reduced/`, `r1/`, `r2/` headless; `typecheck/`; `before/`: the old gate).
+  - **Real Chrome** (`topbarshot.py --real`; the arrival, a tap mid-arrival, entered, scrolled back to the very top and
+    home again, the shortcut's jump): 0 errors at all four sizes. fps during the arrival (3.5 s): 120 (1440 x 900, worst
+    8.6 ms), 118.2 (2160 x 1147, one 67 ms frame), 118.0 / 118.5 (384 / 360 emulated, one 58-67 ms frame). Going home
+    (1.3 s): 101-110 fps with two frames of 100-142 ms as the curtain opens onto page 1 (page 1's first paint; the old
+    gate's curtain opened onto it the same way). The grid runs: every straight run of every route on a grid line
+    (largest offset 0.006 px). A tap mid-arrival lands on the end state; the replay writes the sentence again and a tap
+    sends the mark home (title block mark shown, phase ready). The jump shows "Cutting to the chase." and lands in the
+    final room. No text clipped in the bar or the title block.
+  - **Type check** (23 stops across page 1, the hallway, pages 3-6, the final room and the spec sheet, so the bar and the
+    title block are checked everywhere; 2160 x 1147 @1.333, 1440 x 900, 384 x 734 @2.8125, 360 x 800 @3; light and dark;
+    184 frames): **0 machine failures** (first run: 92 on the phones, "01 / 08" 4.5 px from its line in a 4-cell page
+    cell; fixed with the 3 / 5 / 6 / 4 split).
+  - **Axe on the gate** (`gateaxe.py`, 384 x 734 and 1440 x 900, light and dark, and reduced motion): 0 violations.
+  - **Found and fixed:** dark mode's gate was light grey with the sentence nearly invisible (before this pass too); the
+    button's focus ring drew a ring at the beacon from the first frame.
+  - **My calls:** the routing rules (along the strip's bottom line and the title block's top line; a cell left of the
+    sentence, a cell right of the beacon; the ring one cell round the beacon, so it sits on the grid); the straight line
+    is as long as the wave; the snake pours into the pen as the writing starts; the second line is a serif sentence
+    (TYPE_RULES: sentences are Newsreader), flagged Draft; a tap skips and a scroll enters at once; the title block's
+    phone split; the dark gate black; the replay after 320 ms at the top, not with reduced motion; the favicon on a
+    paper plate.
+  - **Edges:** going home's two long frames (above); one 62 ms frame as the sentence settles on the phone sizes (no
+    script; it stays with the words pre-painted); real Chrome's phone emulation with touch on gives the page a 15 px
+    classic scrollbar the grid script cannot see, so the title block sits 0.2 cell off the grid there (headless and the
+    S23 have none); the page title and the title block's Project cell still say "Wajih Mansouri" (not in the brief).
+  - **Pending: the real-phone run** (the arrival, the tap, the replay, the jump on the S23).
 - **Pass 3b, the scroll drives the stage (26 Nov).** Brief committed (`7bea6c6`). Built as in "Pass 3b structure notes".
   Shots: `tools/shots/stage/` (per size: the show's stops forwards and backwards, the ground and dress mid-change, REAL,
   the json reports, `typecheck/`).

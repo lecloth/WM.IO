@@ -14,7 +14,7 @@ async def run(mode):
         await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
         await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
         if mode in ("tap", "reduced"): await page.tap("#enter")   # reduced: a real tap on the still gate must stay silent
-        else: await page.keyboard.press("Enter")
+        else: await page.keyboard.press("Enter"); await page.wait_for_timeout(250); await page.keyboard.press("Enter")
         await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000); await page.wait_for_timeout(800)
         if mode != "reduced":
             for k in range(0, 101):

@@ -124,9 +124,10 @@ words' rects.
 ## Wording status (round 8b)
 
 **Signed off (never flagged):** page 1 from "Glad you’re finally here." to "Now, how can we serve you?" (the verbs and
-meanings included); the final room's heading "What’s the task list? Tick everything that fits."; "Cut to the chase".
+meanings included); the final room's heading "What’s the task list? Tick everything that fits."; "Take a shortcut →"
+(26 Nov, Wajih; it replaced "Cut to the chase") and "Cutting to the chase." (the shortcut's jump; the brief's).
 
-**Drafts (always flagged):** the hallway's opening line ("We design backwards. …") and the five story lines; the
+**Drafts (always flagged):** the gate's second line "Tap, and we’ll take you on a journey." (26 Nov); the hallway's opening line ("We design backwards. …") and the five story lines; the
 words inside the drawings (canvas 2's notes included: "Who: home buyers" …); the final room's rows, answers, "Next:
 your details", the work slip's wording; the stubs' lines; any new wording a run adds.
 
@@ -148,5 +149,5 @@ folder, named after the item.
    phones.
 6. **The frosted labels** turn with their drawings, as wide as the drawing, corners softly rounded, the words crisp at
    rest.
-7. **Cut to the chase** reads as a quiet link, not a button.
+7. **Take a shortcut →** reads as a quiet link, not a button.
 8. **Drafts look flagged, finals look final** on every screen.

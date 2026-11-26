@@ -22,7 +22,8 @@
 .enter { position: fixed; inset: 0; z-index: 52; display: block; width: 100%; height: 100%; border: 0; background: transparent; cursor: pointer; -webkit-tap-highlight-color: transparent; color: var(--diff); font: inherit; }
 .enter__hello, .enter__hint { position: absolute; white-space: nowrap; color: var(--diff); mix-blend-mode: difference; opacity: 0; transition: opacity .6s var(--ease-out); }
 .enter__hello { font-family: var(--f-display); font-weight: 420; letter-spacing: -.01em; }
-.enter__hint { font-family: var(--f-mono); letter-spacing: .1em; text-transform: uppercase; transform: translateX(-50%); }
+.enter__hint { font-family: var(--f-display); font-weight: 400; transform: translateX(-50%); }
+.enter__hint .ph { vertical-align: 0; line-height: 0; }
 .enter.is-ready .enter__hello { opacity: 1; }
 .enter.is-ready .enter__hint { opacity: .85; transition-delay: .25s; }
 .enter.is-gone { pointer-events: none; }
@@ -46,6 +47,38 @@ html[data-motion="reduce"] .sing__point { animation: none; }
 html[data-motion="reduce"] .sing__ring { animation: none !important; }
 html[data-motion="reduce"][data-phase="gate"] .sing__ring--1 { opacity: .45; transform: scale(3); }
 html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hint { transition: none; }
+/* ---------- the arrival (enter.js; Part 5 "The name, the top bar and the title block"): one drawing layer over the
+   curtain, difference-blended (white on the black gate, ink on the paper), hairlines only ---------- */
+.arrive { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 53; pointer-events: none; mix-blend-mode: difference; overflow: visible; }
+.arrive path, .arrive ellipse { fill: none; stroke: #fff; }
+.arrive .arrive__fill { fill: #fff; stroke: none; }
+.arrive__snake { stroke-width: 1.5px; stroke-linejoin: miter; stroke-linecap: butt; }
+.arrive__wave { stroke-linejoin: miter; stroke-miterlimit: 10; }
+.arrive__let { stroke-width: 1.25px; stroke-linecap: round; stroke-linejoin: round; }
+.arrive__grid { stroke-width: 2px; }
+/* the arrival drives the words' opacity itself (no transitions); the beacon's dot comes with the I, its rings at the end */
+html[data-arrive] .enter__hello, html[data-arrive] .enter__hint, html[data-arrive] .enter__stop { transition: none; }
+html[data-arrive="run"] .sing__point, html[data-arrive="run"] .sing__ring, html[data-arrive="dot"] .sing__ring, html[data-arrive="home"] .sing__point, html[data-arrive="home"] .sing__ring { visibility: hidden; }
+html[data-arrive="wait"] .sing__point, html[data-arrive="wait"] .sing__ring { visibility: hidden; }
+/* the button's focus ring is the beacon's ring: it shows once the line has coiled into it */
+html[data-arrive="wait"] .enter::after, html[data-arrive="run"] .enter::after, html[data-arrive="dot"] .enter::after, html[data-arrive="home"] .enter::after { display: none; }
+html:not([data-arrive]) .enter__hello, html:not([data-arrive]) .enter__hint { opacity: 0 !important; }
+/* dark mode: the gate is black too (the brief's black first screen; the difference curtain came out light grey over the
+   dark page, and the gate's words, light in both themes, vanished on it). The curtain is plain black there and sits under
+   the top bar, which is already dark; the beacon is drawn light */
+:root[data-theme="dark"] .curtain { mix-blend-mode: normal; z-index: 44; }
+:root[data-theme="dark"] .curtain__panel { background: #000; }
+:root[data-theme="dark"] .sing__point { background: var(--diff); }
+:root[data-theme="dark"] .sing__ring { border-color: var(--diff); }
+:root[data-theme="dark"] .sing__line { background: var(--diff); }
+html.is-replay[data-theme="dark"] .titleblock { z-index: 46; }
+/* the title block stays while the mark leaves it (scrolling back to the very top) */
+html.is-replay[data-phase="gate"] .titleblock { opacity: 1; }
+/* the shortcut's jump: our words over the hyperdrive (on a paper backing, so no line runs through them) */
+.hyper__words { position: fixed; left: var(--gx); top: calc(var(--gy) - 1rem); z-index: 61; margin: 0; padding: .5rem 1rem; transform: translate(-50%, -100%);
+  background: var(--paper); color: var(--ink); font-family: var(--f-display); font-weight: 420; font-size: 1.5rem; line-height: 2rem; letter-spacing: -.01em; white-space: nowrap;
+  pointer-events: none; opacity: 0; }
+@media (min-width: 1024px) { .hyper__words { font-size: 2rem; line-height: 3rem; } }
 
 /* ---------- the draft flag on every line Wajih hasn't signed off ---------- */
 .ph { display: inline-block; margin-right: .5rem; font-family: var(--f-mono); font-weight: 400; font-size: .5rem; letter-spacing: .08em; text-transform: uppercase; }

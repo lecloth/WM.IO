@@ -12,8 +12,16 @@ written in code for this site (see the last section).
 | `newsreader-var.woff2`, `newsreader-var-italic.woff2` | Newsreader, variable (weight 200–800, optical size 6–72), roman + italic, v5.3.0 | npm `@fontsource-variable/newsreader` (Production Type, via Google Fonts), https://github.com/productiontype/Newsreader | SIL Open Font License 1.1; full text shipped as `site/fonts/LICENSE-newsreader.txt` | Site-wide: headlines, body, product screens |
 | `dm-mono-300.woff2` (round 8), `dm-mono-400.woff2`, `dm-mono-500.woff2` | DM Mono Light 300 (round 8: the live measurements on the dimension lines), 400 and 500, v5.3.0, latin subset, unmodified | npm `@fontsource/dm-mono` (Colophon Foundry for Google), https://github.com/googlefonts/dm-mono | SIL Open Font License 1.1; full text shipped as `site/fonts/LICENSE-dm-mono.txt` | Labels, strip, title blocks, dimensions, product screens |
 
+| `site/js/brand/lettering.js` (26 Nov; glyph data, not a font file: the strokes of "Glad you’re finally here" only) | **Hershey Sans 1-stroke**, a single-line (engraving / plotter) font: the Hershey Fonts, created by Dr. A. V. Hershey at the U.S. National Bureau of Standards; this SVG-font version by Windell H. Oskay (Evil Mad Scientist), from emergent.unpythonic.net/software/hershey by way of Marty McGuire's "Hershey Fonts in SVG" | EMS svg-fonts, https://gitlab.com/oskay/svg-fonts (`fonts/Hershey/HersheySans1.svg`, downloaded 26 Nov 2026 into `tools/sources/singleline/`, git-ignored; converted by `tools/brand.py`) | The Hershey Fonts' own licence: free for any use, commercial included, provided the acknowledgements (Dr. A. V. Hershey at the U.S. NBS; the data format by James Hurt, Cognition, Inc.) are distributed with the data, and the data is not put in the U.S. NTIS format. The acknowledgements are in the file's header and the full notice is shipped as `site/fonts/LICENSE-hershey.txt`. (Effectively public domain; Wajih's brief names Hershey as an allowed choice.) | **The arrival** (page 1's first screen): the single-stroke technical lettering the line writes before it settles into Newsreader |
+
 No other font files are shipped. Pairings A and C were removed in slice 3 with `/type.html`; none of their files or
 `@font-face` rules remain (checked: `site/css/*.css` declares only the five files above).
+
+## WM.IO's mark (`site/media/brand/`, `site/js/brand/mark.js`)
+
+Drawn in code for this site (`tools/brand.py`): `wmio-mark.svg` (the small version), `wmio-mark-hero.svg` (the hero
+version; its measurements in DM Mono Light, embedded from `site/fonts/dm-mono-300.woff2`, SIL OFL 1.1 as above),
+`wmio-favicon.svg` (the favicon). No outside artwork.
 
 ## Libraries (`site/vendor/`)
 

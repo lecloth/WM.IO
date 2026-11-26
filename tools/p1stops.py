@@ -24,7 +24,7 @@ async def main(a):
         await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
         await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
         await page.wait_for_timeout(700); await page.screenshot(path=str(out / f"{tag}_00_gate.png"))
-        await page.keyboard.press("Enter")
+        await page.keyboard.press("Enter"); await page.wait_for_timeout(250); await page.keyboard.press("Enter")
         await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000); await page.wait_for_timeout(900)
         stops = await ev("window.__p1.stops"); R = await ev("window.__p1.R")
         shots = sorted([(p, k, 1100) for k, p in stops.items()] + [(0.5, "mid-morph", 400), (0.7, "late-morph", 400), (4.82, "callout-late", 400)])

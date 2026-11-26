@@ -16,7 +16,7 @@ async def main():
         await ctx.route("https://example.invalid/**", handle)
         p = await ctx.new_page(); ev = lambda js, arg=None: p.evaluate(js, arg, isolated_context=False)
         await p.goto("http://127.0.0.1:8109/?first", wait_until="load")
-        await p.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000); await p.keyboard.press("Enter")
+        await p.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000); await p.keyboard.press("Enter"); await p.wait_for_timeout(250); await p.keyboard.press("Enter")
         await p.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000); await p.wait_for_timeout(3000)
         R = {}
         # typed text: caps, control and bidi-override characters, Arabic kept, the link capped

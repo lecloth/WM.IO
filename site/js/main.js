@@ -5,6 +5,7 @@ import { engine, initScroll } from './engine/core.js';
 import { initCursor } from './engine/cursor.js';
 import { initTheme } from './engine/theme.js';
 import { runEnter } from './enter.js';
+import { layoutStrip } from './engine/strip.js';
 import { initPage01 } from './page01/page.js';
 import { initPages23 } from './page02/page.js';
 import { initPage03 } from './page03/page.js';
@@ -43,13 +44,9 @@ function setActive(i) {
   segs.forEach((s, k) => s.classList.toggle('is-active', k === i));
 }
 setActive(0);
-// the strip's eight segments on whole columns of the grid (the head script's unit); "Cut to the chase" takes the last
-// columns (six on phones, seven on desktop)
-function stripCols() {
-  const n = window.__grid?.n || 20, c = innerWidth >= 1024 ? 7 : 6, m = n - c;
-  segs.forEach((s, i) => { s.style.setProperty('--c0', Math.round(i * m / segs.length) + 1); s.style.setProperty('--c1', Math.round((i + 1) * m / segs.length) + 1); });
-  if (cutLi) { cutLi.style.setProperty('--c0', m + 1); cutLi.style.setProperty('--c1', n + 1); }
-}
+// the strip's eight segments on whole columns of the grid (the head script's unit); "Take a shortcut →" takes the last
+// columns (six on phones, seven on desktop); on arrival WM.IO's mark holds the first ones (engine/strip.js, enter.js)
+const stripCols = () => layoutStrip();
 stripCols(); document.addEventListener('wm:grid', stripCols); addEventListener('resize', stripCols);
 // the page under the screen's top is the active one (a page counts from the moment it lands). Each segment fills from
 // its page's landing to the next page's.
@@ -68,7 +65,8 @@ ScrollTrigger.create({ start: 0, end: 'max', onUpdate: track, onRefresh: () => {
 addEventListener('scroll', track, { passive: true });
 const go = (hash) => { const el = document.querySelector(hash); if (el) engine.scrollTo(docTop(el), { duration: 1.4 }); };
 
-// ---------- round 8: "Cut to the chase": the hyperdrive into the final room (a plain jump with reduced motion) ----------
+// ---------- round 8: "Take a shortcut →" (was "Cut to the chase"): the hyperdrive into the final room (a plain jump with
+// reduced motion); during the jump our words, "Cutting to the chase." ----------
 let chasing = false;
 async function cutToChase() {
   if (chasing || document.documentElement.dataset.phase !== 'ready') return;
@@ -81,7 +79,7 @@ async function cutToChase() {
   };
   try {
     const { playHyperdrive } = await import('./engine/hyperdrive.js');
-    await playHyperdrive({ jump, reduced: engine.reduced, engine });
+    await playHyperdrive({ jump, reduced: engine.reduced, engine, words: 'Cutting to the chase.' });
   } catch (e) { console.warn('[cut to the chase]', e); jump(); }
   chasing = false;
   room.querySelector('#p2-h')?.focus({ preventScroll: true });

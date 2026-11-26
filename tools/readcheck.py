@@ -30,7 +30,7 @@ async def main(a):
             ctx = await b.new_context(**opts); page = await ctx.new_page()
             await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
             await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
-            await page.keyboard.press("Enter"); await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
+            await page.keyboard.press("Enter"); await page.wait_for_timeout(250); await page.keyboard.press("Enter"); await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
             await page.wait_for_timeout(500)
             r = await page.evaluate(JS, isolated_context=False)
             for f in r["frames"]:

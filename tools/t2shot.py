@@ -28,11 +28,11 @@ async def enter(page, a, out, tag):
     if a.reduced:   # the still gate: shoot it, then enter at once
         await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
         await page.wait_for_timeout(400); await page.screenshot(path=str(out / f"{tag}_gate.png"))
-        await page.keyboard.press("Enter"); await page.wait_for_timeout(1200); return
+        await page.keyboard.press("Enter"); await page.wait_for_timeout(250); await page.keyboard.press("Enter"); await page.wait_for_timeout(1200); return
     await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
     if a.gate:
         await page.wait_for_timeout(600); await page.screenshot(path=str(out / f"{tag}_gate.png"))
-    await page.keyboard.press("Enter")
+    await page.keyboard.press("Enter"); await page.wait_for_timeout(250); await page.keyboard.press("Enter")
     ms = await page.evaluate(ENTER_JS)
     await page.wait_for_timeout(400)
     return ms

@@ -27,7 +27,7 @@ async def main(a):
         page = await ctx.new_page(); ev = lambda js, arg=None: page.evaluate(js, arg, isolated_context=False); errs = []
         page.on("pageerror", lambda e: errs.append(str(e)[:200])); page.on("console", lambda m: m.type == "error" and errs.append(m.text[:200]))
         await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
-        await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000); await page.keyboard.press("Enter")
+        await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000); await page.keyboard.press("Enter"); await page.wait_for_timeout(250); await page.keyboard.press("Enter")
         await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000); await page.wait_for_timeout(1500)
         if a.fps:
             yA = await ev("window.__p1.yAt(4.0)"); segs = {}

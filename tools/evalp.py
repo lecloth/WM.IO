@@ -20,7 +20,7 @@ async def main(a):
         await page.goto("http://127.0.0.1:8109/" + a.url, wait_until="load")
         if not a.url or a.url.startswith("?"):
             await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
-            await page.keyboard.press("Enter"); await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
+            await page.keyboard.press("Enter"); await page.wait_for_timeout(250); await page.keyboard.press("Enter"); await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
         await page.wait_for_timeout(700)
         if a.p is not None: await page.evaluate(GOTO_JS, a.p, isolated_context=False); await page.wait_for_timeout(a.wait)
         r = await page.evaluate(a.expr, isolated_context=False)

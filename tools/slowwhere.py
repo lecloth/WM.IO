@@ -19,7 +19,7 @@ async def main(a):
         page = await (await b.new_context(**o)).new_page()
         await page.goto("http://127.0.0.1:8109/?first", wait_until="load")
         await page.wait_for_function("document.documentElement.dataset.phase === 'gate'", timeout=20000)
-        await page.keyboard.press("Enter"); await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
+        await page.keyboard.press("Enter"); await page.wait_for_timeout(250); await page.keyboard.press("Enter"); await page.wait_for_function("document.documentElement.dataset.phase === 'ready'", timeout=20000)
         if a.css: await page.add_style_tag(content=a.css)
         if a.js: await page.evaluate(a.js, isolated_context=False)
         await page.wait_for_timeout(2500)
