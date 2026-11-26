@@ -1015,3 +1015,41 @@ three.js; Lenis with light settings.
     number. Then the loop back to the start.
 - **Still open for Wajih:** the final room's call to action (A, B or C); every flagged draft; the seven-pin idea; the
   lighter trips' ideas; the two phone licences (before any hosting).
+
+### Hallway rebuild (26 Nov, Wajih, agreed on demos in the chat): three passes. Overrides the above where they differ.
+- **How we work from now on (Wajih):** one piece at a time. The chat shows a demo first, Wajih points and refines, then a
+  small build of just that piece, checked on the S23 and committed before the next one. Never several stages in one run.
+- **The hallway, as agreed on the demos:**
+  - **Proportions stay fixed on every screen:** the corridor is about 2.6 wide, 3 high and 19 long (in the same units),
+    with the five frames at about 4, 7, 10, 13 and 16 along it, alternating left, right, left, right, left. Never
+    lengthen or narrow it to fit a screen (round 8b did; that made it look smaller).
+  - **The sequence as you scroll:** the hallway stretches out as a white sketch (its grid lines drawn into depth) → in
+    the first couple of seconds of scrolling it dresses up → it goes dark and the spotlights come on → then the frames
+    appear, lit, and each one opens as you reach it. The sketch's grid lines stay faintly visible on the dressed walls.
+  - **The dressed look (the "dark hall"):** walls about `#1C1E22`, floor about `#111215` with a soft polished sheen,
+    ceiling about `#16181B` with one light strip down its middle, a spotlight pool and a small fixture above each frame,
+    a skirting line. No warm tones. Light and shine are painted into the surfaces once (no live shadows, no live
+    reflections), so it costs about what the sketch costs: 60 fps on the S23. In dark mode it starts as a dark sketch and
+    ends in the same lit hall.
+  - **The frames open fully:** each hangs on its wall by a hinge and swings out to 90° (square to you) as you reach it,
+    then folds back to the wall once you've passed. About a third of the hallway's height. Never floating in the middle.
+  - **Scrolling is walking:** the camera moves only while you scroll, at a steady pace; to linger, stop.
+  - **The end:** a wall facing you with the door **centred** in it (about 0.9 wide and 2.1 high in the units above),
+    two panels, **shut**. Its lock: a back plate with a lever above a keyhole, on the door's right edge strip between
+    the two panels, at handle height. **The walk ends standing in front of the shut door.** The approach to the keyhole
+    and the way into page 3 are designed later; until then the page carries on to page 3 as it does now.
+  - **The frames (pass 2):** black float art frames (a thin black frame with real depth, the blueprint floating a
+    little inside it with a dark shadow gap; no glass, no ornate moulding), blueprint drawings, a frosted rounded label
+    under each, as wide as the frame. Five frames: 1 Where customers give up (property app: the path as it is, they
+    leave at the form; fixed: one tap to send) · 2 Design that understands people (booking app: five layers numbered
+    from the bottom, who they are → what they feel → requirements → palette and type → the screen; the three palette dots
+    go solid → faint → outline) · 3 Everything in one place (business system: WhatsApp, Excel, paper and the register
+    feed one database, shown as joined tables: customers, orders, stock, staff; "four places become one source of
+    truth") · 4 Speed (website: the same page before and after, still waiting vs ready on open; no numbers) · 5 On every
+    phone they carry (booking app on the iPhone and the Android). Clean layout: even margins, no word touching a line,
+    numbered steps where there's an order. The chat's demo in this chat is the reference.
+- **The three passes:**
+  1. **The space** (this pass): the proportions, the sketch → dress → dark → spotlights sequence, the walk, the frames
+     opening fully to 90° (they keep today's drawings and labels until pass 2), the centred shut door with its lock.
+  2. **The frames:** the black float frames and the five new drawings and labels.
+  3. **The hallway polish:** type rules, flicker, all 14 sizes. Nothing new.
