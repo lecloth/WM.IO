@@ -1053,3 +1053,43 @@ three.js; Lenis with light settings.
      opening fully to 90° (they keep today's drawings and labels until pass 2), the centred shut door with its lock.
   2. **The frames:** the black float frames and the five new drawings and labels.
   3. **The hallway polish:** type rules, flicker, all 14 sizes. Nothing new.
+
+### Hallway pass 2 and the security page (26 Nov, Wajih, agreed on demos in the chat). Overrides the above where they differ.
+- **Pass 1 is in** (`32869f5`): Wajih: "fucking perfect" for the space. What his phone and laptop showed wrong is now pass 2's job.
+- **Hallway pass 2 (the frames, and the phone framing):**
+  - **Real black float frames:** a thin black frame with real depth; the blueprint set a little inside it with a dark
+    shadow gap all round; a soft shadow on the wall behind; the frame's top edge catches the light. Round 8's flat black
+    outline read as "a black square" (Wajih). No glass, no ornate moulding.
+  - **Lit:** each frame sits in its own spotlight pool, so the light falls on the art (today it falls on the wall beside
+    it). **The lighting order:** the lit art is the brightest thing on screen, then the plaque; the ceiling strip is
+    dimmed to a soft line (today it outshines everything and pulls the eye up).
+  - **Plaques, not slabs:** a small light plaque right under each frame, exactly as wide as the frame, with only the
+    title and the FIG line. Today's grey labels were bigger than the art, detached, covered the door, and their FIG
+    line nearly touched the title's descenders. **The story line moves to a caption band** at the bottom of the screen
+    (dark, quiet, readable at any size), showing the open frame's title and story line (drafts, flagged).
+  - **Phones:** a **narrower lens** on portrait screens, so the walls and frames fill the screen and the ceiling and floor
+    shrink (today about 60% of the phone is ceiling and floor). Each frame, when open, takes about **two thirds of the
+    screen's width**. **The camera slides gently sideways** towards each open frame and back to the centre line: a slide
+    only, never a turn (turns made Wajih dizzy). The hall's shape doesn't change.
+  - **Dark chrome in the hall:** the top strip and the title block use their dark version while you're in the dark hall.
+  - **The five drawings** (as in "Hallway rebuild", the chat's demo is the reference): 1 Where customers give up ·
+    2 Design that understands people · 3 Everything in one place · 4 Speed · 5 On every phone they carry. Frame 5 shows
+    the booking app on both phones as a blueprint drawing, not today's white photo of the phones (it glares in the dark).
+  - **The door's lock becomes the real 3D brass lock** (the Cutaway Lock with a polished brass material; brass is the
+    one warm tone on the site, Wajih's exception), on the door's right edge strip at handle height.
+- **The security page (page 3), after pass 2.** Scroll-driven, about 5-6 screens, the chat's storyboard is the reference:
+  1. **The steady push:** the walk carries on straight into the door's brass lock, slowing gently, no cut; then in
+     through the keyhole and past the pins (the style lab's B1, short).
+  2. **The room of locks:** the style lab's **B3** as built there (its turning and travelling through the lattice is the
+     point; Wajih likes it): hundreds of real 3D brass locks in every direction, unlocking in a wave. The headline appears
+     (placeholder).
+  3. **They fold into one lock**, centred.
+  4. **Three ways to see one lock** (each look earns its place):
+     - **A3, X-ray blueprint: the thief's view.** He sees through it and five weak spots get marked (placeholders, e.g.
+       weak passwords, old software, an open back door, no alerts, data lying in the open).
+     - **A1, matte engineering: our view.** The same five spots, each fixed; the security features are named on the part
+       they protect (placeholders: the key = only the right people get in; the pins = every request checked; the plug =
+       your data locked away; the housing = built strong from the start; the springs = alerts when something's wrong).
+     - **A2, real brass: your view.** Polished, closed, it just works.
+  5. **"Locked."** and on to page 4, how we work.
+  All words are placeholders. The real lock and the lab's looks (A1-A3, B1, B3) are the material; 60 fps on the S23.
