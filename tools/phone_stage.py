@@ -20,6 +20,13 @@ TRACE = """(secs) => { window.__trace = []; const t0 = performance.now(); const 
   (function f(now) { window.__trace.push([+(now - t0).toFixed(1), +scrollY.toFixed(2), +(window.__scene?.() ?? window.__p1?.P?.() ?? 0).toFixed(5)]); if (now < end) requestAnimationFrame(f); })(t0); return true; }"""
 
 STAGES = {
+  "hall1": {   # hallway pass 1 (the space): the sketch, the dressing, the lights, each frame opening, the walk to the shut door
+    "segs": [["the sketch drawn into depth", "p", 4.94, 5.28], ["dress up, go dark (opening line)", "p", 5.28, 5.9], ["spotlights, frames appear", "p", 5.9, 6.24],
+             ["frame 1 opens", "p", "F1-0.4", "F1+0.12"], ["frame 2 opens", "p", "F2-0.4", "F2+0.12"], ["frame 3 opens", "p", "F3-0.4", "F3+0.12"],
+             ["frame 4 opens", "p", "F4-0.4", "F4+0.12"], ["frame 5 opens, the phones turn", "p", "F5-0.4", "F5+0.12"], ["the walk to the shut door", "p", "F5+0.12", "DOOR"], ["hand-over to page 3", "p", "DOOR", "LOCK"]],
+    "swipe_from": ["p", 6.3], "stops": [["p", k] for k in ["TR", "OPEN", "LIT", "F1", "F2", "F3", "F4", "F5", "F5B", "DOOR", "LOCK"]],
+    "reduced": ["#page-02"],
+  },
   "8b": {
     "segs": [["the way in, dress, opening line", "p", 4.62, 5.6], ["the walk: frames 1-2", "p", 5.6, 6.95], ["the walk: frames 3-4", "p", 6.95, 8.1],
              ["the walk: frame 5, the phones turn", "p", 8.1, 8.95], ["the walk up to the lock", "p", 8.95, 9.84], ["the final room", "#page-07", 0, 2.2]],
@@ -67,7 +74,10 @@ async def main(a):
             async def shot(name):
                 r = await c.call("Page.captureScreenshot", {"format": "jpeg", "quality": 82}); (out / f"{name}.jpg").write_bytes(base64.b64decode(r["data"])); print("shot", name, flush=True)
             async def ypos(kind, v):
-                if kind == "p": return await c.eval(f"window.__p1.yAt({v})" if not isinstance(v, str) else f"window.__p1.yAt(window.__p1.stops['{v}'])")
+                if kind == "p":
+                    if not isinstance(v, str): return await c.eval(f"window.__p1.yAt({v})")
+                    import re as _re; m = _re.match(r"^([A-Za-z0-9]+)([+-][0-9.]+)?$", v)   # a stop's name, maybe with an offset in screens ("F1-0.4")
+                    return await c.eval(f"window.__p1.yAt(window.__p1.stops['{m.group(1)}'] + ({m.group(2) or 0}))")
                 return await c.eval(f"(() => {{ const e = document.querySelector('{kind}'); let y = 0; for (let n = e; n; n = n.offsetParent) y += n.offsetTop; return Math.round(y + {v} * innerHeight); }})()")
             async def open_site(reduced=False):
                 await c.call("Emulation.setEmulatedMedia", {"features": [{"name": "prefers-reduced-motion", "value": "reduce" if reduced else ""}]})

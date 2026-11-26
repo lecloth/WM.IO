@@ -52,7 +52,7 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
 @media (min-width: 1024px) { .ph { font-size: .4375rem; } }
 
 /* ---------- page 1 (the design ethos: hairlines, ink, blue only for the drawing stage) ---------- */
-.p1 { position: relative; height: 1084vh; height: 1084lvh; }   /* round 8b: 9.84 screens of scroll (page.js SCROLL) + one */
+.p1 { position: relative; height: 1134vh; height: 1134lvh; }   /* hallway pass 1: 10.34 screens of scroll (page.js SCROLL) + one */
 /* the paper ground and its grid (the grid's origin is the stage's top left = the screen's, while page 1 plays) */
 .p1__stage { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; isolation: isolate;
   background-color: var(--paper); background-image: var(--grid-img); background-size: var(--grid-size); }
@@ -213,6 +213,7 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
 .p1-hall { display: grid; gap: 2rem; margin-top: 2rem; max-width: 34rem; }
 .p1-hall__f { margin: 0; }
 .p1-hall__d svg, .p1-hall__real { display: block; width: 100%; height: auto; }
+.p1-hall__still img { display: block; width: 100%; height: auto; background: #1C1E22; }   /* hallway pass 1: the dressed hall, still (reduced motion) */
 .p1-hall__real { margin-top: .5rem; }
 .p1-frame { margin: 0; }
 .p1-frame img { display: block; width: 100%; max-width: 34rem; height: auto; }

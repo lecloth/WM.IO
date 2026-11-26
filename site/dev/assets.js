@@ -7,7 +7,7 @@
 import { Phone } from '../js/page01/phone.js';
 import { PhonePair, PHONES } from '../js/phones/realphones.js';
 import { createLive } from '../js/page01/live.js';
-import { createDive, STOPS, DOOR, WAY_IN, OPEN_AT } from '../js/page01/dive.js';
+import { createDive, STOPS, DOOR, WAY_IN, OPEN_AT, FRAMES_IN } from '../js/page01/dive.js';
 import { drawHyperdrive, HYPER_MS } from '../js/engine/hyperdrive.js';
 import { CTAS, CTA_DESIGN, initCta } from '../js/page02/cta.js';
 import { LIGHT } from '../js/engine/tokens.js';
@@ -33,18 +33,18 @@ function hallCard(host, { tag, title, note }) {
   dive.onBeat(() => draw());
   return { dive, draw, layout, q: () => q, ready: document.fonts.ready.then(() => dive.load('../')).then(() => { layout(); return dive.loadPhones('../'); }).then(() => draw()) };
 }
-const hall = hallCard($('#rowC'), { tag: 'H', title: 'The hallway', note: 'The grid folds into the hallway, which dresses up as you walk; scrolling is walking; each drawing swings out part way on its hinge as you pass, in one hairline frame, its frosted label turning with it.' });
-const doorCard = hallCard($('#rowD'), { tag: 'D', title: 'The shut door, with the real lock', note: 'Faint from the start, clearer as you walk towards it; it stays shut. The lock (the real “Cutaway Lock”, zbzzn, CC BY 4.0) sits at eye level; the walk ends with it filling the screen.' });
+const hall = hallCard($('#rowC'), { tag: 'H', title: 'The hallway', note: 'A white sketch drawn into depth dresses into the dark hall; the spotlights come on and the frames appear; scrolling is walking; each frame swings out fully on its hinge as you reach it and folds back as you pass.' });
+const doorCard = hallCard($('#rowD'), { tag: 'D', title: 'The shut door, with its lock', note: 'Centred in the end wall, two panels, shut. Its lock: a back plate, a lever above a keyhole, on the right edge strip between the panels, at handle height. The walk ends in front of it.' });
 // (1b) canvas 2's layers, spread (the same drawing as the hallway's, as an SVG)
 import('../js/page01/corridor-drawings.js').then(({ FRAMES, toSVG }) => { const f = FRAMES.find((x) => x.key === 'layers'); const host = $('#layers'); if (f && host) host.innerHTML = toSVG(f.draw); });
 const diveIn = $('#dive'), doorIn = $('#door');
 const D0 = DOOR.walk[0] - 0.02;
-const drawDives = () => { hall.draw(+diveIn.value / 1000); doorCard.draw(D0 + (1 - D0) * (+doorIn.value / 1000)); };
+const drawDives = () => { hall.draw(+diveIn.value / 1000); doorCard.draw(D0 + (DOOR.end - D0) * (+doorIn.value / 1000)); };   // the door's walk ends in front of the shut door
 diveIn.addEventListener('input', drawDives); doorIn.addEventListener('input', drawDives);
-// play the way in: the slider runs from the page to the opening line (the way in is scrubbed by the scroll on the page)
+// play the way in: the slider runs from the page through the sketch, the dressing and the lights to the frames (all scrubbed by the scroll on the page)
 let playRaf = 0;
 $('#play').addEventListener('click', () => {
-  cancelAnimationFrame(playRaf); const t0 = performance.now(), to = OPEN_AT[0] + 0.01, ms = 2400;
+  cancelAnimationFrame(playRaf); const t0 = performance.now(), to = FRAMES_IN[1] + 0.005, ms = 3600;
   const step = () => { const u = Math.min(1, (performance.now() - t0) / ms), e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2; diveIn.value = String(Math.round(e * to * 1000)); drawDives(); if (u < 1) playRaf = requestAnimationFrame(step); };
   playRaf = requestAnimationFrame(step);
 });

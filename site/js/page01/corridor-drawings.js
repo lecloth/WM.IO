@@ -277,19 +277,19 @@ function phones() {
 // chat's drafts, flagged for Wajih). Round 8b: the sheet's shape in whole grid cells is chosen at layout from the
 // drawing's own proportions (its blue margin takes the difference).
 export const FRAMES = [
-  { key: 'enquiry', side: 'r', caption: 'Where customers give up.', fig: 'Fig. 01 · Property app',
+  { key: 'enquiry', side: 'l', caption: 'Where customers give up.', fig: 'Fig. 01 · Property app',
     story: 'We walk every step your customers take, find the one that loses them, and fix it.',
     alt: 'Blueprint: the property app’s enquiry path. Search, a listing, then a long enquiry form where people leave; the fix is drawn in: one tap, straight from the listing, and it’s sent.', draw: enquiry() },
-  { key: 'layers', side: 'l', caption: 'Design that understands people.', fig: 'Fig. 02 · Listing, in layers',
+  { key: 'layers', side: 'r', caption: 'Design that understands people.', fig: 'Fig. 02 · Listing, in layers',
     story: 'We learn what your customers need to feel, then choose every colour, shape and word for it.',
     alt: 'The property app’s listing screen taken apart into its design layers, bottom to top: who they are (home buyers), what they must feel (calm, sure, nothing hidden), the requirements (price first, one tap to ask), the palette (blue #173F73, paper #F6F7F9, ink #121212, graphite #66696E) and type (Newsreader, DM Mono), then the finished screen.', draw: layersPlan() },
-  { key: 'dispatch', side: 'r', caption: 'Your way of deciding, built in.', fig: 'Fig. 03 · Delivery tracker',
+  { key: 'dispatch', side: 'l', caption: 'Your way of deciding, built in.', fig: 'Fig. 03 · Delivery tracker',
     story: 'The rules you carry in your head, turned into a system that decides like you, every time.',
     alt: 'Blueprint: the delivery tracker’s decision flow for which driver gets a new order: the nearest driver; if they can’t make it on time, the next nearest; then assign.', draw: dispatch() },
-  { key: 'website', side: 'l', caption: 'Speed.', fig: 'Fig. 04 · Website loading',
+  { key: 'website', side: 'r', caption: 'Speed.', fig: 'Fig. 04 · Website loading',
     story: 'Every second of waiting costs you a customer. We find the slow parts and cut them.',
     alt: 'Blueprint: a website loading. Five parts loading one after another are redrawn as parts loading side by side; each timeline carries its measured length.', draw: website() },
-  { key: 'apps', side: 'r', caption: 'On every phone they carry.', fig: 'Fig. 05 · Booking app',
+  { key: 'apps', side: 'l', caption: 'On every phone they carry.', fig: 'Fig. 05 · Booking app',
     story: 'One app, at home on iPhone and Android.',
     alt: 'Blueprint of our booking app’s screen on an iPhone and an Android phone, which turns into the app running on the real phones.', draw: phones(), real: 'media/phones-unverified/corridor-phones.webp' },
 ];

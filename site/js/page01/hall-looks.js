@@ -1,27 +1,21 @@
-// The hallway's look (Part 5 "Round 5", item 2; round 6: look A stays, looks B and C are removed). Round 4's corridor
-// read as a wireframe: flat lines, no light. Expensive comes from real light, depth and shadow, so the frames are real
-// objects (a moulding with depth, a mat with a bevelled window, glass that catches the light) and the card is a real
-// CC0 scan (ambientCG Paper001, CREDITS.md) under real light with soft shadows. No glows; blue only in the blueprints.
-//   A · Architect's model: white card walls and floor, open to the light above like a scale model, real soft shadows,
-//       thin black metal frames. Ink on paper: the site's grid is printed on the card (round 6: the same cells as the
-//       screen's, continued into depth from the hallway's mouth) and the hallway's edges stay hairlines.
-// Round 6: no warm tone anywhere (the card, the mat and the light are neutral; the scan is printed in grey).
-// tex: a folder in site/media/materials/ (color.webp + normal.webp). Colours are [light, dark].
-export const HALL = 'A';
+// The hallway's look (Part 5 "Hallway rebuild", 26 Nov, pass 1: the space). One look, the "dark hall", the same in
+// light and dark mode (only the sketch it starts from follows the theme: white paper in light mode, dark paper in dark):
+// walls about #1C1E22, floor about #111215 with a soft polished sheen, ceiling about #16181B with one light strip down
+// its middle, a spotlight pool and a small fixture above each frame, a skirting line. No warm tones. Light and shine are
+// painted into the surfaces once (dive.js paintHall: no live lights, shadows or reflections), so the hall costs about
+// what the sketch costs.
+export const HALL = 'D';
 export const LOOKS = {
-  A: {
-    id: 'A', name: 'Architect’s model', exposure: 1.08,
-    walls: { tex: 'Paper001', grid: true, color: ['#FFFFFF', '#FFFFFF'], base: ['#F4F5F7', '#1B1C1D'], rough: 0.92, normal: 0.35, env: 0.35 },
-    floor: { tex: 'Paper001', grid: true, color: ['#FFFFFF', '#FFFFFF'], base: ['#F2F3F5', '#18191A'], rough: 0.92, normal: 0.35, env: 0.35 },
-    ceiling: null,                                  // open to the light, like a model on a table
-    edges: 0.42,                                    // the hallway's edges stay ink hairlines
-    wallsCast: true,                                // the walls' own shadows fall on the floor
-    frame: { w: 0.013, d: 0.05, color: ['#151515', '#C2C4C7'], metal: [0.65, 1], rough: [0.36, 0.34] },
-    mat: ['#FAFBFC', '#2A2B2D'],
-    glass: 0.2,
-    // light: a soft key from above, front left (a window over the model), a sky / ground fill, the studio's reflections
-    key: { dir: [-0.38, 0.85, 0.9], i: [2.6, 1.4], color: '#FFFFFF', radius: 5 },
-    hemi: { sky: ['#FFFFFF', '#D5D7DA'], ground: ['#D6D8DB', '#28292B'], i: [1.25, 0.32] },
-    env: [0.9, 0.55],
+  D: {
+    id: 'D', name: 'Dark hall',
+    wall: '#1C1E22', floor: '#111215', ceiling: '#16181B', end: '#1C1E22', door: '#202328',
+    light: [0.93, 0.96, 1.0],          // the light's colour (cool neutral, never warm)
+    gain: 0.82,                         // how bright the painted light is at full
+    shade: 0.62,                        // how dark the painted shade (corners, gaps, skirting) is at full
+    strip: ['#1A1C20', '#EEF1F5'],      // the ceiling's light strip: off, on
+    fixture: '#2C2F35', lens: ['#2C2F35', '#F4F6F9'],
+    edges: { sketch: 0.42, dressed: 0.16, dressedColor: '#C3C7CD' },   // the hairlines: ink in the sketch, faint once dressed
+    grid: { sketch: 0.1, dressed: 0.045, dressedColor: '#D9DCE1' },    // the grid: the page's own in the sketch, faint once dressed
+    exposure: 1.08,                     // for the real phones on frame 5 (their studio light is the only live light)
   },
 };

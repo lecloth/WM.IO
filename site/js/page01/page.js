@@ -49,7 +49,10 @@ const R = {
 };
 const HAND = 0.9;          // the handover: Bell's outlines -> X-ray, pose held until here
 // named stops for tests (a paused frame at each must be clean), including mid-morph, mid-drum and mid-dive
-export const STOPS = { S0: 0.1, draw: 0.24, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.9, END: 4.8, TR: 5.11, OPEN: 5.5, F1: 6.26, F2: 6.84, F3: 7.42, F4: 8.0, F5: 8.56, F5B: 8.64, DOOR: 9.3, LOCK: 9.84 };
+// the hallway's (hallway pass 1): TR the sketch, OPEN dressing (the opening line), LIT the lights on and the frames in, F1-F5
+// each frame open at its closest (set by layoutDive from the hallway's layout: they depend on the screen), F5B frame 5
+// folding back, DOOR the walk's end in front of the shut door, LOCK the hand-over to page 3
+export const STOPS = { S0: 0.1, draw: 0.24, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.9, END: 4.8, TR: 5.11, OPEN: 5.5, LIT: 6.2, F1: 6.6, F2: 7.3, F3: 8.0, F4: 8.7, F5: 9.4, F5B: 9.55, DOOR: 9.94, LOCK: 10.34 };
 const NAMES = ['Back', 'Battery', 'Board', 'Frame', 'Screen', 'Glass'];   // back to front
 const BLUE = [23, 63, 115];
 
@@ -304,7 +307,12 @@ export function initPage01(engine) {
   }
 
   // ---------- the hallway's layout ----------
-  function layoutDive() { dive.layout(diveEl.clientWidth || W, diveEl.clientHeight || innerHeight, { u: grid.u }); }
+  function layoutDive() {
+    dive.layout(diveEl.clientWidth || W, diveEl.clientHeight || innerHeight, { u: grid.u });
+    const c = dive.closeAt(); if (!c) return;
+    c.forEach((s, i) => { STOPS[`F${i + 1}`] = +(R.dive[0] + s).toFixed(3); });
+    STOPS.F5B = +(STOPS.F5 + 0.12).toFixed(3); STOPS.DOOR = +(R.dive[0] + 5.0).toFixed(3); STOPS.LOCK = +(R.dive[0] + DIVE).toFixed(3);
+  }
 
   // ---------- "you" -> "YOU" and "us" -> "WE": one word each, travelling between its places ----------
   let flyT = { you: {}, we: {} };
@@ -535,8 +543,14 @@ export function initPage01(engine) {
     // local-only still is there)
     import('./corridor-drawings.js').then(({ FRAMES, toSVG }) => {
       const list = document.createElement('div'); list.className = 'p1-hall';
-      // round 7: the line that opens the hallway, then the five drawings with their labels
+      // round 7: the line that opens the hallway, then (hallway pass 1) the dressed hall, still, every frame open, then the
+      // five drawings with their labels
       list.insertAdjacentHTML('afterbegin', openingHTML().replace('dive__open', 'dive__open p1-hall__open'));
+      const hall = document.createElement('figure'); hall.className = 'p1-hall__f p1-hall__still';
+      const himg = new Image(); himg.alt = 'The hallway, dressed: dark walls, a light strip down the ceiling, a spotlight over each of five drawings open on their hinges, and a shut door at the end.';
+      hall.append(himg); list.querySelector('.p1-hall__open').after(hall);
+      requestAnimationFrame(() => { const w = Math.round(list.getBoundingClientRect().width) || 320, h = Math.round(Math.min(innerHeight * 0.75, w * 1.25));
+        himg.width = w; himg.height = h; dive.still(w, h, { u: grid.u }).then((url) => { himg.src = url; }).catch((e) => console.warn('[page 01] hall still', e)); });
       FRAMES.forEach((F) => {
         const fig = document.createElement('figure'); fig.className = 'p1-hall__f';
         fig.innerHTML = `<div class="p1-hall__d" role="img" aria-label="${F.alt}">${toSVG(F.draw)}</div><figcaption>${labelHTML(F)}</figcaption>`;

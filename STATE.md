@@ -22,7 +22,7 @@ Take 1's history below.
 | # | Page | What happens | Viewports | Status |
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Page 1 | Beacon → Bell's ink on our grid → X-ray phone, six named pieces (each leader on its own piece) → kinetic line, real phone → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum → **"Now, how can we serve you?"** (signed off, round 8) | ~5.9 (with 2: 10.54) | **round 8 built (25 Nov): waiting for Wajih's review** |
-| 2 | The hallway | The grid folds into it; it dresses up as you walk; "We design backwards…" (draft); scrolling is walking; five drawings hang on hinges and swing out 40° as you pass, one hairline frame each (1 property app's enquiry path, 2 the property app's listing screen in its design layers, 3 delivery tracker, 4 website loading, 5 booking app on the real iPhone 18 and S26), frosted labels under them turning with them (story lines drafts); the shut door, its lock at eye level; the walk ends with the lock filling the screen | 4.9 (inside page 1's section) | **round 8b built** |
+| 2 | The hallway | Hallway pass 1 (26 Nov): fixed proportions (about 2.6 x 3 x 19, frames at 4, 7, 10, 13, 16, left/right alternating); a white sketch drawn into depth dresses into the dark hall, the spotlights and the ceiling strip come on, the frames appear; scrolling is walking at one steady pace; each frame swings out fully (90 degrees) as you reach it and folds back as you pass (round 8b's drawings and labels until pass 2); the walk ends in front of the centred, shut door (plate, lever above keyhole); then page 3 as before | 5.4 (inside page 1's section) | **pass 1 built; pass 2 (the frames) next** |
 | 3 | Into the lock | Starts on the hallway's last frame (the lock in X-ray); into the keyhole past the pins; out to the same lock on every crossing point of a grid in every direction; they unlock in a wave and fold back into one. Two lines (drafts) | 4.6 (overlapping page 1's last screen) | **round 9 built** |
 | 4 | How we work | The lock turns side-on into a 2D cutaway; "First, the obvious key." / "It fails. Most people stop here." / "We don't." (drafts); the wrong key fails; seven pins picked in the drum's order, each verb on a leader, the newest meaning under the lock on a leader; it turns on Delivered | 4 (inside page 3's section) | **round 10 built** |
 | 5 | Lighter trips | Three rooms, scrubbed: AI (the property app's enquiries: the AI drafts, a person approves, then it's sent), websites (the booking app's site, drawn on the grid then real), apps (the delivery tracker live on the real iPhone 18 and S26). Lines and content drafts | 7.2 | **round 11 built** |
@@ -275,7 +275,60 @@ Take 1's history below.
   the top; a plain jump with reduced motion).
 - `tools/typecheck.py`: weekdays added to the proper names; `typecheck.js`: measurements may carry thousands commas.
 
+### Hallway pass 1 structure notes (26 Nov, Part 5 "Hallway rebuild": the space)
+- **Page 1's section is 11.34 screens** (`SCROLL = 4.94 + DIVE`, `DIVE = 5.4`; `.p1` 1134lvh). Hallway stops (`__p1.stops`):
+  TR 5.11 (the sketch), OPEN 5.5 (dressing, the opening line), LIT 6.2 (lights on, frames in), F1-F5 (each frame open at
+  its closest: **set by `layoutDive()` from `dive.closeAt()`, they depend on the screen**; S23: 6.62, 7.20, 7.81, 8.49,
+  9.09; 1440 x 900: 6.83, 7.51, 8.16, 8.81, 9.45), F5B = F5 + 0.12, DOOR 9.94 (the walk's end), LOCK 10.34 (the hand-over).
+- **`dive.js` (rewritten):** `HALL` = the hall in its own units (w 2.6, h 3, len 19, eye 1.5, frames `at` [4, 7, 10, 13,
+  16] alternating left/right by index, `frameH` 1.0, `frameMaxW` 1.0, `hang` 1.55, the door 0.9 x 2.1 with its panels,
+  stiles and lock place). World units are CSS px at the mouth (z = 0); `K = max(W / 2.6, H / 3)` px to one hall unit (the
+  mouth covers the screen, so the sketch's grid at depth 0 is the page's grid; the shape never changes, only the lens
+  crop). Timeline (screens): `WAY_IN` 0.02-0.32, `OPEN_AT` 0.3-0.95, `DRESS` 0.34-0.7, `LIGHTS` 0.92-1.18, `FRAMES_IN`
+  1.1-1.24, `WALK` 1.2-5.0 (linear: `camZ`), `XRAY` 5.16-5.36. The camera stands still during the sketch and the dressing.
+- **The surfaces:** one `ShaderMaterial` each (`SURF_VS/FS`): sketch = `--paper` + the grid tile (`makeGrid`, 5 cells,
+  r channel) in `--ink`; dressed = base colour + painted light (texture R) x lights - painted shade (texture B) + the grid
+  at 4.5%. `paintHall()` paints walls, floor, ceiling, end wall and the door's leaf once in hall units (pools, the strip's
+  glow and floor sheen, fixtures' glints, corner shade, skirting, architrave, panel bevels). Geometry: the ceiling strip
+  (its own shader: cut round every label, like the hairlines: `cutStrip`), five fixtures (per-fixture materials), the lock
+  (plate, rose, neck, lever, keyhole; hall units scaled by K). No live lights or shadows (`hall-looks.js` is the dark
+  hall's tokens; only frame 5's real phones keep the studio light and tone mapping).
+- **Frames:** hinge at the near edge, `SWING` 90 degrees; per frame `Dc` (read closest) = the nearest distance at which
+  its hinge is 0.6 cell inside the screen, its sheet at most 0.48 of the screen's height, sheet and label between the
+  strip and the title block. Open over 1.0 unit (`Dopen` -> `Dread`), held 0.8 (`Dread` -> `Dc`), folded over 1.0
+  (`Dc` -> `Dg`); the drawing draws on as it opens and un-draws as it folds. Labels (round 8b's, DOM, quad-mapped):
+  desktop (>= 1024) beside the sheet on its inner side, the backing's foot on the sheet's foot (16 cells, 18 on large
+  screens; widened until its words clear the strip's far end); phones 16 cells (N - 4) from the hinge side, **over** the
+  sheet where that lets it be read closer than under (on the S23 all five go over). While a label is up, farther frames
+  and fixtures behind it fade (`f.hide`, like the lock). Frames' offsets off the wall in drawing units: `ZS` 8, `ZL`, `ZF`, `ZT`.
+- **The end:** `Dend` = the door's top under the strip and its foot over the title block (else on the screen), capped so
+  the walk never stops before frame 5 has folded. The hand-over draws page 3's first frame (lock3d `endFaceHeight`)
+  straight ahead of where the walk ended (`Dx`), on the blue. Round 8b's off-centre door and the door's real-lock model
+  are gone (lock3d is used only for the hand-over).
+- **Reduced motion:** `dive.still(w, h)` renders the dressed hall, lit, every frame open, from the mouth, to a JPEG;
+  page.js puts it (`.p1-hall__still`) after the opening line, before the still drawings.
+- **Asset sheet:** sections 1 and 2 rewritten for pass 1; Play runs to the frames appearing; the door card's walk ends at
+  the shut door. **Tools:** `phone_stage.py --stage hall1` (stop names with offsets, e.g. `F1-0.4`); `readability()`
+  returns `cells` again for readcheck.py.
+
 ### Take 2 log
+- **Hallway pass 1, the space (26 Nov).** Brief committed (`d25e804`). Built as in "Hallway pass 1 structure notes".
+  Shots: `tools/shots/hall-p1/` (probe, typecheck, phone, reduced, assets).
+  - **Type check** (`typecheck.py`, the hallway's 11 stops TR-LOCK; 384 x 734 @2.8125, 1440 x 900, 2160 x 1147 @1.333;
+    light and dark; 66 frames): **0 machine failures**. Fixed on the way (148 -> 2 -> 0): desktop labels over farther
+    frames on the same wall and phone labels over the fixtures (they now fade behind a label), drawings that stayed
+    drawn after folding back, a live measurement without its thousands comma ("1661.8 PX"), and frame 4's measurement
+    pushed onto its frame on the phone (its gap is now capped at the drawing's CLEAR).
+  - **S23** (`phone_stage.py --stage hall1`): 60 fps in all 10 segments on both passes (the sketch, dressing, lights,
+    each frame opening, the walk to the door, the hand-over); one 33 ms frame on the first pass of the sketch. 8 real
+    swipes: no pull-back; worst frames 83 ms (first flick) and 117 ms (first flick back); one long drag did not move
+    (the swipe did not register). Reduced motion: the dressed hall still, frames open, then the drawings. 0 errors.
+  - **Readcheck** (not this pass's gate; for pass 2/3): 19 failures at the three sizes. S23: the drawings' words are
+    0.2-0.32 cells at their closest (rule 0.375) and four drawings' in-plane clearance fails, because a frame opened
+    square to you fits whole on a portrait phone only from about 3 units (the hall's width through the 50 degree lens),
+    where it is about a fifth of the screen tall. Laptops: words 0.56-1.13 cells; the sheet passes half the screen's
+    height while it folds back (the rule was written for round 8b's fading drawings).
+  - Not run (pass 3): the other 11 sizes, gridcheck, overlap, flicker, axe.
 - **Final check (25 Nov, stopped early on Wajih's word).** Shots and outputs: `tools/shots/r9-final/`.
   - **S23, whole page** (`phone_stage.py --stage all`, segments in visiting order, two passes): every segment 59.7-60 fps
     on both passes except page 5's websites room on the first pass (one 200 ms frame) and its apps room on the second
