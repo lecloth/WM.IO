@@ -1114,3 +1114,42 @@ three.js; Lenis with light settings.
   self-check), on-grid, the readability check (adjust it for the fixed hall and the open frames, so it measures what we
   now show), overlap, geometry, axe, console errors, reduced motion, length in viewports, the design-ethos self-check,
   and flicker in real Chrome at Wajih's laptop settings against pass 1 (`32869f5`). Fix what they find in the hallway.
+
+### The name, the top bar and the title block (26 Nov, Wajih, agreed on demos in the chat). Overrides the above where they differ.
+- **The name (Wajih):** **WM.IO, a design and engineering studio.** W and M are a wave; where W ends and M begins is a
+  sawtooth's reset; IO reads as 1 0 (bits), input/output, and Iyed and Oussema. The brand is WM.IO; the web address is a
+  separate decision for later (a .dev address, not .io; nothing hosted yet).
+- **The mark:** a smooth W and a smooth M joined by one sharp reset, then a dot, then I and O (the chat's demo "C" is the
+  reference). **Hero version:** with the site's measurements (λ for the wavelength, A for the height, "RESET · W → M" at
+  the reset) in DM Mono Light. **Small version:** the plain mark without measurements (the bar, the title block,
+  favicons).
+- **Arrival (page 1's first screen):** the mark starts at the left of the black top bar. It straightens into one line
+  and **snakes along the grid at right angles** (clean routing, like a trace on a circuit board); the grid lines it runs
+  along light up thicker behind it, then fade. The top bar's boxes slide over to fill the space the mark left. The line
+  turns onto the first sentence's baseline and writes **"Glad you're finally here"** (drawn first in single-stroke
+  technical lettering, then settling into the real typeface), drops the **full stop** (the mark's dot), then snakes on
+  to the beacon and **coils into its ring** (the O; the I becomes the beacon's dot). Then the second line appears:
+  **"Tap, and we'll take you on a journey."** (draft; replaces "Tap to start"). About 3.5 seconds; a tap at any moment
+  skips straight to the end; reduced motion: everything in place at once.
+- **On tap:** the beacon uncoils, the line snakes down the grid to the bottom and reassembles as the mark in a **new
+  first cell of the title block** (the drawing's signature, as on a real engineering title block); it stays there for
+  the whole journey. The top bar never gets the mark back: its boxes keep the full width.
+- **Scrolling back to the very top:** the mark leaves the title block, snakes up and writes the sentence again; on tap
+  it goes home to the title block.
+- **The shortcut:** the bar's "Cut to the chase" becomes **"Take a shortcut →"** (Wajih: "Cut to the chase" speaks for
+  the visitor). During the hyperdrive jump the words **"Cutting to the chase."** appear (ours, a wink).
+- On phones the title block's TITLE cell gives up some width for the mark's cell.
+
+### The scroll drives the stage (26 Nov, Wajih after pass 3). Overrides the above where they differ.
+- **The rule (Wajih):** the scroll drives the object on centre stage. Going back and forth moves it: the morph, the
+  phones turning, every main object animation. No object animation runs on a timer while the visitor is scrolling.
+- **Exceptions (kept timed, short):** words' reveals (a paused frame never shows half a word); motion that happens with
+  no scroll to drive it (the arrival, a tap, the hyperdrive jump); the drum's detent click (Wajih kept it).
+- **Frame 5 (hallway pass 3b):** when frame 5 is fully open, the camera **stops walking** and the scroll drives the show:
+  the scribble draws, the phones lift out, and each makes one full 360° turn (the Android a beat behind the iPhone),
+  about 1.5 screens of scroll per turn; then the walk resumes at the normal pace towards the door. Scrolling back plays
+  it in reverse (the phones turn back, sink into the frame, become the drawing). Reduced motion: a still of the phones
+  out of the frame, front on.
+- **Everywhere else on page 1 and in the hallway:** every timed object animation (for example the dress to real, the
+  ground's change, the phones' load cross-fade if it shows motion) becomes scroll-driven, or is listed in STATE.md with
+  the reason it must stay timed.
