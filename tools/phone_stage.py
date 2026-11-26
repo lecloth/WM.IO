@@ -122,32 +122,24 @@ async def main(a):
             for k, v in cfg["stops"]:
                 y = await ypos(k, v); await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.1); await shot(f"stop_{k.strip('#')}_{v}")
             if cfg.get("spin"):
-                # hallway pass 3: frame 5's show, in real time, standing still: the scribble drawing on, the phones lifting out,
-                # mid-turn, their fronts; fps while they turn (no screenshot during it: a capture stalls the phone's frames);
-                # then reduced motion: straight to the fronts, no turn
-                y = await ypos("p", "F5-0.25"); await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.2); await shot("f5_1_scribble")
-                y = await ypos("p", "F5"); await c.eval(f"{GOTO_Y}({y})")
-                async def until(e):
-                    for _ in range(200):
-                        v = await c.eval("(window.__p1.diveApi.seq().e || 0)")
-                        if v >= e: return v
-                        await asyncio.sleep(0.05)
-                ea = await until(0.75); await shot("f5_2_lifting")
-                await until(1.6)
-                await c.eval("window.__spinT = []; (function f(now) { window.__spinT.push(now); if (window.__spinT.length < 181) requestAnimationFrame(f); })(performance.now()); true")
-                await asyncio.sleep(3.1)
-                t = json.loads(await J("window.__spinT")); d = [t[i + 1] - t[i] for i in range(len(t) - 1)]; so = sorted(d)
-                eb = await until(4.3); yb = json.loads(await J("window.__p1.diveApi.yaws()")); await shot("f5_3_midturn")
-                ec = await until(8.4); yc = json.loads(await J("window.__p1.diveApi.yaws()")); await shot("f5_4_fronts")
-                sq = json.loads(await J("window.__p1.diveApi.seq()"))
-                # reduced motion: walk back before it opens, switch it on, come back: no turn, straight to the fronts
-                y0 = await ypos("p", "F5-0.6"); await c.eval(f"{GOTO_Y}({y0})"); await asyncio.sleep(0.8)
+                # pass 3b: frame 5's held show, scroll-driven: shots at its stops forwards and backwards, fps while the scroll
+                # drives it (6 s each way, Lenis, linear); then reduced motion: straight to the fronts, no turn
+                names = ["F5H", "F5S", "F5R", "F5L", "F5T", "F5E"]
+                for k in names: y = await ypos("p", k); await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.1); await shot(f"f5_fw_{k}")
+                for k in names[::-1][1:4]: y = await ypos("p", k); await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.1); await shot(f"f5_bw_{k}")
+                async def scrub(k0, k1):
+                    y0 = await ypos("p", k0); y1 = await ypos("p", k1); await c.eval(f"{GOTO_Y}({y0})"); await asyncio.sleep(1.0)
+                    await c.eval(f"window.__spinT = []; window.__spinOn = true; (function f(now) {{ window.__spinT.push(now); if (window.__spinOn) requestAnimationFrame(f); }})(performance.now()); window.__t2.engine.lenis.scrollTo({y1}, {{ duration: 6, easing: (t) => t, force: true, onComplete: () => {{ window.__spinOn = false; }} }}); true")
+                    await asyncio.sleep(6.6)
+                    t = json.loads(await J("window.__spinT")); d = [t[i + 1] - t[i] for i in range(len(t) - 1)]; so = sorted(d)
+                    return {"fps": round(1000 * len(d) / max(1, sum(d)), 1), "p95": round(so[int(len(so) * .95)], 1) if so else None, "worst": round(so[-1], 1) if so else None, "over20": sum(1 for x in d if x > 20)}
+                fw = await scrub("F5H", "F5E"); bw = await scrub("F5E", "F5H")
+                y = await ypos("p", "F5T")
                 await c.call("Emulation.setEmulatedMedia", {"features": [{"name": "prefers-reduced-motion", "value": "reduce"}]})
                 await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.2)
-                yr = json.loads(await J("window.__p1.diveApi.yaws()")); await shot("f5_5_reduced")
+                yr = json.loads(await J("window.__p1.diveApi.yaws()")); await shot("f5_reduced")
                 await c.call("Emulation.setEmulatedMedia", {"features": [{"name": "prefers-reduced-motion", "value": ""}]})
-                rep["spin"] = {"e_shots": [ea, eb, ec], "yaws_midturn": yb, "yaws_end": yc, "seq": sq, "fps_turning": round(1000 * len(d) / max(1, sum(d)), 1), "p95": round(so[int(len(so) * .95)], 1) if so else None,
-                               "worst": round(so[-1], 1) if so else None, "over20": sum(1 for x in d if x > 20), "reduced_yaws": yr}
+                rep["spin"] = {"scrub_forwards": fw, "scrub_backwards": bw, "reduced_yaws": yr}
                 print("spin", rep["spin"], flush=True)
             if cfg.get("plaque"):
                 y = await ypos("p", cfg["plaque"]); await c.eval(f"{GOTO_Y}({y})"); await asyncio.sleep(1.5)

@@ -1,4 +1,5 @@
-"""Hallway pass 3: frame 5's show in a REAL (headed) Chrome window on this laptop: fps at LIT, during the scribble, through
+"""SUPERSEDED in pass 3b by tools/stagechrome.py (frame 5's show is scroll-driven now; this tool waits on the old timed show).
+Hallway pass 3: frame 5's show in a REAL (headed) Chrome window on this laptop: fps at LIT, during the scribble, through
 the whole show (the phones lift out and turn, 8.3 s, standing still) and after it; one shot of the fronts.
   python -I tools/hall3chrome.py tools/shots/hall-p3/f5 2160 1147 1.333   (out, width, height, dpr; phone sizes emulate a phone)"""
 import asyncio, sys, json

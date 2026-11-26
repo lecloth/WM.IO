@@ -25,6 +25,8 @@
 .dive__open.on { transform: none; transition: transform .5s var(--ease-out, ease-out) .06s; }
 .dive__open.on::before { opacity: 1; transition: opacity .26s linear; }
 .dive__open.on > * { opacity: 1; transition: opacity .26s linear .08s; }
+/* pass 3b: the page's warm-up paints it once, fully on, so the backdrop blur's first use is not on the walk in */
+.is-warm .dive__open, .is-warm .dive__open::before, .is-warm .dive__open > * { transition: none !important; }
 .dive__labs { position: absolute; inset: 0; pointer-events: none; }
 .dive__lab p, .dive__open p, .dive__band p { margin: 0; }
 .dive__lab-t { font-family: var(--f-display, Newsreader, Georgia, serif); font-weight: 420; font-size: 1rem; line-height: 1.5rem; letter-spacing: -.005em; text-wrap: balance; }

@@ -22,7 +22,7 @@ Take 1's history below.
 | # | Page | What happens | Viewports | Status |
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Page 1 | Beacon → Bell's ink on our grid → X-ray phone, six named pieces (each leader on its own piece) → kinetic line, real phone → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum → **"Now, how can we serve you?"** (signed off, round 8) | ~5.9 (with 2: 10.54) | **round 8 built (25 Nov): waiting for Wajih's review** |
-| 2 | The hallway | Hallway pass 1 (26 Nov): fixed proportions (about 2.6 x 3 x 19, frames at 4, 7, 10, 13, 16, left/right alternating); a white sketch drawn into depth dresses into the dark hall, the spotlights and the ceiling strip come on, the frames appear; scrolling is walking at one steady pace; each frame swings out fully (90 degrees) as you reach it and folds back as you pass; pass 2: black float frames lit in their spotlights, a light plaque under each (title, FIG line), the open frame's title and story line in a dark caption band, the camera slides (never turns) to each open frame (portrait: a narrower lens, the frame about two thirds of the width), dark chrome in the hall, five new blueprints; the walk ends in front of the centred, shut door with its brass Cutaway Lock; then page 3 as before; pass 3: the eye one height for the whole walk, the title on the plaque only (light paper, rounded), the band the story line only, no stock icons, frame 5's blueprint dresses into the real phones, which lift out of the frame and turn once each | 5.4 (inside page 1's section) | **pass 3 built (pre-ducked camera, light rounded plaques, no icons, frame 5's real phones lift out and turn); pending: the real-phone run** |
+| 2 | The hallway | Hallway pass 1 (26 Nov): fixed proportions (about 2.6 x 3 x 19, frames at 4, 7, 10, 13, 16, left/right alternating); a white sketch drawn into depth dresses into the dark hall, the spotlights and the ceiling strip come on, the frames appear; scrolling is walking at one steady pace; each frame swings out fully (90 degrees) as you reach it and folds back as you pass; pass 2: black float frames lit in their spotlights, a light plaque under each (title, FIG line), the open frame's title and story line in a dark caption band, the camera slides (never turns) to each open frame (portrait: a narrower lens, the frame about two thirds of the width), dark chrome in the hall, five new blueprints; the walk ends in front of the centred, shut door with its brass Cutaway Lock; then page 3 as before; pass 3: the eye one height for the whole walk, the title on the plaque only (light paper, rounded), the band the story line only, no stock icons, frame 5's blueprint dresses into the real phones, which lift out of the frame and turn once each; pass 3b: at frame 5 the walk stops and the scroll drives its show (scribble, lift, a full turn each, about 1.5 screens per turn; back plays it in reverse) | 8.3 (5.4 walk + 2.9 held show; inside page 1's section) | **pass 3b built (frame 5's held, scrubbed show; every page 1 and hallway object animation scrubbed); pending: the real-phone run** |
 | 3 | Into the lock | Starts on the hallway's last frame (the lock in X-ray); into the keyhole past the pins; out to the same lock on every crossing point of a grid in every direction; they unlock in a wave and fold back into one. Two lines (drafts) | 4.6 (overlapping page 1's last screen) | **round 9 built** |
 | 4 | How we work | The lock turns side-on into a 2D cutaway; "First, the obvious key." / "It fails. Most people stop here." / "We don't." (drafts); the wrong key fails; seven pins picked in the drum's order, each verb on a leader, the newest meaning under the lock on a leader; it turns on Delivered | 4 (inside page 3's section) | **round 10 built** |
 | 5 | Lighter trips | Three rooms, scrubbed: AI (the property app's enquiries: the AI drafts, a person approves, then it's sent), websites (the booking app's site, drawn on the grid then real), apps (the delivery tracker live on the real iPhone 18 and S26). Lines and content drafts | 7.2 | **round 11 built** |
@@ -419,7 +419,65 @@ Take 1's history below.
   phones' state. `tools/phone_stage.py --stage hall2` covers frame 5's phones, their turn standing still (fps, two shots, reduced
   motion stops it) and a plaque close up.
 
+### Pass 3b structure notes (26 Nov, Part 5 "The scroll drives the stage")
+- **Frame 5's held show:** `dive.js` exports `SHOW` (screens of scroll into the hold: `len` 2.9, `draw` 0-0.4 the
+  scribble, `real` 0.4-0.65, `lift` 0.5-1.0, `turn` [1.05, 2.55] the iPhone and [1.3, 2.8] the Android: 1.5 screens per
+  turn, the Android 0.25 behind). `render(q, again, show)` takes the show's position from page.js; without it (the asset
+  sheet, the stills) the show is at its start before frame 5 is fully open and at its end after. The scribble of frame 5
+  draws in the hold (it no longer draws while it opens: the blue sheet swings out blank); it un-draws as it folds. The
+  turns ease with a sine in-out (cubic's middle ran at 3x the average when scrubbed). The timed loop (`SEQ`, `seqStep`,
+  `seqT0`) is gone; `seqAt(e)` holds the show at e screens; `seq()` reports it.
+- **page.js:** `HALL = DIVE + SHOW.len` (8.3 screens), `SCROLL` 13.24, `.p1` 1424lvh. `holdAt` (the walk's screens at
+  which frame 5 is fully open: `dive.openAt()[4]`, per screen) splits the hall's scroll: before it the walk, then
+  `SHOW.len` screens with the camera still and the show driven, then the walk at the same pace (`hallAt`, `hallOf`).
+  New stops: `blue` 0.36 (the ground mid-change), `dress` 2.23 (mid matte -> real), `F5H` fully open (the walk stops),
+  `F5S` +0.2, `F5R` +0.55, `F5L` +1.0, `F5T` +1.8, `F5E` +2.9 (the walk resumes); F5 (closest), F5B, DOOR, LOCK move on
+  by 2.9. Tests: `__p1.at(p)` renders p at once (no lag), `__p1.look()`, `__p1.hall()`.
+- **Scrubbed now (were timed):** the ground's paper -> blue -> paper (over 0.08 screens centred on 0.36 and 1.98), matte
+  -> real (over `R.real` 2.16-2.3), the phone canvas's fade in and out (0.04 / 0.06 screens), frame 5's scribble, lift and
+  turns.
+- **Kept timed, with the reason (the brief's exceptions):**
+  - the words' reveals (SplitText rise-and-straighten, the X-ray names, the meanings, the hallway's opening line, the
+    drum's and the construction grid's fade in with WE): a paused frame never shows half a word;
+  - the travelling words (you -> YOU, us -> WE): words, and a paused frame must find each on a baseline (TYPE_RULES 5);
+  - the drum's detent (Wajih kept it);
+  - motion with no scroll to drive it: the gate and its curtain, the hyperdrive jump, the finished phone following the
+    pointer or the visitor's tilt (`live.js`: driven by the pointer, not a clock), the real phones' cross-fade if they
+    finish loading while frame 5's show is already past its real point (a load event; they load from page 1's X-ray
+    scene on, so it is rare), the beacon's rings.
+- **Warm-up:** page.js's warm-up now paints the hallway's opening line once, fully on (`.is-warm`): its frosted
+  backing's backdrop blur cost a 133-150 ms frame the first time it was drawn on the walk in (found in real Chrome with
+  long-animation-frame entries: no script in it; gone with the blur off).
+- **Tools:** `tools/stagechrome.py` (real Chrome, one size: continuity of every scrubbed value at every 0.01 screen,
+  forwards vs backwards, the camera during the show, fps through page 1 and the hallway twice and the show scrubbed both
+  ways, shots); `tools/loafprobe.py` (long animation frames between two positions, optional CSS); `phone_stage.py
+  --stage hall2` scrubs the show (shots at its stops, fps both ways); `hall3chrome.py` is superseded.
+
 ### Take 2 log
+- **Pass 3b, the scroll drives the stage (26 Nov).** Brief committed (`7bea6c6`). Built as in "Pass 3b structure notes".
+  Shots: `tools/shots/stage/` (per size: the show's stops forwards and backwards, the ground and dress mid-change, REAL,
+  the json reports, `typecheck/`).
+  - **Continuity** (`stagechrome.py`, real Chrome; every 0.01 screen, 0 to the hand-over): forwards and backwards give
+    identical values (largest difference 0); the camera moves 0 px during frame 5's show; the walk's step is the same
+    before and after the hold (25.5 px per 0.01 screen at 1440 x 900). Largest step per 0.01 screen: the ground 0.29 (of
+    0 -> 1, the shortest scrubbed beat), built / real 0.19, the turns 0.066 rad (3.8 degrees), the lift 0.14 (frame 5
+    folding back after the show, as before).
+  - **fps, real Chrome on this laptop (Radeon 780M, 120 Hz), a steady scroll of 0.66 screens a second through page 1
+    and the hallway, two passes, then the show scrubbed forwards and backwards (6 s each):** 1440 x 900 119-120 fps
+    everywhere, worst frame 25 ms (one, page 1 at 3.07, first pass only), the show 119-120 fps, worst 16.7 ms;
+    384 x 734 @2.8125 (emulated) 119-120 fps, one 25 ms frame (page 1, first pass), the show 120 fps; 2160 x 1147
+    @1.333, two runs: page 1 96-112 fps with 5-14 frames of 25-75 ms, most around Bell's drawing and the morph (p
+    0.40-0.83; this pass changed only the ground's fade there), the hall 82-120 fps (frames of 17-25 ms), the show
+    100-114 fps, worst 17-50 ms (one run 8 frames of 25-50 ms scrubbing back near 12.1, the other none over 20 ms).
+    Errors: none. Found and fixed: the opening line's backdrop blur (above).
+  - **Type check** (page 1 and the hallway's 32 stops, the new ones included; 384 x 734 @2.8125, 1440 x 900, 2160 x
+    1147 @1.333; light and dark; 192 frames): **0 machine failures**.
+  - **My calls:** frame 5 opens blank and its scribble draws in the hold (the brief lists the scribble with what the
+    scroll drives once it is open); the show's parts as `SHOW` above (the Android 0.25 screens behind); the turns ease
+    with a sine in-out; the ground's change spans 0.08 screens (shorter would pop, longer reads as a murky mix); the
+    travelling words stay timed (words; they must land on baselines).
+  - Not run (the full check comes after the top bar): gridcheck, overlap, geom, axe, the other 11 sizes; reduced
+    motion (unchanged code path). **Pending: the real-phone run.**
 - **Hallway pass 3, fixes and polish (26 Nov).** Brief committed (`33ccc5a`). Built as in "Hallway pass 3 structure
   notes": the pre-ducked camera, the title on the plaque only, light paper plaques, no stock icons in the drawings, the
   real phones back in frame 5; then Wajih's three changes during the pass: the phones turn by themselves (later

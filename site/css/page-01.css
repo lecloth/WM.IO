@@ -52,7 +52,7 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
 @media (min-width: 1024px) { .ph { font-size: .4375rem; } }
 
 /* ---------- page 1 (the design ethos: hairlines, ink, blue only for the drawing stage) ---------- */
-.p1 { position: relative; height: 1134vh; height: 1134lvh; }   /* hallway pass 1: 10.34 screens of scroll (page.js SCROLL) + one */
+.p1 { position: relative; height: 1424vh; height: 1424lvh; }   /* pass 3b: 13.24 screens of scroll (page.js SCROLL: the walk 5.4 + frame 5's show 2.9) + one */
 /* the paper ground and its grid (the grid's origin is the stage's top left = the screen's, while page 1 plays) */
 .p1__stage { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; isolation: isolate;
   background-color: var(--paper); background-image: var(--grid-img); background-size: var(--grid-size); }
@@ -75,7 +75,7 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
 .p1__morph, .p1__canvas, .p1__leaders { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .p1__morph { overflow: visible; color: var(--ink); visibility: hidden; }
 .p1__morph path { fill: none; stroke: currentColor; stroke-width: var(--hair, 1px); vector-effect: non-scaling-stroke; stroke-linejoin: round; }
-.p1__canvas { transition: opacity .32s var(--ease-out); }
+.p1__canvas { transition: none; }   /* pass 3b: its fade out is scrubbed (page.js) */
 .p1__canvas.is-off { opacity: 0; }
 .p1__labels { position: absolute; inset: 0; pointer-events: none; }
 /* X-ray names: a mono word on a hairline shelf with a leader, the way a drawing does it (no box); page.js puts each

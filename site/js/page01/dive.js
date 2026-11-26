@@ -40,6 +40,7 @@ const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const span = (p, a, b) => clamp((p - a) / (b - a));
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const ease2 = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+const easeSine = (t) => (1 - Math.cos(Math.PI * t)) / 2;
 const lerp = (a, b, t) => a + (b - a) * t;
 
 /** the site's lens (page 3 starts on the hallway's last frame with it): 50 degrees across the narrower side, at most 66
@@ -83,6 +84,8 @@ export const FRAMES_IN = [S_(1.1), S_(1.24)];    // the frames appear, lit
 export const WALK = [S_(1.2), S_(5.0)];          // the walk: one steady pace, from the mouth to the shut door
 export const DOOR = { walk: [S_(4.3), S_(5.0)], end: S_(5.0) };
 export const XRAY = [S_(5.16), S_(5.36)];        // the hand-over to page 3 (its first frame: the lock in X-ray, on blue)
+// frame 5's held show, in screens of scroll into the hold (page.js holds the walk this long once frame 5 is fully open)
+export const SHOW = { len: 2.9, draw: [0, 0.4], real: [0.4, 0.65], lift: [0.5, 1.0], turn: [[1.05, 2.55], [1.3, 2.8]] };
 export const STOPS = [];                         // per frame [fully open, closest] (q), set by layout (for the tests)
 const SWING = Math.PI / 2;                       // fully open: square to you
 const OPEN_LEN = 1.0, HOLD_LEN = 0.8, FOLD_LEN = 1.0;   // hall units walked while a frame swings out, is held open, folds back
@@ -527,7 +530,8 @@ export function createDive(root, top, { base = '' } = {}) {
         placePhones();
         phones.state = 'ready';
         phones.warm = true; idleWarm();
-        if (f5.real > 0.001) liveTo(1); else phones.mix = 1;
+        // a load event, not a scroll position: if frame 5's show is already past its real point, a short cross-fade
+        { const l5 = lay && lay[lay.length - 1], e5 = l5 ? showAt(l5, camZ(lastQ) + l5.hd) : 0; if (e5 > SHOW.real[0]) { phones.mix = 0; liveTo(1); } else phones.mix = 1; }
         render(lastQ, true);
       } catch (e) { console.warn('[dive] phones', e); phones.state = 'missing'; }
       return phones.state;
@@ -560,44 +564,27 @@ export function createDive(root, top, { base = '' } = {}) {
     const step = () => { const k = clamp((performance.now() - t0) / 420); phones.mix = lerp(from, t, ease2(k)); render(lastQ, true); if (k < 1) liveRaf = requestAnimationFrame(step); };
     liveRaf = requestAnimationFrame(step);
   }
-  // frame 5's show (Wajih, pass 3): the scribble draws on as the frame opens; once it is fully open the phones turn real
-  // and lift OUT of the frame towards you (along your line of sight, so they grow without drifting: past the frame's
-  // front, breaking it on purpose), a soft shadow left on the sheet; then each makes ONE slow full turn, the iPhone first,
-  // the Android a beat later, ending on its front with the booking app. Timed (seconds from fully open), it plays once;
-  // walking back before the frame opens, or on past it, resets it; folding the frame takes them back in. Reduced motion:
-  // no turn (they stand out, front on). One render per frame: when the scroll has drawn this frame, the timer only reads.
-  const SEQ = { real: [0, 0.6], lift: [0.15, 1.35], turn: [[1.4, 7.4], [2.0, 8.0]], end: 8.05 };
+  // frame 5's show (pass 3, scroll-driven since pass 3b, Part 5 "The scroll drives the stage"): once frame 5 is fully open
+  // the camera stops walking (page.js holds the walk for SHOW.len screens) and the scroll drives the show: the scribble
+  // draws, the phones turn real and lift OUT of the frame towards you (along your line of sight, so they grow without
+  // drifting: past the frame's front, breaking it on purpose), a soft shadow left on the sheet; then each makes ONE full
+  // turn, about 1.5 screens of scroll each, the Android a beat behind the iPhone, ending on its front with the booking app;
+  // then the walk resumes. Scrolling back plays it in reverse. Positions are screens of scroll into the hold (page.js
+  // passes them to render as `show`). Folding the frame takes them back in. Reduced motion: page.js shows the still.
   const motionQ = matchMedia('(prefers-reduced-motion: reduce)');
-  let seqT0 = null, seqRaf = 0, seqOn = false, forced = false, seqHold = null;   // seqHold: the tests hold the clock at a moment
-  // (one loop only: the handle stays set while its own render runs, or that render would start a second loop, which
-  // would start a third, every frame: the renders per frame doubled and the hall stalled)
-  const seqStep = (now) => {
-    if (!seqOn || motionQ.matches) { seqRaf = 0; render(lastQ, true); return; }
-    if (now - lastScrollRender > 12) render(lastQ, true);
-    if (seqOn) seqRaf = requestAnimationFrame(seqStep); else { seqRaf = 0; render(lastQ, true); }
-  };
-  function seqRun() {
-    if (seqRaf || !seqOn) return;
-    seqRaf = requestAnimationFrame(seqStep);
-  }
-  /** frame 5 as you walk (see SEQ) */
+  let forced = false, seqHold = null, showE = null;   // seqHold: the tests hold the show at a position (screens into the hold)
+  /** how far into frame 5's show (screens into the hold): from page.js while walking; without it (the asset sheet, the
+   *  stills) the show is at its start before the frame is fully open and at its end after */
+  const showAt = (l, D) => (seqHold !== null ? seqHold : showE !== null ? showE : D <= l.Dread + 1e-6 ? SHOW.len : 0);
+  /** frame 5 as you walk (see SHOW) */
   function phoneFrame(f, l, D, op, st) {
     const live = phones.state === 'ready' && !st;
     const fold = 1 - ease2(span(D, l.Dc, l.Dc - 0.6 * (l.Dc - l.Dg)));   // folding the frame takes them back in
-    let e = 0;
-    if (forced) e = SEQ.end;
-    else if (live) {
-      if (D > l.Dread + 0.05 * K || D < l.Dg) seqT0 = null;
-      else if (seqT0 === null && D <= l.Dread) seqT0 = performance.now();
-      e = seqT0 === null ? 0 : (performance.now() - seqT0) / 1000;
-      if (seqT0 !== null && motionQ.matches) e = SEQ.end;   // reduced motion: straight to the end, front on, no turn
-      if (seqHold !== null) e = seqHold;
-    } else seqT0 = null;
-    seqOn = live && !forced && seqT0 !== null && e < SEQ.end && !motionQ.matches;
-    if (seqOn) seqRun();
-    f.real = live || forced ? ease2(span(e, ...SEQ.real)) * (forced ? 1 : fold) : 0;
-    phones.lift = live || forced ? ease2(span(e, ...SEQ.lift)) * (forced ? 1 : fold) : 0;
-    phones.yaws = SEQ.turn.map(([t0, t1]) => 2 * Math.PI * ease(span(e, t0, t1)));
+    let e = forced ? SHOW.len : showAt(l, D);
+    if (motionQ.matches && e > 0) e = SHOW.len;   // reduced motion: front on, no turn
+    f.real = live || forced ? ease2(span(e, ...SHOW.real)) * (forced ? 1 : fold) : 0;
+    phones.lift = live || forced ? ease2(span(e, ...SHOW.lift)) * (forced ? 1 : fold) : 0;
+    phones.yaws = SHOW.turn.map(([t0, t1]) => 2 * Math.PI * easeSine(span(e, t0, t1)));   // a gentle in-out: scrubbed, its middle never races (cubic's is 3x the average)
     phones.yaw = phones.yaws[0];
     const a = live || forced ? f.real * phones.mix * op : 0;
     phones.root.visible = a > 0.002 && f.pivot.visible;
@@ -919,9 +906,9 @@ export function createDive(root, top, { base = '' } = {}) {
   /** q: 0..1 over the dive. Returns what page 1 needs and what the checks measure */
   let out = null, lastQ = 0, labQuads = [], stillMode = false, look = { dress: 0, lights: 0 }, bandOn = -1, bandOp = 0;
   const cA = new THREE.Color(), cB = new THREE.Color();
-  function render(q, again = false) {
+  function render(q, again = false, show) {
     if (!lay) return null;
-    lastQ = q; if (!again) lastScrollRender = performance.now();
+    lastQ = q; if (!again) { lastScrollRender = performance.now(); showE = show === undefined ? null : show; }
     const st = stillMode;
     const T = st ? 1 : ease(span(q, ...WAY_IN));
     const dress = st ? 1 : ease2(span(q, ...DRESS)), lights = st ? 1 : ease2(span(q, ...LIGHTS)), fin = st ? 1 : ease2(span(q, ...FRAMES_IN));
@@ -958,7 +945,9 @@ export function createDive(root, top, { base = '' } = {}) {
       f.plateMat.color.copy(cPlaque).multiplyScalar(lights * (0.5 + 0.5 * s.swing));   // dim on the wall, lit as it comes out into the light (open: exactly #EDEEF0, as its CSS plate)
       f.wshadow.visible = f.pivot.visible && dress > 0.01; f.wsMat.opacity = 0.6 * op * (1 - 0.8 * s.swing);
       { const k = 1 - 0.7 * s.swing, wb = f.wsBase.w * k; f.wshadow.scale.set(wb, f.wsBase.h, 1); f.wshadow.position.z = -(l.hd + wb / 2 - 0.04 * l.Ws); }
-      const n = Math.round(s.drawn * f.d.segs.length); f.drawing.geometry.instanceCount = n; f.drawing.visible = n > 0 && f.pivot.visible;
+      // frame 5's scribble draws in its held show (the scroll drives it), not as it opens; it un-draws as it folds
+      const drawnK = f === f5 && !st && !forced ? Math.min(s.drawn, span(showAt(l, D), ...SHOW.draw)) : s.drawn;
+      const n = Math.round(drawnK * f.d.segs.length); f.drawing.geometry.instanceCount = n; f.drawing.visible = n > 0 && f.pivot.visible;
       if (f === f5) phoneFrame(f, l, D, op, st);
       f.drawMat.opacity = op * (1 - f.real); if (f.real > 0.99) f.drawing.visible = false;   // (the blue sheet stays behind the phones)
       f.fills.forEach((o) => { o.visible = f.pivot.visible && n > 0 && n >= Math.min(o.userData.at, f.d.segs.length); });
@@ -988,9 +977,9 @@ export function createDive(root, top, { base = '' } = {}) {
       }
       if (f.pivot.visible) {
         const quad = visiblePoly(f);
-        if (!quad) { info.push({ i, swing: s.swing, op, drawn: s.drawn, lab: s.lab, quad: null, D, ratio: f.d.w / f.d.h, share: 0, widthShare: 0 }); return; }
-        info.push({ i, swing: s.swing, op, drawn: s.drawn, lab: s.lab, quad, D, ratio: f.d.w / f.d.h, share: Math.max(...quad.map((p) => p[1])) - Math.min(...quad.map((p) => p[1])), widthShare: (Math.max(...quad.map((p) => p[0])) - Math.min(...quad.map((p) => p[0]))) / W });
-      } else info.push({ i, swing: 0, op: 0, drawn: s.drawn, lab: 0, quad: null, D, ratio: f.d.w / f.d.h, share: 0, widthShare: 0 });
+        if (!quad) { info.push({ i, swing: s.swing, op, drawn: drawnK, lab: s.lab, quad: null, D, ratio: f.d.w / f.d.h, share: 0, widthShare: 0 }); return; }
+        info.push({ i, swing: s.swing, op, drawn: drawnK, lab: s.lab, quad, D, ratio: f.d.w / f.d.h, share: Math.max(...quad.map((p) => p[1])) - Math.min(...quad.map((p) => p[1])), widthShare: (Math.max(...quad.map((p) => p[0])) - Math.min(...quad.map((p) => p[0]))) / W });
+      } else info.push({ i, swing: 0, op: 0, drawn: drawnK, lab: 0, quad: null, D, ratio: f.d.w / f.d.h, share: 0, widthShare: 0 });
     });
     // the caption band: the open frame's title and story line
     bandEls.forEach((el, i) => { const a = i === bandI ? bandA : 0; el.style.setProperty('--op', a.toFixed(3)); el.classList.toggle('on', a > 0.01); });
@@ -1040,7 +1029,7 @@ export function createDive(root, top, { base = '' } = {}) {
       renderer.autoClear = false; renderer.render(xQuadScene, xCam); renderer.render(xScene, xCam); renderer.autoClear = true;
     }
     const lockBox = lock.visible ? screenBox(lock) : null;
-    const o = { info, q, t, cam: [camera.position.x / K, camera.position.y / K], eye: E, phones: { state: phones.state, mix: phones.mix, real: f5 ? f5.real : 0, yaw: phones.yaw, yaws: phones.yaws, lift: phones.lift, visible: phones.root.visible }, open: T >= 1, tr: T, dress, lights, frames: fin, walked: span(q, ...WALK),
+    const o = { info, q, show: showE, t, cam: [camera.position.x / K, camera.position.y / K], eye: E, phones: { state: phones.state, mix: phones.mix, real: f5 ? f5.real : 0, yaw: phones.yaw, yaws: phones.yaws, lift: phones.lift, visible: phones.root.visible }, open: T >= 1, tr: T, dress, lights, frames: fin, walked: span(q, ...WALK),
       door: { lock: door.lockState, box: lockBox, distance: (camera.position.z + L) / K }, xray: xt, labels: labQuads, band: bandShown ? { i: bandI, op: bandA, rect: bandR } : null };
     if (!again) out = o; else if (out) Object.assign(out, o);
     if (again) onAgain?.(out);
@@ -1255,6 +1244,6 @@ export function createDive(root, top, { base = '' } = {}) {
     closeAt: () => (lay ? lay.map((l) => qAtD(l, l.Dc) * DIVE) : null), openAt: () => (lay ? lay.map((l) => qAtD(l, l.Dread) * DIVE) : null),
     phones: () => phones.state, frames: () => frames, lay: () => lay, P: () => P, L: () => L, K: () => K, hall: () => ({ W, H, P, K, X, L, z0, zEnd, Dend: Dend / K, Dx, portrait, band: bandR, eye: E, limits }),
     band: () => ({ i: bandOn, op: bandOp, rect: bandR }),
-    brass: () => brass, doorLock: () => doorLock, yaw: () => phones.yaw, yaws: () => phones.yaws.slice(), seqAt: (e) => { seqHold = e; render(lastQ, true); }, seq: () => ({ t0: seqT0, e: seqT0 === null ? null : (performance.now() - seqT0) / 1000, on: seqOn, lift: phones.lift, liftF: phones.liftF }), frameStill,
+    brass: () => brass, doorLock: () => doorLock, yaw: () => phones.yaw, yaws: () => phones.yaws.slice(), seqAt: (e) => { seqHold = e; render(lastQ, true); }, seq: () => ({ e: seqHold !== null ? seqHold : showE, lift: phones.lift, liftF: phones.liftF, real: f5 ? f5.real : 0 }), show: SHOW, frameStill,
     door: () => ({ lockState: door.lockState, Dend, zEnd }), endFrame: () => ({ P: lensP(W, H), hL: hX, Dend: Dx }), camera: () => camera, renderer: () => renderer, lockParts: () => lockParts, onBeat: (fn) => { onAgain = fn; } };
 }

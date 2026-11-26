@@ -1,5 +1,5 @@
-// Page 1 (Enter + hook) and page 2 (the hallway), rounds 3-8. Scroll-driven: the stage stays put while 9.84 screens of
-// scroll play the story, then it scrolls away and page 3 follows. Positions p are in screens of scroll (0..9.84):
+// Page 1 (Enter + hook) and page 2 (the hallway), rounds 3-8, pass 3b. Scroll-driven: the stage stays put while 13.24 screens
+// of scroll play the story, then it scrolls away and page 3 follows. Positions p are in screens of scroll (0..13.24):
 //   S0     Bell's 1877 sheet (his ink on our grid), headline and credit                                0.00 – 0.22
 //          eight clean outlines draw on exactly over the scan (DrawSVG); the scan fades and leaves them 0.12 – 0.36
 //          the ground turns blue (one timed beat); the outlines morph into the phone's (MorphSVG)       0.36 – 0.80
@@ -12,17 +12,19 @@
 //   WE     "us" becomes WE, pinned; the verb drum turns through the seven steps, each meaning beneath   3.02 – 4.62
 //   END    "Now, how can we serve you?" (round 8, signed off)                                          4.64 – 4.94
 //   HALL   page 2: the grid folds into the hallway, which dresses up as you walk; "We design backwards…";
-//          five drawings swing out part way as you walk past; the shut door, its lock filling the screen 4.94 – 9.84
+//          five drawings swing out as you walk past; at frame 5 the walk stops for 2.9 screens while the scroll
+//          drives its show (scribble, lift, a turn each); the shut door, then the hand-over to page 3         4.94 – 13.24
 // Round 8, held scenes: each scene holds still for a stretch of scroll, and the page renders from a lagged scroll
 // position that follows the real one smoothly (scrubbed, never timed), so nothing pops and nothing jumps when the thumb
-// lets go. Words still land on beats as short timed reveals (a paused frame always settles on whole, readable words);
-// the ground's and the dress's changes and the drum's detent are short beats too (never a murky mix, never a wobble).
+// lets go. Pass 3b (Part 5 "The scroll drives the stage"): every object animation is scrubbed, the ground's and the
+// dress's changes included; kept timed: the words' reveals (a paused frame always settles on whole, readable words) and
+// the travelling words, the drum's detent (Wajih kept it); STATE.md lists each with its reason.
 // Reduced motion: still frames with the full text, no vibration.
 // Round 6: the grid is the layout system (site/js/engine/grid.js; the texts' baselines are set in CSS, .gt).
 import { Phone } from './phone.js';
 import { BellMorph } from './morph.js';
 import { createLive } from './live.js';
-import { createDive, captionHTML, openingHTML, DIVE } from './dive.js';
+import { createDive, captionHTML, openingHTML, DIVE, SHOW } from './dive.js';
 import { FRAMES, OPENING } from './corridor-drawings.js';
 const OPENING_TXT = `${OPENING.lead} ${OPENING.rest}`;
 import { haptics } from '../engine/haptics.js';
@@ -40,19 +42,23 @@ function keys(p, k) {
 }
 const inR = (p, [a, b]) => p >= a - 1e-4 && p <= b + 1e-4;
 
-// round 7: the drum turns slower (more room: 1.6 screens for seven verbs); round 8: the hallway is 4.6 screens
-export const SCROLL = 4.94 + DIVE;
+// round 7: the drum turns slower (more room: 1.6 screens for seven verbs); round 8: the hallway is 4.6 screens; pass 3b:
+// the walk (DIVE, 5.4 screens) plus frame 5's held show (SHOW.len, 2.9 screens: the camera stops while the scroll drives it)
+const HALL = DIVE + SHOW.len;
+export const SCROLL = 4.94 + HALL;
 const R = {
   s0: [0, 0.22], draw: [0.12, 0.28], scanOut: [0.26, 0.36], blueOn: 0.36, morph: [0.4, 0.8], xray: [0.8, 0.88], linesOut: [0.86, 0.9],
   spread: [0.9, 1.12], s1: [1.12, 1.42], kin: [1.44, 2.32], kinWords: [1.44, 1.86], seat: 1.5, paperOn: 1.98, built: [2.0, 2.14], real: [2.16, 2.3],
-  s2: [2.34, 2.6], you: [2.62, 2.8], task: [2.82, 3.0], we: [3.02, 4.62], verbs: [3.06, 4.62], end: [4.64, 4.94 + DIVE], endText: [4.64, 4.955], dive: [4.94, 4.94 + DIVE],
+  s2: [2.34, 2.6], you: [2.62, 2.8], task: [2.82, 3.0], we: [3.02, 4.62], verbs: [3.06, 4.62], end: [4.64, 4.94 + HALL], endText: [4.64, 4.955], dive: [4.94, 4.94 + HALL],
 };
 const HAND = 0.9;          // the handover: Bell's outlines -> X-ray, pose held until here
 // named stops for tests (a paused frame at each must be clean), including mid-morph, mid-drum and mid-dive
 // the hallway's (hallway pass 1): TR the sketch, OPEN dressing (the opening line), LIT the lights on and the frames in, F1-F5
 // each frame open at its closest (set by layoutDive from the hallway's layout: they depend on the screen), F5B frame 5
-// folding back, DOOR the walk's end in front of the shut door, LOCK the hand-over to page 3
-export const STOPS = { S0: 0.1, draw: 0.24, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.9, END: 4.8, TR: 5.11, OPEN: 5.5, LIT: 6.2, F1: 6.6, F2: 7.3, F3: 8.0, F4: 8.7, F5: 9.4, F5B: 9.55, DOOR: 9.94, LOCK: 10.34 };
+// folding back, DOOR the walk's end in front of the shut door, LOCK the hand-over to page 3. Pass 3b, frame 5's held show:
+// F5H fully open (the walk stops), F5S the scribble half drawn, F5R turning real and lifting, F5L lifted, F5T both phones
+// mid-turn, F5E the show's end (the walk resumes)
+export const STOPS = { S0: 0.1, draw: 0.24, blue: 0.36, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, dress: 2.23, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.9, END: 4.8, TR: 5.11, OPEN: 5.5, LIT: 6.2, F1: 6.6, F2: 7.3, F3: 8.0, F4: 8.7, F5H: 9.2, F5S: 9.4, F5R: 9.75, F5L: 10.2, F5T: 11.0, F5E: 12.1, F5: 12.3, F5B: 12.45, DOOR: 12.84, LOCK: 13.24 };
 const NAMES = ['Back', 'Battery', 'Board', 'Frame', 'Screen', 'Glass'];   // back to front
 const BLUE = [23, 63, 115];
 
@@ -309,9 +315,12 @@ export function initPage01(engine) {
   // ---------- the hallway's layout ----------
   function layoutDive() {
     dive.layout(diveEl.clientWidth || W, diveEl.clientHeight || innerHeight, { u: grid.u });
-    const c = dive.closeAt(); if (!c) return;
-    c.forEach((s, i) => { STOPS[`F${i + 1}`] = +(R.dive[0] + s).toFixed(3); });
-    STOPS.F5B = +(STOPS.F5 + 0.12).toFixed(3); STOPS.DOOR = +(R.dive[0] + 5.0).toFixed(3); STOPS.LOCK = +(R.dive[0] + DIVE).toFixed(3);
+    const c = dive.closeAt(), o = dive.openAt(); if (!c || !o) return;
+    holdAt = o[o.length - 1];
+    const at = (s) => +(R.dive[0] + s).toFixed(3);
+    c.forEach((s, i) => { STOPS[`F${i + 1}`] = at(hallOf(s)); });
+    Object.assign(STOPS, { F5H: at(holdAt), F5S: at(holdAt + 0.2), F5R: at(holdAt + 0.55), F5L: at(holdAt + 1.0), F5T: at(holdAt + 1.8), F5E: at(holdAt + SHOW.len) });
+    STOPS.F5B = +(STOPS.F5 + 0.12).toFixed(3); STOPS.DOOR = at(5.0 + SHOW.len); STOPS.LOCK = at(HALL);
   }
 
   // ---------- "you" -> "YOU" and "us" -> "WE": one word each, travelling between its places ----------
@@ -347,7 +356,10 @@ export function initPage01(engine) {
     if (s !== 'off') el.style.transform = flyT[which][s];
   }
 
-  // ---------- the ground: paper -> blue -> paper, each change one short timed beat (never a scrubbed mix) ----------
+  // ---------- the ground: paper -> blue -> paper. Pass 3b ("the scroll drives the stage"): each change is scrubbed over a
+  // short stretch of scroll (GROUND_K screens, centred on its beat), no longer a timed beat ----------
+  const GROUND_K = 0.08;
+  const groundAt = (p) => span(p, R.blueOn - GROUND_K / 2, R.blueOn + GROUND_K / 2) * (1 - span(p, R.paperOn - GROUND_K / 2, R.paperOn + GROUND_K / 2));
   const G = { b: 0, target: 0 };
   const look = { xray: 0, ground: 1, built: 0, real: 0 };
   function paintGround() {
@@ -357,20 +369,11 @@ export function initPage01(engine) {
     look.ground = onBlue ? 0 : 1;
     morph.set({ ...morphState, color: onBlue ? '#ECF1F6' : hex(ink) });
   }
-  function groundTo(target, instant) {
-    if (target === G.target && !instant) return; G.target = target;
-    gsap.killTweensOf(G);
-    if (instant) { G.b = target; paintGround(); return; }
-    gsap.to(G, { b: target, duration: 0.42, ease: 'power2.inOut', onUpdate: () => { paintGround(); phone.looks(look); if (phoneSeen) phone.render(); } });
+  function groundTo(b) {
+    if (b === G.b) return; G.b = b; paintGround();
   }
   let morphState = { draw: 0, t: 0, alpha: 0 };
-  // matte -> real: also one short timed beat, so a paused frame is either the white model or the real phone, never a grey mix
-  const D = { r: 0, target: 0 };
-  function dressTo(target) {
-    if (target === D.target) return; D.target = target;
-    gsap.killTweensOf(D);
-    gsap.to(D, { r: target, duration: 0.55, ease: 'power2.inOut', onUpdate: () => { look.real = D.r; phone.looks(look); if (phoneSeen) phone.render(); } });
-  }
+  // matte -> real: pass 3b, scrubbed over R.real (was one short timed beat)
 
   // ---------- one frame of the story at scroll position p ----------
   function render(p) {
@@ -379,18 +382,19 @@ export function initPage01(engine) {
     plateFig.style.opacity = String(1 - scanOut);
     plateFig.style.visibility = scanOut >= 1 ? 'hidden' : 'visible';
     credit.style.opacity = String(1 - span(p, 0.2, 0.28));
-    groundTo(p >= R.blueOn && p < R.paperOn ? 1 : 0);
+    groundTo(ease(groundAt(p)));
     morphState = { draw: span(p, ...R.draw), t: span(p, ...R.morph), alpha: p < R.draw[0] || p >= R.linesOut[1] ? 0 : 1 - span(p, ...R.linesOut) };
     morph.set({ ...morphState, color: G.b >= 0.5 ? '#ECF1F6' : hex(ink) });
 
     const ps = pose(Math.max(p, HAND));
     phone.parts.forEach((part, i) => { part.e = ps.explodeEach[i]; });
     phone.set(ps);
-    look.xray = span(p, ...R.xray); look.built = ease(span(p, ...R.built)); dressTo(p >= R.real[0] ? 1 : 0); look.real = D.r;
+    look.xray = span(p, ...R.xray); look.built = ease(span(p, ...R.built)); look.real = ease(span(p, ...R.real));
     look.ground = G.b >= 0.5 ? 0 : 1;
     phone.looks(look);
     const shown = p >= R.xray[0] && p < R.s2[1];
     canvas.classList.toggle('is-off', !shown);
+    canvas.style.opacity = shown ? (span(p, R.xray[0], R.xray[0] + 0.04) * (1 - span(p, R.s2[1] - 0.06, R.s2[1]))).toFixed(3) : '0';   // pass 3b: in and out by scroll (was a timed fade)
     // snap ticks (forward only, after the unlock tap; haptics checks reduced motion)
     ps.explodeEach.forEach((e, i) => { const s = e <= 0.001; if (s && !seated[i] && p > R.seat) haptics.tick(14); seated[i] = s; });
 
@@ -421,19 +425,24 @@ export function initPage01(engine) {
   // page 2, the hallway: on from its first scroll position until page 1's last (then the stage, plain paper and grid like
   // the open door's view, scrolls away and page 3 follows)
   let diveNow = null, hallDark = false, phonesT = 0;
+  // pass 3b: once frame 5 is fully open the walk stops for SHOW.len screens while the scroll drives its show (holdAt: the
+  // walk's screens at that moment, from the hallway's layout); hall screens h -> the walk's screens and the show
+  let holdAt = Infinity;
+  const hallAt = (h) => (h <= holdAt ? { w: h, show: 0 } : h < holdAt + SHOW.len ? { w: holdAt, show: h - holdAt } : { w: h - SHOW.len, show: SHOW.len });
+  const hallOf = (w) => (w <= holdAt + 1e-9 ? w : w + SHOW.len);   // the walk's screens -> hall screens
   // hallway pass 2: the strip and the title block wear their dark version while you are in the dark hall
   const setHallDark = (on) => { if (on === hallDark) return; hallDark = on; document.documentElement.classList.toggle('hall-dark', on); };
   function renderDive(p) {
-    const q = span(p, ...R.dive), going = p > R.dive[0];   // round 8b: the hallway holds its last frame (the lock filling the screen) while page 3 takes over
+    const h = clamp(p - R.dive[0], 0, HALL), { w, show } = hallAt(h), q = w / DIVE, going = p > R.dive[0];   // round 8b: the hallway holds its last frame (the lock filling the screen) while page 3 takes over
     // frame 5's real phones (pass 3) load from page 1's X-ray scene on, in the first pause (300 ms without scrolling), so
     // their parsing never lands in a moving frame; once the hallway starts they load at once whatever happens
     if (p >= R.dive[0]) dive.loadPhones();
     else if (p >= R.s1[0]) { clearTimeout(phonesT); phonesT = setTimeout(() => dive.loadPhones(), 300); }
     diveEl.classList.toggle('on', going); diveTop.classList.toggle('on', going);
     if (!going) { diveNow = null; setHallDark(false); return; }
-    const d = dive.render(q); if (!d) return;
+    const d = dive.render(q, false, show); if (!d) return;
     setHallDark(d.dress > 0.5 && d.xray < 0.5 && !diveTop.classList.contains('is-past'));
-    diveNow = { ...d, q };
+    diveNow = { ...d, q, h };
   }
 
   // the hallway's layers are fixed to the screen: once page 1's stage starts to scroll away (page 3 takes over there, on
@@ -617,9 +626,11 @@ export function initPage01(engine) {
     dive.load().then(() => {
       if (P >= R.end[0]) return;
       // every frame drawn whole once, then three depths over three frames, so it all reaches the GPU now, not mid-dive
-      diveEl.style.opacity = '0.01'; diveEl.classList.add('on'); diveTop.style.opacity = '0.01'; diveTop.classList.add('on'); dive.warm(0.35);
-      requestAnimationFrame(() => { dive.render(0.55); requestAnimationFrame(() => { dive.render(0.75); requestAnimationFrame(() => requestAnimationFrame(() => {
-        diveEl.style.opacity = ''; diveEl.classList.remove('on'); diveTop.style.opacity = ''; diveTop.classList.remove('on'); render(P); })); }); });
+      // pass 3b: first one painted frame of the opening line, fully on (its frosted backing's backdrop blur cost a 130-150 ms
+      // frame the first time it was drawn, on the first walk in: found in real Chrome, no script in that frame)
+      diveEl.style.opacity = '0.01'; diveEl.classList.add('on'); diveTop.style.opacity = '0.01'; diveTop.classList.add('on', 'is-warm'); dive.render(0.6 / DIVE);
+      requestAnimationFrame(() => { diveTop.classList.remove('is-warm'); dive.warm(0.35); requestAnimationFrame(() => { dive.render(0.55); requestAnimationFrame(() => { dive.render(0.75); requestAnimationFrame(() => requestAnimationFrame(() => {
+        diveEl.style.opacity = ''; diveEl.classList.remove('on'); diveTop.style.opacity = ''; diveTop.classList.remove('on'); render(P); })); }); }); });
     });
   };
   morph.load('media/plates/bell-us186787-paths.json').then(() => { again(); warm(); }).catch((e) => console.warn('[page 01] paths', e));
@@ -632,6 +643,9 @@ export function initPage01(engine) {
 
   // for tests
   window.__p1 = { phone, morph, stops: STOPS, scroll: SCROLL, R, yAt: (p) => st.start + (st.end - st.start) * p / SCROLL,
+    hall: () => ({ holdAt, show: SHOW, len: HALL }), look: () => ({ ...look, canvas: +(canvas.style.opacity || 0) }),
+    // pass 3b: render the story at p at once (no scroll, no lag), for the continuity check (tools/stagechrome.py)
+    at: (p) => { cancelAnimationFrame(lagRaf); lagRaf = 0; target = P = p; render(p); return diveNow ? { t: diveNow.t, show: diveNow.show, phones: diveNow.phones, f5: diveNow.info?.[4] ? { swing: diveNow.info[4].swing, drawn: diveNow.info[4].drawn } : null, dress: diveNow.dress, lights: diveNow.lights } : null; },
     box: () => phone.screenBox(), band: () => band, plate: () => plateRect, P: () => P, top: () => sec.offsetTop, settled: () => !lagRaf && Math.abs(target - P) < 1e-4,
     leaders: () => leaderSegs, drum: () => drum.i, drumA: () => drum.a, grid: () => gridLines, shelves: () => shelves, imgRect: () => imgRect, bellLines: () => bellLines, ground: () => G.b, live, dive: () => diveNow, diveApi: dive, morphOn: () => morphState.alpha > 0.001, morphT: () => morphState.t };
   // for the type check (TYPE_RULES.md): page 1's drawn lines and shapes that are not in the DOM (the 3D phone's pieces as
