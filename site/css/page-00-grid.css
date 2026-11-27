@@ -67,10 +67,20 @@ html .strip { background: var(--paper); mix-blend-mode: normal; color: var(--ink
 /* Part 5 "The name, the top bar and the title block": each box placed on its columns (strip.js sets --c0 / --c1, whole
    columns at rest; fractional only while the boxes slide over the space the mark left on arrival) */
 .strip__list { display: block; position: relative; height: 2rem; }
-.strip__seg, .strip__cut, .strip__mark { position: absolute; top: 0; height: 2rem; left: calc((var(--c0, 1) - 1) * 1rem); width: calc((var(--c1, 2) - var(--c0, 1)) * 1rem); }
-.strip__mark { --c0: 1; display: flex; align-items: center; justify-content: center; list-style: none; }
+.strip__seg, .strip__cut, .strip__mark { position: absolute; top: 0; height: calc(2rem + var(--strip-x)); left: calc((var(--c0, 1) - 1) * 1rem); width: calc((var(--c1, 2) - var(--c0, 1)) * 1rem); }
+/* Part 5 "The name's size: option B": at the start of the arrival the bar is two cells taller (four in all), so the mark
+   stands in it at its title-block size (the arrival starts on the same name it ends on); the extra height goes as the
+   boxes slide over (strip.js sets --sk, the mark's share, 1 -> 0). The bar's own box stays two cells (the pages measure
+   it); the extra band is drawn below it */
+.strip { --strip-x: calc(2rem * var(--sk, 0)); }
+.strip::after { content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: 100%; height: var(--strip-x); background: var(--paper); pointer-events: none; }
+.strip__base { bottom: calc(-1 * var(--strip-x)) !important; }
+.strip__mark { --c0: 1; display: block; list-style: none; }
 .strip__mark[hidden] { display: none; }
-.strip__mark-svg { height: .6rem; width: auto; overflow: visible; }
+/* the mark at the option B size (--mk: one mark unit; the wave, 200 units, is 4.5 cells), its baseline on the third line,
+   centred in its columns: the same place in the cell as in the title block */
+.strip__mark-svg, .tb__mark { --mk: calc(4.5rem / 200); position: absolute; left: 50%; top: calc(3rem - 70.5 * var(--mk)); height: calc(76 * var(--mk)); width: auto;
+  transform: translateX(-50%); overflow: visible; }
 .strip__seg a { display: block; height: 2rem; padding: 0 0 0 .5rem; font-size: .5rem; line-height: 1rem; }
 .strip__seg a > span { display: inline-block; text-box: trim-both cap alphabetic; padding-top: mod(calc(-1em * var(--cap-mono)), 1rem); }
 .strip__no { margin-right: .25rem; }
@@ -91,14 +101,19 @@ html .strip { background: var(--paper); mix-blend-mode: normal; color: var(--ink
 /* ---------- the title block: a closed hairline box of cells, each whole cells wide and (round 8, TYPE_RULES rule 2) three
    cells tall: the key's baseline on the cell's first line, the value's on its second, so every word keeps half a cell
    clear of every rule; its top on a line above the screen's bottom ---------- */
-.titleblock { --tb-rows: 1; right: 1rem; bottom: auto; top: calc(round(down, 100dvh - 1rem, 1rem) - var(--tb-rows) * 3rem);
+.titleblock { --tb-rows: 2; right: 1rem; bottom: auto; top: calc(round(down, 100dvh - 1rem, 1rem) - var(--tb-rows) * 3rem);
   display: grid; gap: 0; border: 0; background: var(--paper); box-shadow: inset 0 0 0 1px var(--hair);
-  grid-template-columns: 3rem 5rem 6rem 4rem; grid-auto-rows: 3rem; }
+  grid-template-columns: 8rem 6rem 4rem; grid-auto-rows: 3rem; }
 /* Part 5 "The name, the top bar and the title block": the drawing's signature, WM.IO's mark, in a new first cell (the
-   arrival brings it here and it stays for the whole journey). Phones: mark 3 (the mark as tall as the values' capitals),
-   page 5, title 6 (it gives up two), print 4 */
-.titleblock .tb__cell.tb__cell--mark { display: flex; flex-direction: row; align-items: center; justify-content: center; padding: 0; }
-.tb__mark { height: .45rem; width: auto; overflow: visible; color: var(--ink); }
+   arrival brings it here and it stays for the whole journey). Part 5 "The name's size: option B": the mark's cell is
+   double width and spans the block's full height (two rows, six cells), the mark at its option B size (the wave 4.5
+   cells wide, ".IO" 1.24 cells tall on its baseline, which sits on the cell's third line), "design and engineering" in
+   the keys' small grey label type under it (its baseline on the fourth line, centred). The other cells stack in two
+   rows beside it. Phones (18 cells): mark 8 | page over title 6 | scale over print 4 (an 8-cell mark beside sheet and
+   scale, 5, and title and print, 6, would need 19) */
+.titleblock .tb__cell.tb__cell--mark { position: relative; display: block; padding: 0; grid-row: 1 / span 2; height: 6rem; }
+.tb__mark { color: var(--ink); }
+.titleblock .tb__cell--mark .tb__tag { position: absolute; left: 0; right: 0; bottom: 2rem; margin: 0; text-align: center; }
 .titleblock .tb__cell, .titleblock .tb__theme { display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; min-width: 0; height: 3rem; padding: 0 0 0 1rem; border: 0; gap: 0; background: transparent;
   box-shadow: inset 1px 0 0 rgba(var(--ink-rgb), .3), inset 0 1px 0 rgba(var(--ink-rgb), .3); }
 .titleblock .tb__k, .titleblock .tb__v { display: block; white-space: nowrap; overflow: hidden; line-height: .5rem;
@@ -106,21 +121,27 @@ html .strip { background: var(--paper); mix-blend-mode: normal; color: var(--ink
 .titleblock .tb__k { font-size: .4375rem; color: var(--graphite); margin-top: .5rem; }
 .titleblock .tb__v { font-size: .625rem; color: var(--ink); margin-top: .5rem; }
 @media (max-width: 1023px) {
-  .titleblock .tb__cell--wide, .titleblock .tb__cell:nth-child(n+5) { display: none; }
+  .titleblock .tb__cell--wide, .titleblock .tb__cell:nth-child(n+6) { display: none; }
   .titleblock .tb__theme { display: flex !important; }
+  /* page (3rd child) over title (4th) in the middle column, scale (5th) over print in the last */
+  .titleblock > :nth-child(3) { grid-column: 2; grid-row: 1; }
+  .titleblock > :nth-child(4) { grid-column: 2; grid-row: 2; }
+  .titleblock > .tb__cell:nth-child(5) { grid-column: 3; grid-row: 1; display: flex; }   /* (site.css, loaded first, hid scale on phones) */
+  .titleblock .tb__theme { grid-column: 3; grid-row: 2; }
 }
 @media (min-width: 1024px) {
   .titleblock { --tb-rows: 2; right: 2rem; top: calc(round(down, 100dvh - 2rem, 1rem) - var(--tb-rows) * 3rem);
-    grid-template-columns: 6rem 6rem 6rem 6rem 6rem 4rem; }
-  .titleblock .tb__cell.tb__cell--mark { grid-row: 1 / span 2; height: 6rem; }
-  .tb__mark { height: 1rem; }
-  /* round 8: on short windows one row (page, title, scale, print), so the hallway's drawings and labels have room */
+    grid-template-columns: 10rem 6rem 6rem 6rem 6rem 4rem; }
+  /* round 8: on short windows fewer cells (page, title, scale, print); option B: two rows there too (the mark's cell
+     spans both): mark 10 | page over scale 6 | title over print 7 */
   @media (max-height: 860px) {
-    .titleblock { --tb-rows: 1; grid-template-columns: 5rem 6rem 7rem 4rem 4rem; }
+    .titleblock { grid-template-columns: 10rem 6rem 7rem; }
     .titleblock .tb__cell--wide, .titleblock .tb__cell:nth-child(n+6) { display: none; }
     .titleblock .tb__cell--wide { grid-column: auto; }
-    .titleblock .tb__cell.tb__cell--mark { grid-row: auto; height: 3rem; }
-    .tb__mark { height: .8rem; }
+    .titleblock > :nth-child(3) { grid-column: 2; grid-row: 1; }
+    .titleblock > :nth-child(4) { grid-column: 3; grid-row: 1; }
+    .titleblock > :nth-child(5) { grid-column: 2; grid-row: 2; }
+    .titleblock .tb__theme { grid-column: 3; grid-row: 2; }
   }
   .titleblock .tb__cell--wide { grid-column: 2 / 4; }
   .titleblock .tb__k { font-size: .375rem; }

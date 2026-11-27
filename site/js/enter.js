@@ -94,7 +94,8 @@ export function runEnter(engine, onDone) {
     // the strip's mark (its first columns) and the title block's (its first cell); the title block is laid out even
     // while it is hidden
     layoutStrip(stripShare);
-    const S = placeOf(stripMark || tbMark), T = placeOf(tbMark), yS = 2 * u, yT = tbMark.closest('.tb__cell').getBoundingClientRect().top;
+    // (option B: the bar is four cells tall while the mark is in it, so the mark straightens onto its fourth line)
+    const S = placeOf(stripMark || tbMark), T = placeOf(tbMark), yS = 4 * u, yT = tbMark.closest('.tb__cell').getBoundingClientRect().top;
     // the single-stroke lettering, fitted to the real sentence (its width without the full stop, its cap height)
     let adv = 0; [...TEXT].forEach((c) => { adv += (GLYPHS[c] || GLYPHS[' ']).adv; });
     const sx = (sr.left - xt) / adv, sy = cap / CAP;
@@ -160,13 +161,14 @@ export function runEnter(engine, onDone) {
   }
   /** the mark morphing between its wave in place P (k 0) and its straight line on y0 (k 1); its dot, I and O shown by m */
   function drawMark(P, y0, k, m) {
-    const a = markPts(P), b = linePts(P, y0), pts = a.map((p, i) => [lerp(p[0], b[i][0], k), lerp(p[1], b[i][1], k)]);
+    // (the tail, the stretch a straight line also covers, folds into the wave's end at rest: the mark has no underline)
+    const a = markPts(P), b = linePts(P, y0), e = a[W0.end - 1], pts = a.map((p, i) => { const q = i < W0.end ? p : e; return [lerp(q[0], b[i][0], k), lerp(q[1], b[i][1], k)]; });
     wave.setAttribute('d', dOf(pts)); wave.style.strokeWidth = `${(MARK.SW * P.s).toFixed(2)}px`; show(wave, true);
     const sc = clamp(m);
     mDot.setAttribute('cx', P.ox + MARK.X_DOT * P.s); mDot.setAttribute('cy', P.oy + (MARK.A - MARK.DOT_R) * P.s); mDot.setAttribute('r', (MARK.DOT_R * P.s * sc).toFixed(2));
-    const ih = MARK.A * P.s * sc, ix = P.ox + MARK.X_I * P.s, iy = P.oy + MARK.A * P.s;
+    const ih = MARK.IOH * P.s * sc, ix = P.ox + MARK.X_I * P.s, iy = P.oy + MARK.A * P.s;
     mI.setAttribute('d', `M${ix} ${iy - ih}V${iy}`); mI.style.strokeWidth = `${(MARK.SW * P.s).toFixed(2)}px`;
-    mO.setAttribute('cx', P.ox + MARK.X_O * P.s); mO.setAttribute('cy', P.oy + MARK.A / 2 * P.s); mO.setAttribute('rx', (MARK.OW / 2 * P.s * sc).toFixed(2)); mO.setAttribute('ry', (MARK.A / 2 * P.s * sc).toFixed(2));
+    mO.setAttribute('cx', P.ox + MARK.X_O * P.s); mO.setAttribute('cy', P.oy + (MARK.A - MARK.IOH / 2) * P.s); mO.setAttribute('rx', (MARK.OW / 2 * P.s * sc).toFixed(2)); mO.setAttribute('ry', (MARK.IOH / 2 * P.s * sc).toFixed(2));
     mO.style.strokeWidth = mI.style.strokeWidth;
     [mDot, mI, mO].forEach((e) => show(e, sc > 0.01));
   }

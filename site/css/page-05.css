@@ -12,6 +12,14 @@
 .t5l__t { margin-top: 1rem !important; font-family: var(--f-display); font-weight: 420; font-size: 1.5rem; line-height: 2rem; letter-spacing: -.012em; max-width: 22ch; text-wrap: balance; }
 .t5flag { position: absolute; right: var(--gut); top: var(--t5-top, 4rem); margin: 0; color: var(--graphite); font-size: .4375rem; line-height: .5rem; }
 .t5fig { position: relative; margin-top: 2rem; height: var(--t5-fig-h, 24rem); }
+.t5__stage.is-compact .t5fig { margin-top: 1rem; }   /* (trips.js: short screens, option B's taller title block) */
+/* compact 2 (trips.js: still too short): the website's headline a step smaller and, on phones, the picture 6 cells tall
+   (so it starts under the headline, which takes the page's full width) */
+.t5__stage.is-compact2 .t5b--h .t5b__r { font-size: 1.25rem; line-height: 1.5rem; }
+@media (max-width: 1023px) {
+  .t5__stage.is-compact2 .t5b--img { height: 6rem; }
+  .t5__stage.is-compact2 .t5b--h { padding-right: 1rem; }
+}
 .t5k { margin: 0; color: var(--graphite); font-size: .5rem; line-height: .5rem; }
 @media (min-width: 1024px) {
   .t5r { padding-left: 5rem; padding-right: 5rem; }

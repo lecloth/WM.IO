@@ -124,6 +124,7 @@ async def main(a):
     for size, d in shares.items(): print(f"  {size}: " + ", ".join(f"{i}: {v['share']:.2f} h / {v['width']:.2f} w" for i, v in sorted(d.items())))
     (out / "overlap.json").write_text(json.dumps({"overlaps": total, "pairs": pairs, "shares": shares, "rows": rows}, indent=1), encoding="utf-8")
 
-ap = argparse.ArgumentParser(); ap.add_argument("--sizes", default=SIZES); ap.add_argument("--out", default="tools/shots/r8/overlap")
-with BrowserLock():
-    asyncio.run(main(ap.parse_args()))
+if __name__ == "__main__":   # (importable: tools/namecheck.py uses MEASURE and check)
+    ap = argparse.ArgumentParser(); ap.add_argument("--sizes", default=SIZES); ap.add_argument("--out", default="tools/shots/r8/overlap")
+    with BrowserLock():
+        asyncio.run(main(ap.parse_args()))

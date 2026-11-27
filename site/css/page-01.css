@@ -212,6 +212,11 @@ html.is-replay[data-phase="gate"] .titleblock { opacity: 1; }
   .p1-mean { grid-row: 2; grid-column: 2; margin-top: 3rem; min-height: 6rem; max-width: 22rem; }   /* round 7: a cell clear of the drum's faintest verbs */
   .p1-mean p { font-size: 1.25rem; line-height: 1.5rem; }
 }
+/* Part 5 "The name's size: option B": on short windows the title block is two rows (six cells) and the meaning, under
+   the drum, would run under it; there it sits under WE instead (same row, WE's column), clear of the block */
+@media (min-width: 1024px) and (max-height: 860px) {
+  .p1-mean { grid-column: 1; }
+}
 @media (min-width: 1800px) and (min-height: 1000px) {
   .p1-txt { width: 28rem; top: 8rem; }
   .p1-txt--end { width: 40rem; }

@@ -61,11 +61,25 @@ export function initTrips(engine) {
     const u = grid.u, desktop = innerWidth >= 1024, n = N(), H = stage.clientHeight || innerHeight;
     const strip = document.getElementById('strip')?.offsetHeight || 2 * u, tb = document.querySelector('.titleblock')?.getBoundingClientRect();
     const tbTop = tb && tb.height ? Math.min(innerHeight, tb.top) : H, rT = Math.ceil((strip + u) / u - 1e-6);
-    stage.style.setProperty('--t5-top', `${(rT + 1) * u}px`);
-    // the figure: from under the room's line to a cell above the title block (measured: the line may take two or three rows)
-    const line = rooms.find((r) => r.classList.contains('on'))?.querySelector('.t5l') || rooms[0].querySelector('.t5l');
-    const lineBottom = (rT + 1) * u + (line?.offsetHeight || 4 * u);
-    stage.style.setProperty('--t5-fig-h', `${Math.max(10 * u, Math.floor((tbTop - u) / u) * u - Math.ceil(lineBottom / u) * u - 2 * u)}px`);
+    // the figure: from under the room's line to a cell above the title block (measured: the line may take two or three
+    // rows). Part 5 "The name's size: option B": each room's figure from its own line (they were all sized from one
+    // room's line, so a room with a shorter line lost the difference), and compact (the taller title block leaves short
+    // screens too little room for the website's page): the lines a cell nearer the strip and the figures a cell nearer
+    // their lines, only when the website's blocks would not fit in its page; still not (384 x 734): compact 2, the
+    // website's headline a step smaller (1.25 cells on a 1.5-cell line)
+    const place = (compact, c2 = false) => {
+      stage.classList.toggle('is-compact', compact); stage.classList.toggle('is-compact2', c2);
+      const top = (rT + (compact ? 0 : 1)) * u;
+      stage.style.setProperty('--t5-top', `${top}px`);
+      rooms.forEach((r) => {
+        const lineBottom = top + (r.querySelector('.t5l')?.offsetHeight || 4 * u);
+        r.style.setProperty('--t5-fig-h', `${Math.max(10 * u, Math.floor((tbTop - u) / u) * u - Math.ceil(lineBottom / u) * u - (compact ? 1 : 2) * u)}px`);
+      });
+    };
+    place(false);
+    const web = stage.querySelector('.t5web__page');
+    const over = () => web && web.scrollHeight > web.clientHeight + 1;
+    if (over()) { place(true); if (over()) place(true, true); }
     if (pair && pairState === 'ready') { const r = glCv.getBoundingClientRect(); pair.resize(r.width, r.height); pair.frame({ top: u, bottom: u, left: u, right: u }); }
     if (pairState !== 'ready') drawFlat();
   }

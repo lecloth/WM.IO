@@ -41,6 +41,8 @@
 .dive__band { position: absolute; left: 0; top: 0; box-sizing: border-box; padding: 1rem; background: #0C0D0F;
   color: #EDEEF0; visibility: hidden; opacity: var(--op, 0); border-radius: .5rem; }
 .dive__band.on { visibility: visible; }
+/* compact (dive.js, short phones under option B's taller title block): no padding under the words */
+.dive__bands.is-compact .dive__band { padding-bottom: 0; }
 .dive__band-s { font-family: var(--f-display, Newsreader, Georgia, serif); font-size: 1rem; line-height: 1.5rem; color: #DADDE1; text-wrap: pretty; }
 .dive__band .ph { color: #8C8F94; }
 /* the line that opens the hallway (round 7; draft): its lead as a headline, the rest under it */

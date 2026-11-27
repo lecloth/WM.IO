@@ -503,7 +503,76 @@ Take 1's history below.
   the replay and home, the jump; fps during the arrival and going home; what the arrival reports: grid-line offsets of
   every run, the strip's share, the title block's cells and the strip's boxes in cells and whether any text is clipped).
 
+### Parked fixes: structure notes (27 Nov, Part 5 "Parked small fixes" + "The name's size: option B")
+- **The mark at option B's size:** the wave 4.5 cells wide everywhere (`--mk` = 4.5rem / 200 per mark unit); the I and
+  the O 0.85 of the wave's height (55.25 units: ".IO" 1.24 cells), standing on the wave's baseline (`MARK.IOH`, `X_O`
+  271.55, `OW` 47.6, `W` 295.35 in `site/js/brand/mark.js`; `IO = 0.85` in `tools/brand.py`, which rewrote
+  `wmio-mark.svg`, `wmio-mark-hero.svg` and the favicon). The template's two inline marks carry the new geometry.
+- **The title block** (`site/css/page-00-grid.css`): two rows (six cells) at every size. The mark's cell spans both
+  (`.tb__cell--mark`, its wave's baseline on the cell's third line, centred), "design and engineering" (`.tb__tag`, the
+  keys' grey label type: 0.4375 cells on phones, 0.375 on desktop) under it, its baseline on the fourth line, centred.
+  Phones: mark 8 | page over title 6 | scale over print 4 (an 8-cell mark beside sheet and scale, 5, and title and print,
+  6, would need 19 of the 18 cells; scale shows on phones again). Short desktop windows (≤ 860 high): mark 10 | page over
+  scale 6 | title over print 7. Tall desktop: mark 10, then the cells as before (project, page, title, scale; drawn,
+  checked, approved, rev, print).
+- **The top bar at the start of the arrival:** four cells tall. The bar's own box stays two cells (the pages measure
+  it); `.strip::after` draws the extra two cells under it (behind the boxes), the boxes, their rules and the base line
+  run the full height; `--sk` (the mark's share, set by `engine/strip.js layoutStrip`) takes it back to two cells as
+  the boxes slide over (0.4-0.95 s), so the replay and reduced motion keep two cells. The mark's columns are its
+  title-block cell's width (8 on phones, 10 on desktop: `markCols`), the mark in the same place in them as in the
+  cell, so the arrival starts on the same name it ends on. `enter.js`: the line straightens onto the bar's fourth line
+  (`yS` 4 cells); the I and O drawn at `IOH`; the morph's tail folds into the wave's end at rest (it drew a line under
+  ".IO" at t = 0, before this pass too).
+- **WM.IO:** the tab says "WM.IO, a design and engineering studio" (MARK_LABEL); the project cell "WM.IO".
+- **The favicon** (`site/media/brand/wmio-favicon.svg`, from `tools/brand.py`): square (128), the mark's own curves
+  from x 50 to 150 (the W's last wave, the reset, the M's first wave), stroke 11 (1.4 px at 16 px), on the paper plate
+  (ink plate in a dark tab); already linked in `src/index.template.html`.
+- **Short screens under the taller block** (the type gate found three layouts that no longer fit; Wajih: "on short
+  screens only"):
+  - page 1, short desktop windows (≤ 860 high): the drum's meaning sits under WE (same row, WE's column) instead of
+    under the drum (`page-01.css`), clear of the block;
+  - the hallway, portrait: when no frame size fits between the strip and the band (375 x 667), compact spacing: no
+    padding under the band's words (`.dive__bands.is-compact`), the frames' block half a cell from the strip and the
+    band instead of a cell (`dive.js placeBand`, `solvePortrait`);
+  - page 5: each room's figure sized from its own line (`--t5-fig-h` per `.t5r`; all three were sized from one room's
+    line), and compact (the lines a cell nearer the strip, the figures a cell nearer their lines: `.t5__stage.is-compact`)
+    only when the website's blocks don't fit its page.
+- **Tools:** `tools/namecheck.py` (one size at a time: the bar at the start of the arrival and the title block after
+  the tap, with gridcheck's and overlap's own measurements, the option B sizes, nothing under the bar or the block,
+  WM.IO's texts; `--favicon` renders it at 16 / 32 / 64 px, light and dark). `tools/overlap.py` is importable now
+  (a `__main__` guard).
+
 ### Take 2 log
+- **Parked fixes: the name bigger (option B), WM.IO everywhere, the square favicon (27 Nov).** Built
+  as in "Parked fixes: structure notes". Shots: `tools/shots/name/` (`<size>_gate_bar.png`, `<size>_gate.png`,
+  `<size>_tb.png`, `<size>_tb_screen.png`, `favicon.png`, `favicon@2x.png`; `fixes/`: the three short-screen layouts;
+  `tc_fail/`: the first gate's failures).
+  - **Name check** (`namecheck.py`, headless, one size at a time; all 7 phone sizes, 2160 x 1147 @1.333 and 1366 x 768):
+    0 failures. At the start of the arrival the bar is 4.0 cells tall, the wave 4.5 cells, ".IO" 1.24, its baseline on
+    the bar's third line, half a cell inside its columns and the bar, no box in its columns, nothing under the bar, the
+    same size as in the title block. After the tap: the mark's cell 8 x 6 (phones) / 10 x 6 (desktop), the block's full
+    height, 1.5-1.6 x the other cells' average width; the wave's baseline on the cell's third line; "design and
+    engineering" under it, 0.52-0.57 cells clear of the mark, centred; gridcheck clean (worst 0.07 px), overlap clean.
+  - **Type gate, run 1:** 62 machine failures (16 distinct), all from the taller block on short screens: page 1's drum
+    meaning under the block (1280 x 720, 1366 x 768, 1440 x 765), the hallway's frames 2-3 plaques at 375 x 667, page 5's
+    website page clipped (375 x 667, 384 x 734, short desktops). Wajih: keep option B exactly, fit those three on short
+    screens only. **Run 2:** 2 failures (384 x 734 T07, page 5's button on its page's frame), fixed with compact 2.
+    **Run 3:** stopped by the system for low memory (with the local server) after 1,481 frames, all clean (384 x 734,
+    390 x 844, 1280 x 720, 1366 x 768, 1440 x 900, 1920 x 1080, 2160 x 1147, 1440 x 765, 2560 x 1440 light and dark;
+    360 x 800 light); then, one size at a time, 360 x 800 dark, 375 x 667, 393 x 852, 412 x 915, 430 x 932 (light and
+    dark): **0 machine failures** (the gate passes at all 14 sizes).
+  - **Routecheck** (14 sizes, light and dark): every route's straight runs on grid lines (largest offset 0.015 px), the
+    title block's cells and the bar's boxes on whole cells, nothing clipped, in every run. Console: `ERR_CONNECTION_REFUSED`
+    on one texture (a different one each time, `media/materials/*.webp`) at 4 combinations in the first run, then only
+    at 1366 x 768 light; the same refusal on the last commit's build (same 66 requests, at most 20 in flight): the plain
+    local server's connection queue under the texture burst (`materials.js` has no retry: an edge for hosting). Re-runs:
+    every combination clean.
+  - **Shots refreshed on the final build** (`namecheck.py`, 384 x 734 and 2160 x 1147): 0 failures.
+  - **My calls:** the phone block's split (mark 8 | page over title 6 | scale over print 4: option B's "sheet and scale
+    stack" literally needs 19 of the 18 cells); the mark's cell 10 on desktop (about 1.7 x a 6-cell cell; 12 left it
+    floating); ".IO" 0.85 of the wave everywhere (the hero file too, one mark); the bar 4 cells at the start on desktop
+    as well; the favicon's stroke and plate; "design and engineering" treated as the name's own line (MARK_LABEL), not a
+    draft; the three short-screen fallbacks (above).
 - **The name, the top bar and the title block (26 Nov).** Built as in "The name, the top bar and the title block:
   structure notes". Shots: `tools/shots/topbar/` (`real/`: real Chrome at 2160 x 1147 @1.333, 1440 x 900, 384 x 734
   @2.8125 and 360 x 800 @3 emulated; `dark/`, `reduced/`, `r1/`, `r2/` headless; `typecheck/`; `before/`: the old gate).

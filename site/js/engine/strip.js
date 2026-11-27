@@ -2,9 +2,10 @@
 // the top bar and the title block": on arrival the mark sits in the bar's first columns (MARK_COLS); as it leaves, the
 // boxes slide over to fill its space (k: the mark's share, 1 -> 0), and from then on they keep the full width (the bar
 // never gets the mark back). Each box's edges move from their place beside the mark to their place without it, so at
-// both ends every edge is on a column.
+// both ends every edge is on a column. Part 5 "The name's size: option B": the mark's columns are its title-block
+// cell's width (8 on phones, 10 on desktop), and the bar is two cells taller while the mark is in it (--sk: the share).
 const segs = () => [...document.querySelectorAll('.strip__seg')];
-export const markCols = () => (innerWidth >= 1024 ? 5 : 4);
+export const markCols = () => (innerWidth >= 1024 ? 10 : 8);
 let k = 0;
 export function layoutStrip(share = k) {
   k = share;
@@ -16,6 +17,7 @@ export function layoutStrip(share = k) {
   });
   const c = document.querySelector('.strip__cut');
   if (c) { c.style.setProperty('--c0', m + 1); c.style.setProperty('--c1', n + 1); }
+  document.getElementById('strip')?.style.setProperty('--sk', k.toFixed(4));
   const mk = document.querySelector('.strip__mark');
   if (mk) { mk.style.setProperty('--c1', mc + 1); mk.hidden = k <= 0; }
 }

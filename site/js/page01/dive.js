@@ -707,8 +707,13 @@ export function createDive(root, top, { base = '' } = {}) {
       const wrap = need > maxC; openEl.classList.toggle('is-wrap', wrap);
       openEl.style.width = `${Math.max(desktop ? 20 : 0, Math.min(maxC, wrap ? maxC : need)) * u}px`; }
     // the caption band: at the bottom of the screen; beside the title block where there is room for it (wide screens),
-    // else over it, a cell clear; as tall as the longest line needs (whole cells)
-    {
+    // else over it, a cell clear; as tall as the longest line needs (whole cells). compact (Part 5 "The name's size:
+    // option B": the taller title block leaves short phones too little room for a frame and its plaque): no padding
+    // under the band's words (they keep half a cell from its edge), and the frames' block half a cell from the strip
+    // and the band instead of a cell. Used only when the portrait solve below finds no frame size that fits.
+    let compact = false;
+    const placeBand = () => {
+      bandsEl.classList.toggle('is-compact', compact);
       const tbL = tbr ? tbr.left : W, tbB = tbr ? tbr.bottom : Math.floor((H - u) / u) * u;
       const side = desktop ? 5 : 1, besideW = Math.floor((tbL - u) / u) - side;
       const beside = !!tbr && besideW >= 24;
@@ -719,8 +724,10 @@ export function createDive(root, top, { base = '' } = {}) {
       bandsEl.style.top = `${bottom - rows * u}px`; bandsEl.style.height = `${rows * u}px`;
       bandEls.forEach((el) => { el.style.height = `${rows * u}px`; });
       bandR = { l: l0, r: r0, t: bottom - rows * u, b: bottom };
-    }
-    const topLim = (rT) * u, botLim = Math.min(bandR.t, tbTop) - u;   // a cell under the strip, a cell over the band and the title block
+    };
+    placeBand();
+    // a cell under the strip, a cell over the band and the title block (compact: half a cell)
+    let topLim = (rT) * u, botLim = Math.min(bandR.t, tbTop) - u;
 
     // the pre-ducked camera (pass 3). Each frame is read closest (Dc: fully open, square to you, d hall units from its
     // hinge's plane) with the frame, half a cell, and its plaque centred between the strip and the band. Everything on
@@ -729,7 +736,8 @@ export function createDive(root, top, { base = '' } = {}) {
     // frame's d centres its own block (its plaque may be one or two lines). Portrait: the widest frame n cells wide
     // (two thirds of the width, fewer if a block won't fit). Wide screens: the frame's wall edge 1.5 cells inside the
     // screen, the frame at most 0.6 of the screen's height.
-    const avail = botLim - topLim, mid = (topLim + botLim) / 2, gap = 0.5 * u, PAD = 0.75 * u;
+    let mid = (topLim + botLim) / 2;
+    const gap = 0.5 * u, PAD = 0.75 * u;
     const plateAt = (i, d) => { const el = labEls[i], wpx = DIMS[i].ow * P / d; el.style.width = `${Math.max(2 * u, wpx - 2 * PAD)}px`; const wh = el.offsetHeight; return { wpx, wh, hpx: wh + 2 * PAD }; };
     const frameH = (i, d) => DIMS[i].oh * 1.03 * P / d;   // (its front face is a little nearer than its hinge)
     // every frame is read at the same distance d, so each lands on the same place on the screen; the eye (a under the
@@ -746,7 +754,14 @@ export function createDive(root, top, { base = '' } = {}) {
       const yc = H / 2 - a * P / d;
       return DIMS.every((dm, i) => yc - dm.oh * 1.03 * P / d / 2 >= topLim - 0.5 && yc + dm.oh * P / d / 2 + gap + ps[i] <= botLim + 0.5) && (portrait || hallX * P / d <= W / 2 - 1.5 * u + 0.5);
     };
-    if (portrait) { for (n = Math.round(N * 2 / 3); n >= 6; n--) if (solve(DIMS[ref].ow * P / (n * u))) break; }
+    const solvePortrait = () => { for (n = Math.round(N * 2 / 3); n >= 6; n--) if (solve(DIMS[ref].ow * P / (n * u))) return true; return false; };
+    if (portrait) {
+      if (!solvePortrait()) {
+        compact = true; placeBand();
+        topLim = (rT - 0.5) * u; botLim = Math.min(bandR.t, tbTop) - 0.5 * u; mid = (topLim + botLim) / 2;
+        if (!solvePortrait()) solve(DIMS[ref].ow * P / (6 * u));
+      }
+    }
     else { let dRef = Math.max(hallX * P / Math.max(1, W / 2 - 1.5 * u), DIMS[ref].oh * P / (0.6 * H)); for (let k = 0; k < 300 && !solve(dRef); k++) dRef *= 1.02; }
     E = HALL.hang - a;
     // the hall's mouth covers the screen with the eye at E: one hall unit is K px there (the shape never changes)
