@@ -1153,3 +1153,14 @@ three.js; Lenis with light settings.
 - **Everywhere else on page 1 and in the hallway:** every timed object animation (for example the dress to real, the
   ground's change, the phones' load cross-fade if it shows motion) becomes scroll-driven, or is listed in STATE.md with
   the reason it must stay timed.
+
+### Parked small fixes (26 Nov, Wajih after the top bar build: "flawless", then park). Overrides the above where they differ.
+- **The name bigger:** the WM.IO mark doesn't get the attention a title should. Make it noticeably bigger where it
+  lives (the title block's first cell, which grows to fit) and at the start of the arrival in the top bar, so it reads as
+  the site's title, not a footnote.
+- **WM.IO everywhere:** the page title and the title block's project cell say WM.IO (not "Wajih Mansouri").
+- **A square favicon:** half a W, the reset, half an M (the wide mark reads as a thin line at 16 px).
+- **Frame 5 opening blank, the scribble drawing during the hold:** accepted (Wajih). The gate's second line stays a
+  flagged draft until he signs it off.
+- **Next pieces, in order:** these fixes, then the security page (already in the brief), the full-check re-run when the
+  laptop has memory free, the real-phone run when the S23 is free.
