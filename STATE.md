@@ -612,6 +612,18 @@ Take 1's history below.
   lock as a drawing; `flicker.py --beat1` (CDP zoom; the push, the keyhole, the pins, the dark end and the fade, plus a
   hallway stretch for reference).
 
+### Edges to watch in the final full check
+- **Routecheck, the arrival's replay (logged 27 Nov, after `ae75e24`):** once, in the full routecheck run after beat 1's
+  second pass, 1280 x 720 dark stopped the run: scrolling back to the top (after two screens down) didn't restart the
+  arrival within 8 s (`Page.wait_for_function: Timeout 8000ms exceeded`, `window.__arrival.state() === 'run'`). It
+  didn't come back in two single-size re-runs of 1280 x 720 or in the full re-run (every size's replay measured). The
+  suspect is that pass's new `ScrollTrigger.refresh` when page 1's height moves (`refreshIfMoved`, page.js), which it
+  calls once a few frames after load; not confirmed. In the final full check: run routecheck at every size more than
+  once and watch for it; if it comes back, check whether the refresh lands during the scroll back to the top
+  (`watchTop` in enter.js needs scrollY 0 for 320 ms after being half a screen down).
+- **`ERR_CONNECTION_REFUSED` on one request under a burst** (the plain local server's connection queue; a different size
+  each run, clean on re-run): an edge for hosting, not the site (see the parked fixes' entry in the log).
+
 ### Take 2 log
 - **The security page, beat 1, second pass: the pins ride the key, the push starts at walking speed (27 Nov, Wajih's two
   yeses).** Built as in the structure notes ("The push at walking speed", "The pins ride the key"). Shots:
