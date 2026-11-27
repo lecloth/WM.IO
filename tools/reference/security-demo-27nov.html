@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security page, beats 1 to 5 (demo)</title>
+<style>
+  html, body { margin: 0; background: #0A0A0B; color: #C3C7CD; font: 13px/1.5 ui-monospace, "DM Mono", Menlo, Consolas, monospace; }
+  #track { height: 3500vh; }
+  #stage { position: sticky; top: 0; height: 100vh; width: 100%; overflow: hidden; }
+  canvas { display: block; width: 100%; height: 100%; }
+  .hud { position: absolute; left: 16px; top: 14px; letter-spacing: .04em; pointer-events: none; }
+  .hud b { font-weight: 500; color: #EDEEF0; }
+  .bar { position: absolute; left: 16px; right: 16px; bottom: 34px; height: 2px; background: #202328; }
+  .bar i { display: block; height: 100%; width: 0; background: #C3C7CD; }
+  .credit { position: absolute; left: 16px; bottom: 10px; font-size: 11px; color: #8C8F94; }
+  .hint { position: absolute; right: 16px; top: 14px; color: #8C8F94; }
+  .head { position: absolute; left: 0; right: 0; top: 18%; text-align: center; pointer-events: none; opacity: 0; color: #EDEEF0; }
+  .head small { display: block; color: #8C8F94; letter-spacing: .06em; margin-bottom: 6px; }
+  .head span { font: 400 clamp(22px, 3.4vw, 40px)/1.15 Georgia, "Newsreader", serif; }
+  .fold { position: absolute; right: 16px; top: 40px; display: flex; gap: 8px; align-items: center; color: #8C8F94; }
+  .fold button { font: inherit; color: #C3C7CD; background: #16181B; border: 1px solid #2C2F35; padding: 8px 12px; border-radius: 6px; cursor: pointer; min-height: 40px; }
+  .fold button[aria-pressed="true"] { color: #0A0A0B; background: #C3C7CD; border-color: #C3C7CD; }
+  #over { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .lbl { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; transition: opacity .25s; pointer-events: none; font-size: 13px; }
+  .lbl.on { opacity: 1; }
+  .lbl i { font-style: normal; font-weight: 500; font-size: 11px; letter-spacing: .06em; padding: 2px 5px; margin-right: 6px; }
+  .lbl.xr { color: #EDEEF0; } .lbl.xr i { background: rgba(10,10,11,.92); border: 1px solid rgba(237,238,240,.7); }
+  .lbl.mt { color: #EDEEF0; } .lbl.mt i { background: rgba(10,10,11,.92); border: 1px solid rgba(237,238,240,.8); }
+  .lbl span { padding: 2px 4px; }
+  .lbl.xr span, .lbl.mt span { background: rgba(10,10,11,.85); }
+  .look { position: absolute; left: 0; right: 0; top: 12%; text-align: center; pointer-events: none; opacity: 0; }
+  .look small { display: block; letter-spacing: .06em; margin-bottom: 4px; font-size: 11px; }
+  .look span { font: 400 clamp(20px, 3vw, 34px)/1.15 Georgia, "Newsreader", serif; }
+  #load { position: absolute; inset: 0; display: grid; place-items: center; color: #8C8F94; }
+</style>
+<script type="importmap">
+{ "imports": { "three": "./three/three.module.min.js", "three/addons/": "./three/addons/" } }
+</script>
+</head>
+<body>
+<div id="track">
+  <div id="stage">
+    <canvas id="gl"></canvas>
+    <div class="hud"><b id="beat">Beat 1 (the steady push)</b><br><span id="step">Standing at the shut door</span></div>
+    <div class="hint">Scroll</div>
+    <div class="head" id="head"><small>Outside · every lock you own (placeholder, from the lab)</small><span>One door is never the only door.</span></div>
+    <canvas id="over"></canvas>
+    <div class="look" id="look"><small id="lookE"></small><span id="lookB"></span></div>
+    <div id="lbls"></div>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="credit">Lock: "Cutaway Lock" by zbzzn, CC BY 4.0. Demo, not the build. The bar is in fifths: beats 1 to 5.</div>
+    <div id="load">Loading the lock</div>
+  </div>
+</div>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
+import { loadKit } from './kit.js';
+
+// ---------- helpers (lab3d.js) ----------
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const span = (p, a, b) => clamp((p - a) / (b - a));
+const ease = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const lerp = (a, b, t) => a + (b - a) * t;
+
+// ---------- renderer and lens (dive.js lensP: 50 deg across the narrower side, at most 66 across) ----------
+const canvas = document.getElementById('gl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, logarithmicDepthBuffer: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.08;   // hall-looks.js: exposure for the brass
+renderer.setClearColor(0x0A0A0B, 1);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, 1, 0.0015, 400);
+scene.add(camera);
+function lensFov(W, H) {
+  const t = (d) => Math.tan(d * Math.PI / 360);
+  const P = Math.max(Math.min(W, H) / 2 / t(50), W / 2 / t(66));
+  return 2 * Math.atan(H / 2 / P) * 180 / Math.PI;
+}
+
+const kit = await loadKit('lock/');
+const S = kit.scale, inv = kit.xf.clone().invert();
+const M = (x, y, z) => kit.toWorld(x, y, z);
+const UP = kit.dirWorld(0, 0, 1), AX = kit.dirWorld(0, 1, 0);
+
+// ---------- the light: the studio HDRI (the site's), the same as the door's brass in dive.js ----------
+const env = await (async () => {   // the studio HDRI, packed in a script file (the host serves no .hdr)
+  const t64 = (await import('./studio-hdr.js')).default, bin = atob(t64), u = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+  const L = new HDRLoader(), d = L.parse(u.buffer);
+  const t = new THREE.DataTexture(d.data, d.width, d.height, THREE.RGBAFormat, d.type);
+  t.colorSpace = THREE.LinearSRGBColorSpace; t.minFilter = t.magFilter = THREE.LinearFilter; t.generateMipmaps = false; t.flipY = true; t.needsUpdate = true;
+  t.mapping = THREE.EquirectangularReflectionMapping;
+  const g = new THREE.PMREMGenerator(renderer); const e = g.fromEquirectangular(t).texture; g.dispose(); t.dispose(); return e;
+})();
+const roomPm = new THREE.PMREMGenerator(renderer);
+const roomEnv = roomPm.fromScene(new RoomEnvironment(), 0.04).texture; roomPm.dispose();
+scene.fog = new THREE.Fog(0x0A0A0B, 1e4, 2e4);
+
+// ---------- the lock: real parts, door look (dive.js brass) blending into the inside look (lab B1) ----------
+const LOOK_DOOR = { color: new THREE.Color('#D8B26A'), metal: 1, rough: 0.26 };
+const LOOK_IN = {
+  brass: { color: new THREE.Color(0xB88F48), metal: 1, rough: 0.42 },
+  steel: { color: new THREE.Color(0xB8BBBF), metal: 1, rough: 0.28 },
+  dark: { color: new THREE.Color(0x5A5E62), metal: 0.9, rough: 0.38 },
+};
+const mats = {};
+for (const k of ['brass', 'steel', 'dark']) mats[k] = new THREE.MeshStandardMaterial({ color: LOOK_DOOR.color.clone(), metalness: 1, roughness: 0.26, envMap: env, envMapIntensity: 0.75 });
+mats.brass.envMapRotation.set(0, 1.5 * Math.PI, 0);
+const axisPt = M(0, 0, 0);
+const lock = new THREE.Group(); scene.add(lock);
+const pivot = new THREE.Group(); pivot.position.copy(axisPt); lock.add(pivot);
+const inPivot = new THREE.Group(); inPivot.position.copy(axisPt).negate(); pivot.add(inPivot);
+const by = (id) => kit.parts.find((p) => p.id === id);
+const realParts = [];   // every part of the one real lock, with its holder (beat 3 scrambles and rebuilds them)
+const add = (part, parent) => { const h = new THREE.Group(); h.add(new THREE.Mesh(part.geo, mats[part.mat] || mats.steel)); parent.add(h); realParts.push({ h, part }); return h; };
+['housing', 'cap', 'clip'].forEach((id) => add(by(id), lock));
+add(by('plug'), inPivot);
+const keyH = add(by('key'), inPivot); keyH.visible = false;            // the door is shut: no key in it; its profile still lifts the pins
+const keyPins = [1, 2, 3, 4, 5].map((i) => add(by('keypin' + i), inPivot));
+const drivers = [1, 2, 3, 4, 5].map((i) => add(by('driver' + i), lock));
+const pinY = kit.pins.y, bottoms = [1.8, 0.4, -1.0, -2.4, -3.8];
+
+// the key's top edge along its length (opt-b.js keyProfile, unchanged)
+function keyProfile(geo, inv) {
+  const pos = geo.attributes.position, idx = geo.index, bins = new Map(), v = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
+  const put = (p) => { if (Math.abs(p.x + 1) > 3.2) return; const b = Math.round(p.y * 4); bins.set(b, Math.max(bins.get(b) ?? -1e9, p.z)); };
+  const n = idx ? idx.count : pos.count, q = new THREE.Vector3();
+  for (let i = 0; i < n; i += 3) {
+    for (let j = 0; j < 3; j++) v[j].fromBufferAttribute(pos, idx ? idx.getX(i + j) : i + j).applyMatrix4(inv);
+    for (let j = 0; j < 3; j++) for (let t = 0; t <= 8; t++) put(q.lerpVectors(v[j], v[(j + 1) % 3], t / 8));
+  }
+  return (y) => { const b = Math.round(y * 4); let z = -1e9; for (let d = -1; d <= 1; d++) z = Math.max(z, bins.get(b + d) ?? -1e9); return z; };
+}
+const profile = keyProfile(by('key').geo, inv);
+function setLock(off, turn = 0) {   // opt-b.js setLock: off = mm the key's tip sits out of the lock; turn 0..1 = the plug 0..90 deg
+  keyH.position.copy(AX).multiplyScalar(off * S);
+  keyPins.forEach((h, i) => {
+    const yk = pinY[i] - off;
+    const lift = yk < -80 || off > 200 ? 0 : clamp(profile(yk) - bottoms[i], 0, 6);
+    h.position.copy(UP).multiplyScalar(lift * S);
+    drivers[i].position.copy(UP).multiplyScalar(lift * S);
+  });
+  pivot.quaternion.setFromAxisAngle(AX, -turn * Math.PI / 2);
+}
+
+// ---------- beat 2: lab B3's room of locks, unchanged (instanced copies of the real housing, plug, cap and key) ----------
+const step190 = M(0, 0, 0).distanceTo(M(190, 0, 0));
+const cells = []; for (let i = -2; i <= 2; i++) for (let j = -1; j <= 1; j++) for (let k = -2; k <= 2; k++) if (i || j || k) cells.push([i, j, k]);
+const lattice = new THREE.Group(); scene.add(lattice);
+const cheap = { brass: new THREE.MeshLambertMaterial({ color: 0xA88445 }), steel: new THREE.MeshLambertMaterial({ color: 0x9A9DA1 }) };
+const inst = ['housing', 'plug', 'cap', 'key'].map((id) => {
+  const part = by(id), im = new THREE.InstancedMesh(part.geo, cheap[part.mat] || cheap.steel, cells.length);
+  im.frustumCulled = false; lattice.add(im); return { id, im };
+});
+const hemi = new THREE.HemisphereLight(0xfff4e0, 0x0a0a0a, 0); scene.add(hemi);
+const rm = { m: new THREE.Matrix4(), q: new THREE.Quaternion(), p: new THREE.Vector3(), s: new THREE.Vector3(1, 1, 1) };
+function setRoom(show, wave, fold, collapse) {   // opt-b.js setRoom, unchanged
+  lattice.visible = show > 0.001;
+  if (!lattice.visible) return;
+  const { m, q, p, s } = rm, step = step190;
+  const camLocal = lattice.worldToLocal(camera.position.clone());
+  lattice.quaternion.setFromEuler(new THREE.Euler(fold * 0.9, fold * 1.4, fold * 0.35));
+  cells.forEach(([i, j, k], n) => {
+    const d = Math.hypot(i, j, k), k1 = clamp(show * 4 - d * 0.55);
+    p.set(i * step, j * step * 0.92, k * step).multiplyScalar(1 - collapse);
+    const near = clamp((camLocal.distanceTo(p) - step * 0.45) / (step * 0.35));
+    const sc = k1 * (1 - collapse) * near;
+    const turn = clamp(wave * 3.2 - d * 0.42);
+    inst.forEach(({ id, im }) => {
+      if (id === 'plug' || id === 'key') {
+        q.setFromAxisAngle(AX, -ease(turn) * Math.PI / 2);
+        const a = axisPt.clone(); m.compose(p.clone().add(a).sub(a.clone().applyQuaternion(q)), q, s.set(sc, sc, sc));
+      } else m.compose(p, q.identity(), s.set(sc, sc, sc));
+      im.setMatrixAt(n, m);
+    });
+    q.identity();
+  });
+  inst.forEach(({ im }) => { im.instanceMatrix.needsUpdate = true; });
+}
+const keys = (p, k) => {   // lab3d.js keys
+  if (p <= k[0][0]) return k[0][1];
+  for (let i = 1; i < k.length; i++) if (p <= k[i][0]) { const t = ease(span(p, k[i - 1][0], k[i][0])), a = k[i - 1][1], b = k[i][1]; return Array.isArray(a) ? a.map((v, j) => lerp(v, b[j], t)) : lerp(a, b, t); }
+  return k[k.length - 1][1];
+};
+
+// ---------- the hallway's end (dive.js HALL + hall-looks.js "Dark hall"), built in lock millimetres ----------
+// Lock space: x across (your right is -x), y towards you (the lock's face at y = 0), z up (the face's middle at z = 20).
+// The door's lock face is 0.13 hall units tall (HALL.door.lock.face) and the real face is 82 mm, so 1 hall unit = 82/0.13 mm.
+const K = 82 / 0.13, FZ = 20 - 1.0 * K;                   // lock at handle height 1.0
+const DX = 0.385 * K;                                      // the door's middle, 0.385 to your left of the lock
+const vx = (v) => DX - v * K;                              // a hall x (from the door's middle, + to your right) to lock x
+const hz = (h) => FZ + h * K;                              // a hall height to lock z
+const WALL_Y = 10, LEAF_Y = -2, LEN = 7 * K;               // the face stands just proud of the leaf
+const hall = new THREE.Group(); hall.matrixAutoUpdate = false; hall.matrix.copy(kit.xf); scene.add(hall);
+const flat = (hex) => new THREE.MeshBasicMaterial({ color: hex, toneMapped: false, side: THREE.DoubleSide });
+function quad(mat, a, b, c, d) {   // four corners in lock mm
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute([...a, ...b, ...c, ...a, ...c, ...d], 3));
+  const m = new THREE.Mesh(g, mat); hall.add(m); return m;
+}
+const L = { wall: '#1C1E22', floor: '#111215', ceiling: '#16181B', end: '#1C1E22', door: '#202328' };
+const hw = 1.3;
+const x0 = vx(-hw), x1 = vx(hw), zf = hz(0), zc = hz(3), yb = WALL_Y + LEN;
+quad(flat(L.floor), [x0, WALL_Y, zf], [x1, WALL_Y, zf], [x1, yb, zf], [x0, yb, zf]);
+quad(flat(L.ceiling), [x0, WALL_Y, zc], [x1, WALL_Y, zc], [x1, yb, zc], [x0, yb, zc]);
+quad(flat(L.wall), [x0, WALL_Y, zf], [x0, yb, zf], [x0, yb, zc], [x0, WALL_Y, zc]);
+quad(flat(L.wall), [x1, WALL_Y, zf], [x1, yb, zf], [x1, yb, zc], [x1, WALL_Y, zc]);
+const dw = 0.45, dh = 2.1;
+const endM = flat(L.end);
+quad(endM, [x0, WALL_Y, zf], [vx(-dw), WALL_Y, zf], [vx(-dw), WALL_Y, zc], [x0, WALL_Y, zc]);
+quad(endM, [vx(dw), WALL_Y, zf], [x1, WALL_Y, zf], [x1, WALL_Y, zc], [vx(dw), WALL_Y, zc]);
+quad(endM, [vx(-dw), WALL_Y, hz(dh)], [vx(dw), WALL_Y, hz(dh)], [vx(dw), WALL_Y, zc], [vx(-dw), WALL_Y, zc]);
+quad(flat(L.door), [vx(-dw), LEAF_Y, zf], [vx(dw), LEAF_Y, zf], [vx(dw), LEAF_Y, hz(dh)], [vx(-dw), LEAF_Y, hz(dh)]);
+// the reveal (the opening's sides, between the wall and the leaf)
+quad(flat('#17191C'), [vx(-dw), LEAF_Y, zf], [vx(-dw), WALL_Y, zf], [vx(-dw), WALL_Y, hz(dh)], [vx(-dw), LEAF_Y, hz(dh)]);
+quad(flat('#17191C'), [vx(dw), LEAF_Y, zf], [vx(dw), WALL_Y, zf], [vx(dw), WALL_Y, hz(dh)], [vx(dw), LEAF_Y, hz(dh)]);
+quad(flat('#17191C'), [vx(-dw), LEAF_Y, hz(dh)], [vx(dw), LEAF_Y, hz(dh)], [vx(dw), WALL_Y, hz(dh)], [vx(-dw), WALL_Y, hz(dh)]);
+// the ceiling's light strip, dimmed to a soft line (pass 2)
+const sw = 0.035 / 2;
+quad(flat('#5E636B'), [vx(-sw), WALL_Y + 1, zc - 1], [vx(sw), WALL_Y + 1, zc - 1], [vx(sw), yb, zc - 1], [vx(-sw), yb, zc - 1]);
+// painted light: the strip's end lights the wall over the door; a little light on the lock's strip (dive.js blob())
+function blobTex() { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'); const g = x.createRadialGradient(64, 64, 0, 64, 64, 64); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); }
+const BT = blobTex(), LIGHT = new THREE.Color(0.93 * 0.82, 0.96 * 0.82, 1.0 * 0.82);
+function blob(v, h, rx, rz, a, y) {
+  const m = new THREE.MeshBasicMaterial({ map: BT, color: LIGHT, transparent: true, opacity: a, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false });
+  quad(m, [vx(v - rx), y, hz(h - rz)], [vx(v + rx), y, hz(h - rz)], [vx(v + rx), y, hz(h + rz)], [vx(v - rx), y, hz(h + rz)]).geometry.setAttribute('uv', new THREE.Float32BufferAttribute([0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1], 2));
+}
+blob(0, 2.5, 1.0, 0.9, 0.07 * 3, WALL_Y + 0.5);
+blob(dw - 0.07, 1.0, 0.16, 0.2, 0.06 * 3, LEAF_Y + 0.5);
+// the hairlines, faint once dressed (hall-looks.js edges.dressed 0.16, #C3C7CD)
+const lineM = new THREE.LineBasicMaterial({ color: '#C3C7CD', transparent: true, opacity: 0.16, toneMapped: false });
+const segs = [];
+const seg = (a, b) => segs.push(...a, ...b);
+const rect = (y, va, vb, ha, hb) => { seg([vx(va), y, hz(ha)], [vx(vb), y, hz(ha)]); seg([vx(vb), y, hz(ha)], [vx(vb), y, hz(hb)]); seg([vx(vb), y, hz(hb)], [vx(va), y, hz(hb)]); seg([vx(va), y, hz(hb)], [vx(va), y, hz(ha)]); };
+[[x0, zf], [x1, zf], [x0, zc], [x1, zc]].forEach(([x, z]) => seg([x, WALL_Y, z], [x, yb, z]));
+rect(WALL_Y + 0.3, -hw, hw, 0, 3);
+seg([x0, WALL_Y + 0.3, hz(0.1)], [vx(-dw - 0.07), WALL_Y + 0.3, hz(0.1)]); seg([vx(dw + 0.07), WALL_Y + 0.3, hz(0.1)], [x1, WALL_Y + 0.3, hz(0.1)]);
+seg([x0, WALL_Y, hz(0.1)], [x0, yb, hz(0.1)]); seg([x1, WALL_Y, hz(0.1)], [x1, yb, hz(0.1)]);
+rect(WALL_Y + 0.3, -dw - 0.07, dw + 0.07, 0, dh + 0.07);   // the architrave
+rect(WALL_Y + 0.3, -dw, dw, 0, dh);                        // the opening
+const pl = -dw + 0.12, pr = dw - 0.14;                     // the stiles: 0.12 left, 0.14 right (the lock's strip)
+rect(LEAF_Y + 0.3, pl, pr, 0.15, 0.82); rect(LEAF_Y + 0.3, pl, pr, 1.18, 1.95);
+const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(segs, 3));
+hall.add(new THREE.LineSegments(lg, lineM));
+
+// ---------- the inside's light (lab B1): a headlamp we carry in, and a rim ----------
+const lamp = new THREE.PointLight(0xfff1dc, 0, 2.0, 1); camera.add(lamp);
+const rim = new THREE.DirectionalLight(0xffe7c2, 0); rim.position.set(-1, 1.5, 0.6); scene.add(rim);
+
+// ---------- the path, in lock mm ----------
+// 1 walk: from where the hallway's walk ends (standing at the shut door, eye 1.5) straight to the lock, slowing as it
+//   grows (distance falls evenly on a log scale: the approved "even growth"), until the face fills the screen
+// 2 the keyway: the camera settles onto the keyhole and goes in (lab B1's mouth, [-1, 6, -9])
+// 3 past the pins: down the keyway; the key rides just behind the camera (you are the key) and lifts each pin as it passes
+// 4 out the back of the plug into the dark: beat 2 (the room of locks) starts here
+const P1 = 0.46, P2 = 0.58, P3 = 0.9;
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+const FACE_C = V(0, 0, 20), DOOR_C = V(DX, LEAF_Y, hz(1.05));
+let START = V(DX, 0, hz(1.5)), dFill = 116;
+const MOUTH = V(-1, 6, -9);
+let lensF = 42, b3F = 52;
+function frame(W, H) {
+  const fov = lensFov(W, H); camera.fov = fov; lensF = fov; b3F = 62 * (W < H ? 1.12 : 0.85); camera.aspect = W / H; camera.updateProjectionMatrix();
+  const t = Math.tan(fov * Math.PI / 360);
+  START.y = WALL_Y + (dh * K / 0.82) / (2 * t);   // the door about 82% of the screen's height
+  dFill = (82 / 0.92) / (2 * t);                  // the face 92% of the screen's height (lock3d.js endFaceHeight)
+}
+const pos = V(0, 0, 0), look = V(0, 0, 0), tmp = V(0, 0, 0);
+function place1(p) {
+  let off = 260, inside = 0, step;
+  lattice.visible = false; keyH.visible = false; hemi.intensity = 0; headEl.style.opacity = 0; restoreParts();
+  if (camera.fov !== lensF) { camera.fov = lensF; camera.updateProjectionMatrix(); }
+  if (p < P1) {
+    const t = p / P1, d0 = START.distanceTo(FACE_C), d = d0 * Math.pow(dFill / d0, t);
+    const k = ease(span(t, 0.05, 0.85));
+    const dir = START.clone().sub(FACE_C).normalize().lerp(V(0, 1, 0), k).normalize();
+    pos.copy(FACE_C).addScaledVector(dir, d); look.copy(DOOR_C).lerp(FACE_C, k);
+    step = t < 0.04 ? 'Standing at the shut door' : t < 0.9 ? 'Walking on, straight into the brass lock' : 'The lock fills the screen';
+  } else if (p < P2) {
+    const t = span(p, P1, P2), e = ease(t);
+    pos.set(lerp(0, MOUTH.x, e), dFill * Math.pow(MOUTH.y / dFill, t), lerp(20, MOUTH.z, e));
+    look.copy(FACE_C).lerp(V(-1, -60, -6), e);
+    inside = span(t, 0.3, 1); step = 'In through the keyhole';
+  } else if (p < P3) {
+    const t = span(p, P2, P3), y = lerp(MOUTH.y, -70, ease(t));
+    pos.set(-1, y, -9); look.set(-1, y - 60, -5 + 4 * Math.sin(Math.PI * t));
+    off = clamp(y + 3 + 80, 0, 260); inside = 1; step = 'Past the pins: each one lifts as you pass';
+  } else {
+    const t = span(p, P3, 1), y = lerp(-70, -86, ease(t));
+    pos.set(-1, y, -9); look.set(-1, y - 60, -5);
+    off = clamp(y + 3 + 80, 0, 260); inside = 1; step = 'Out the back, into the dark: beat 2 (the room of locks) starts here';
+  }
+  setLock(off);
+  camera.position.copy(M(pos.x, pos.y, pos.z)); camera.up.copy(UP); camera.lookAt(M(look.x, look.y, look.z));
+  // the look: the door's polished brass on the studio light, then lab B1's inside (darker brass, steel, dark drivers), fog, headlamp
+  for (const k of ['brass', 'steel', 'dark']) {
+    const m = mats[k], a = LOOK_IN[k];
+    m.color.copy(LOOK_DOOR.color).lerp(a.color, inside); m.metalness = lerp(1, a.metal, inside); m.roughness = lerp(0.26, a.rough, inside);
+    m.envMap = inside > 0.5 ? roomEnv : env; m.envMapIntensity = inside > 0.5 ? 0.55 : 0.75;
+  }
+  lamp.intensity = 0.1 * inside; rim.intensity = 0.9 * inside;
+  const fogFar = p < P2 ? lerp(2e4, 3.2, span(p, P1 + 0.06, P2) ** 0.35) : lerp(3.2, 0.5, span(p, P3 + 0.03, 1));
+  scene.fog.near = Math.min(0.6, fogFar * 0.2); scene.fog.far = fogFar;
+  hall.visible = p < P2;
+  return step;
+}
+
+// beat 2: back up the keyway (the key is now fully in: you were the key), back out through the keyhole and pull back;
+// from there it is lab B3 exactly, from its p 0.30 (in the keyway) to 0.84 (just before the room collapses: beat 3)
+const B3a = 0.3, B3b = 0.84, BACK = 0.12;
+function place2(q) {
+  let step, pos3, look3, pB;
+  keyH.visible = true; hall.visible = false; restoreParts();
+  for (const k of ['brass', 'steel', 'dark']) { const m = mats[k], a = LOOK_IN[k]; m.color.copy(a.color); m.metalness = a.metal; m.roughness = a.rough; m.envMap = roomEnv; m.envMapIntensity = 0.55; }
+  lamp.intensity = 0.1; rim.intensity = 0.9;
+  if (q < BACK) {
+    const t = ease(q / BACK);
+    pos3 = [-1, lerp(-86, -30, t), -9]; look3 = [-1, lerp(-146, -80, t), lerp(-5, -4, t)];
+    setLock(0, 0); setRoom(0, 0, 0, 0); hemi.intensity = 0;
+    const f = lerp(0.5, 3.2, t); scene.fog.near = Math.min(0.6, f * 0.2); scene.fog.far = f;
+    step = 'Backing up the keyway: the key is in now';
+    headEl.style.opacity = 0;
+  } else {
+    pB = lerp(B3a, B3b, (q - BACK) / (1 - BACK));
+    const p = pB;
+    const orbit = ease(span(p, 0.54, 0.84)) * 1.1;
+    const far = [-150, 300, 150], ca = Math.cos(orbit), sa = Math.sin(orbit);
+    const farR = [far[0] * ca - far[1] * sa, far[0] * sa + far[1] * ca, far[2]];
+    pos3 = keys(p, [[0.26, [-1, -30, -9]], [0.32, [-1, -30, -9]], [0.46, far], [0.54, far], [0.84, farR]]);
+    look3 = keys(p, [[0.26, [-1, -80, -4]], [0.32, [-1, -80, -4]], [0.46, [0, -36, 60]], [0.54, [0, -36, 60]], [0.84, [0, -36, 50]]]);
+    setLock(0, ease(span(p, 0.56, 0.66)));
+    hemi.intensity = 0.5;
+    scene.fog.near = 0.6; scene.fog.far = lerp(3.2, 14, span(p, 0.3, 0.46));
+    headEl.style.opacity = Math.min(span(p, 0.44, 0.47), 1 - span(p, 0.53, 0.56));
+    step = p < 0.46 ? 'Out through the keyhole, pulling back: the lock has multiplied' : p < 0.54 ? 'The headline (placeholder)' : p < 0.66 ? 'The key turns' : 'The room turns, the wave runs through every lock';
+    pB = p;
+  }
+  const f = q < BACK ? lensF : lerp(lensF, b3F, ease(span(pB, 0.3, 0.46)));
+  if (Math.abs(camera.fov - f) > 1e-3) { camera.fov = f; camera.updateProjectionMatrix(); }
+  camera.position.copy(M(...pos3)); camera.up.copy(UP); camera.lookAt(M(...look3));
+  camera.updateMatrixWorld();
+  if (q >= BACK) setRoom(span(pB, 0.3, 0.46), span(pB, 0.56, 0.82), ease(span(pB, 0.32, 0.9)) * 0.35, 0);
+  return step;
+}
+// beat 3: lab B3's collapse, exactly (its p 0.84 to 0.93: every copy folds into the one lock), then the camera settles on
+// the one lock, centred, framed the way the lab's A views end (opt-a.js: lens 28, yaw -0.62, pitch 0.34, the whole lock
+// contained): beat 4 (the three views) starts from that frame
+const A_FOV = 28, A_YAW = -0.62, A_PITCH = 0.34;
+const lockBox = new THREE.Box3(); kit.parts.forEach((pt) => lockBox.union(pt.geo.boundingBox));
+const lockSph = lockBox.getBoundingSphere(new THREE.Sphere());
+function aPose() {
+  const t = Math.tan(A_FOV * Math.PI / 360), frac = Math.max(0.6, (H - 140) / H), wfrac = (W - 24) / W, s = lockSph.radius;
+  const d = Math.max(s * 2 / 2 / t / frac, s * 2 / 2 / t / camera.aspect / wfrac);
+  const c = lockSph.center;
+  return { pos: V(c.x + d * Math.sin(A_YAW) * Math.cos(A_PITCH), c.y + d * Math.sin(A_PITCH), c.z + d * Math.cos(A_YAW) * Math.cos(A_PITCH)), look: c.clone() };
+}
+// beat 3 (Wajih's picks, 27 Nov): fly home, then chaos, then one lock builds itself.
+//   1 the room turns back square and the camera pulls back to see all of it
+//   2 fly home: every copy flies back on an arc, nearest first, full size, turning one full turn on the way
+//   3 chaos: the one real lock bursts into its parts; each copy bursts into its parts as it arrives, and its pieces drift
+//     off, tumbling, into the dark (the copies carry only their big parts; only the real lock has pins and drivers)
+//   4 out of the chaos the real lock's parts come home one by one in the manifest's order (housing, plug, clip, key
+//     pins, drivers, cap, key) while the camera pushes in to the lab's A frame: one lock, centred, the key in it
+const PLUG_L = new THREE.Matrix4().makeTranslation(axisPt.x, axisPt.y, axisPt.z).multiply(new THREE.Matrix4().makeRotationAxis(AX, -Math.PI / 2)).multiply(new THREE.Matrix4().makeTranslation(-axisPt.x, -axisPt.y, -axisPt.z));
+const G = new THREE.Matrix4(), GP = new THREE.Matrix4(), TMP = new THREE.Matrix4(), ZERO = new THREE.Matrix4().makeScale(0, 0, 0), cq = new THREE.Quaternion(), YW = V(0, 1, 0);
+const dists = cells.map(([i, j, k]) => Math.hypot(i, j, k)), dMin = Math.min(...dists), dMax = Math.max(...dists);
+function rng(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const randDir = (r) => { const z = r() * 2 - 1, a = r() * Math.PI * 2, s = Math.sqrt(1 - z * z); return V(s * Math.cos(a), z, s * Math.sin(a)); };
+// the copies' debris: a direction, a spin axis and a speed for each big part of each copy
+const instC = inst.map(({ id }) => by(id).geo.boundingBox.getCenter(V(0, 0, 0)));
+const debris = cells.map((c, n) => inst.map((_, k) => { const r = rng(1000 + n * 7 + k); return { dir: randDir(r), axis: randDir(r), spin: 1.5 + r() * 2.5, speed: 0.8 + r() * 0.6 }; }));
+const arriveAt = (n) => 0.2 + (dists[n] - dMin) / (dMax - dMin) * 0.18 + 0.14;
+// the real lock's scramble: where each part waits in the chaos, and its turn there
+const scram = realParts.map(({ part }, n) => { const r = rng(77 + n * 13); return { off: randDir(r).multiplyScalar(1.3 + r() * 1.6), axis: randDir(r), ang: 2 + r() * 2.5, c: part.geo.boundingBox.getCenter(V(0, 0, 0)), order: part.order ?? 0 }; });
+const BURST = [0.3, 0.42], BUILD0 = 0.56, BUILD_STEP = 0.055, BUILD_DUR = 0.12;
+const Rq = new THREE.Quaternion(), Mc = new THREE.Matrix4(), Mci = new THREE.Matrix4(), Mr = new THREE.Matrix4(), Mt = new THREE.Matrix4();
+function setChaos(q, unwind) {
+  lattice.visible = true;
+  lattice.quaternion.setFromEuler(new THREE.Euler(unwind * 0.9, unwind * 1.4, unwind * 0.35));
+  lattice.updateMatrixWorld(); const camLocal = lattice.worldToLocal(camera.position.clone());
+  const s = step190, pp = V(0, 0, 0), sv = V(1, 1, 1);
+  cells.forEach(([i, j, k], n) => {
+    const st = arriveAt(n) - 0.14, e = ease(span(q, st, st + 0.14));
+    if (e < 1) {   // flying home
+      pp.set(i * s, j * s * 0.92, k * s).multiplyScalar(1 - e).addScaledVector(YW, Math.sin(Math.PI * e) * s * 0.55 * (j >= 0 ? 1 : -1));
+      cq.setFromAxisAngle(YW, 2 * Math.PI * e * (n % 2 ? 1 : -1));
+      const sc = clamp((camLocal.distanceTo(pp) - s * 0.45) / (s * 0.35));
+      G.compose(pp, cq, sv.set(sc, sc, sc)); GP.multiplyMatrices(G, PLUG_L);
+      inst.forEach(({ id, im }) => im.setMatrixAt(n, sc <= 0.001 ? ZERO : (id === 'plug' || id === 'key') ? GP : G));
+    } else {       // burst: its parts drift off, tumbling, into the dark
+      const t = q - arriveAt(n), b = 1 - Math.pow(1 - clamp(t / 0.25), 3);
+      inst.forEach(({ id, im }, k2) => {
+        const d = debris[n][k2], r = (2.2 * b + 26 * t) * d.speed * s / 3.23;
+        Rq.setFromAxisAngle(d.axis, d.spin * t * 6);
+        const c = instC[k2];
+        Mt.makeTranslation(d.dir.x * r, d.dir.y * r, d.dir.z * r);
+        Mc.makeTranslation(c.x, c.y, c.z); Mci.makeTranslation(-c.x, -c.y, -c.z); Mr.makeRotationFromQuaternion(Rq);
+        TMP.copy(Mt).multiply(Mc).multiply(Mr).multiply(Mci);
+        if (id === 'plug' || id === 'key') TMP.multiply(PLUG_L);
+        const wp = V(d.dir.x * r, d.dir.y * r, d.dir.z * r), sc = clamp((camLocal.distanceTo(wp) - s * 0.3) / (s * 0.3));
+        im.setMatrixAt(n, sc <= 0.001 ? ZERO : TMP);
+      });
+    }
+  });
+  inst.forEach(({ im }) => { im.instanceMatrix.needsUpdate = true; });
+  // the one real lock: out to the chaos, then home part by part
+  const out = ease(span(q, BURST[0], BURST[1]));
+  realParts.forEach(({ h }, n) => {
+    const sp = scram[n], back = ease(span(q, BUILD0 + sp.order * BUILD_STEP, BUILD0 + sp.order * BUILD_STEP + BUILD_DUR));
+    const k = out * (1 - back);
+    if (k <= 0.0001) { h.matrixAutoUpdate = true; return; }
+    h.matrixAutoUpdate = false; h.updateMatrix();   // its own place (a key pin keeps its lift)
+    const tumble = sp.ang * k + (q - BURST[0]) * 1.2 * k;
+    Rq.setFromAxisAngle(sp.axis, tumble);
+    Mt.makeTranslation(sp.off.x * k, sp.off.y * k, sp.off.z * k);
+    Mc.makeTranslation(sp.c.x, sp.c.y, sp.c.z); Mci.makeTranslation(-sp.c.x, -sp.c.y, -sp.c.z); Mr.makeRotationFromQuaternion(Rq);
+    TMP.copy(Mt).multiply(Mc).multiply(Mr).multiply(Mci);
+    h.matrix.premultiply(TMP); h.matrixWorldNeedsUpdate = true;
+  });
+}
+function restoreParts() { realParts.forEach(({ h }) => { h.matrixAutoUpdate = true; }); }
+function place3(q) {
+  keyH.visible = true; hall.visible = false; headEl.style.opacity = 0;
+  for (const k of ['brass', 'steel', 'dark']) { const m = mats[k], a = LOOK_IN[k]; m.color.copy(a.color); m.metalness = a.metal; m.roughness = a.rough; m.envMap = roomEnv; m.envMapIntensity = 0.55; }
+  lamp.intensity = 0.1; rim.intensity = 0.9; hemi.intensity = 0.5;
+  setLock(0, 1);
+  const orbit = 1.1, far = [-150, 300, 150], ca = Math.cos(orbit), sa = Math.sin(orbit);
+  const bPos = M(far[0] * ca - far[1] * sa, far[0] * sa + far[1] * ca, far[2]), bLook = M(0, -36, 50);
+  const ap = aPose(), dir = ap.pos.clone().sub(ap.look), dA = dir.length(); dir.normalize();
+  const wide = ap.look.clone().addScaledVector(dir, dA * 3.4);
+  const t1 = ease(span(q, 0, 0.2)), t3 = ease(span(q, 0.52, 1));
+  camera.position.copy(bPos).lerp(wide, t1).lerp(ap.pos, t3); camera.up.copy(UP); camera.lookAt(bLook.clone().lerp(ap.look, t1));
+  const f = lerp(b3F, A_FOV, t1); if (Math.abs(camera.fov - f) > 1e-3) { camera.fov = f; camera.updateProjectionMatrix(); }
+  camera.updateMatrixWorld();
+  scene.fog.near = 0.6; scene.fog.far = q < 0.5 ? lerp(14, 60, t1) : lerp(60, 14, ease(span(q, 0.5, 0.9)));
+  setChaos(q, 0.34 * (1 - t1));
+  return q < 0.2 ? 'The room turns back square; we pull back to see all of it' : q < 0.3 ? 'Flying home, nearest first'
+    : q < BUILD0 ? 'Chaos: every lock breaks into its parts' : q < 0.97 ? 'Out of the chaos, one lock builds itself' : 'One lock, centred, the key in it: beat 4 (the three views) starts here';
+}
+// ---------- beat 4: three ways to see one lock (the lab's A3, A1, A2 looks on the same real lock) ----------
+// A3 X-ray: the thief's view, five weak spots marked.
+// A1 matte engineering: our view, the same five spots, each fixed and named. A2 the real metals: your view, no labels.
+// Wajih (27 Nov): all three on the same dark ground as the hallway and the room (the site's dark-mode ground). Each look takes over with a wipe, a hairline sweeping across like a drafting move.
+// All words are the brief's placeholders. The model has no springs, so "springs" points at the cap that holds them.
+const sX = new THREE.Scene(), sM = new THREE.Scene(), sB = new THREE.Scene();
+const xrayMat = () => new THREE.ShaderMaterial({   // opt-a.js xrayMat, unchanged
+  uniforms: { glow: { value: 0 } }, transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, toneMapped: false,
+  vertexShader: `varying vec3 vN; varying vec3 vV; void main(){ vec4 mv = modelViewMatrix * vec4(position,1.); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }`,
+  fragmentShader: `uniform float glow; varying vec3 vN; varying vec3 vV; void main(){ float f = 1. - abs(dot(normalize(vN), normalize(vV))); float a = .05 + pow(f, 2.2) * .55 + glow * .25; gl_FragColor = vec4(vec3(.93,.95,.97) * a, a); }`,
+});
+const AMATS = { brass: { color: 0xC59A4E, metalness: 1, roughness: 0.34 }, steel: { color: 0xB8BBBF, metalness: 1, roughness: 0.3 }, dark: { color: 0x4E5256, metalness: 0.9, roughness: 0.42 } };
+sM.add(new THREE.HemisphereLight(0xffffff, 0xb9b6ae, 2.0)); { const k = new THREE.DirectionalLight(0xffffff, 1.4); k.position.set(-0.6, 1, 1.4); sM.add(k); }
+sB.environment = roomEnv; { const k = new THREE.DirectionalLight(0xfff4e0, 1.2); k.position.set(-1, 1.6, 1.2); sB.add(k); }
+const mirrors = [];   // [real mesh, its copies in the three looks]
+const realMeshOf = new Map(realParts.map(({ h, part }) => [part.id, h.children[0]]));
+kit.parts.forEach((p) => {
+  const real = realMeshOf.get(p.id); if (!real) return;
+  const mk = (sc, mat, edgeCol, edgeOp, thr) => {
+    const g = new THREE.Group(); g.matrixAutoUpdate = false; sc.add(g);
+    g.add(new THREE.Mesh(p.geo, mat));
+    if (edgeCol != null) { const eg = new THREE.EdgesGeometry(p.geo, thr); g.add(new THREE.LineSegments(eg, new THREE.LineBasicMaterial({ color: edgeCol, transparent: edgeOp < 1, opacity: edgeOp, toneMapped: false }))); }
+    return g;
+  };
+  mirrors.push([real, [
+    mk(sX, xrayMat(), 0xECF1F6, 0.7, p.group ? 60 : 38),
+    mk(sM, new THREE.MeshStandardMaterial({ color: 0xEAE8E3, roughness: 0.95, metalness: 0, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 }), 0x121212, 1, p.group ? 60 : 28),
+    mk(sB, new THREE.MeshStandardMaterial({ ...(AMATS[p.mat] || AMATS.steel), envMapIntensity: 1.0 }), null),
+  ]]);
+});
+{ // A2's soft contact shadow under the lock (opt-a.js), on the white paper
+  const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d');
+  const rg = g.createRadialGradient(64, 64, 0, 64, 64, 64); rg.addColorStop(0, 'rgba(0,0,0,.5)'); rg.addColorStop(1, 'rgba(18,18,18,0)'); g.fillStyle = rg; g.fillRect(0, 0, 128, 128);
+  const sh = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 1.4), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false, toneMapped: false }));
+  sh.rotation.x = -Math.PI / 2; sh.position.y = lockBox.min.y - 0.02; sB.add(sh);
+}
+// the five spots: the part each one sits on, the thief's weak spot, our fix (the brief's placeholders)
+const SPOTS = [
+  { id: 'key', name: 'Key', weak: 'Weak passwords', fix: 'Only the right people get in', at: (b) => V(b.getCenter(V()).x, b.getCenter(V()).y, b.max.z * 0.85 + b.min.z * 0.15) },
+  { id: 'keypin3', name: 'Pins', weak: 'An open back door', fix: 'Every request checked' },
+  { id: 'plug', name: 'Plug', weak: 'Data lying in the open', fix: 'Your data locked away' },
+  { id: 'housing', name: 'Housing', weak: 'Old software', fix: 'Built strong from the start', at: (b) => V(b.max.x, b.getCenter(V()).y - (b.max.y - b.min.y) * 0.25, b.getCenter(V()).z) },
+  { id: 'cap', name: 'Springs', weak: 'No alerts', fix: 'Alerts when something\'s wrong' },
+];
+const lblWrap = document.getElementById('lbls'), over = document.getElementById('over'), og = over.getContext('2d');
+SPOTS.forEach((s, i) => {
+  s.local = (s.at || ((b) => b.getCenter(V())))(by(s.id).geo.boundingBox);
+  s.el = document.createElement('div'); s.el.className = 'lbl'; lblWrap.append(s.el); s.n = String(i + 1).padStart(2, '0');
+});
+const lookEl = document.getElementById('look'), lookE = document.getElementById('lookE'), lookB = document.getElementById('lookB');
+const LOOKS4 = {
+  x: { bg: 0x0A0A0B, tm: THREE.NoToneMapping, ex: 1, ink: '#EDEEF0', e: 'The thief\'s view · X-ray', b: 'He sees straight through it. (placeholder)' },
+  m: { bg: 0x0A0A0B, tm: THREE.NoToneMapping, ex: 1, ink: '#EDEEF0', e: 'Our view · matte', b: 'The same five spots, each one fixed. (placeholder)' },
+  b: { bg: 0x0A0A0B, tm: THREE.ACESFilmicToneMapping, ex: 1.05, ink: '#EDEEF0', e: 'Your view · brass', b: 'Polished, closed. It just works. (placeholder)' },
+};
+const SC4 = { x: sX, m: sM, b: sB };
+let b4 = null;   // set while beat 4 is on screen: { q }
+function place4(q) {
+  place3(1);   // the one lock as beat 3 left it, every part home, the key in
+  const yaw = lerp(A_YAW, -0.42, ease(q)), t = Math.tan(A_FOV * Math.PI / 360), frac = Math.max(0.6, (H - 140) / H), wfrac = (W - 24) / W, s = lockSph.radius;
+  const d = Math.max(s / t / frac, s / t / camera.aspect / wfrac), c = lockSph.center;
+  camera.position.set(c.x + d * Math.sin(yaw) * Math.cos(A_PITCH), c.y + d * Math.sin(A_PITCH), c.z + d * Math.cos(yaw) * Math.cos(A_PITCH));
+  camera.up.copy(UP); camera.lookAt(c); camera.updateMatrixWorld();
+  b4 = { q };
+  return q < 0.08 ? 'The X-ray sweeps in' : q < 0.36 ? 'The thief\'s view: five weak spots (placeholders)' : q < 0.44 ? 'Matte sweeps in' : q < 0.72 ? 'Our view: the same five spots, each fixed (placeholders)' : q < 0.8 ? 'Brass sweeps in' : 'Your view: polished, closed, it just works';
+}
+function pass(key, x0, x1) {
+  const L = key === 'dark' ? { bg: 0x0A0A0B, tm: THREE.ACESFilmicToneMapping, ex: 1.08 } : LOOKS4[key];
+  renderer.setScissor(x0, 0, Math.max(0, x1 - x0), H);
+  renderer.setClearColor(L.bg, 1); renderer.toneMapping = L.tm; renderer.toneMappingExposure = L.ex;
+  renderer.clear(); renderer.render(key === 'dark' ? scene : SC4[key], camera);
+}
+function render4() {
+  const q = b4.q;
+  scene.updateMatrixWorld();
+  mirrors.forEach(([real, copies]) => copies.forEach((g) => { g.matrix.copy(real.matrixWorld); g.matrixWorldNeedsUpdate = true; g.visible = real.parent.visible; }));
+  const steps = [['dark', 'x', 0, 0.08], ['x', 'm', 0.36, 0.44], ['m', 'b', 0.72, 0.8]];
+  let from = 'x', to = null, w = 0;
+  for (const [a, b, s0, s1] of steps) { if (q < s0) { from = a; to = null; break; } if (q < s1) { from = a; to = b; w = ease(span(q, s0, s1)); break; } from = b; }
+  renderer.autoClear = false; renderer.setScissorTest(true);
+  pass(from, 0, W);
+  const wx = Math.round(w * W);
+  if (to) pass(to, 0, wx);
+  renderer.setScissorTest(false); renderer.autoClear = true;
+  renderer.setClearColor(0x0A0A0B, 1); renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.08;
+  // the overlay: the wipe's hairline, then the leaders
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  if (over.width !== Math.round(W * dpr) || over.height !== Math.round(H * dpr)) { over.width = Math.round(W * dpr); over.height = Math.round(H * dpr); }
+  og.clearRect(0, 0, over.width, over.height);
+  if (to && w > 0 && w < 1) { og.strokeStyle = '#EDEEF0'; og.lineWidth = dpr; og.beginPath(); og.moveTo(wx * dpr, 0); og.lineTo(wx * dpr, H * dpr); og.stroke(); }
+  const settled = to ? null : from;
+  const showX = settled === 'x' ? span(q, 0.1, 0.12) : 0, showM = settled === 'm' ? span(q, 0.46, 0.48) : 0;
+  const mode = showX > 0 ? 'x' : showM > 0 ? 'm' : null;
+  const lk = settled && settled !== 'dark' ? LOOKS4[settled] : null;
+  lookEl.style.opacity = lk ? 1 : 0;
+  if (lk) { lookE.textContent = lk.e; lookB.textContent = lk.b; lookEl.style.color = lk.ink; }
+  if (b4.five != null) {   // beat 5: the brass caption goes, then "Locked."
+    const f = b4.five, a = 1 - span(f, 0.02, 0.08), l = span(f, 0.76, 0.82);
+    if (f < 0.4) { lookEl.style.opacity = a; } else { lookE.textContent = ''; lookB.textContent = 'Locked.'; lookEl.style.opacity = l; }
+  }
+  const pts = [];
+  SPOTS.forEach((s, i) => {
+    const t0 = mode === 'x' ? 0.1 + i * 0.03 : 0.46 + i * 0.03;
+    const on = !!mode && q >= t0;
+    s.el.classList.toggle('on', on); s.el.classList.toggle('xr', mode === 'x'); s.el.classList.toggle('mt', mode === 'm');
+    if (!mode) return;
+    const wp = s.local.clone().applyMatrix4(realMeshOf.get(s.id).matrixWorld).project(camera);
+    pts.push({ s, on, x: (wp.x + 1) / 2 * W, y: (1 - wp.y) / 2 * H });
+  });
+  if (!pts.length) return;
+  const cx = pts.reduce((a, p) => a + p.x, 0) / pts.length, cy = pts.reduce((a, p) => a + p.y, 0) / pts.length;
+  const R = Math.min(W, H) * 0.3;
+  pts.forEach((p) => { let dx = p.x - cx, dy = p.y - cy; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l; p.side = dx < 0 ? -1 : 1; p.lx = cx + p.side * R * 1.05; p.ly = p.y + dy * 30; });
+  [-1, 1].forEach((sd) => { const g = pts.filter((p) => p.side === sd).sort((a, b) => a.ly - b.ly); for (let i = 1; i < g.length; i++) if (g[i].ly - g[i - 1].ly < 34) g[i].ly = g[i - 1].ly + 34; });
+  og.strokeStyle = 'rgba(237,238,240,.85)'; og.fillStyle = og.strokeStyle; og.lineWidth = dpr;
+  pts.forEach((p) => {
+    p.s.el.innerHTML = `<i>${p.s.n}</i><span>${p.s.name} · ${mode === 'x' ? p.s.weak : p.s.fix}</span>`;
+    const lx = Math.max(16, Math.min(W - 16, p.lx));
+    p.s.el.style.transform = `translate(${lx + (p.side < 0 ? -6 : 6)}px, ${p.ly}px) translate(${p.side < 0 ? '-100%' : '0'}, -50%)`;
+    if (!p.on) return;
+    og.beginPath(); og.moveTo(p.x * dpr, p.y * dpr); og.lineTo(lx * dpr, p.ly * dpr); og.stroke();
+    og.beginPath(); og.arc(p.x * dpr, p.y * dpr, 2.5 * dpr, 0, 7); og.fill();
+  });
+}
+// ---------- beat 5: "Locked." In brass (your view), the key turns back, then comes out the way it went in: each pin
+// drops as the key's cuts pass under it (the real key's profile). The plug can't turn now. "Locked." Page 4 (how we work)
+// starts from this lock with no key in it: the wrong key goes in next.
+function place5(q) {
+  place4(1);
+  const turn = 1 - ease(span(q, 0.06, 0.3)), off = lerp(0, 170, ease(span(q, 0.36, 0.72)));
+  setLock(off, turn); keyH.visible = off < 165;
+  const yaw = lerp(-0.42, -0.3, ease(q)), t = Math.tan(A_FOV * Math.PI / 360), frac = Math.max(0.6, (H - 140) / H), wfrac = (W - 24) / W, s = lockSph.radius;
+  const d = Math.max(s / t / frac, s / t / camera.aspect / wfrac), c = lockSph.center;
+  camera.position.set(c.x + d * Math.sin(yaw) * Math.cos(A_PITCH), c.y + d * Math.sin(A_PITCH), c.z + d * Math.cos(yaw) * Math.cos(A_PITCH));
+  camera.up.copy(UP); camera.lookAt(c); camera.updateMatrixWorld();
+  b4 = { q: 1, five: q };
+  return q < 0.06 ? 'Your view, in brass' : q < 0.32 ? 'The key turns back' : q < 0.74 ? 'The key comes out: each pin drops as its cut passes' : q < 0.97 ? 'Locked.' : 'Page 4 (how we work) starts here: the wrong key goes in';
+}
+function clear4() {
+  if (!b4) return; b4 = null; og.clearRect(0, 0, over.width, over.height); lookEl.style.opacity = 0; SPOTS.forEach((s) => s.el.classList.remove('on'));
+}
+const beatEl = document.getElementById('beat'), headEl = document.getElementById('head');
+
+function place(p) {
+  const T = 1 / 5;
+  if (p < 3 * T) clear4();
+  if (p < T) { beatEl.textContent = 'Beat 1 (the steady push)'; return place1(p / T); }
+  if (p < 2 * T) { beatEl.textContent = 'Beat 2 (the room of locks)'; return place2((p - T) / T); }
+  if (p < 3 * T) { beatEl.textContent = 'Beat 3 (they fold into one lock)'; return place3((p - 2 * T) / T); }
+  if (p < 4 * T) { beatEl.textContent = 'Beat 4 (the three views)'; return place4((p - 3 * T) / T); }
+  beatEl.textContent = 'Beat 5 ("Locked.")'; return place5((p - 4 * T) / T);
+}
+
+// ---------- scroll drives the stage ----------
+const stepEl = document.getElementById('step'), progEl = document.getElementById('prog'), hudEl = document.querySelector('.hud'), hudB = document.querySelector('.hud b');
+let target = 0, cur = 0, last = 0, W = 0, H = 0;
+function size() {
+  W = innerWidth; H = innerHeight; renderer.setSize(W, H, false); frame(W, H);
+}
+addEventListener('resize', size); size();
+const readScroll = () => { const max = document.documentElement.scrollHeight - innerHeight; target = max > 0 ? clamp(scrollY / max) : 0; };
+addEventListener('scroll', readScroll, { passive: true }); readScroll(); cur = target;
+document.getElementById('load').remove();
+function loop(ts) {
+  const dt = last ? Math.min(0.05, (ts - last) / 1000) : 0; last = ts;
+  cur += (target - cur) * Math.min(1, dt * 10 || 1);
+  const s = place(cur); if (stepEl.textContent !== s) stepEl.textContent = s;
+  progEl.style.width = (cur * 100).toFixed(1) + '%';
+  if (b4) render4(); else renderer.render(scene, camera);
+  
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+window.__set = (p) => { target = cur = p; place(p); if (b4) render4(); else renderer.render(scene, camera); };
+</script>
+</body>
+</html>

@@ -23,18 +23,22 @@
 //   iPhone 18 and Galaxy S26 (local only, realphones.js), which turn slowly in the frame's spotlight.
 // - The end: a wall facing you, the door centred in it (about 0.9 x 2.1), two panels, shut. Its lock (pass 2): the real
 //   Cutaway Lock in polished brass (the site's one warm tone), on the door's right edge strip at handle height. The walk
-//   ends standing in front of the shut door; the hallway hands over to page 3 as before: the screen turns blue and page
-//   3's first frame (the lock in X-ray) fades in (XRAY).
+//   ends standing in front of the shut door.
+// - The security page's beat 1 (27 Nov, Part 5 "The security page, as demoed"; BEAT1): the walk carries on straight into
+//   the lock and down its keyway past the pins, out the back of the plug into the dark (see beat1() below). It replaces
+//   the blue-screen X-ray hand-over. Until beat 2 (the room of locks) is built, the dark end fades plainly into page 3's
+//   first frame as it is today (XRAY, temporary: STATE.md).
 import * as THREE from 'three';
 import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { FRAMES, OPENING, dimParts, MOUNT, PHONE_PAIR } from './corridor-drawings.js';
 import { LOOKS, HALL as LOOK_ID } from './hall-looks.js';
 import { grid } from '../engine/grid.js';
 import { studio } from '../phones/studio.js';
-import { loadLockParts, endFaceHeight } from '../page03/lock3d.js';
+import { loadLockParts, endFaceHeight, FACE } from '../page03/lock3d.js';
 
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const span = (p, a, b) => clamp((p - a) / (b - a));
@@ -42,6 +46,24 @@ const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const ease2 = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
 const easeSine = (t) => (1 - Math.cos(Math.PI * t)) / 2;
 const lerp = (a, b, t) => a + (b - a) * t;
+
+// ---------- the security page's beat 1 (27 Nov): the lab's own pieces ----------
+// lock3d's lock space -> the lock's model millimetres (the STL files, the lab and the reference demo: x across, y out of
+// the face, z up; lock3d's lock space is (-x, z, y) of them)
+const LOCK_TO_MODEL = new THREE.Matrix4().set(-1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1);
+/** the key's top edge along its length (model mm), sampled from the real key mesh (site/dev/lab/opt-b.js keyProfile, unchanged) */
+function keyProfile(geo, inv) {
+  const pos = geo.attributes.position, idx = geo.index, bins = new Map(), v = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
+  const put = (p) => { if (Math.abs(p.x + 1) > 3.2) return; const b = Math.round(p.y * 4); bins.set(b, Math.max(bins.get(b) ?? -1e9, p.z)); };
+  const n = idx ? idx.count : pos.count, q = new THREE.Vector3();
+  for (let i = 0; i < n; i += 3) {
+    for (let j = 0; j < 3; j++) v[j].fromBufferAttribute(pos, idx ? idx.getX(i + j) : i + j).applyMatrix4(inv);
+    for (let j = 0; j < 3; j++) for (let t = 0; t <= 8; t++) put(q.lerpVectors(v[j], v[(j + 1) % 3], t / 8));
+  }
+  return (y) => { const b = Math.round(y * 4); let z = -1e9; for (let d = -1; d <= 1; d++) z = Math.max(z, bins.get(b + d) ?? -1e9); return z; };
+}
+const PIN_Y = [-9.7, -22.7, -35.7, -48.7, -61.7];       // the five pin stacks along the key (model y: manifest.json pins.y)
+const PIN_BOTTOM = [1.8, 0.4, -1.0, -2.4, -3.8];        // each key pin's foot at rest (model z: opt-b.js)
 
 /** the site's lens (page 3 starts on the hallway's last frame with it): 50 degrees across the narrower side, at most 66
  *  degrees across (the camera distance P of the screen plane) */
@@ -74,7 +96,7 @@ function frameDims(d) {
 const DIMS = FRAMES.map((F) => frameDims(F.draw));
 
 // ---------- the timeline, in screens of scroll (q = screens / DIVE) ----------
-export const DIVE = 5.4;
+export const DIVE = 6.9;   // 27 Nov: + the security page's beat 1 (1.5 screens; was 5.4)
 const S_ = (screens) => screens / DIVE;
 export const WAY_IN = [S_(0.02), S_(0.32)];      // the sketch stretches out into depth
 export const OPEN_AT = [S_(0.3), S_(0.95)];      // the opening line
@@ -83,7 +105,14 @@ export const LIGHTS = [S_(0.92), S_(1.18)];      // the spotlights and the strip
 export const FRAMES_IN = [S_(1.1), S_(1.24)];    // the frames appear, lit
 export const WALK = [S_(1.2), S_(5.0)];          // the walk: one steady pace, from the mouth to the shut door
 export const DOOR = { walk: [S_(4.3), S_(5.0)], end: S_(5.0) };
-export const XRAY = [S_(5.16), S_(5.36)];        // the hand-over to page 3 (its first frame: the lock in X-ray, on blue)
+// the security page's beat 1 (27 Nov): the steady push into the lock, in through the keyhole, past the pins, out into the
+// dark; 1.5 screens, its moments as shares of it (the reference demo's place1: the face fills the screen at 0.46, the
+// camera is at the keyway's mouth at 0.58, past the last pin at 0.9, then out the back of the plug into the dark)
+export const BEAT1 = [S_(5.0), S_(6.5)];
+export const B1 = { fill: 0.46, mouth: 0.58, pins: 0.9 };
+// the hand-over to page 3: TEMPORARY (until beat 2, the room of locks): a plain fade from beat 1's dark end to page 3's
+// first frame as it is today (the lock in X-ray, on blue)
+export const XRAY = [S_(6.6), S_(6.8)];
 // frame 5's held show, in screens of scroll into the hold (page.js holds the walk this long once frame 5 is fully open)
 export const SHOW = { len: 2.9, draw: [0, 0.4], real: [0.4, 0.65], lift: [0.5, 1.0], turn: [[1.05, 2.55], [1.3, 2.8]] };
 export const STOPS = [];                         // per frame [fully open, closest] (q), set by layout (for the tests)
@@ -223,7 +252,7 @@ export function createDive(root, top, { base = '' } = {}) {
 
   // world units are CSS px at the screen plane (the hall's mouth, z = 0); K px to one hall unit (layout)
   let W = 1, H = 1, P = 1, K = 1, X = 1, FY = -1, CY = 1, L = 1, ink = '#121212', paper = '#F6F7F9', dark = false, gu = 20;
-  let z0 = 1, zEnd = 0, Dend = 1, hX = 1, Dx = 1, portrait = false, bandR = null, E = HALL.eye, limits = null;
+  let z0 = 1, zEnd = 0, Dend = 1, hX = 1, Dx = 1, portrait = false, bandR = null, E = HALL.eye, limits = null, faceH = 1, lens0 = { near: 1, far: 1e5 };
 
   // ---------- the painted light: each surface's light (R) and shade (B), in the hall's own units, painted once ----------
   function paintHall() {
@@ -360,11 +389,30 @@ export function createDive(root, top, { base = '' } = {}) {
 
   // ---------- the door's lock (pass 2): the real Cutaway Lock in polished brass, on the leaf's right edge strip at
   // handle height, its face to you (lock3d.js; hall units, the holder scaled by K). The studio light is its only light ----------
-  const lock = new THREE.Group(); scene.add(lock);
+  // 27 Nov (beat 1): the lock lives in its own scene (lockScene), drawn right after the hall with the hall's depth kept, so
+  // beat 1's fog and lights touch only the lock (the hall's materials never compile for them)
+  const lockScene = new THREE.Scene();
+  const lock = new THREE.Group(); lockScene.add(lock);
   lock.renderOrder = 1;
   const brass = new THREE.MeshStandardMaterial({ color: new THREE.Color('#D8B26A'), metalness: 1, roughness: 0.26, envMapIntensity: 0.75, transparent: true, opacity: 0 });
   brass.envMapRotation.set(0, 1.5 * Math.PI, 0);   // turned so the face catches the studio's soft boxes (straight on, it reflects their dark side)
   let doorLock = null;
+  // beat 1's looks: the door's polished brass on the studio light (every part, as the door has always shown it), blending
+  // into lab B1's inside look (opt-b.js: darker brass, steel, dark drivers, the room light, fog, a headlamp and a rim)
+  const LOOK_DOOR = { color: new THREE.Color('#D8B26A'), metal: 1, rough: 0.26 };
+  const LOOK_IN = {
+    brass: { color: new THREE.Color(0xB88F48), metal: 1, rough: 0.42 },
+    steel: { color: new THREE.Color(0xB8BBBF), metal: 1, rough: 0.28 },
+    dark: { color: new THREE.Color(0x5A5E62), metal: 0.9, rough: 0.38 },
+  };
+  const mats = { brass, steel: brass.clone(), dark: brass.clone() };
+  const MAT_OF = (n) => (n === 'clip' || n === 'key' ? 'steel' : n.startsWith('drv') ? 'dark' : 'brass');   // as the lab's manifest
+  lockScene.fog = new THREE.Fog(0x0A0A0B, 1e12, 2e12);   // (off until beat 1 reaches the keyhole)
+  const lamp = new THREE.PointLight(0xfff1dc, 0, 0, 1); lockScene.add(lamp);            // a headlamp: we carry the light in
+  const rim = new THREE.DirectionalLight(0xffe7c2, 0); rim.position.set(-1, 1.5, 0.6); lockScene.add(rim);
+  let studioEnv = null, roomEnv = null;
+  const ENV_ROOM = 2.6;   // the room light's intensity that matches the studio light's at the swap (measured on the laptop: 79 vs 75-79 grey)
+  const b1 = { U: 55, profile: null, keyH: null, pins: [], drivers: [], look: -1 };   // U: mm per unit of the lab's world
 
   // the static hairlines: the hall's edges, its skirting, the door and its panels (cut round every word on screen)
   const edgeMat = lmat({ opacity: LOOK.edges.sketch });
@@ -382,7 +430,9 @@ export function createDive(root, top, { base = '' } = {}) {
   let xLock = null, lockParts = null;
   const door = { lockState: 'idle' };
   /** the real "Cutaway Lock" (lock3d.js): in brass on the door, and in X-ray for the hand-over */
-  async function loadLock(b = base) {
+  let lockP = null;
+  function loadLock(b = base) { return lockP || (lockP = loadLock_(b)); }
+  async function loadLock_(b) {
     if (door.lockState !== 'idle') return; door.lockState = 'loading';
     try {
       lockParts = await loadLockParts(b);
@@ -391,14 +441,144 @@ export function createDive(root, top, { base = '' } = {}) {
       xLock.solids.forEach((m) => { m.visible = false; });
       xLock.lineMats.forEach((m) => { m.resolution.set(Math.round(W * dpr), Math.round(H * dpr)); m.linewidth = Math.max(1, Math.round(dpr)); m.depthTest = false; lineMats.push(m); });
       xLock.xray(1); xLock.setKey(0); xLock.setFaceHeight(hX); xHolder.add(xLock.root);
-      doorLock = lockParts.build({ inside: false });
+      // 27 Nov (beat 1): the whole real lock, its key pins and drivers solid (the camera rides under them); the key is
+      // unseen (you are the key): only its profile is used, to lift the pins
+      doorLock = lockParts.build({ inside: true, solidInside: true });
       doorLock.root.traverse((o) => { if (o.isLineSegments2) o.visible = false; });
-      doorLock.solids.forEach((m) => { m.geometry = toCreasedNormals(m.geometry, Math.PI / 5); m.material = brass; m.renderOrder = 1; });
+      doorLock.solids.forEach((m) => { m.geometry = toCreasedNormals(m.geometry, Math.PI / 5); m.material = mats[MAT_OF(m.userData.part)]; m.renderOrder = 1; });
       doorLock.setFaceHeight(HALL.door.lock.face);
+      b1.keyH = doorLock.groups.key; b1.keyH.removeFromParent();
+      b1.pins = doorLock.groups.pins; b1.drivers = doorLock.groups.drivers;
+      const kp = lockParts.by.key, kg = new THREE.BufferGeometry();
+      kg.setAttribute('position', new THREE.BufferAttribute(kp.pos, 3)); kg.setIndex(new THREE.BufferAttribute(kp.idx, 1));
+      b1.profile = keyProfile(kg, LOCK_TO_MODEL);
+      // the lab's world unit (its kit scales the whole lock to 2 units across its largest side): the demo's fog, near
+      // plane and headlamp are given in it
+      { const bx = new THREE.Box3(), v = new THREE.Vector3(); lockParts.parts.forEach((pt) => { for (let i = 0; i < pt.pos.length; i += 3) bx.expandByPoint(v.fromArray(pt.pos, i)); });
+        const sz = bx.getSize(v); b1.U = Math.max(sz.x, sz.y, sz.z) / 2; }
       lock.add(doorLock.root);
-      try { renderer.compile(scene, camera); } catch (e) {}
+      setLock(260);
+      try { renderer.compile(scene, camera); renderer.compile(lockScene, camera); } catch (e) {}
       door.lockState = 'ready'; render(lastQ, true);
     } catch (e) { console.warn('[dive] lock', e); door.lockState = 'missing'; }
+  }
+
+  // ---------- the security page, beat 1 (27 Nov, Part 5 "The security page, as demoed"): the steady push ----------
+  // From where the walk ends (standing at the shut door) the walk carries on straight into the door's brass lock, no cut:
+  // its distance to the lock's face falls evenly on a log scale (the lock grows on screen at a steady rate, so the walk
+  // slows gently) until the face fills 92% of the room between the strip and the title block (lock3d.js endFaceHeight).
+  // The camera settles onto the keyway's mouth (lab B1's [-1, 6, -9] mm) and goes in, down the keyway past the five
+  // pins to y = -70 mm, then out the back of the plug into the dark. You are the key: the real key rides 3 mm behind the
+  // camera, unseen, and its profile lifts each pin as it passes (opt-b.js keyProfile and setLock). The look blends from
+  // the door's polished brass on the studio light to lab B1's inside (its darker brass, steel and dark drivers, the room
+  // light, the fog, a headlamp and a rim) as the camera enters; the hall stops drawing once inside. The reference:
+  // tools/reference/security-demo-27nov.html place1(), whose numbers are the lock's model mm and the lab's world units.
+  const b1v = { F: V3(), start: V3(), dir: V3(), look: V3(), Z: V3(0, 0, 1) };
+  /** the lock's model mm -> world (lock3d's lock space is (-x, z, y) of it; the holder carries it onto the door) */
+  const MM = (x, y, z, out = V3()) => out.set(-x, z, y).applyMatrix4(doorLock.body.matrixWorld);
+  /** opt-b.js setLock (the plug's turn is beat 5's): off = mm the key's tip sits out of the lock; each key pin and its
+   *  driver ride on the key's profile where they meet it */
+  function setLock(off) {
+    if (b1.keyH) b1.keyH.position.set(0, 0, off);   // along the keyway (model y = lock z), unseen
+    b1.pins.forEach((h, i) => {
+      const yk = PIN_Y[i] - off;
+      const lift = yk < -80 || off > 200 ? 0 : clamp(b1.profile(yk) - PIN_BOTTOM[i], 0, 6);
+      h.position.y = lift; b1.drivers[i].position.y = lift;   // up (model z = lock y)
+    });
+    b1.off = off;
+  }
+  /** the materials for a share of the way inside (0: the door's polished brass on the studio light .. 1: lab B1) */
+  function lockLook(inside) {
+    if (inside === b1.look) return; b1.look = inside;
+    for (const k of ['brass', 'steel', 'dark']) {
+      const m = mats[k], a = LOOK_IN[k];
+      m.color.copy(LOOK_DOOR.color).lerp(a.color, inside); m.metalness = lerp(LOOK_DOOR.metal, a.metal, inside); m.roughness = lerp(LOOK_DOOR.rough, a.rough, inside);
+      const env = inside > 0.5 && roomEnv ? roomEnv : studioEnv; if (env && m.envMap !== env) m.envMap = env;
+    }
+    lamp.intensity = 0; rim.intensity = 0.9 * inside;
+  }
+  /** before beat 1 (and scrolling back out of it): the door's lock at rest, the hall's own lens */
+  function restLock() {
+    lockLook(0); if (b1.off !== 260) setLock(260);
+    lamp.intensity = 0; lockScene.fog.near = 1e12; lockScene.fog.far = 2e12;
+    if (camera.near !== lens0.near || camera.far !== lens0.far) { camera.near = lens0.near; camera.far = lens0.far; camera.updateProjectionMatrix(); }
+    return null;
+  }
+  /** does the lock's face cover the whole screen? Its solid part (lock space: x -9.5 .. 21, clear of the notch on its
+   *  left; y -21 .. 54, under the slots in its top; the face's plane z = 0) seen through the camera */
+  const fcV = V3();
+  function faceCovers() {
+    const xs = [], ys = [];
+    for (const [x, y] of [[-9.5, -21], [21, -21], [21, 54], [-9.5, 54]]) {
+      fcV.set(x, y, 0).applyMatrix4(doorLock.body.matrixWorld).applyMatrix4(camera.matrixWorldInverse); if (fcV.z > -camera.near) return false;
+      fcV.applyMatrix4(camera.projectionMatrix); xs.push((fcV.x + 1) / 2 * W); ys.push((1 - fcV.y) / 2 * H);
+    }
+    // corners in order: bottom left, bottom right, top right, top left (screen y down)
+    return Math.max(xs[0], xs[3]) <= 0 && Math.min(xs[1], xs[2]) >= W && Math.max(ys[2], ys[3]) <= 0 && Math.min(ys[0], ys[1]) >= H;
+  }
+  /** beat 1 at p (0..1): places the camera, lifts the pins, sets the look, the fog and the lens */
+  function beat1(p) {
+    lock.updateMatrixWorld(true);
+    const mmW = HALL.door.lock.face * K / FACE.h, U = b1.U * mmW;   // world units per mm, per unit of the lab's world
+    const { fill: P1, mouth: P2, pins: P3 } = B1;
+    const F = MM(0, 0, 20, b1v.F), start = b1v.start.copy(camera.position);   // the face's middle; where the walk ended
+    // the face 92% of the screen's height at the fill (the brief and the demo; lock3d.js endFaceHeight's 0.92 is of the room
+    // between the strip and the title block, which on a phone is about half the screen: the camera goes on in regardless)
+    const dFill = HALL.door.lock.face * K * P / (0.92 * H), dFillMM = dFill / mmW;
+    let off = 260, inside = 0, step;
+    if (p < P1) {
+      // the push: the distance falls evenly on a log scale; the line of approach swings onto the face's axis and the eye
+      // turns from straight ahead (as the walk left it) to the face's middle
+      const t = p / P1, d0 = start.distanceTo(F), d = d0 * Math.pow(dFill / d0, t), k = ease(span(t, 0.05, 0.85));
+      b1v.dir.copy(start).sub(F).normalize().lerp(b1v.Z, k).normalize();
+      camera.position.copy(F).addScaledVector(b1v.dir, d);
+      b1v.look.set(start.x, start.y, F.z).lerp(F, k);
+      step = t < 0.04 ? 'door' : t < 0.9 ? 'push' : 'fill';
+    } else if (p < P2) {
+      // onto the keyway's mouth
+      const t = span(p, P1, P2), e = ease(t);
+      MM(lerp(0, -1, e), dFillMM * Math.pow(6 / dFillMM, t), lerp(20, -9, e), camera.position);
+      MM(lerp(0, -1, e), lerp(0, -60, e), lerp(20, -6, e), b1v.look);
+      inside = span(t, 0.3, 1); step = 'keyhole';
+    } else if (p < P3) {
+      // down the keyway, past the pins; the key's tip 3 mm behind the camera
+      const t = span(p, P2, P3), y = lerp(6, -70, ease(t));
+      MM(-1, y, -9, camera.position); MM(-1, y - 60, -5 + 4 * Math.sin(Math.PI * t), b1v.look);
+      off = clamp(y + 3 + 80, 0, 260); inside = 1; step = 'pins';
+    } else {
+      // out the back of the plug, into the dark
+      const t = span(p, P3, 1), y = lerp(-70, -86, ease(t));
+      MM(-1, y, -9, camera.position); MM(-1, y - 60, -5, b1v.look);
+      off = clamp(y + 3 + 80, 0, 260); inside = 1; step = 'dark';
+    }
+    camera.up.set(0, 1, 0); camera.lookAt(b1v.look); camera.updateMatrixWorld();
+    setLock(off);
+    lockLook(inside);
+    // the light. The demo swapped the studio light for the room light in one step at half way in (the face's brightness
+    // jumped in one frame): here the studio light dims to ENV_LOW, the swap happens there, and the room light comes up.
+    // Past the last pin every light fades to dark by the plug's back, so the keyway's walls go dark before they pass.
+    const exitK = span(p, P3, 0.965), lit = Math.pow(1 - exitK, 1.5), ENV_LOW = 0.04;
+    const envI = inside <= 0.5 ? lerp(0.75, ENV_LOW, span(inside, 0.15, 0.5)) : lerp(ENV_LOW * ENV_ROOM, 0.55, span(inside, 0.5, 0.85));
+    for (const k of ['brass', 'steel', 'dark']) mats[k].envMapIntensity = envI * lit;
+    rim.intensity = 0.9 * inside * lit;
+    lamp.intensity = 0.1 * inside * U * lit; lamp.distance = 2.0 * U; lamp.position.copy(camera.position);   // (decay 1: scaled by the unit)
+    // (the demo closed the fog from 3.2 to 0.5 over P3 + 0.03 .. 1, its near edge at a fifth of that; the keyway's walls,
+    // 3-4 mm from the camera, stayed inside the near edge, bright, and vanished in a couple of frames as the camera left
+    // the plug. Here, past the last pin, the fog closes evenly on a log scale to 0.06 units by the plug's back (about
+    // 0.965) with its near edge at a twentieth, so the walls fade evenly into the dark before they pass)
+    const fogFar = p < P2 ? lerp(2e4, 3.2, span(p, P1 + 0.06, P2) ** 0.35) : 3.2 * Math.pow(0.06 / 3.2, exitK);
+    lockScene.fog.near = Math.min(0.6, fogFar * lerp(0.2, 0.05, exitK)) * U; lockScene.fog.far = fogFar * U;
+    // the lens: a near plane close enough for the keyway (the lab's 0.0015 units inside), the far one only as far as is seen
+    // the hall stops drawing once the lock's face covers the whole screen (from then on only the keyway shows past it, and
+    // through it the lock's own dark inside, not the door's leaf, whose plane cuts through the lock's body)
+    const hall = p < P2 && !faceCovers(), nearMin = 0.0015 * U;
+    camera.near = hall ? clamp(0.05 * camera.position.distanceTo(F), nearMin, lens0.near) : nearMin;
+    camera.far = hall ? Math.min(lens0.far, Math.max(camera.near * 20, camera.position.z + L + 2 * K)) : Math.max(camera.near * 20, Math.min(2 * fogFar * U, camera.position.distanceTo(F) + 4 * U));   // (the whole lock is about 2 units)
+    camera.updateProjectionMatrix();
+    // for the checks: the lock is a shape on the screen while its face still fits the room between the strip and the
+    // title block (endFaceHeight); past that it is the space the camera moves into, as the hall's walls are
+    const facePx = HALL.door.lock.face * K * P / Math.max(1e-6, camera.position.distanceTo(F));
+    return { p: +p.toFixed(4), step, inside, hall, object: p < P1 && facePx <= faceH + 0.5, facePx: +facePx.toFixed(1), off: +off.toFixed(2), lifts: b1.pins.map((h) => +h.position.y.toFixed(2)), face: +(facePx / H).toFixed(3) };
   }
 
   // ---------- the frames: a blueprint sheet each, in a black float frame, on a hinge, a plaque under it ----------
@@ -663,7 +843,8 @@ export function createDive(root, top, { base = '' } = {}) {
   const load = (b = base) => loaded || (loaded = (async () => {
     try { await Promise.all([document.fonts.load('500 56px "DM Mono"'), document.fonts.load('420 56px Newsreader')]); } catch (e) {}
     rebuildLabels();
-    envP = studio(renderer, b).then((e) => { if (e) { brass.envMap = e; brass.needsUpdate = true; phoneScene.environment = e; } }).catch(() => {});
+    envP = studio(renderer, b).then((e) => { if (e) { studioEnv = e; Object.values(mats).forEach((m) => { m.envMap = e; m.needsUpdate = true; }); phoneScene.environment = e; } }).catch(() => {});
+    { const pm = new THREE.PMREMGenerator(renderer); roomEnv = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose(); }   // lab B1's inside light
     await envP;
     frames.forEach((f) => f.labels.forEach((m) => renderer.initTexture(m.material.map)));
     [...Object.values(PT), spotMap, mouldMap, blobMap, shadowMap].forEach((t) => { try { renderer.initTexture(t); } catch (e) {} });
@@ -767,6 +948,7 @@ export function createDive(root, top, { base = '' } = {}) {
     // the hall's mouth covers the screen with the eye at E: one hall unit is K px there (the shape never changes)
     K = Math.max(W / HALL.w, H / (2 * Math.min(E, HALL.h - E))); X = HALL.w / 2 * K; FY = -E * K; CY = (HALL.h - E) * K; L = HALL.len * K;
     camera.fov = 2 * Math.atan(H / 2 / P) * 180 / Math.PI; camera.aspect = W / H; camera.near = 0.05 * K; camera.far = L + P + 2 * K; camera.updateProjectionMatrix();
+    lens0 = { near: camera.near, far: camera.far };
     xCam.fov = 2 * Math.atan(H / 2 / P3l) * 180 / Math.PI; xCam.aspect = W / H; xCam.near = camera.near; xCam.far = camera.far; xCam.updateProjectionMatrix();
     limits = { top: topLim, bottom: botLim, mid };
     makeGrid(); placeSurfaces();
@@ -821,7 +1003,8 @@ export function createDive(root, top, { base = '' } = {}) {
     Dend = Math.min(Dcap, want <= Dcap ? want : fall);
     z0 = P; zEnd = -(L - Dend);
     // the hand-over: page 3's first frame (lock3d.js endFaceHeight) through page 3's lens, straight ahead of where the walk ended
-    hX = 0.3 * K; Dx = hX * P3l / Math.max(1, endFaceHeight(H, { strip: strip_, tbTop, u })); xLock?.setFaceHeight(hX);
+    faceH = Math.max(1, endFaceHeight(H, { strip: strip_, tbTop, u }));   // beat 1's face fill, and page 3's first frame
+    hX = 0.3 * K; Dx = hX * P3l / faceH; xLock?.setFaceHeight(hX);
     // the tests' stops: each frame fully open, then at its closest
     STOPS.length = 0; lay.forEach((l) => STOPS.push([qAtD(l, l.Dread), qAtD(l, l.Dc)]));
     lock.scale.setScalar(K);
@@ -938,13 +1121,16 @@ export function createDive(root, top, { base = '' } = {}) {
     strip.visible = lights > 0.004 && T >= 1; stripCol(lights); stripMat.uniforms.uA.value = clamp(lights * 3);
     fixtures.forEach((g) => { const { fixMat, lensMat } = g.userData; g.visible = lights > 0.004 && T >= 1;
       fixMat.opacity = clamp(lights * 3); lensMat.opacity = fixMat.opacity; lensMat.color.copy(cA.set(LOOK.lens[0])).lerp(cB.set(LOOK.lens[1]), lights); });
-    lock.visible = dress > 0.004 && !!doorLock; brass.opacity = dress; brass.envMapIntensity = lerp(0.25, 0.75, lights);
+    lock.visible = dress > 0.004 && !!doorLock; Object.values(mats).forEach((m) => { m.opacity = dress; m.envMapIntensity = lerp(0.25, 0.75, lights); });
     // the camera: along the hall as you walk; towards the open frame (a slide, never a turn)
     const t = camZ(q);
     let sx = 0, sw = 0;
     const states = frames.map((f, i) => { const l = lay[i], D = t + l.hd, s = st ? { swing: 1, op: 1, drawn: 1, lab: 0 } : stateAt(l, D); if (!st && s.swing > 0) { sx += s.swing * l.cx; sw += s.swing; } return { D, s }; });
     if (sw > 1) sx /= sw;
     camera.position.set(sx, 0, st ? z0 : t); camera.rotation.set(0, 0, 0); camera.updateMatrixWorld();   // the eye's height never changes
+    // the security page's beat 1 (27 Nov): from the walk's end the camera carries on into the lock
+    const bp = !st && doorLock ? span(q, ...BEAT1) : 0;
+    const bt = bp > 0 ? beat1(bp) : restLock();
     const info = [], rects = [];
     labQuads = [];
     let bandI = -1, bandA = 0;
@@ -1020,7 +1206,7 @@ export function createDive(root, top, { base = '' } = {}) {
     if (lock.visible) {
       const lb = screenBox(lock);
       if (lb) labQuads.forEach((lq) => { const r = lq.rect, c = gu; if (r.l - c < lb.x + lb.w && r.r + c > lb.x && r.t - c < lb.y + lb.h && r.b + c > lb.y) lockHidden = Math.max(lockHidden, lq.op); });
-      if (lockHidden > 0) brass.opacity = dress * (1 - lockHidden);
+      if (lockHidden > 0) Object.values(mats).forEach((m) => { m.opacity = dress * (1 - lockHidden); });
     }
     door.lockHidden = lockHidden;
     const openOn = !st && q >= OPEN_AT[0] && q <= OPEN_AT[1] && T >= 1;
@@ -1028,7 +1214,12 @@ export function createDive(root, top, { base = '' } = {}) {
     if (openOn) { const c = gu / 2 + 2, r = openEl.getBoundingClientRect(); rects.push({ l: r.left - gu - c, r: r.right + gu + c, t: r.top - gu - c - gu / 2, b: r.bottom + gu + c + gu / 2 }); }   // its backing, half a cell clear (it settles from below)
     knockout(rects); cutStrip(rects);
     renderer.autoClear = true;
-    renderer.render(scene, camera);
+    if (!bt || bt.hall) renderer.render(scene, camera);
+    else { renderer.setClearColor(0x0A0A0B, 1); renderer.clear(); renderer.setClearColor(0x000000, 0); }   // inside the lock: the hall stops drawing; the dark ground
+    // the lock, over the hall's depth; once the camera is on the lock's axis (0.85 of the push: the face hides the housing's
+    // sides) over the hall whatever its depth, so the keyway shows the lock's own inside and never the door's leaf, whose
+    // plane cuts through the lock's body (on a wide screen the face never covers the whole width, so the hall still draws)
+    if (lock.visible) { renderer.autoClear = false; if (bt && bt.p >= 0.85 * B1.fill) renderer.clearDepth(); renderer.render(lockScene, camera); renderer.autoClear = true; }
     const warmDraw = phones.warmNow && !phones.root.visible && f5;
     if (warmDraw) { phones.root.visible = true; phones.mats.forEach((m) => { m.opacity = 0.002; }); }
     if (phones.root.visible) {
@@ -1045,7 +1236,7 @@ export function createDive(root, top, { base = '' } = {}) {
     }
     const lockBox = lock.visible ? screenBox(lock) : null;
     const o = { info, q, show: showE, t, cam: [camera.position.x / K, camera.position.y / K], eye: E, phones: { state: phones.state, mix: phones.mix, real: f5 ? f5.real : 0, yaw: phones.yaw, yaws: phones.yaws, lift: phones.lift, visible: phones.root.visible }, open: T >= 1, tr: T, dress, lights, frames: fin, walked: span(q, ...WALK),
-      door: { lock: door.lockState, box: lockBox, distance: (camera.position.z + L) / K }, xray: xt, labels: labQuads, band: bandShown ? { i: bandI, op: bandA, rect: bandR } : null };
+      door: { lock: door.lockState, box: lockBox, distance: (camera.position.z + L) / K }, beat1: bt, xray: xt, labels: labQuads, band: bandShown ? { i: bandI, op: bandA, rect: bandR } : null };
     if (!again) out = o; else if (out) Object.assign(out, o);
     if (again) onAgain?.(out);
     return out;
@@ -1091,6 +1282,10 @@ export function createDive(root, top, { base = '' } = {}) {
     const D = { lines: [], shapes: [], texts: [], fails: [] };
     if (!lay || !out) return D;
     if (out.xray > 0.5) { if (xLock) { const b = screenBox(xLock.root); if (b) D.shapes.push({ ...b, tag: 'lock:xray' }); } return D; }
+    // beat 1: inside the lock the hall isn't drawn; from the moment its face fills the room the camera goes in and the
+    // lock is the space (as the hall's walls are), no longer a shape on the screen
+    if (out.beat1 && !out.beat1.hall) return D;
+    const lockShape = !out.beat1 || out.beat1.object;
     const segIn = (A, B) => A[2] > camera.near && B[2] > camera.near;
     const outer = (f) => [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([sx, sy]) => P3(f, sx * f.OX, sy * f.OY, f.FD));
     const occ = [];
@@ -1116,7 +1311,7 @@ export function createDive(root, top, { base = '' } = {}) {
     fixtures.forEach((g, i) => { if (!g.visible || g.userData.hide > 0.5) return; const b = screenBox(g); if (!b || b.x >= W || b.x + b.w <= 0 || b.y >= H || b.y + b.h <= 0) return;
       if (occ.some((q) => [[b.x, b.y], [b.x + b.w, b.y], [b.x + b.w, b.y + b.h], [b.x, b.y + b.h]].every(([x, y]) => inQuad(q, x, y)))) return;
       D.shapes.push({ ...b, tag: `hall:fixture${i + 1}` }); });
-    if (lock.visible && (1 - (door.lockHidden || 0)) * look.dress > 0.05) { const b = screenBox(lock); if (b) D.shapes.push({ ...b, tag: 'door:lock' }); }
+    if (lockShape && lock.visible && (1 - (door.lockHidden || 0)) * look.dress > 0.05) { const b = screenBox(lock); if (b) D.shapes.push({ ...b, tag: 'door:lock' }); }
     // the plaques' plates (shown with their words): their four sides
     labQuads.forEach((lq) => { if (lq.op < 0.05) return; const b = lq.back; for (let k = 0; k < 4; k++) { const A = b[k], B = b[(k + 1) % 4]; D.lines.push({ x1: A[0], y1: A[1], x2: B[0], y2: B[1], tag: `hall${lq.i + 1}lab:backing` }); } });
     // the frames nearer than each drawing (its hinge's distance), for occlusion
@@ -1243,8 +1438,9 @@ export function createDive(root, top, { base = '' } = {}) {
     render(q);
     frames.forEach((f) => { f.pivot.visible = true; f.drawing.visible = true; f.drawing.geometry.instanceCount = f.d.segs.length; f.labels.forEach((m) => { m.visible = true; }); f.fills.forEach((o) => { o.visible = true; }); f.wshadow.visible = true; });
     strip.visible = true; lock.visible = !!doorLock; fixtures.forEach((g) => { g.visible = true; });
-    try { renderer.compile(scene, camera); } catch (e) {}
+    try { renderer.compile(scene, camera); renderer.compile(lockScene, camera); } catch (e) {}
     renderer.render(scene, camera);
+    if (doorLock) render(lerp(BEAT1[0], BEAT1[1], 0.75));   // beat 1 inside the keyway, once (its lights, fog and room light reach the GPU now)
     render(q);
   }
   /** reduced motion: one still picture of the dressed hall, lit, every frame open, seen from its mouth (a JPEG) */
@@ -1254,11 +1450,19 @@ export function createDive(root, top, { base = '' } = {}) {
     stillMode = true; render(WALK[0]); const url = canvas.toDataURL('image/jpeg', 0.9); stillMode = false;
     return url;
   }
+  /** reduced motion (beat 1): the lock's face filling the room, still (a JPEG); null without the lock */
+  async function faceStill(w, h, opts = {}) {
+    await load(); await loadLock(); await envP;
+    if (!doorLock) return null;
+    layout(w, h, { strip: 0, noTitleblock: true, ...opts });
+    render(lerp(BEAT1[0], BEAT1[1], B1.fill)); const url = canvas.toDataURL('image/jpeg', 0.9);
+    return url;
+  }
   function reset() {}
-  return { layout, render, load, warm, still, reset, theme, loadPhones, loadLock, drawn, readability, look: LOOK.id, stops: STOPS,
+  return { layout, render, load, warm, still, faceStill, reset, theme, loadPhones, loadLock, drawn, readability, look: LOOK.id, stops: STOPS,
     closeAt: () => (lay ? lay.map((l) => qAtD(l, l.Dc) * DIVE) : null), openAt: () => (lay ? lay.map((l) => qAtD(l, l.Dread) * DIVE) : null),
     phones: () => phones.state, frames: () => frames, lay: () => lay, P: () => P, L: () => L, K: () => K, hall: () => ({ W, H, P, K, X, L, z0, zEnd, Dend: Dend / K, Dx, portrait, band: bandR, eye: E, limits }),
     band: () => ({ i: bandOn, op: bandOp, rect: bandR }),
     brass: () => brass, doorLock: () => doorLock, yaw: () => phones.yaw, yaws: () => phones.yaws.slice(), seqAt: (e) => { seqHold = e; render(lastQ, true); }, seq: () => ({ e: seqHold !== null ? seqHold : showE, lift: phones.lift, liftF: phones.liftF, real: f5 ? f5.real : 0 }), show: SHOW, frameStill,
-    door: () => ({ lockState: door.lockState, Dend, zEnd }), endFrame: () => ({ P: lensP(W, H), hL: hX, Dend: Dx }), camera: () => camera, renderer: () => renderer, lockParts: () => lockParts, onBeat: (fn) => { onAgain = fn; } };
+    door: () => ({ lockState: door.lockState, Dend, zEnd }), beat1: () => (out ? out.beat1 : null), lockScene: () => lockScene, endFrame: () => ({ P: lensP(W, H), hL: hX, Dend: Dx }), camera: () => camera, renderer: () => renderer, lockParts: () => lockParts, onBeat: (fn) => { onAgain = fn; } };
 }

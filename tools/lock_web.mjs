@@ -4,10 +4,14 @@
 // housing, plug, cap and clip as meshes with their hairline edges, the five key pins, the five drivers and the key as
 // hairline edges. Every edge set is chained into polylines and simplified (Douglas-Peucker): `edges` at 0.04 mm (close
 // up), `lod` at 0.7 mm without the smallest bits (the lattice of many locks draws this one geometry hundreds of times).
+// 27 Nov (the security page, beat 1): the key pins, drivers and key also carry solid meshes (the camera rides down the
+// keyway under them), simplified with meshoptimizer to SOLID_ERR mm (absolute) so the S23 keeps 60 fps; their hairline
+// edges are made from the full meshes exactly as before. The housing, cap, clip and plug are unchanged, byte for byte.
 // Lock space (millimetres): x across, y up (the plug's axis at y = 0), z out of the face (the face at z = 0, the body
 // behind it, z < 0). From the STL files: (x, y, z) -> (-x, z, y).
 //   lock-parts.bin: 'LKP2' u32 version u32 nParts; per part: 16 bytes name, u32 group, u32 nVerts, u32 nIndex,
 //   u32 nEdgeFloats, u32 nLodFloats; then per part: Float32 positions, Uint32 indices, Float32 edges, Float32 lod.
+//   (Since 27 Nov every part has positions and indices; before, only the housing, cap, clip and plug did.)
 //   node tools/lock_web.mjs
 import fs from 'node:fs';
 import path from 'node:path';
@@ -15,6 +19,7 @@ import { fileURLToPath } from 'node:url';
 import * as THREE from 'three';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
 import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { MeshoptSimplifier } from 'meshoptimizer';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const dir = path.resolve(here, '../site/media/models/lock');
 const loader = new STLLoader();
@@ -24,6 +29,17 @@ const PARTS = [
   ['drv1', 'driver-standard.stl', 3], ['drv2', 'driver-spool.stl', 3], ['drv3', 'driver-mushroom.stl', 3], ['drv4', 'driver-serrated.stl', 3], ['drv5', 'driver-tpin.stl', 3],
   ['key', 'key_abcde.stl', 4],
 ];
+const SOLID_ERR = 0.025;   // mm: the inner parts' solids, simplified (seen from about 3 mm at the closest, inside the keyway)
+await MeshoptSimplifier.ready;
+/** a mesh simplified to SOLID_ERR mm, its unused vertices dropped */
+function simplified(m) {
+  const pos = new Float32Array(m.attributes.position.array), idx = new Uint32Array(m.index.array);
+  const [s] = MeshoptSimplifier.simplify(idx, pos, 3, 0, SOLID_ERR, ['ErrorAbsolute']);
+  const used = new Map(), out = [];
+  const ni = new Uint32Array(s.length);
+  for (let i = 0; i < s.length; i++) { let k = used.get(s[i]); if (k === undefined) { k = used.size; used.set(s[i], k); out.push(pos[s[i] * 3], pos[s[i] * 3 + 1], pos[s[i] * 3 + 2]); } ni[i] = k; }
+  return { pos: new Float32Array(out), idx: ni };
+}
 const toLock = (a) => { for (let i = 0; i < a.length; i += 3) { const x = a[i], y = a[i + 1], z = a[i + 2]; a[i] = -x; a[i + 1] = z; a[i + 2] = y; } return a; };
 
 /** chain segments into polylines (shared endpoints, quantised) and simplify each one */
@@ -78,6 +94,7 @@ for (const [name, file, group, mesh] of PARTS) {
   const edges = simplify(raw, 0.04), lod = group <= 1 ? simplify(raw, 0.7, 3) : [];
   let pos = new Float32Array(0), idx = new Uint32Array(0);
   if (mesh) { const m = mergeVertices(g, 1e-4); pos = new Float32Array(m.attributes.position.array); idx = new Uint32Array(m.index.array); }
+  else { const m = mergeVertices(g, 1e-4), full = m.index.count / 3; ({ pos, idx } = simplified(m)); stats.push(`  ${name} solid: ${full} -> ${idx.length / 3} tris`); }
   const nm = Buffer.alloc(16); nm.write(name, 'ascii');
   head.push(nm, Buffer.from(new Uint32Array([group, pos.length / 3, idx.length, edges.length, lod.length]).buffer));
   blocks.push(Buffer.from(pos.buffer), Buffer.from(idx.buffer), Buffer.from(new Float32Array(edges).buffer), Buffer.from(new Float32Array(lod).buffer));

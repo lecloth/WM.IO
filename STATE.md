@@ -23,7 +23,7 @@ Take 1's history below.
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Page 1 | Beacon → Bell's ink on our grid → X-ray phone, six named pieces (each leader on its own piece) → kinetic line, real phone → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum → **"Now, how can we serve you?"** (signed off, round 8) | ~5.9 (with 2: 10.54) | **round 8 built (25 Nov): waiting for Wajih's review** |
 | 2 | The hallway | Hallway pass 1 (26 Nov): fixed proportions (about 2.6 x 3 x 19, frames at 4, 7, 10, 13, 16, left/right alternating); a white sketch drawn into depth dresses into the dark hall, the spotlights and the ceiling strip come on, the frames appear; scrolling is walking at one steady pace; each frame swings out fully (90 degrees) as you reach it and folds back as you pass; pass 2: black float frames lit in their spotlights, a light plaque under each (title, FIG line), the open frame's title and story line in a dark caption band, the camera slides (never turns) to each open frame (portrait: a narrower lens, the frame about two thirds of the width), dark chrome in the hall, five new blueprints; the walk ends in front of the centred, shut door with its brass Cutaway Lock; then page 3 as before; pass 3: the eye one height for the whole walk, the title on the plaque only (light paper, rounded), the band the story line only, no stock icons, frame 5's blueprint dresses into the real phones, which lift out of the frame and turn once each; pass 3b: at frame 5 the walk stops and the scroll drives its show (scribble, lift, a full turn each, about 1.5 screens per turn; back plays it in reverse) | 8.3 (5.4 walk + 2.9 held show; inside page 1's section) | **pass 3b built (frame 5's held, scrubbed show; every page 1 and hallway object animation scrubbed); pending: the real-phone run** |
-| 3 | Into the lock | Starts on the hallway's last frame (the lock in X-ray); into the keyhole past the pins; out to the same lock on every crossing point of a grid in every direction; they unlock in a wave and fold back into one. Two lines (drafts) | 4.6 (overlapping page 1's last screen) | **round 9 built** |
+| 3 | The security page | 27 Nov (Part 5, as demoed): five beats on the real lock. **Beat 1 built** (the steady push into the door's lock, the keyway past the pins, out into the dark; 1.5 screens, at the end of the hallway's section in dive.js); then, TEMPORARILY, a plain fade from the dark into round 9's page 3 as it was (starts on the lock in X-ray; into the keyhole past the pins; the lattice unlocks in a wave and folds back into one; two lines, drafts) until beats 2-5 replace it | 1.5 + 4.6 (overlapping page 1's last screen) | **beat 1 built (27 Nov); beats 2-5 next** |
 | 4 | How we work | The lock turns side-on into a 2D cutaway; "First, the obvious key." / "It fails. Most people stop here." / "We don't." (drafts); the wrong key fails; seven pins picked in the drum's order, each verb on a leader, the newest meaning under the lock on a leader; it turns on Delivered | 4 (inside page 3's section) | **round 10 built** |
 | 5 | Lighter trips | Three rooms, scrubbed: AI (the property app's enquiries: the AI drafts, a person approves, then it's sent), websites (the booking app's site, drawn on the grid then real), apps (the delivery tracker live on the real iPhone 18 and S26). Lines and content drafts | 7.2 | **round 11 built** |
 | 6 | Team | "The three of us." (draft); three cards, clearly placeholders (a crossed picture box, "Name to come", a bio placeholder) | ~1 | **round 11 built** |
@@ -542,7 +542,98 @@ Take 1's history below.
   WM.IO's texts; `--favicon` renders it at 16 / 32 / 64 px, light and dark). `tools/overlap.py` is importable now
   (a `__main__` guard).
 
+### The security page, beat 1: structure notes (27 Nov, Part 5 "The name's size, and the security page as demoed")
+- **Where it lives:** in the hallway (`site/js/page01/dive.js`), after the walk: `DIVE` 6.9 (was 5.4), `BEAT1` 5.0-6.5
+  screens (1.5), `B1` = { fill 0.46, mouth 0.58, pins 0.9 } (the reference demo's place1 shares). page.js: `SCROLL`
+  14.74, `.p1` 1574lvh; new stops B1H (halfway to the lock), B1F (the face fills the screen), B1K (the keyhole), B1P
+  (under the middle pin), B1E (the dark end); LOCK = the hand-over done. The warm-up's hall depths keep their screens.
+- **`beat1(p)`:** from where the walk ended (the camera's own position and straight-ahead view, so no cut) the distance
+  to the face's middle falls as `d0 (dFill / d0)^t` while the line of approach swings onto the face's axis and the eye
+  turns to the face (eased 0.05-0.85, as the demo). `dFill`: the face 92% of the screen's height (the brief's and the
+  demo's number; `endFaceHeight`'s 0.92 is of the room between the chrome, about half a phone's screen). Then the
+  demo's numbers exactly, in the lock's model mm (`MM()`: STL x across, y out of the face, z up; lock3d's space is
+  (-x, z, y) of it): onto the mouth [-1, 6, -9], down the keyway to y = -70, out to -86; the key's tip 3 mm behind the
+  camera (`off = y + 83`), `setLock(off)` = opt-b.js's (the plug's turn left out), `keyProfile` verbatim. The look
+  (`lockLook`): the door's brass (#D8B26A, metal 1, rough 0.26, the studio HDRI) → lab B1's brass / steel / dark
+  (manifest materials), the room light (RoomEnvironment PMREM) past half; the headlamp (a PointLight at the camera,
+  decay 1, intensity and range scaled by the lab's world unit `b1.U` = half the lock's largest side, mm), the rim, the fog
+  (#0A0A0B, the demo's near/far in lab units). The lens: the near plane follows the distance to the face (0.05 x),
+  down to the lab's 0.0015 units inside; the far plane only as far as is seen.
+- **Two changes from the demo (found by flicker.py, both one-frame jumps):** (1) the demo swapped the studio light for
+  the room light in one step at half way in: here the studio light dims to `ENV_LOW` 0.04, the swap happens there, and
+  the room light comes up from 0.04 x `ENV_ROOM` 2.6 (the room light's intensity that matched the studio light's
+  brightness at the swap, measured on the laptop) to 0.55: a smooth dip into the keyway instead of a jump. (2) Past the
+  last pin every light (room light, rim, headlamp) fades to dark by the plug's back (`(1 - exitK)^1.5`, exitK over
+  0.9-0.965) and the fog closes evenly on a log scale to 0.06 units, its near edge from a fifth to a twentieth (the
+  keyway's walls, 3-4 mm away, sat inside the demo's near edge, bright, and vanished in two frames as the camera left
+  the plug).
+- **The lock's own scene (`lockScene`):** the door's lock moved out of the hall's scene and is drawn right after it
+  (`autoClear` off, the hall's depth kept), so beat 1's fog and lights never touch (or recompile) the hall's materials.
+  From 0.85 of the push (the camera on the lock's axis, so the face hides the housing's sides) the lock is drawn over the
+  hall whatever its depth (`clearDepth`): the keyway shows the lock's own inside, never the door's leaf, whose plane
+  cuts through the lock's body (the demo showed the flat leaf in the keyhole, then the inside popped in). The hall stops
+  drawing once the face covers the whole screen (`faceCovers()`: its solid part, clear of the notch and the top slots)
+  or at the mouth; inside, the canvas is cleared to #0A0A0B.
+- **The lock:** `lockParts.build({ inside: true, solidInside: true })`: the key pins, drivers and key solid (creased
+  normals, the brass / steel / dark materials; at the door all three are the door's brass, so the door looks as before);
+  the key's holder is taken out of the lock (unseen: you are the key; its profile only). `lock3d.js`: `solidInside`
+  (default off: pages 3 and 4 build exactly what they built), each solid's `userData.part`.
+- **`lock-parts.bin` (`tools/lock_web.mjs`):** every part now carries positions and indices; the key pins, drivers and
+  key are meshoptimizer-simplified to 0.025 mm (absolute): pins 11,232 → about 890 triangles each, the serrated driver
+  67,968 → 2,876, the others 276-552, the key 1,416 → 516 (10,100 added in all); 377 KB → 539 KB. The housing, cap,
+  clip and plug (meshes, edges, lod) and every part's edges are byte-identical to before.
+- **The hand-over to page 3, TEMPORARY (until beat 2, the room of locks, is built):** `XRAY` 6.6-6.8: from beat 1's dark
+  end a plain fade (the blue quad and the X-ray lock, as before, through `xCam`) to page 3's first frame as it is today;
+  page 3 takes over on that frame. Beat 2 replaces this.
+- **Checks' view:** `drawn()` reports the lock as a shape (`door:lock`) only while its face fits between the strip and the
+  title block (`beat1.object`); past that it is the space (like the hall's walls); inside, nothing. `render()` returns
+  `beat1` (p, step, inside, hall, object, facePx, off, lifts, face share); `dive.beat1()`, `dive.lockScene()`.
+- **Reduced motion:** no flight: after the hallway's still drawings, the lock's face filling the frame
+  (`dive.faceStill`, a JPEG at B1F), on #0A0A0B, its opacity following the scroll (face, then a cross-fade to the dark).
+- **Tools:** `tools/beat1probe.py` (shots and what beat 1 reports at stops; `--scrub`: the camera forwards vs backwards
+  in 300 steps, the largest step and turn, each pin's largest lift; `--reduced`); `overlap.py --stops` and the beat-1
+  lock as a drawing; `flicker.py --beat1` (CDP zoom; the push, the keyhole, the pins, the dark end and the fade, plus a
+  hallway stretch for reference).
+
 ### Take 2 log
+- **The security page, beat 1: the steady push into the lock (27 Nov).** Built as in "The security page, beat 1:
+  structure notes". Shots: `tools/shots/beat1/final/` (384 x 734 and 2160 x 1147 at DOOR, B1F, B1P, B1E;
+  `384x734_reduced_lock0-3.png`), `probe/`, `flicker/`, `grid/`, `overlap/`, `typecheck/`.
+  - **Type gate** (`typecheck.py`, one browser; 384 x 734, 1440 x 900, 2160 x 1147, light and dark, every stop with the
+    new B1H-B1E): 498 frames, **0 machine failures**. Re-run on the hallway's end and beat 1 after the flicker fixes
+    (384 x 734, 375 x 667, 2160 x 1147): 48 frames, 0.
+  - **Gridcheck** (F5B, DOOR, B1H, B1F, B1K, B1P, B1E, LOCK; the 7 phone sizes and 2160 x 1147): 0 off the grid (worst
+    0.072 px; re-run 0.063). **Overlap** (same): 0 overlaps in 5,326 pairs; the lock counts as a drawing while it fits
+    between the strip and the title block.
+  - **Flicker** (`flicker.py --beat1`, real Chrome, 2160 x 1147 @1.333 set through DevTools): energy (p95) the hallway's
+    walk 0.37 (0.42) for reference; the push 1.90 (2.53), the keyhole 5.18 (11.68), under the pins 2.56 (3.69), the
+    dark end and the fade 1.09 (6.06). The first run had two one-frame jumps (the keyhole 54.8 grey levels, the leaf
+    popping to the inside on the wide screen; the room-light swap 37; the exit 18): fixed (above). What remains is the
+    camera's own speed (the keyhole stretch is the fastest: 90 mm to 6 mm in about 0.18 screens) and the hand-over's
+    chrome turning light at the fade's midpoint (24, as before: the temporary hand-over).
+  - **Routecheck** (14 sizes, light and dark): every route on the grid; one `ERR_CONNECTION_REFUSED` at 360 x 800 light
+    (the plain local server under a burst, the known edge); re-run clean.
+  - **Scrubbed** (`beat1probe.py --scrub`, 384 x 734, 300 steps from the door to the dark end): forwards and backwards
+    give the same camera at every step (difference 0); the largest step 0.059 hall units, right at the start; the
+    largest turn 1.3 degrees per step. The pins' largest lifts: 1.23, 1.23, 1.23, 1.22, 2.33 mm.
+  - **Reduced motion** (384 x 734): the lock's face still after the hallway's drawings, its opacity 1 → 0.37 → 0 as it
+    scrolls by. No console errors anywhere.
+  - **My calls:** (1) the fill is 92% of the screen's height (the brief's and the demo's number), not `endFaceHeight`'s
+    92% of the room between the chrome (51% of a phone's screen); (2) the lock draws over the hall from 0.85 of the push
+    and the hall stops once the face covers the screen (the demo showed the flat door leaf in the keyhole); (3) the
+    light swap as a dip and the lights fading out at the plug's back (flicker); (4) the key is unseen and out of the
+    lock's group (its profile only), the pins and drivers always built (at the door they sit inside the housing; the
+    door looks as before); (5) the solids simplified to 0.025 mm; (6) the beat starts the moment the walk ends (5.0),
+    no pause at the door (there was 0.16 screens before the X-ray).
+  - **Notes for Wajih:** (a) `setLock` unchanged means the pins move only where the key's profile stands above their
+    modelled height: in this model they sit on the key's cuts (the key fully in), so as the key comes in only its tip's
+    ramp lifts them (about 1.2 mm, the last pin 2.3) and each settles back; the demo did the same. Making each pin rest
+    lower with no key and rise onto its cut would be a change to `setLock`. (b) At 1.5 screens the lock grows about
+    three times faster on screen than the door did in the walk's last stretch (the demo had about 3 screens for the
+    push): the walk speeds up at the door, then slows gently. Both are his call.
+  - **Waiting:** the S23 run (60 fps through beat 1, the pins close up, real swipes back and forth; `phone_stage.py`
+    needs a beat-1 stage) when the phone is free. **Temporary:** the plain fade from the dark into page 3 as it is
+    today (`XRAY`), until beat 2.
 - **Parked fixes: the name bigger (option B), WM.IO everywhere, the square favicon (27 Nov).** Built
   as in "Parked fixes: structure notes". Shots: `tools/shots/name/` (`<size>_gate_bar.png`, `<size>_gate.png`,
   `<size>_tb.png`, `<size>_tb_screen.png`, `favicon.png`, `favicon@2x.png`; `fixes/`: the three short-screen layouts;

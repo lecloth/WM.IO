@@ -65,6 +65,9 @@ MEASURE = r"""() => {
     pic(`hallway drawing ${f.i + 1}${f.swing > 0.98 ? ' (open)' : ''}`, Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys));
     if (f.rest) out.shares.push({ i: f.i + 1, share: +((Math.max(...ys) - Math.min(...ys)) / H).toFixed(3), width: +((Math.max(...xs) - Math.min(...xs)) / W).toFixed(3) });
   });
+  // 27 Nov, the security page's beat 1: the door's lock is a drawing on the screen while it still fits between the strip
+  // and the title block (dive.js beat1().object); past that the camera goes into it and it is the space, not a drawing
+  if (dv && dv.beat1 && dv.beat1.object && dv.door && dv.door.box) { const b = dv.door.box; pic('the door lock (beat 1)', b.x, b.y, b.x + b.w, b.y + b.h); }
   if (!inDive) document.querySelectorAll('#page-07 .p2-row .mark').forEach((m, k) => { if (visible(m)) { const r = m.getBoundingClientRect(); pic(`tick box ${k + 1}`, r.left, r.top, r.right, r.bottom); } });
   return out;
 }"""
@@ -104,6 +107,7 @@ async def main(a):
             await page.wait_for_timeout(600)
             stops = await page.evaluate("window.__p1.stops", isolated_context=False)
             seq = [(k, "p1", v) for k, v in stops.items()] + [(k, "y", (q, act)) for k, q, act in P23]
+            if a.stops: want = a.stops.split(","); seq = [x for x in seq if x[0] in want]   # 27 Nov: --stops, as gridcheck
             for stop, kind, arg in seq:
                 if kind == "p1": await page.evaluate(GOTO_JS, arg, isolated_context=False); await page.wait_for_timeout(SETTLE.get(stop, 800))
                 else:
@@ -125,6 +129,6 @@ async def main(a):
     (out / "overlap.json").write_text(json.dumps({"overlaps": total, "pairs": pairs, "shares": shares, "rows": rows}, indent=1), encoding="utf-8")
 
 if __name__ == "__main__":   # (importable: tools/namecheck.py uses MEASURE and check)
-    ap = argparse.ArgumentParser(); ap.add_argument("--sizes", default=SIZES); ap.add_argument("--out", default="tools/shots/r8/overlap")
+    ap = argparse.ArgumentParser(); ap.add_argument("--sizes", default=SIZES); ap.add_argument("--out", default="tools/shots/r8/overlap"); ap.add_argument("--stops", default="")
     with BrowserLock():
         asyncio.run(main(ap.parse_args()))

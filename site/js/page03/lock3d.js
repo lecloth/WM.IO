@@ -1,8 +1,9 @@
 // The real "Cutaway Lock" (zbzzn, Printables 250197, CC BY 4.0; CREDITS.md), one object for pages 2, 3 and 4 (round 8b):
 // the hallway's door wears it, page 3 goes into it and multiplies it, page 4 picks it. Loaded from lock-parts.bin
 // (tools/lock_web.mjs): the housing, cap, clip and plug as meshes with their hairline edges; the five key pins, five
-// drivers and the key as hairline edges. Lock space is millimetres: x across, y up (the plug's axis at y = 0), z out of
-// the face (the face at z = 0, the body behind it). The look is the hallway's: matte card with ink hairlines; X-ray:
+// drivers and the key as hairline edges (and, since 27 Nov, simplified solids, built only with solidInside). Lock
+// space is millimetres: x across, y up (the plug's axis at y = 0), z out of the face (the face at z = 0, the body
+// behind it). The look is the hallway's: matte card with ink hairlines; X-ray:
 // the body goes see-through and every part shows as white hairlines (page 1's X-ray).
 import * as THREE from 'three';
 import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
@@ -47,8 +48,10 @@ const segGeo = (arr) => { const g = new LineSegmentsGeometry(); g.setPositions(a
 
 /** one lock: root (its face's middle at the origin, the face in the z = 0 plane, facing +z), its parts for animation
  *  (plug, pins, drivers, key: each a group in lock space), and its look. inside: the pins, drivers and key are built
- *  (page 3 and 4); the door's lock leaves them out. */
-function buildLock(parts, { inside = true } = {}) {
+ *  (page 3 and 4); the door's lock leaves them out. solidInside (27 Nov, the security page's beat 1): the pins, drivers
+ *  and key get their solid meshes too (lock-parts.bin carries them since then); without it only the housing, cap, clip
+ *  and plug are solid, as before. Each solid knows its part (userData.part). */
+function buildLock(parts, { inside = true, solidInside = false } = {}) {
   const root = new THREE.Group(), body = new THREE.Group(); root.add(body);
   body.position.y = -FACE.cy;
   const lineMats = [], meshMats = [];
@@ -63,9 +66,9 @@ function buildLock(parts, { inside = true } = {}) {
     const grp = p.group === 0 ? groups.housing : p.group === 1 ? groups.plug : p.group === 4 ? groups.key : new THREE.Group();
     if (p.group === 2 || p.group === 3) { if (!inside) return; body.add(grp); (p.group === 2 ? groups.pins : groups.drivers).push(grp); }
     if (p.group === 4 && !inside) return;
-    if (p.nI) {
+    if (p.nI && (p.group <= 1 || solidInside)) {
       const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(p.pos, 3)); g.setIndex(new THREE.BufferAttribute(p.idx, 1));
-      const m = new THREE.Mesh(g, solidMat); m.renderOrder = 1; grp.add(m); solids.push(m);
+      const m = new THREE.Mesh(g, solidMat); m.renderOrder = 1; m.userData.part = p.name; grp.add(m); solids.push(m);
     }
     const l = new LineSegments2(segGeo(p.edges), p.group <= 1 ? edgeMat : p.group === 4 ? keyMat : innerMat); l.renderOrder = 2; grp.add(l);
   });

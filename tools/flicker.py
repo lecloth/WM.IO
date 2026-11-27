@@ -117,6 +117,16 @@ async def run_build(pw, b, a, out):
     yAt = lambda p: page.evaluate(f"window.__p1.yAt({p})", isolated_context=False)
     n = a.frames
     rep = {"env": env}
+    # 27 Nov (--beat1): only the security page's beat 1, from the shut door to the dark end, in small steps (the walk into
+    # the lock, the keyhole, the keyway under the pins), each frame from the compositor; then the hand-over's fade
+    if a.beat1:
+        for name, s0, s1 in [("hall_ref", stops["F1"] + (stops["F2"] - stops["F1"]) * 0.32, stops["F1"] + (stops["F2"] - stops["F1"]) * 0.5), ("b1_push", stops["DOOR"], stops["B1F"]), ("b1_keyhole", stops["B1F"], stops["B1K"] + 0.06), ("b1_pins", stops["B1P"] - 0.1, stops["B1P"] + 0.1), ("b1_dark", stops["B1E"] - 0.12, stops["LOCK"])]:
+            ya = await yAt(s0); yb = await yAt(s1)
+            await page.evaluate(GOTO, ya, isolated_context=False); await page.wait_for_timeout(1500)
+            fr = await walk(page, [ya + (yb - ya) * k / n for k in range(n)], out, f"{b}_{name}")
+            G = [gray(f) for f in fr]; rep[f"{name}_flicker"] = flicker(G)
+        await ctx.close()
+        return rep
     # 1. the drum (pinned): a still area, lower left, under the meaning and left of the title block
     d0 = (stops.get("DRUM", 3.6)); y0 = await yAt(d0); y1 = await yAt(d0 + 0.08)
     await page.evaluate(GOTO, y0, isolated_context=False); await page.wait_for_timeout(1500)
@@ -178,6 +188,6 @@ async def main(a):
     (out / "flicker.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
 
 ap = argparse.ArgumentParser(); ap.add_argument("--builds", default="r7old,current"); ap.add_argument("--out", default="tools/shots/r8/flicker"); ap.add_argument("--frames", type=int, default=36)
-ap.add_argument("--width", type=int, default=2160); ap.add_argument("--height", type=int, default=1147); ap.add_argument("--dpr", type=float, default=1.333); ap.add_argument("--no-hyper", action="store_true")
+ap.add_argument("--width", type=int, default=2160); ap.add_argument("--height", type=int, default=1147); ap.add_argument("--dpr", type=float, default=1.333); ap.add_argument("--no-hyper", action="store_true"); ap.add_argument("--beat1", action="store_true")
 with BrowserLock():
     asyncio.run(main(ap.parse_args()))
