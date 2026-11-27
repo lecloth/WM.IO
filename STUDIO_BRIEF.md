@@ -1164,3 +1164,60 @@ three.js; Lenis with light settings.
   flagged draft until he signs it off.
 - **Next pieces, in order:** these fixes, then the security page (already in the brief), the full-check re-run when the
   laptop has memory free, the real-phone run when the S23 is free.
+
+### The name's size, and the security page as demoed (27 Nov, Wajih, agreed on demos in the chat). Overrides the above where they differ.
+- **The name's size: option B** (the chat's pick, Wajih approved 26 Nov; it makes "The name bigger" in the parked fixes
+  exact):
+  - **The title block:** the mark gets a double-width first cell (about 2× a normal cell's width) spanning the block's
+    full height, with "design and engineering" in small grey label type under it. The wave about 4–5 cells wide, ".IO"
+    about 1.1–1.25 rem, bottom-aligned with the wave. The sheet and scale cells stack in the remaining column.
+  - **The start of the arrival:** the top bar a bit taller (about 4 cells on phones), the mark at the same bigger size,
+    so the arrival starts on the same name it ends on.
+  - Rejected: A (label-sized, the old size) and C (a full-width name row: too heavy on phones).
+- **The security page (page 3), as demoed on the real lock.** It replaces the page-3 steps in "Hallway pass 2 and the
+  security page" and stage 9. Five beats, all driven by scroll, one real Cutaway Lock throughout, on the hall's dark
+  ground (#0A0A0B) the whole way. All words are placeholders.
+  1. **Beat 1, the steady push.** From where the hallway's walk ends (standing at the shut door), the walk carries on
+     straight into the door's brass lock. Its distance falls evenly on a log scale, so the lock grows on screen at a
+     steady rate and the walk slows gently, until the face fills about 92% of the screen's height (lock3d.js
+     endFaceHeight). No cut. The camera settles onto the keyway's mouth (lab B1's [-1, 6, -9] mm) and goes in, down
+     the keyway past the five pins to about y = -70 mm, and out the back of the plug into the dark. The key rides 3 mm
+     behind the camera, unseen ("you are the key", opt-b.js setLock), and the real key's profile lifts each pin as it
+     passes. The look blends from the door's polished brass on the studio light to lab B1's inside look (its darker
+     brass, steel and dark drivers, the fog, the headlamp) as the camera enters. This replaces the blue-screen X-ray
+     hand-over (dive.js XRAY).
+  2. **Beat 2, the room of locks.** The camera backs up the keyway (the key is fully in now) and out through the
+     keyhole, still facing the lock (no turn), and pulls back. From there it is lab B3 exactly (opt-b.js "tesseract",
+     from its p 0.30 to 0.84): the copies appear nearest first, the room turns on two axes, the camera circles, the
+     centre key turns and the unlock wave runs out from the centre. The lab's headline placeholder "One door is never the
+     only door." appears while the camera holds. B3's 74 copies (5 × 3 × 5) are the approved count; "hundreds" only
+     later, as lighter copies that keep 60 fps on the S23.
+  3. **Beat 3, fly home, chaos, one lock** (Wajih's idea; it replaces "they fold into one lock"):
+     - The room turns back square while the camera pulls back along the A frame's line to see all of it.
+     - **Fly home:** every copy flies back on an arc, nearest first, full size (never shrinking), turning one full turn,
+       and lands square on the real lock.
+     - **Chaos:** the real lock bursts into its 15 parts as the first copies land; each copy bursts into its big parts
+       (housing, plug, cap, key) as it arrives, and the pieces drift off, tumbling, into the dark (the fog takes them).
+     - **One lock:** out of the chaos the real lock's parts come home one by one in the manifest's order (housing, plug,
+       clip, key pins, drivers, cap, key) while the camera pushes straight in to the lab's A frame (lens 28°, yaw -0.62,
+       pitch 0.34, the whole lock in view). It ends on one lock, centred, the key in it.
+     - Rejected: B3's shrink-to-a-point collapse (Wajih: "lazy"), and the fold in rows.
+  4. **Beat 4, three ways to see one lock:** A3 X-ray (the thief's view), then A1 matte (our view), then A2 real
+     metals (your view). Each look takes over with a wipe: a hairline sweeping across, left to right. **All three on the
+     same dark ground** (Wajih: cleaner; no blueprint blue, no white paper here). Five numbered spots, each with a leader
+     to its part and its label beside it:
+     - 01 the key: weak passwords → only the right people get in;
+     - 02 the pins: an open back door → every request checked;
+     - 03 the plug: data lying in the open → your data locked away;
+     - 04 the housing: old software → built strong from the start;
+     - 05 the springs, pointed at the cap that holds them (the model has no springs): no alerts → alerts when
+       something's wrong.
+     The X-ray shows the weak spots, matte the fixes, brass no labels. One caption per look (placeholders: "He sees
+     straight through it." / "The same five spots, each one fixed." / "Polished, closed. It just works."). The lock turns
+     a little through the beat.
+  5. **Beat 5, "Locked."** In brass, the key turns back (the plug from 90° to 0), then comes out the way it went in,
+     each pin dropping as its cut passes (the real key's profile). Then "Locked." (serif, centred). Page 4 starts from
+     this lock with an empty keyhole: the wrong key goes in next.
+- **The reference:** the chat's demo page, built on the real lock's files and the lab's own code (opt-b.js keyProfile,
+  setLock and setRoom; opt-a.js xrayMat and its materials; dive.js HALL and hall-looks.js for the hall's end). The hall's
+  end in the demo is a simplified stand-in for dive.js; the build keeps dive.js's real hallway.
