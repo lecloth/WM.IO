@@ -85,7 +85,7 @@ html.is-replay[data-phase="gate"] .titleblock { opacity: 1; }
 @media (min-width: 1024px) { .ph { font-size: .4375rem; } }
 
 /* ---------- page 1 (the design ethos: hairlines, ink, blue only for the drawing stage) ---------- */
-.p1 { position: relative; height: 1574vh; height: 1574lvh; }   /* 27 Nov: 14.74 screens of scroll (page.js SCROLL: the walk 5.4 + the security page's beat 1, 1.5 = DIVE 6.9, + frame 5's show 2.9) + one */
+.p1 { position: relative; height: 1574vh; height: 1574lvh; }   /* 27 Nov: 14.74 screens of scroll (page.js SCROLL: the walk 5.4 + the security page's beat 1, 1.5 = DIVE 6.9, + frame 5's show 2.9) + one; page.js sets the real height per screen (beat 1's push at walking speed: dive.pushLen) */
 /* the paper ground and its grid (the grid's origin is the stage's top left = the screen's, while page 1 plays) */
 .p1__stage { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; isolation: isolate;
   background-color: var(--paper); background-image: var(--grid-img); background-size: var(--grid-size); }

@@ -23,7 +23,7 @@ Take 1's history below.
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Page 1 | Beacon → Bell's ink on our grid → X-ray phone, six named pieces (each leader on its own piece) → kinetic line, real phone → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum → **"Now, how can we serve you?"** (signed off, round 8) | ~5.9 (with 2: 10.54) | **round 8 built (25 Nov): waiting for Wajih's review** |
 | 2 | The hallway | Hallway pass 1 (26 Nov): fixed proportions (about 2.6 x 3 x 19, frames at 4, 7, 10, 13, 16, left/right alternating); a white sketch drawn into depth dresses into the dark hall, the spotlights and the ceiling strip come on, the frames appear; scrolling is walking at one steady pace; each frame swings out fully (90 degrees) as you reach it and folds back as you pass; pass 2: black float frames lit in their spotlights, a light plaque under each (title, FIG line), the open frame's title and story line in a dark caption band, the camera slides (never turns) to each open frame (portrait: a narrower lens, the frame about two thirds of the width), dark chrome in the hall, five new blueprints; the walk ends in front of the centred, shut door with its brass Cutaway Lock; then page 3 as before; pass 3: the eye one height for the whole walk, the title on the plaque only (light paper, rounded), the band the story line only, no stock icons, frame 5's blueprint dresses into the real phones, which lift out of the frame and turn once each; pass 3b: at frame 5 the walk stops and the scroll drives its show (scribble, lift, a full turn each, about 1.5 screens per turn; back plays it in reverse) | 8.3 (5.4 walk + 2.9 held show; inside page 1's section) | **pass 3b built (frame 5's held, scrubbed show; every page 1 and hallway object animation scrubbed); pending: the real-phone run** |
-| 3 | The security page | 27 Nov (Part 5, as demoed): five beats on the real lock. **Beat 1 built** (the steady push into the door's lock, the keyway past the pins, out into the dark; 1.5 screens, at the end of the hallway's section in dive.js); then, TEMPORARILY, a plain fade from the dark into round 9's page 3 as it was (starts on the lock in X-ray; into the keyhole past the pins; the lattice unlocks in a wave and folds back into one; two lines, drafts) until beats 2-5 replace it | 1.5 + 4.6 (overlapping page 1's last screen) | **beat 1 built (27 Nov); beats 2-5 next** |
+| 3 | The security page | 27 Nov (Part 5, as demoed): five beats on the real lock. **Beat 1 built** (the steady push into the door's lock, the keyway past the pins, out into the dark; 1.5 screens, at the end of the hallway's section in dive.js); then, TEMPORARILY, a plain fade from the dark into round 9's page 3 as it was (starts on the lock in X-ray; into the keyhole past the pins; the lattice unlocks in a wave and folds back into one; two lines, drafts) until beats 2-5 replace it | 2.5-3.5 (per screen: the push at walking speed) + 4.6 (overlapping page 1's last screen) | **beat 1 built (27 Nov; second pass: the pins ride the key, the push at walking speed); beats 2-5 next** |
 | 4 | How we work | The lock turns side-on into a 2D cutaway; "First, the obvious key." / "It fails. Most people stop here." / "We don't." (drafts); the wrong key fails; seven pins picked in the drum's order, each verb on a leader, the newest meaning under the lock on a leader; it turns on Delivered | 4 (inside page 3's section) | **round 10 built** |
 | 5 | Lighter trips | Three rooms, scrubbed: AI (the property app's enquiries: the AI drafts, a person approves, then it's sent), websites (the booking app's site, drawn on the grid then real), apps (the delivery tracker live on the real iPhone 18 and S26). Lines and content drafts | 7.2 | **round 11 built** |
 | 6 | Team | "The three of us." (draft); three cards, clearly placeholders (a crossed picture box, "Name to come", a bio placeholder) | ~1 | **round 11 built** |
@@ -544,9 +544,26 @@ Take 1's history below.
 
 ### The security page, beat 1: structure notes (27 Nov, Part 5 "The name's size, and the security page as demoed")
 - **Where it lives:** in the hallway (`site/js/page01/dive.js`), after the walk: `DIVE` 6.9 (was 5.4), `BEAT1` 5.0-6.5
-  screens (1.5), `B1` = { fill 0.46, mouth 0.58, pins 0.9 } (the reference demo's place1 shares). page.js: `SCROLL`
-  14.74, `.p1` 1574lvh; new stops B1H (halfway to the lock), B1F (the face fills the screen), B1K (the keyhole), B1P
-  (under the middle pin), B1E (the dark end); LOCK = the hand-over done. The warm-up's hall depths keep their screens.
+  nominal screens (1.5), `B1` = { fill 0.46, mouth 0.58, pins 0.9 } (the reference demo's place1 shares). New stops B1H
+  (halfway to the lock), B1F (the face fills the screen), B1K (the keyhole), B1P (under the middle pin), B1E (the dark
+  end); LOCK = the hand-over done. The warm-up's hall depths keep their screens.
+- **The push at walking speed (27 Nov, second pass, Wajih):** the push (0 .. B1.fill) starts at exactly the walk's own
+  speed, then slows on the log scale as before. Its speed at the start is d0 ln(d0 / dFill) per its length; the walk's
+  is (z0 - zEnd) / 3.8 screens; `dive.pushLen()` (set in `layout`, per screen) is the length that makes them equal:
+  1.66 screens on the S23 (384 x 734), 1.77 at 1440 x 900, 2.03 at 375 x 667, 2.73 at 2160 x 1147 (the nominal was 0.69).
+  The rest of the beat keeps its nominal 0.81 screens. page.js maps the scroll onto the dive's nominal beat, like frame
+  5's hold (`beatAt` / `beatOf` inside `hallAt` / `hallOf`), and sets `HALL`, `SCROLL` (15.71 on the S23, 16.78 on the
+  laptop), `R.end` / `R.dive` and the section's height (`.p1` inline, `(SCROLL + 1) x 100lvh`; the CSS 1574lvh is the
+  nominal fallback) in `layoutDive`; when the height moves, every ScrollTrigger measures again once (`refreshIfMoved`).
+  `__p1.scroll` is a getter now; `__p1.pushLen()`.
+- **The pins ride the key (27 Nov, second pass, Wajih):** `setLock` (opt-b.js's, changed). Measured on the model: each
+  key pin's top is at 13.8 mm, the shear line at 16, so the right key lifts each stack 2.2 mm (`PIN_LIFT`, manifest
+  pins.lift) from its modelled place, and the model's key sits that much under the pins' feet. A pin's foot is on the
+  real key's profile + 2.2 where the key is under it (never under its rest, at most 8), else at rest, `PIN_REST` -4 mm
+  (its spring pushes it down into the keyway; the five tips rest level, above the key's tip at -5.8, 5 mm over the
+  camera's path); its driver rides on it. No key: the pins hang 5.8, 4.4, 3.0, 1.6, 0.2 mm under their modelled places;
+  as the key comes in each rides its teeth (up to 3.1-4.2 mm over) and, fully in, all five sit on the shear line (+2.2).
+  Pages 3 and 4 build their own lock and never call it.
 - **`beat1(p)`:** from where the walk ended (the camera's own position and straight-ahead view, so no cut) the distance
   to the face's middle falls as `d0 (dFill / d0)^t` while the line of approach swings onto the face's axis and the eye
   turns to the face (eased 0.05-0.85, as the demo). `dFill`: the face 92% of the screen's height (the brief's and the
@@ -596,6 +613,37 @@ Take 1's history below.
   hallway stretch for reference).
 
 ### Take 2 log
+- **The security page, beat 1, second pass: the pins ride the key, the push starts at walking speed (27 Nov, Wajih's two
+  yeses).** Built as in the structure notes ("The push at walking speed", "The pins ride the key"). Shots:
+  `tools/shots/beat1b/final/` (384 x 734 and 2160 x 1147 at DOOR, B1F, B1P, B1E; `384x734_reduced_lock0-3.png`),
+  `probe2/`, `flicker/`, `grid/`, `overlap/`, `typecheck/`.
+  - **The speed** (`beat1probe.py --scrub`, the camera's speed in hall units per screen of scroll around the walk's
+    end): 384 x 734 4.717 walking → 4.707, 4.666 … (slowing); 1440 x 900 4.753 → 4.737; 375 x 667 4.567 → 4.567, 4.533;
+    2160 x 1147 4.463 → 4.463, 4.435. No jump at any size (the first pass had the push start about 2.7 x faster). The
+    push's length: 1.66 / 1.77 / 2.03 / 2.73 screens; the whole beat 2.47-3.54 screens; page 1's scroll 15.71 (S23) to
+    16.78 (laptop). Forwards and backwards give the same camera at every step.
+  - **The pins** (same run, S23): with no key they hang 5.8, 4.4, 3.0, 1.6 and 0.2 mm under their modelled places (tips
+    level at -4 mm); each rides the key's teeth as it passes (highest 3.08, 3.08, 3.08, 3.13, 4.24 mm over); fully in,
+    all five at +2.2: on the shear line. The first pin shows hanging in the keyhole at B1F; under the pins, the ones
+    ahead hang over the camera, the ones behind ride the key.
+  - **Type gate** (384 x 734, 1440 x 900, 2160 x 1147, light and dark, every stop): 498 frames, **0 machine failures**.
+    **Gridcheck** (the hallway's end and beat 1; the 7 phone sizes and 2160 x 1147): 0 off the grid (worst 0.072 px).
+    **Overlap** (same): 0 in 5,289 pairs.
+  - **Flicker** (`flicker.py --beat1`, real Chrome, 2160 x 1147 @1.333 through DevTools): energy (p95) the hallway's walk
+    0.37 (0.42), the push 1.92 (2.60), the keyhole 5.14 (11.69), under the pins 2.24 (3.05), the dark end and the fade
+    1.10 (5.91); the largest single-frame changes: the keyhole 26.6 (the light's dip, fast motion), the fade 24.8 (the
+    chrome turning light: the temporary hand-over). Under the pins calmer than before (2.56 → 2.24).
+  - **Routecheck** (14 sizes, light and dark): run 1 stopped at 1280 x 720 dark (the replay at the top didn't start
+    within 8 s: once, not seen again in four later runs of that size or the full re-run); run 2: 27 of 28 clean, one
+    `ERR_CONNECTION_REFUSED` (430 x 932 light: the plain server under a burst, the known edge; also seen at 1280 x 720
+    light in one single-size run); re-runs of both clean. Every route on the grid in every run.
+  - **Reduced motion:** unchanged (the face still, 1 → 0.37 → 0). No console errors.
+  - **My calls:** the pins' rest level, one for all five (-4 mm: above the key's tip, clear of the camera); their upper
+    limit (8 mm); the speed matched in magnitude (the push heads straight for the lock's face, a few degrees off the
+    walk's line, and turns onto its axis as before); the rest of the beat (keyhole, pins, the dark) kept at its 0.81
+    nominal screens; the length set per screen (a fixed length can't match the walk on every screen).
+  - **Waiting:** the S23 run (60 fps through the longer beat 1, the pins close up, real swipes). **Temporary:** the fade
+    from the dark into page 3 (`XRAY`), until beat 2.
 - **The security page, beat 1: the steady push into the lock (27 Nov).** Built as in "The security page, beat 1:
   structure notes". Shots: `tools/shots/beat1/final/` (384 x 734 and 2160 x 1147 at DOOR, B1F, B1P, B1E;
   `384x734_reduced_lock0-3.png`), `probe/`, `flicker/`, `grid/`, `overlap/`, `typecheck/`.

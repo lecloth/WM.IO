@@ -2,7 +2,8 @@
 screen and print what beat 1 reports (its share p, the step, how far inside the look is, whether the hall still draws,
 the key's offset, each key pin's lift in mm, the face's height as a share of its fill size), the lock's box, the camera's
 lens, the chrome's mode and page 3's state. Optional --scrub: steps through beat 1 forwards and backwards in small steps
-and reports the largest jump of the camera between neighbouring steps and whether both directions give the same frame
+and reports the largest jump of the camera between neighbouring steps, each pin's lowest and highest lift (mm from its
+modelled place; 2.2 = on the shear line), the push's length in screens, and whether both directions give the same frame
 (the scroll drives it: back plays it in reverse). --reduced: the reduced-motion page (the lock's face still, its fade).
   python -I tools/beat1probe.py --size 384x734 --dpr 2.8125 --mobile --stops DOOR,B1H,B1F,B1K,B1P,B1E,LOCK --out tools/shots/beat1
 Stops are __p1.stops names with optional offsets (B1F-0.1) or plain numbers (page 1 screens)."""
@@ -67,10 +68,15 @@ async def main(a):
             K = fw[0]["K"]; import math
             jumps = [math.dist(fw[i]["pos"], fw[i - 1]["pos"]) / K for i in range(1, len(fw))]
             turns = [2 * math.acos(min(1, abs(sum(x * y for x, y in zip(fw[i]["quat"], fw[i - 1]["quat"]))))) * 180 / math.pi for i in range(1, len(fw))]
+            vj = [jumps[i] / ((p1 - p0) / n) for i in range(len(jumps))]   # hall units per screen of scroll
+            k0 = min(range(len(ps)), key=lambda i: abs(ps[i] - stops["DOOR"]))
+            print("speed (hall units per screen) around the walk's end:", [round(x, 3) for x in vj[max(0, k0 - 4):k0 + 6]])
             same = max(max(abs(x - y) for x, y in zip(f["pos"] + f["quat"], g["pos"] + g["quat"])) for f, g in zip(fw, bw))
             lifts = [f["lifts"] for f in fw if f["lifts"]]
             print("scrub:", json.dumps({"steps": n, "largest_step_hall_units": round(max(jumps), 4), "at": round(ps[jumps.index(max(jumps)) + 1], 3), "largest_turn_deg": round(max(turns), 3),
-                  "forward_vs_backward_max_diff": same, "max_lift_per_pin": [round(max(l[i] for l in lifts), 2) for i in range(5)] if lifts else None}))
+                  "forward_vs_backward_max_diff": same, "max_lift_per_pin": [round(max(l[i] for l in lifts), 2) for i in range(5)] if lifts else None,
+                  "min_lift_per_pin": [round(min(l[i] for l in lifts), 2) for i in range(5)] if lifts else None, "lift_at_end": lifts[-1] if lifts else None,
+                  "pushLen": await page.evaluate("window.__p1.pushLen()", isolated_context=False), "scroll": await page.evaluate("window.__p1.scroll", isolated_context=False)}))
         print("errors:", errs or "none")
         await b.close()
 

@@ -63,7 +63,15 @@ function keyProfile(geo, inv) {
   return (y) => { const b = Math.round(y * 4); let z = -1e9; for (let d = -1; d <= 1; d++) z = Math.max(z, bins.get(b + d) ?? -1e9); return z; };
 }
 const PIN_Y = [-9.7, -22.7, -35.7, -48.7, -61.7];       // the five pin stacks along the key (model y: manifest.json pins.y)
-const PIN_BOTTOM = [1.8, 0.4, -1.0, -2.4, -3.8];        // each key pin's foot at rest (model z: opt-b.js)
+const PIN_BOTTOM = [1.8, 0.4, -1.0, -2.4, -3.8];        // each key pin's foot as modelled (model z: opt-b.js)
+// 27 Nov (Wajih: the pins ride the key). Measured on the model: every key pin's top is at 13.8 mm, the shear line at 16
+// (manifest pins.shear), so the right key lifts each stack PIN_LIFT = 2.2 mm (manifest pins.lift) from its modelled
+// place; the model's key sits that much under the pins' feet (its profile at each pin = PIN_BOTTOM). So a pin's foot on
+// the key is at the key's profile + PIN_LIFT, and fully in, every pin lands on the shear line. With no key under it, its
+// spring pushes it down into the keyway until its foot is at PIN_REST (model z, the same for all five: the key pins'
+// lengths differ, their tips rest level; above the key's tip, -5.8 with the lift, so the tip's ramp picks them up, and
+// 5 mm over the camera's path at -9); each driver rides on its pin.
+const PIN_LIFT = 2.2, PIN_REST = -4.0, PIN_TOP = 8.0;
 
 /** the site's lens (page 3 starts on the hallway's last frame with it): 50 degrees across the narrower side, at most 66
  *  degrees across (the camera distance P of the screen plane) */
@@ -106,8 +114,10 @@ export const FRAMES_IN = [S_(1.1), S_(1.24)];    // the frames appear, lit
 export const WALK = [S_(1.2), S_(5.0)];          // the walk: one steady pace, from the mouth to the shut door
 export const DOOR = { walk: [S_(4.3), S_(5.0)], end: S_(5.0) };
 // the security page's beat 1 (27 Nov): the steady push into the lock, in through the keyhole, past the pins, out into the
-// dark; 1.5 screens, its moments as shares of it (the reference demo's place1: the face fills the screen at 0.46, the
-// camera is at the keyway's mouth at 0.58, past the last pin at 0.9, then out the back of the plug into the dark)
+// dark; 1.5 nominal screens, its moments as shares of them (the reference demo's place1: the face fills the screen at
+// 0.46, the camera is at the keyway's mouth at 0.58, past the last pin at 0.9, then out the back of the plug into the
+// dark). The push (0 .. B1.fill) really takes pushLen screens of scroll, per screen, so that it starts at the walk's own
+// speed (Wajih, 27 Nov): page.js maps the scroll onto it; the rest keeps its nominal 0.81 screens
 export const BEAT1 = [S_(5.0), S_(6.5)];
 export const B1 = { fill: 0.46, mouth: 0.58, pins: 0.9 };
 // the hand-over to page 3: TEMPORARY (until beat 2, the room of locks): a plain fade from beat 1's dark end to page 3's
@@ -252,7 +262,7 @@ export function createDive(root, top, { base = '' } = {}) {
 
   // world units are CSS px at the screen plane (the hall's mouth, z = 0); K px to one hall unit (layout)
   let W = 1, H = 1, P = 1, K = 1, X = 1, FY = -1, CY = 1, L = 1, ink = '#121212', paper = '#F6F7F9', dark = false, gu = 20;
-  let z0 = 1, zEnd = 0, Dend = 1, hX = 1, Dx = 1, portrait = false, bandR = null, E = HALL.eye, limits = null, faceH = 1, lens0 = { near: 1, far: 1e5 };
+  let z0 = 1, zEnd = 0, Dend = 1, hX = 1, Dx = 1, portrait = false, bandR = null, E = HALL.eye, limits = null, faceH = 1, lens0 = { near: 1, far: 1e5 }, pushLen = 1;
 
   // ---------- the painted light: each surface's light (R) and shade (B), in the hall's own units, painted once ----------
   function paintHall() {
@@ -476,13 +486,16 @@ export function createDive(root, top, { base = '' } = {}) {
   const b1v = { F: V3(), start: V3(), dir: V3(), look: V3(), Z: V3(0, 0, 1) };
   /** the lock's model mm -> world (lock3d's lock space is (-x, z, y) of it; the holder carries it onto the door) */
   const MM = (x, y, z, out = V3()) => out.set(-x, z, y).applyMatrix4(doorLock.body.matrixWorld);
-  /** opt-b.js setLock (the plug's turn is beat 5's): off = mm the key's tip sits out of the lock; each key pin and its
-   *  driver ride on the key's profile where they meet it */
+  /** the key in the lock (27 Nov: opt-b.js setLock, its pins riding the key; the plug's turn is beat 5's): off = mm the
+   *  key's tip sits out of the lock. Each key pin's foot: on the real key's profile + PIN_LIFT where the key is under it
+   *  (never lower than its rest), else at rest, PIN_REST; its driver rides on it. Positions are offsets from the
+   *  modelled place (model z = lock y); pages 3 and 4 build their own lock and never call this. */
   function setLock(off) {
     if (b1.keyH) b1.keyH.position.set(0, 0, off);   // along the keyway (model y = lock z), unseen
     b1.pins.forEach((h, i) => {
-      const yk = PIN_Y[i] - off;
-      const lift = yk < -80 || off > 200 ? 0 : clamp(b1.profile(yk) - PIN_BOTTOM[i], 0, 6);
+      const yk = PIN_Y[i] - off, under = yk >= -80 && off <= 200;
+      const foot = under ? clamp(b1.profile(yk) + PIN_LIFT, PIN_REST, PIN_TOP) : PIN_REST;
+      const lift = foot - PIN_BOTTOM[i];
       h.position.y = lift; b1.drivers[i].position.y = lift;   // up (model z = lock y)
     });
     b1.off = off;
@@ -499,7 +512,7 @@ export function createDive(root, top, { base = '' } = {}) {
   }
   /** before beat 1 (and scrolling back out of it): the door's lock at rest, the hall's own lens */
   function restLock() {
-    lockLook(0); if (b1.off !== 260) setLock(260);
+    lockLook(0); if (b1.off !== 260) setLock(260);   // (no key: every pin at rest)
     lamp.intensity = 0; lockScene.fog.near = 1e12; lockScene.fog.far = 2e12;
     if (camera.near !== lens0.near || camera.far !== lens0.far) { camera.near = lens0.near; camera.far = lens0.far; camera.updateProjectionMatrix(); }
     return null;
@@ -1004,6 +1017,12 @@ export function createDive(root, top, { base = '' } = {}) {
     z0 = P; zEnd = -(L - Dend);
     // the hand-over: page 3's first frame (lock3d.js endFaceHeight) through page 3's lens, straight ahead of where the walk ended
     faceH = Math.max(1, endFaceHeight(H, { strip: strip_, tbTop, u }));   // beat 1's face fill, and page 3's first frame
+    // beat 1's push at walking speed (27 Nov, Wajih): the push's distance falls as d0 (dFill / d0)^t, so its speed at
+    // the start is d0 ln(d0 / dFill) per push length; the walk covers (z0 - zEnd) in its screens. The push takes the
+    // screens of scroll that make the two speeds equal (page.js maps them onto the beat's nominal push)
+    { const F = V3(HALL.door.lock.x * K, FY + HALL.door.lock.y * K, -L + 1.5), d0 = F.distanceTo(V3(0, 0, zEnd));
+      const dFill = HALL.door.lock.face * K * P / (0.92 * H), vWalk = (z0 - zEnd) / ((WALK[1] - WALK[0]) * DIVE);
+      pushLen = d0 * Math.log(d0 / dFill) / vWalk; }
     hX = 0.3 * K; Dx = hX * P3l / faceH; xLock?.setFaceHeight(hX);
     // the tests' stops: each frame fully open, then at its closest
     STOPS.length = 0; lay.forEach((l) => STOPS.push([qAtD(l, l.Dread), qAtD(l, l.Dc)]));
@@ -1464,5 +1483,5 @@ export function createDive(root, top, { base = '' } = {}) {
     phones: () => phones.state, frames: () => frames, lay: () => lay, P: () => P, L: () => L, K: () => K, hall: () => ({ W, H, P, K, X, L, z0, zEnd, Dend: Dend / K, Dx, portrait, band: bandR, eye: E, limits }),
     band: () => ({ i: bandOn, op: bandOp, rect: bandR }),
     brass: () => brass, doorLock: () => doorLock, yaw: () => phones.yaw, yaws: () => phones.yaws.slice(), seqAt: (e) => { seqHold = e; render(lastQ, true); }, seq: () => ({ e: seqHold !== null ? seqHold : showE, lift: phones.lift, liftF: phones.liftF, real: f5 ? f5.real : 0 }), show: SHOW, frameStill,
-    door: () => ({ lockState: door.lockState, Dend, zEnd }), beat1: () => (out ? out.beat1 : null), lockScene: () => lockScene, endFrame: () => ({ P: lensP(W, H), hL: hX, Dend: Dx }), camera: () => camera, renderer: () => renderer, lockParts: () => lockParts, onBeat: (fn) => { onAgain = fn; } };
+    door: () => ({ lockState: door.lockState, Dend, zEnd }), pushLen: () => pushLen, beat1: () => (out ? out.beat1 : null), lockScene: () => lockScene, endFrame: () => ({ P: lensP(W, H), hL: hX, Dend: Dx }), camera: () => camera, renderer: () => renderer, lockParts: () => lockParts, onBeat: (fn) => { onAgain = fn; } };
 }

@@ -44,9 +44,12 @@ const inR = (p, [a, b]) => p >= a - 1e-4 && p <= b + 1e-4;
 
 // round 7: the drum turns slower (more room: 1.6 screens for seven verbs); round 8: the hallway is 4.6 screens; pass 3b:
 // the walk (DIVE, 5.4 screens) plus frame 5's held show (SHOW.len, 2.9 screens: the camera stops while the scroll drives it);
-// 27 Nov: DIVE 6.9 with the security page's beat 1 (1.5 screens: the push into the lock and down its keyway)
-const HALL = DIVE + SHOW.len;
-export const SCROLL = 4.94 + HALL;
+// 27 Nov: DIVE 6.9 with the security page's beat 1 (1.5 nominal screens: the push into the lock and down its keyway).
+// Its push really takes dive.pushLen() screens (it starts at the walk's own speed: per screen), so the hall's length and
+// the page's are set at layout (layoutDive); these are the nominal values until then
+const B1W = BEAT1[0] * DIVE, B1N = B1.fill * (BEAT1[1] - BEAT1[0]) * DIVE;   // where the push starts (walk screens), its nominal length
+let HALL = DIVE + SHOW.len;
+export let SCROLL = 4.94 + HALL;
 const R = {
   s0: [0, 0.22], draw: [0.12, 0.28], scanOut: [0.26, 0.36], blueOn: 0.36, morph: [0.4, 0.8], xray: [0.8, 0.88], linesOut: [0.86, 0.9],
   spread: [0.9, 1.12], s1: [1.12, 1.42], kin: [1.44, 2.32], kinWords: [1.44, 1.86], seat: 1.5, paperOn: 1.98, built: [2.0, 2.14], real: [2.16, 2.3],
@@ -323,7 +326,12 @@ export function initPage01(engine) {
     const at = (s) => +(R.dive[0] + s).toFixed(3);
     c.forEach((s, i) => { STOPS[`F${i + 1}`] = at(hallOf(s)); });
     Object.assign(STOPS, { F5H: at(holdAt), F5S: at(holdAt + 0.2), F5R: at(holdAt + 0.55), F5L: at(holdAt + 1.0), F5T: at(holdAt + 1.8), F5E: at(holdAt + SHOW.len) });
-    STOPS.F5B = +(STOPS.F5 + 0.12).toFixed(3); STOPS.DOOR = at(5.0 + SHOW.len); STOPS.LOCK = at(HALL);
+    STOPS.F5B = +(STOPS.F5 + 0.12).toFixed(3); STOPS.DOOR = at(5.0 + SHOW.len);
+    // beat 1 at walking speed: the push's real length, the hall's and the page's (the section's height follows)
+    pushLen = dive.pushLen() || B1N;
+    HALL = DIVE + SHOW.len + pushLen - B1N; SCROLL = 4.94 + HALL; R.end[1] = R.dive[1] = 4.94 + HALL;
+    STOPS.LOCK = at(HALL);
+    if (!engine.reduced) { const hgt = `${((SCROLL + 1) * 100).toFixed(2)}lvh`; if (sec.style.height !== hgt) { sec.style.height = hgt; heightMoved = true; } }
     const b1 = (b) => at(hallOf((BEAT1[0] + (BEAT1[1] - BEAT1[0]) * b) * DIVE));   // beat 1's share b -> a stop
     Object.assign(STOPS, { B1H: b1(B1.fill / 2), B1F: b1(B1.fill), B1K: b1((B1.fill + B1.mouth) / 2), B1P: b1(B1.mouth + (B1.pins - B1.mouth) * 0.51), B1E: b1(1) });
   }
@@ -433,8 +441,13 @@ export function initPage01(engine) {
   // pass 3b: once frame 5 is fully open the walk stops for SHOW.len screens while the scroll drives its show (holdAt: the
   // walk's screens at that moment, from the hallway's layout); hall screens h -> the walk's screens and the show
   let holdAt = Infinity;
-  const hallAt = (h) => (h <= holdAt ? { w: h, show: 0 } : h < holdAt + SHOW.len ? { w: holdAt, show: h - holdAt } : { w: h - SHOW.len, show: SHOW.len });
-  const hallOf = (w) => (w <= holdAt + 1e-9 ? w : w + SHOW.len);   // the walk's screens -> hall screens
+  // 27 Nov, beat 1 at walking speed: past the walk's end the push takes pushLen screens of scroll for the dive's nominal
+  // B1N (beatAt: the scroll's walk screens -> the dive's; beatOf the other way); the rest of the beat is 1:1
+  let pushLen = B1N, heightMoved = false;
+  const beatAt = (v) => (v <= B1W ? v : v <= B1W + pushLen ? B1W + (v - B1W) * B1N / pushLen : v - pushLen + B1N);
+  const beatOf = (w) => (w <= B1W ? w : w <= B1W + B1N ? B1W + (w - B1W) * pushLen / B1N : w + pushLen - B1N);
+  const hallAt = (h) => (h <= holdAt ? { w: h, show: 0 } : h < holdAt + SHOW.len ? { w: holdAt, show: h - holdAt } : { w: beatAt(h - SHOW.len), show: SHOW.len });
+  const hallOf = (w) => (w <= holdAt + 1e-9 ? w : beatOf(w) + SHOW.len);   // the walk's screens -> hall screens
   // hallway pass 2: the strip and the title block wear their dark version while you are in the dark hall
   const setHallDark = (on) => { if (on === hallDark) return; hallDark = on; document.documentElement.classList.toggle('hall-dark', on); };
   function renderDive(p) {
@@ -627,13 +640,15 @@ export function initPage01(engine) {
   }
   function setTarget(p) { target = p; if (!lagRaf && p !== P) { lastT = performance.now(); lagRaf = requestAnimationFrame(chase); } }
   const placeMark = (s) => { mark2.style.top = `${((s.end - s.start) * R.dive[0] / SCROLL).toFixed(1)}px`; };
+  // the section's height follows beat 1's length (layoutDive): when it moves, every trigger measures again (once)
+  function refreshIfMoved() { if (!heightMoved) return; heightMoved = false; requestAnimationFrame(() => ScrollTrigger.refresh()); }
   const st = ScrollTrigger.create({
     trigger: sec, start: 'top top', end: 'bottom bottom',
     onUpdate: (s) => setTarget(s.progress * SCROLL),
-    onRefresh: (s) => { layout(); cancelAnimationFrame(lagRaf); lagRaf = 0; target = P = s.progress * SCROLL; render(P); placeMark(s); },
+    onRefresh: (s) => { layout(); cancelAnimationFrame(lagRaf); lagRaf = 0; target = P = s.progress * SCROLL; render(P); placeMark(s); refreshIfMoved(); },
   });
-  render(0); placeMark(st);
-  const again = () => { layout(); cancelAnimationFrame(lagRaf); lagRaf = 0; target = P = st.progress * SCROLL; render(P); };
+  render(0); placeMark(st); refreshIfMoved();   // (the first layout set the section's height: every trigger measures it once)
+  const again = () => { layout(); cancelAnimationFrame(lagRaf); lagRaf = 0; target = P = st.progress * SCROLL; render(P); refreshIfMoved(); };
   // first paints of the dashed hairlines (Bell's outlines) and the corridor's sheets cost ~120 ms once on the GPU: they
   // happen right after the page opens, at 1% opacity, not mid-scroll
   let warmed = false;
@@ -659,7 +674,7 @@ export function initPage01(engine) {
   grid.onChange(() => requestAnimationFrame(again));
 
   // for tests
-  window.__p1 = { phone, morph, stops: STOPS, scroll: SCROLL, R, yAt: (p) => st.start + (st.end - st.start) * p / SCROLL,
+  window.__p1 = { phone, morph, stops: STOPS, get scroll() { return SCROLL; }, pushLen: () => pushLen, R, yAt: (p) => st.start + (st.end - st.start) * p / SCROLL,
     hall: () => ({ holdAt, show: SHOW, len: HALL }), look: () => ({ ...look, canvas: +(canvas.style.opacity || 0) }),
     // pass 3b: render the story at p at once (no scroll, no lag), for the continuity check (tools/stagechrome.py)
     at: (p) => { cancelAnimationFrame(lagRaf); lagRaf = 0; target = P = p; render(p); return diveNow ? { t: diveNow.t, show: diveNow.show, phones: diveNow.phones, f5: diveNow.info?.[4] ? { swing: diveNow.info[4].swing, drawn: diveNow.info[4].drawn } : null, dress: diveNow.dress, lights: diveNow.lights } : null; },
