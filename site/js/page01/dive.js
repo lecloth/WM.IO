@@ -36,8 +36,11 @@
 //   arc, nearest first, full size, one full turn, and lands square on the real lock; the real lock bursts into its 15
 //   parts as the first copies land, each copy into its big parts as it lands, the pieces drift off into the dark (the
 //   fog takes them); the real lock's parts come home one by one in the manifest's order while the camera pushes in to
-//   the A frame: one lock, centred, the key in it. Until beat 4 is built, beat 3's end fades plainly into page 3's first
-//   frame as it is today (XRAY, temporary: STATE.md).
+//   the A frame: one lock, centred, the key in it.
+// - Beat 4, three ways to see one lock (28 Nov; BEAT4, see beat4() below): straight on from beat 3's last frame, the lab's
+//   A3 X-ray (the thief's view), A1 matte (ours) and A2 real metals (yours), all on the hall's dark ground, each taking
+//   over with a hairline wipe; five numbered spots with leaders to their labels while the X-ray and matte hold. Until
+//   beat 5 is built, beat 4's end fades plainly into page 3's first frame as it is today (XRAY, temporary: STATE.md).
 import * as THREE from 'three';
 import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
@@ -114,7 +117,7 @@ function frameDims(d) {
 const DIMS = FRAMES.map((F) => frameDims(F.draw));
 
 // ---------- the timeline, in screens of scroll (q = screens / DIVE) ----------
-export const DIVE = 12.9;   // 27 Nov: + the security page's beat 1 (1.5 screens; was 5.4); 28 Nov: + beat 2 (3 screens), + beat 3 (3 screens)
+export const DIVE = 16.9;   // 27 Nov: + the security page's beat 1 (1.5 screens; was 5.4); 28 Nov: + beat 2 (3 screens), + beat 3 (3 screens), + beat 4 (4 screens)
 const S_ = (screens) => screens / DIVE;
 export const WAY_IN = [S_(0.02), S_(0.32)];      // the sketch stretches out into depth
 export const OPEN_AT = [S_(0.3), S_(0.95)];      // the opening line
@@ -143,9 +146,17 @@ export const B2 = { back: 0.12, a: 0.30, b: 0.84, head: [0.45, 0.51] };   // hea
 // the key seats exactly at the end (Wajih, 28 Nov); the camera pushes in from push to the end; the fog closes over fog
 export const BEAT3 = [S_(9.5), S_(12.5)];
 export const B3 = { square: 0.2, fly: [0.2, 0.18, 0.14], burst: [0.3, 0.42], build: 0.56, dur: 0.12, push: 0.52, fog: [0.5, 0.9] };
-// the hand-over to page 3: TEMPORARY (until beat 4: the three views): a plain fade from beat 3's end (one lock, centred, the
-// key in it; held 0.1 screens) to page 3's first frame as it is today (the lock in X-ray, on blue)
-export const XRAY = [S_(12.6), S_(12.8)];
+// the security page's beat 4 (28 Nov): three ways to see one lock, 4 screens, straight on from beat 3's end (the reference
+// demo's place4 / render4 shares): the wipes (dark -> X-ray, X-ray -> matte, matte -> brass), each look holding between
+// them; the spots come in one by one (step apart) from spots.x in the X-ray and spots.m in matte; the camera eases from beat
+// 3's frame to beat 4's over frame (the lock drawn smaller where the labels need the room) and, once brass holds (no labels),
+// back over back to beat 3's centred frame (beat 5 starts there); the lock turns (the A frame's yaw) through the whole
+// beat; still: the moment of each look's reduced-motion still
+export const BEAT4 = [S_(12.5), S_(16.5)];
+export const B4 = { wipes: [[0, 0.08], [0.36, 0.44], [0.72, 0.8]], spots: { x: 0.1, m: 0.46, step: 0.03 }, frame: [0, 0.08], back: [0.8, 0.9], yaw: [-0.62, -0.42], still: { x: 0.3, m: 0.66, b: 0.9 } };
+// the hand-over to page 3: TEMPORARY (until beat 5: "Locked."): a plain fade from beat 4's end (one lock in brass, your
+// view; held 0.1 screens) to page 3's first frame as it is today (the lock in X-ray, on blue)
+export const XRAY = [S_(16.6), S_(16.8)];
 // frame 5's held show, in screens of scroll into the hold (page.js holds the walk this long once frame 5 is fully open)
 export const SHOW = { len: 2.9, draw: [0, 0.4], real: [0.4, 0.65], lift: [0.5, 1.0], turn: [[1.05, 2.55], [1.3, 2.8]] };
 export const STOPS = [];                         // per frame [fully open, closest] (q), set by layout (for the tests)
@@ -230,6 +241,25 @@ export const captionHTML = (f) => `<div class="dive__lab"><p class="dive__lab-t 
 /** beat 2's headline (28 Nov): the style lab's B3 placeholder, flagged Draft, on a dark frosted backing over the room */
 export const ROOM_HEAD = { eyebrow: 'Outside · every lock you own', line: 'One door is never the only door.' };
 export const roomHeadHTML = () => `<div class="dive__head"><p class="dive__head-f ph mono gt gt-h">Draft</p><p class="dive__head-e mono gt gt-h" data-draft>${ROOM_HEAD.eyebrow}</p><p class="dive__head-l display gt" data-draft>${ROOM_HEAD.line}</p></div>`;
+// beat 4 (28 Nov): the five spots, each on its part (the model has no springs: "springs" points at the cap that holds
+// them), the thief's weak spot and our fix; one caption per look. All the brief's placeholders: drafts, flagged
+export const SPOTS4 = [
+  { part: 'key', name: 'Key', weak: 'Weak passwords', fix: 'Only the right people get in' },
+  { part: 'pin3', name: 'Pins', weak: 'An open back door', fix: 'Every request checked' },
+  { part: 'plug', name: 'Plug', weak: 'Data lying in the open', fix: 'Your data locked away' },
+  { part: 'housing', name: 'Housing', weak: 'Old software', fix: 'Built strong from the start' },
+  { part: 'cap', name: 'Springs', weak: 'No alerts', fix: 'Alerts when something’s wrong' },
+];
+export const LOOKS4 = {
+  x: { e: 'The thief’s view · X-ray', l: 'He sees straight through it.' },
+  m: { e: 'Our view · matte', l: 'The same five spots, each one fixed.' },
+  b: { e: 'Your view · brass', l: 'Polished, closed. It just works.' },
+};
+/** a look's caption: the Draft flag (it also flags the look's labels on screen), the eyebrow, the line */
+export const lookHTML = (k) => `<div class="dive__look" data-look="${k}"><p class="dive__look-f ph mono gt gt-h" data-draft-flag>Draft</p><p class="dive__look-e mono gt gt-h" data-draft>${LOOKS4[k].e}</p><p class="dive__look-l display gt" data-draft>${LOOKS4[k].l}</p></div>`;
+/** a spot's label: its number and part, then the weak spot (X-ray) or the fix (matte); plain type, no box */
+export const spotHTML = (k, i, style = '') => { const s = SPOTS4[i]; return `<div class="dive__spot" data-look="${k}" data-i="${i}"${style ? ` style="${style}"` : ''}><p class="dive__spot-n mono gt gt-h" data-draft>${String(i + 1).padStart(2, '0')} · ${s.name}</p><p class="dive__spot-t mono gt gt-h" data-draft>${k === 'x' ? s.weak : s.fix}</p></div>`; };
+const b4HTML = () => `<div class="dive__b4">${['x', 'm', 'b'].map(lookHTML).join('')}${['x', 'm'].map((k) => SPOTS4.map((_, i) => spotHTML(k, i)).join('')).join('')}</div>`;
 export const openingHTML = () => `<div class="dive__open"><p class="dive__open-f ph mono gt gt-h">Draft</p><p class="dive__open-l display gt" data-draft>${OPENING.lead}</p><p class="dive__open-r gt gt-h" data-draft>${OPENING.rest}</p></div>`;
 
 // ---------- the surfaces' shader: the sketch (the page's paper and grid, exact) dressing into the dark hall (its base
@@ -261,7 +291,7 @@ void main() {
 export function createDive(root, top, { base = '' } = {}) {
   const LOOK = LOOKS[LOOK_ID];
   root.innerHTML = `<div class="dive__win"></div>`;
-  top.innerHTML = `<canvas class="dive__gl"></canvas>${openingHTML()}${roomHeadHTML()}<div class="dive__labs">${FRAMES.map(labelHTML).join('')}</div>` +
+  top.innerHTML = `<canvas class="dive__gl"></canvas>${openingHTML()}${roomHeadHTML()}${b4HTML()}<div class="dive__labs">${FRAMES.map(labelHTML).join('')}</div>` +
     `<div class="dive__bands">${FRAMES.map(bandHTML).join('')}</div>`;
   root.dataset.look = top.dataset.look = LOOK.id;
   const canvas = top.querySelector('.dive__gl');
@@ -500,6 +530,10 @@ export function createDive(root, top, { base = '' } = {}) {
       buildRoom();
       setLock(260);
       try { room.O.visible = true; renderer.compile(scene, camera); renderer.compile(lockScene, camera); room.O.visible = false; } catch (e) {}
+      // beat 4's three looks and its overlay (28 Nov): built and compiled now, each under the tone mapping it is drawn with,
+      // so the first wipe never waits on a shader
+      try { if (!b4.ready) buildB4(); const tm = renderer.toneMapping; renderer.toneMapping = THREE.NoToneMapping; renderer.compile(b4.scenes.x, camera); renderer.compile(b4.scenes.m, camera); renderer.compile(b4.ov.scene, b4.ov.cam);
+        renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.compile(b4.scenes.b, camera); renderer.toneMapping = tm; } catch (e) { console.warn('[dive] beat 4', e); }
       door.lockState = 'ready'; render(lastQ, true);
     } catch (e) { console.warn('[dive] lock', e); door.lockState = 'missing'; }
   }
@@ -978,6 +1012,273 @@ export function createDive(root, top, { base = '' } = {}) {
     return sum;
   }
 
+  // ---------- the security page, beat 4 (28 Nov, Part 5 "The security page, as demoed"): three ways to see one lock ----------
+  // The reference: tools/reference/security-demo-27nov.html place4(), render4() and pass() (Wajih approved them), in the
+  // lab's own looks (site/dev/lab/opt-a.js): A3 X-ray (its see-through shader, white hairlines), A1 matte (clay, ink
+  // hairlines, its light), A2 the real metals (the room light, a warm key light, the soft contact shadow), all three on the
+  // hall's dark ground (#0A0A0B; Wajih: no blueprint blue, no white paper here). Each look is a scene of its own that
+  // shares the real lock's geometry: every part's solid, and its hairlines from lock-parts.bin drawn as the site draws them
+  // (LineSegments2, as lock3d.js and page 1's X-ray), each frame placed exactly where the real part stands. Only the looks
+  // on screen are drawn: one, or two during a wipe, each in its own scissor. Each look takes over with a wipe: a hairline
+  // sweeping left to right, the new look revealed behind it.
+  // The spots: a dot on its part and a leader to its label at the side, which stops half a cell short of the words
+  // (TYPE_RULES). Two calls of mine (STATE.md): (1) the labels stand in columns beside the lock (on portrait screens one
+  // column, at the right), so a leader never crosses a word; the lock is fitted into the room the caption and the columns
+  // leave (the lab's A views fit the object into the band their text leaves, opt-a.js safeBand), easing there from beat
+  // 3's frame over B4.frame on the same A line (lens, yaw and pitch unchanged: a dolly and a sideways slide); on a phone
+  // that is about half the width. (2) Each look's labels are set once on the grid at its hold's middle; the leaders follow
+  // the parts as the lock turns.
+  const b4 = { ready: false, key: '', noCap: false, mirrors: [], scenes: null, looks: {}, lines: [], frame: null };
+  const b4v = { cW: V3(), dir: V3(), r: V3(), u: V3(), v: V3(), box: new THREE.Box3(), bb: new THREE.Box3() };
+  const b4El = top.querySelector('.dive__b4');
+  const lookEls = Object.fromEntries(['x', 'm', 'b'].map((k) => [k, b4El.querySelector(`.dive__look[data-look="${k}"]`)]));
+  const spotEls = Object.fromEntries(['x', 'm'].map((k) => [k, [...b4El.querySelectorAll(`.dive__spot[data-look="${k}"]`)]]));
+  /** once the lock is in: the three looks' scenes (sharing the real parts' geometry), the contact shadow, the overlay */
+  function buildB4() {
+    if (!b3.ready) prepB3();
+    const sX = new THREE.Scene(), sM = new THREE.Scene(), sB = new THREE.Scene();
+    // A1 matte's light (opt-a.js): a white sky over a warm grey ground, a key light from the upper left
+    sM.add(new THREE.HemisphereLight(0xffffff, 0xb9b6ae, 2.0)); { const k = new THREE.DirectionalLight(0xffffff, 1.4); k.position.set(-0.6, 1, 1.4); sM.add(k); }
+    // A2 the real metals' (opt-a.js): the room light (RoomEnvironment) and a warm key light
+    sB.environment = roomEnv; { const k = new THREE.DirectionalLight(0xfff4e0, 1.2); k.position.set(-1, 1.6, 1.2); sB.add(k); }
+    const xMat = new THREE.ShaderMaterial({   // opt-a.js xrayMat, unchanged (one shared by every part)
+      uniforms: { glow: { value: 0 } }, transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, toneMapped: false,
+      vertexShader: 'varying vec3 vN; varying vec3 vV; void main(){ vec4 mv = modelViewMatrix * vec4(position,1.); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }',
+      fragmentShader: 'uniform float glow; varying vec3 vN; varying vec3 vV; void main(){ float f = 1. - abs(dot(normalize(vN), normalize(vV))); float a = .05 + pow(f, 2.2) * .55 + glow * .25; gl_FragColor = vec4(vec3(.93,.95,.97) * a, a); }',
+    });
+    const mMat = new THREE.MeshStandardMaterial({ color: 0xEAE8E3, roughness: 0.95, metalness: 0, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });   // opt-a.js matte clay
+    const AM = { brass: { color: 0xC59A4E, metalness: 1, roughness: 0.34 }, steel: { color: 0xB8BBBF, metalness: 1, roughness: 0.3 }, dark: { color: 0x4E5256, metalness: 0.9, roughness: 0.42 } };   // opt-a.js MATS
+    const bMats = Object.fromEntries(Object.entries(AM).map(([k, v]) => [k, new THREE.MeshStandardMaterial({ ...v, envMapIntensity: 1.0 })]));
+    const res = (m) => { m.resolution.set(Math.round(W * dpr), Math.round(H * dpr)); return m; };
+    // the hairlines (the lab's: white at 0.7 in the X-ray, ink in matte), one device-pixel-true width as every line on the site
+    const xLine = res(lmat({ color: 0xECF1F6, opacity: 0.7, depthWrite: false })), mLine = res(lmat({ color: 0x121212, opacity: 1 }));
+    let segs = 0, tris = 0;
+    doorLock.solids.forEach((m) => {
+      const name = m.userData.part, pe = lockParts.by[name].edges, eg = segGeo(pe);   // (one hairline geometry, shared by the X-ray and matte)
+      segs += pe.length / 6; tris += m.geometry.index ? m.geometry.index.count / 3 : m.geometry.attributes.position.count / 3;
+      const mk = (sc, mat, lm) => { const g = new THREE.Group(); g.matrixAutoUpdate = false; sc.add(g); const me = new THREE.Mesh(m.geometry, mat); me.renderOrder = 1; g.add(me);
+        if (lm) { const l = new LineSegments2(eg, lm); l.renderOrder = 2; g.add(l); } return g; };
+      b4.mirrors.push({ m, g: [mk(sX, xMat, xLine), mk(sM, mMat, mLine), mk(sB, bMats[MAT_OF(name)], null)] });
+    });
+    // A2's soft contact shadow under the lock (opt-a.js; the demo's darker one, on the dark ground)
+    { const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d');
+      const rg = g.createRadialGradient(64, 64, 0, 64, 64, 64); rg.addColorStop(0, 'rgba(0,0,0,.5)'); rg.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = rg; g.fillRect(0, 0, 128, 128);
+      const shG = new THREE.Group(); shG.matrixAutoUpdate = false; sB.add(shG);
+      const sh = new THREE.Mesh(new THREE.PlaneGeometry(2.6 * b1.U, 1.4 * b1.U), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false, toneMapped: false }));
+      const lb = b3.lockBox; sh.rotation.x = -Math.PI / 2; sh.position.set((lb.min.x + lb.max.x) / 2, lb.min.y - 0.02 * b1.U, (lb.min.z + lb.max.z) / 2); shG.add(sh);
+      b4.shadow = shG; }
+    // the overlay, in CSS px (y down): the leaders and their dots, the wipe's hairline
+    const ov = new THREE.Scene(), ovCam = new THREE.OrthographicCamera(0, 1, 0, -1, -10, 10);
+    const leadMat = res(lmat({ color: 0xEDEEF0, opacity: 0.85, depthTest: false, depthWrite: false })), wipeMat = res(lmat({ color: 0xEDEEF0, opacity: 1, depthTest: false, depthWrite: false }));
+    const lead = new LineSegments2(segGeo(new Array(6 * SPOTS4.length).fill(0)), leadMat); lead.frustumCulled = false; lead.renderOrder = 0; ov.add(lead);
+    const wipe = new LineSegments2(segGeo([0, 0, 0, 0, -1, 0]), wipeMat); wipe.frustumCulled = false; wipe.renderOrder = 0; ov.add(wipe);
+    const dotG = new THREE.CircleGeometry(1, 24);
+    const ringM = new THREE.MeshBasicMaterial({ color: 0x0A0A0B, toneMapped: false, depthTest: false, depthWrite: false }), dotM = new THREE.MeshBasicMaterial({ color: 0xEDEEF0, toneMapped: false, depthTest: false, depthWrite: false });
+    const dots = SPOTS4.map(() => { const g = new THREE.Group(), r = new THREE.Mesh(dotG, ringM), d = new THREE.Mesh(dotG, dotM); r.scale.setScalar(3.75); d.scale.setScalar(2.5); r.renderOrder = 1; d.renderOrder = 2; g.add(r, d); g.visible = false; ov.add(g); return g; });
+    // the spots on their parts (the demo's places, in the part's own space: lock3d's axes are the lab's)
+    b4.spots = SPOTS4.map((s) => {
+      const m = doorLock.solids.find((x) => x.userData.part === s.part); m.geometry.computeBoundingBox(); const bb = m.geometry.boundingBox, C = bb.getCenter(V3());
+      const local = s.part === 'key' ? V3(C.x, C.y, bb.max.z * 0.85 + bb.min.z * 0.15) : s.part === 'housing' ? V3(bb.max.x, C.y - (bb.max.y - bb.min.y) * 0.25, C.z) : C;
+      return { ...s, m, local };
+    });
+    b4.scenes = { x: sX, m: sM, b: sB }; b4.ov = { scene: ov, cam: ovCam, lead, wipe, dots, buf: new Float32Array(6 * SPOTS4.length) };
+    b4.cam = new THREE.PerspectiveCamera(A_FRAME.fov, 1, 1, 1e6);
+    b4.segs = segs; b4.tris = tris; b4.ready = true;
+  }
+  /** a camera on the A line at this yaw, d world units from the lock's middle, slid sideways (ox, oy px on the screen) */
+  function aim4(cam, yaw, d, ox = 0, oy = 0) {
+    const cp = Math.cos(A_FRAME.pitch); b4v.dir.set(Math.sin(yaw) * cp, Math.sin(A_FRAME.pitch), Math.cos(yaw) * cp);
+    cam.position.copy(b4v.cW).addScaledVector(b4v.dir, d); cam.up.set(0, 1, 0); cam.lookAt(b4v.cW); cam.updateMatrixWorld();
+    if (ox || oy) {
+      const k = 2 * d * Math.tan(cam.fov * Math.PI / 360) / H;   // world units per px at the lock's middle
+      b4v.r.setFromMatrixColumn(cam.matrixWorld, 0); b4v.u.setFromMatrixColumn(cam.matrixWorld, 1);
+      cam.position.addScaledVector(b4v.r, -ox * k).addScaledVector(b4v.u, oy * k); cam.updateMatrixWorld();
+    }
+  }
+  /** the lock's box (world, its 15 parts as oneBox() sees them) on the screen through cam: { l, r, t, b } px */
+  function box4(cam) {
+    const bx = b4v.box, xs = [], ys = [];
+    for (let i = 0; i < 8; i++) { b4v.v.set(i & 1 ? bx.max.x : bx.min.x, i & 2 ? bx.max.y : bx.min.y, i & 4 ? bx.max.z : bx.min.z).project(cam); xs.push((b4v.v.x + 1) / 2 * W); ys.push((1 - b4v.v.y) / 2 * H); }
+    return { l: Math.min(...xs), r: Math.max(...xs), t: Math.min(...ys), b: Math.max(...ys) };
+  }
+  /** the camera at this yaw and distance, slid by k of the way to centre the lock's box in beat 4's room for it */
+  function frame4(cam, yaw, d, k = 1) {
+    aim4(cam, yaw, d);
+    if (k <= 0) return;
+    const bx = box4(cam), R = b4.frame.rect;
+    aim4(cam, yaw, d, k * ((R.l + R.r) / 2 - (bx.l + bx.r) / 2), k * ((R.t + R.b) / 2 - (bx.t + bx.b) / 2));
+  }
+  const yaw4 = (p) => lerp(B4.yaw[0], B4.yaw[1], ease(p));
+  /** beat 4's layout, per screen: the captions (placed as the room's headline), the room left for the lock and its
+   *  distance, and each look's labels on the grid (in their column, by their parts' heights) with their leaders' ends */
+  function layout4() {
+    const key = `${W}x${H}:${lastStrip}:${lastTb}:${gu}:${b4.noCap ? 1 : 0}`;
+    if (b4.key === key) return; b4.key = key;
+    const u = gu, desktop = W >= 1024, N = Math.round(W / u), side = desktop ? 5 : 1, rT = Math.ceil((lastStrip + u) / u - 1e-6);
+    // the captions: as the room's headline (the same column and row under the strip), as wide as their words need
+    let capB = 0; const capBs = {};
+    if (!b4.noCap) ['x', 'm', 'b'].forEach((k) => {
+      const el = lookEls[k], line = el.querySelector('.dive__look-l'), maxC = desktop ? N - 10 : N - 2, t0 = (rT + (desktop ? 3 : 1)) * u;
+      el.style.left = `${side * u}px`; el.style.top = `${t0}px`;
+      el.classList.remove('is-wrap'); el.style.width = 'max-content';
+      const need = Math.ceil((line.getBoundingClientRect().width + 1) / u), wrap = need > maxC;
+      el.classList.toggle('is-wrap', wrap); el.style.width = `${Math.min(maxC, wrap ? maxC : need) * u}px`;
+      capBs[k] = t0 + el.offsetHeight; capB = Math.max(capB, capBs[k]);
+    });
+    // the room for the lock and its labels: a cell under the captions (their descenders hang under the box) to a cell
+    // over the title block
+    const aT = (Math.ceil(capB / u - 1e-6) + 1) * u, aB = Math.floor((lastTb - u) / u + 1e-6) * u, aL = side * u, aR = Math.floor((W - side * u) / u + 1e-6) * u;
+    const two = W >= H, all = [...spotEls.x, ...spotEls.m];
+    all.forEach((el) => { el.classList.toggle('is-one', two); el.classList.remove('is-l'); el.style.width = 'max-content'; el.style.left = '0px'; el.style.top = '0px'; });
+    // the columns' width (whole cells): on wide screens each label on one line; on portrait screens the narrowest width
+    // at which no label leaves a word alone on a line (TYPE_RULES rule 5)
+    const lone = (p) => { const t = p.firstChild; if (!t) return false; const s = t.textContent, rg = document.createRange(), tops = new Map(); let i = 0;
+      for (const w of s.split(' ')) { rg.setStart(t, i); rg.setEnd(t, i + w.length); const r = rg.getClientRects()[0]; if (r) { const y = Math.round(r.top); tops.set(y, (tops.get(y) || 0) + 1); } i += w.length + 1; }
+      return tops.size > 1 && [...tops.values()].some((c) => c === 1); };
+    let colW;
+    if (two) colW = Math.ceil((Math.max(...all.map((el) => el.getBoundingClientRect().width)) + 1) / u);
+    else {
+      const tw = (p) => { const rg = document.createRange(); rg.selectNodeContents(p); return rg.getBoundingClientRect().width; };   // (the words' width, not the block's)
+      const nameW = Math.ceil((Math.max(...all.map((el) => tw(el.querySelector('.dive__spot-n')))) + 1) / u);
+      for (colW = Math.max(6, nameW); colW < N - 6; colW++) { all.forEach((el) => { el.style.width = `${colW * u}px`; }); if (!all.some((el) => lone(el.querySelector('.dive__spot-t')))) break; }
+    }
+    all.forEach((el) => { el.style.width = `${colW * u}px`; });
+    const colX = Math.floor((aR - colW * u) / u + 1e-6) * u;
+    const rect = two ? { l: aL + (colW + 2) * u, r: aR - (colW + 2) * u, t: aT, b: aB } : { l: aL, r: colX - u, t: aT, b: aB };
+    // the lock's box (world) as it stands, every part home, the key in and turned
+    b4v.box.makeEmpty(); doorLock.solids.forEach((m) => { if (m.parent) b4v.box.union(b4v.bb.setFromObject(m)); });
+    const mmW = HALL.door.lock.face * K / FACE.h, d0 = aFrame().dA * mmW, cam = b4.cam;
+    cam.fov = A_FRAME.fov; cam.aspect = W / H; cam.near = 0.01 * d0; cam.far = 1e3 * d0; cam.updateProjectionMatrix();
+    // the distance at which the lock's box fits that room at every yaw of the beat (it turns), never nearer than beat 3's
+    const fits = (yaw, d) => { aim4(cam, yaw, d); const b = box4(cam); return b.r - b.l <= rect.r - rect.l && b.b - b.t <= rect.b - rect.t; };
+    let d4 = d0;
+    for (let j = 0; j <= 4; j++) {
+      const yaw = lerp(B4.yaw[0], B4.yaw[1], j / 4); if (fits(yaw, d4)) continue;
+      let lo = d4, hi = d4; while (!fits(yaw, hi) && hi < d0 * 50) hi *= 1.25;
+      for (let i = 0; i < 32; i++) { const m = (lo + hi) / 2; if (fits(yaw, m)) hi = m; else lo = m; }
+      d4 = hi;
+    }
+    // brass has no labels: the frame it eases back to is beat 3's (the whole lock centred on the screen's middle, a cell
+    // clear of the strip and the title block), at the brass's own yaw, if its caption stays a cell clear of it
+    let dEnd = null;
+    { const vy = Math.min(H / 2 - lastStrip - u, lastTb - u - H / 2), vx = W / 2 - u;
+      const fitsC = (yaw, d) => { aim4(cam, yaw, d); const b = box4(cam); return b.l >= W / 2 - vx && b.r <= W / 2 + vx && b.t >= H / 2 - vy && b.b <= H / 2 + vy; };
+      let de = d0;
+      for (const yaw of [yaw4(B4.back[0]), yaw4(B4.back[1]), B4.yaw[1]]) { if (fitsC(yaw, de)) continue; let lo = de, hi = de; while (!fitsC(yaw, hi) && hi < d0 * 50) hi *= 1.25; for (let i = 0; i < 32; i++) { const m = (lo + hi) / 2; if (fitsC(yaw, m)) hi = m; else lo = m; } de = hi; }
+      aim4(cam, B4.yaw[1], de); const b = box4(cam);
+      if (b4.noCap || b.t >= (capBs.b || 0) + u - 0.5) dEnd = de; }
+    b4.frame = { rect, d0, d4, dEnd, colW, colX, two, area: { t: aT, b: aB, l: aL, r: aR } };
+    // each look's labels, set once at its hold's middle: in the column on their parts' side, in their parts' order
+    // down the screen, each at its part's height where it can be (its top on a half line), a cell apart
+    const h2 = (y) => Math.round(y / (u / 2)) * (u / 2);
+    for (const lk of ['x', 'm']) {
+      const hold = lk === 'x' ? [B4.wipes[0][1], B4.wipes[1][0]] : [B4.wipes[1][1], B4.wipes[2][0]];
+      const bx = { l: Infinity, r: -Infinity }; let anchors = null;
+      [hold[0], (hold[0] + hold[1]) / 2, hold[1]].forEach((p, j) => {
+        frame4(cam, yaw4(p), d4, 1); const b = box4(cam); bx.l = Math.min(bx.l, b.l); bx.r = Math.max(bx.r, b.r);
+        if (j === 1) anchors = b4.spots.map((s) => { b4v.v.copy(s.local).applyMatrix4(s.m.matrixWorld).project(cam); return [(b4v.v.x + 1) / 2 * W, (1 - b4v.v.y) / 2 * H]; });
+      });
+      const cx = (bx.l + bx.r) / 2, xL = Math.ceil((bx.r + 1.5 * u) / u - 1e-6) * u, xR = Math.floor((bx.l - 1.5 * u) / u + 1e-6) * u;
+      const items = spotEls[lk].map((el, i) => {
+        const right = !two || anchors[i][0] >= cx;
+        el.classList.toggle('is-l', !right);
+        const x = right ? (two ? xL : colX) : xR - colW * u;
+        el.style.left = `${x}px`;
+        const r0 = el.getBoundingClientRect(), rn = el.querySelector('.dive__spot-n').getBoundingClientRect();
+        return { i, el, right, x, w: colW * u, h: r0.height, mid: (rn.top + rn.bottom) / 2 - r0.top, ay: anchors[i][1], top: 0 };
+      });
+      [true, false].forEach((sd) => {
+        const col = items.filter((it) => it.right === sd).sort((a, b) => a.ay - b.ay); if (!col.length) return;
+        const stack = (gap) => { col.forEach((it, j) => { const want = h2(it.ay - it.mid); it.top = j ? Math.max(want, col[j - 1].top + col[j - 1].h + gap) : Math.max(aT, want); });
+          const over = col[col.length - 1].top + col[col.length - 1].h - aB;
+          if (over > 0) { for (let j = col.length - 1; j >= 0; j--) { const lim = j === col.length - 1 ? aB - col[j].h : col[j + 1].top - gap - col[j].h; col[j].top = Math.min(col[j].top, Math.floor(lim / (u / 2) + 1e-6) * (u / 2)); } }
+          return col[0].top >= aT - 0.5; };
+        if (!stack(u)) stack(u / 2);
+      });
+      items.forEach((it) => { it.el.style.top = `${it.top}px`; it.end = it.right ? [it.x - u / 2 - 2, it.top + it.mid] : [it.x + it.w + u / 2 + 2, it.top + it.mid]; });
+      b4.looks[lk] = { items };
+    }
+    const oc = b4.ov.cam; oc.left = 0; oc.right = W; oc.top = 0; oc.bottom = -H; oc.updateProjectionMatrix();
+  }
+  /** beat 4 at p (0..1): the one lock (every part home, the key in and turned), the camera (beat 3's frame easing to beat
+   *  4's, the lock turning), the looks and the wipe, the captions, the spots and their leaders */
+  function beat4(p) {
+    if (!b4.ready) buildB4();
+    b4.on = true;
+    const W1 = B4.wipes[0][1];
+    // the first wipe uncovers the X-ray over beat 3's last frame: its look (light, fog, materials) exactly as it ended
+    if (p < W1) beat3(1);
+    else { restoreParts(); if (b1.keyH && !b1.keyH.parent) doorLock.body.add(b1.keyH); if (b1.keyH) b1.keyH.visible = true; setLock(0, 1); if (room.O) room.O.visible = false; }
+    lock.updateMatrixWorld(true);
+    const mmW = HALL.door.lock.face * K / FACE.h, U = b1.U * mmW;
+    b4v.cW.copy(room.c).applyMatrix4(doorLock.body.matrixWorld);
+    layout4();
+    const F = b4.frame, yaw = yaw4(p), kIn = ease(span(p, ...B4.frame)), kOut = F.dEnd ? ease(span(p, ...B4.back)) : 0, k = kIn * (1 - kOut);
+    const d = F.d0 * Math.pow(F.d4 / F.d0, kIn) * (kOut ? Math.pow(F.dEnd / (F.d0 * Math.pow(F.d4 / F.d0, kIn)), kOut) : 1);   // (each move on a log scale)
+    camera.fov = A_FRAME.fov; camera.near = 0.03 * d; camera.far = 2 * d + 4 * b3.lockR * mmW; camera.updateProjectionMatrix();
+    frame4(camera, yaw, d, k);
+    if (p < W1) { const dC = camera.position.distanceTo(b4v.cW) + b3.lockR * mmW; lockScene.fog.near = dC; lockScene.fog.far = dC + 6 * U; }   // (beat 3's fog round the lock, from where the camera now is)
+    b4.mirrors.forEach(({ m, g }) => { for (const gg of g) { gg.matrix.copy(m.matrixWorld); gg.matrixWorldNeedsUpdate = true; } });
+    b4.shadow.matrix.copy(doorLock.body.matrixWorld); b4.shadow.matrixWorldNeedsUpdate = true;
+    // the wipes: [from, to, share swept]
+    const seq = [['dark', 'x'], ['x', 'm'], ['m', 'b']];
+    let from = 'x', to = null, w = 0;
+    for (let i = 0; i < 3; i++) { const [s0, s1] = B4.wipes[i]; if (p < s0) { from = seq[i][0]; break; } if (p < s1) { [from, to] = seq[i]; w = ease(span(p, s0, s1)); break; } from = seq[i][1]; }
+    const settled = to ? null : from, past = lastQ >= XRAY[0];
+    ['x', 'm', 'b'].forEach((lk) => lookEls[lk].classList.toggle('on', settled === lk && !past));
+    // the spots: one by one while their look holds; the leaders and dots follow the parts as the lock turns
+    const ov = b4.ov, buf = ov.buf; let n = 0; const lines = [];
+    ov.dots.forEach((g) => { g.visible = false; });
+    for (const lk of ['x', 'm']) {
+      const t0 = B4.spots[lk];
+      b4.looks[lk].items.forEach((it) => {
+        const on = settled === lk && p >= t0 + it.i * B4.spots.step;
+        it.el.classList.toggle('on', on);
+        if (!on) return;
+        const s = b4.spots[it.i]; b4v.v.copy(s.local).applyMatrix4(s.m.matrixWorld).project(camera);
+        const ax = (b4v.v.x + 1) / 2 * W, ay = (1 - b4v.v.y) / 2 * H, [ex, ey] = it.end;
+        buf.set([ax, -ay, 0, ex, -ey, 0], 6 * n); n++;
+        ov.dots[it.i].visible = true; ov.dots[it.i].position.set(ax, -ay, 0);
+        lines.push({ x1: ax, y1: ay, x2: ex, y2: ey, tag: `b4:leader${it.i + 1}` });
+      });
+    }
+    { const ib = ov.lead.geometry.attributes.instanceStart.data; ib.array.set(buf); ib.needsUpdate = true; ov.lead.geometry.instanceCount = n; ov.lead.visible = n > 0; }
+    const wx = Math.round(w * W), wiping = !!to && w > 0 && w < 1;
+    ov.wipe.visible = wiping;
+    if (wiping) {
+      const tb = lastTbR, foot = tb && wx >= tb.l - 1 && wx <= tb.r + 1 ? tb.t : H;   // (it stops at the title block: none of it shows under its foot)
+      const ib = ov.wipe.geometry.attributes.instanceStart.data; ib.array.set([wx, -lastStrip, 0, wx, -foot, 0]); ib.needsUpdate = true;
+      lines.push({ x1: wx, y1: lastStrip, x2: wx, y2: foot, tag: 'b4:wipe' });
+    }
+    b4.lines = lines;
+    const step = to ? `${from}>${to}` : settled === 'x' ? 'xray' : settled === 'm' ? 'matte' : 'brass';
+    return { beat: 4, p: +p.toFixed(4), step, from, to, w: +w.toFixed(3), wx, settled, labels: n, hall: false, head: false, yaw: +yaw.toFixed(4), frameK: +k.toFixed(3),
+      d: +(d / F.d0).toFixed(3), d4: +(F.d4 / F.d0).toFixed(3), dEnd: F.dEnd ? +(F.dEnd / F.d0).toFixed(3) : null, cols: F.two ? 2 : 1, colW: F.colW, segs: b4.segs, tris: b4.tris };
+  }
+  /** beat 4's picture: the look the wipe leaves, then the one it uncovers to the left of the hairline, each in its own
+   *  scissor on the dark ground (only the looks on screen are drawn), then the leaders, the dots and the hairline */
+  function render4(bt) {
+    const pass = (key, x0, x1) => {
+      renderer.setScissor(x0, 0, Math.max(0, x1 - x0), H);
+      renderer.setClearColor(0x0A0A0B, 1);
+      renderer.toneMapping = key === 'x' || key === 'm' ? THREE.NoToneMapping : THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = key === 'b' ? 1.05 : key === 'dark' ? LOOK.exposure : 1;
+      renderer.clear(); renderer.render(key === 'dark' ? lockScene : b4.scenes[key], camera);
+    };
+    renderer.autoClear = false; renderer.setScissorTest(true);
+    pass(bt.from, 0, W);
+    if (bt.to && bt.wx > 0) pass(bt.to, 0, bt.wx);
+    renderer.setScissorTest(false);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = LOOK.exposure; renderer.setClearColor(0x000000, 0);
+    renderer.render(b4.ov.scene, b4.ov.cam);
+    renderer.autoClear = true;
+  }
+  /** out of beat 4 (scrolling back into beat 3, or before): its words off */
+  function leave4() {
+    if (!b4.on) return; b4.on = false;
+    Object.values(lookEls).forEach((el) => el.classList.remove('on')); [...spotEls.x, ...spotEls.m].forEach((el) => el.classList.remove('on'));
+  }
+
   // ---------- the frames: a blueprint sheet each, in a black float frame, on a hinge, a plaque under it ----------
   const blobMap = blobTex(), shadowMap = blobTex(0.36, 0.34, 30, 26);
   // the spotlight on the art: brightest a little above its middle, falling off to its edges
@@ -1265,7 +1566,7 @@ export function createDive(root, top, { base = '' } = {}) {
   }
 
   // ---------- layout ----------
-  let lay = null, lastStrip = 0, lastTb = 0;
+  let lay = null, lastStrip = 0, lastTb = 0, lastTbR = null;
   /** opts: u (the cell), strip (its height), noTitleblock */
   function layout(w, h, opts = {}) {
     W = w; H = h;
@@ -1404,7 +1705,8 @@ export function createDive(root, top, { base = '' } = {}) {
     // the walk: from the mouth (the camera P in front of it) to standing in front of the shut door: the door's top under
     // the strip and its foot over the title block (or at least on the screen), never stopping before the last frame
     // has folded back
-    lastStrip = strip_; lastTb = tbTop;
+    lastStrip = strip_; lastTb = tbTop; lastTbR = tbr ? { l: tbr.left, r: tbr.right, t: tbr.top, b: tbr.bottom } : null;
+    b4.key = '';   // (beat 4 lays its words out again: the screen, the chrome or the fonts may have changed)
     const dr = HALL.door;
     const Dtop = (dr.h - E) * K * P / Math.max(1, H / 2 - strip_ - u), Dwide = (dr.w / 2 + dr.arch) * K * P / Math.max(1, W / 2 - u);
     const DfootTb = E * K * P / Math.max(1, tbTop - u - H / 2), DfootScr = E * K * P / (H / 2);
@@ -1550,7 +1852,10 @@ export function createDive(root, top, { base = '' } = {}) {
     const b2p = !st && doorLock ? span(q, ...BEAT2) : 0;
     // and beat 3 (28 Nov): fly home, chaos, one lock, straight on from beat 2's last frame
     const b3p = !st && doorLock ? span(q, ...BEAT3) : 0;
-    const bt = b3p > 0 ? beat3(b3p) : b2p > 0 ? beat2(b2p) : bp > 0 ? beat1(bp) : restLock();
+    // and beat 4 (28 Nov): three ways to see one lock, straight on from beat 3's last frame
+    const b4p = !st && doorLock ? span(q, ...BEAT4) : 0;
+    if (b4p <= 0) leave4();
+    const bt = b4p > 0 ? beat4(b4p) : b3p > 0 ? beat3(b3p) : b2p > 0 ? beat2(b2p) : bp > 0 ? beat1(bp) : restLock();
     const headOn = !!(bt && bt.head);
     headEl.classList.toggle('on', headOn);
     const info = [], rects = [];
@@ -1636,12 +1941,15 @@ export function createDive(root, top, { base = '' } = {}) {
     if (openOn) { const c = gu / 2 + 2, r = openEl.getBoundingClientRect(); rects.push({ l: r.left - gu - c, r: r.right + gu + c, t: r.top - gu - c - gu / 2, b: r.bottom + gu + c + gu / 2 }); }   // its backing, half a cell clear (it settles from below)
     knockout(rects); cutStrip(rects);
     renderer.autoClear = true;
-    if (!bt || bt.hall) renderer.render(scene, camera);
-    else { renderer.setClearColor(0x0A0A0B, 1); renderer.clear(); renderer.setClearColor(0x000000, 0); }   // inside the lock: the hall stops drawing; the dark ground
-    // the lock, over the hall's depth; once the camera is on the lock's axis (0.85 of the push: the face hides the housing's
-    // sides) over the hall whatever its depth, so the keyway shows the lock's own inside and never the door's leaf, whose
-    // plane cuts through the lock's body (on a wide screen the face never covers the whole width, so the hall still draws)
-    if (lock.visible) { renderer.autoClear = false; if (bt && (bt.beat >= 2 || bt.p >= 0.85 * B1.fill)) renderer.clearDepth(); renderer.render(lockScene, camera); renderer.autoClear = true; }
+    if (bt && bt.beat === 4) render4(bt);   // beat 4: the looks on screen, each in its own scissor, then the leaders and the wipe
+    else {
+      if (!bt || bt.hall) renderer.render(scene, camera);
+      else { renderer.setClearColor(0x0A0A0B, 1); renderer.clear(); renderer.setClearColor(0x000000, 0); }   // inside the lock: the hall stops drawing; the dark ground
+      // the lock, over the hall's depth; once the camera is on the lock's axis (0.85 of the push: the face hides the housing's
+      // sides) over the hall whatever its depth, so the keyway shows the lock's own inside and never the door's leaf, whose
+      // plane cuts through the lock's body (on a wide screen the face never covers the whole width, so the hall still draws)
+      if (lock.visible) { renderer.autoClear = false; if (bt && (bt.beat >= 2 || bt.p >= 0.85 * B1.fill)) renderer.clearDepth(); renderer.render(lockScene, camera); renderer.autoClear = true; }
+    }
     const warmDraw = phones.warmNow && !phones.root.visible && f5;
     if (warmDraw) { phones.root.visible = true; phones.mats.forEach((m) => { m.opacity = 0.002; }); }
     if (phones.root.visible) {
@@ -1658,7 +1966,7 @@ export function createDive(root, top, { base = '' } = {}) {
     }
     const lockBox = lock.visible ? screenBox(lock) : null;
     const o = { info, q, show: showE, t, cam: [camera.position.x / K, camera.position.y / K], eye: E, phones: { state: phones.state, mix: phones.mix, real: f5 ? f5.real : 0, yaw: phones.yaw, yaws: phones.yaws, lift: phones.lift, visible: phones.root.visible }, open: T >= 1, tr: T, dress, lights, frames: fin, walked: span(q, ...WALK),
-      door: { lock: door.lockState, box: lockBox, distance: (camera.position.z + L) / K }, beat1: bt && !bt.beat ? bt : null, beat2: bt && bt.beat === 2 ? bt : null, beat3: bt && bt.beat === 3 ? bt : null, head: headOn, xray: xt, labels: labQuads, band: bandShown ? { i: bandI, op: bandA, rect: bandR } : null };
+      door: { lock: door.lockState, box: lockBox, distance: (camera.position.z + L) / K }, beat1: bt && !bt.beat ? bt : null, beat2: bt && bt.beat === 2 ? bt : null, beat3: bt && bt.beat === 3 ? bt : null, beat4: bt && bt.beat === 4 ? bt : null, head: headOn, xray: xt, labels: labQuads, band: bandShown ? { i: bandI, op: bandA, rect: bandR } : null };
     if (!again) out = o; else if (out) Object.assign(out, o);
     if (again) onAgain?.(out);
     return out;
@@ -1713,6 +2021,9 @@ export function createDive(root, top, { base = '' } = {}) {
     // beat 3: the room, the flight and the chaos are the space the camera stands in (as beat 2's room); the one lock is a
     // shape on the screen once every part is home (the end, and its hold)
     if (out.beat3) { if (out.beat3.object) { const b = oneBox(); if (b) D.shapes.push({ ...b, tag: 'lock:one' }); } return D; }
+    // beat 4: the one lock is a shape in every look (the X-ray's see-through one too); the leaders and the wipe's hairline
+    // are drawn lines (the hairline under the strip and over the title block, which covers it)
+    if (out.beat4) { const b = oneBox(); if (b) D.shapes.push({ ...b, tag: 'lock:b4' }); b4.lines.forEach((l) => D.lines.push({ ...l })); return D; }
     const lockShape = !out.beat1 || out.beat1.object;
     const segIn = (A, B) => A[2] > camera.near && B[2] > camera.near;
     const outer = (f) => [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([sx, sy]) => P3(f, sx * f.OX, sy * f.OY, f.FD));
@@ -1870,6 +2181,7 @@ export function createDive(root, top, { base = '' } = {}) {
     renderer.render(scene, camera);
     if (doorLock) render(lerp(BEAT1[0], BEAT1[1], 0.75));   // beat 1 inside the keyway, once (its lights, fog and room light reach the GPU now)
     if (doorLock) render(lerp(BEAT2[0], BEAT2[1], 0.8));    // beat 2 mid-wave, once (the room's copies and the key reach the GPU now)
+    if (doorLock) { render(lerp(BEAT4[0], BEAT4[1], 0.4)); render(lerp(BEAT4[0], BEAT4[1], 0.76)); }   // beat 4 mid-wipe, X-ray to matte and matte to brass (its looks' buffers reach the GPU now)
     render(q);
   }
   /** reduced motion: one still picture of the dressed hall, lit, every frame open, seen from its mouth (a JPEG) */
@@ -1904,8 +2216,25 @@ export function createDive(root, top, { base = '' } = {}) {
     render(BEAT3[1]); const url = canvas.toDataURL('image/jpeg', 0.9);
     return url;
   }
+  /** reduced motion (beat 4): a look's still (x, m or b) at its hold, every label in, as a JPEG, with its labels' places
+   *  and widths in the picture (CSS px) so the page sets the words over it as real text; null without the lock */
+  async function lookStill(k, w, h, opts = {}) {
+    await load(); await loadLock(); await envP;
+    if (!doorLock) return null;
+    const hid = top.hidden, vis = top.style.visibility, disp = top.style.display;
+    top.hidden = false; top.style.display = 'block'; top.style.visibility = 'hidden';   // (laid out to be measured, never painted: restored before this task ends; reduced motion hides it)
+    try {
+      b4.noCap = true;
+      layout(w, h, { strip: 0, noTitleblock: true, ...opts });
+      render(lerp(BEAT4[0], BEAT4[1], B4.still[k])); const url = canvas.toDataURL('image/jpeg', 0.9);
+      const labels = k === 'b' ? [] : b4.looks[k].items.map((it) => ({ i: it.i, x: it.x, top: it.top, w: it.w, left: !it.right }));
+      return { url, labels };
+    } finally {
+      b4.noCap = false; b4.key = ''; leave4(); top.hidden = hid; top.style.visibility = vis; top.style.display = disp;
+    }
+  }
   function reset() {}
-  return { layout, render, load, warm, still, faceStill, roomStill, oneStill, reset, beat3: () => (out ? out.beat3 : null), chaosSum: () => (b3.ready ? chaosSum() : null), foldNow: () => (room.O ? new THREE.Euler().setFromQuaternion(room.O.quaternion).x / 0.9 : null), theme, loadPhones, loadLock, drawn, readability, look: LOOK.id, stops: STOPS,
+  return { layout, render, load, warm, still, faceStill, roomStill, oneStill, lookStill, reset, beat4: () => (out ? out.beat4 : null), b4frame: () => (b4.frame ? { ...b4.frame } : null), beat3: () => (out ? out.beat3 : null), chaosSum: () => (b3.ready ? chaosSum() : null), foldNow: () => (room.O ? new THREE.Euler().setFromQuaternion(room.O.quaternion).x / 0.9 : null), theme, loadPhones, loadLock, drawn, readability, look: LOOK.id, stops: STOPS,
     closeAt: () => (lay ? lay.map((l) => qAtD(l, l.Dc) * DIVE) : null), openAt: () => (lay ? lay.map((l) => qAtD(l, l.Dread) * DIVE) : null),
     phones: () => phones.state, frames: () => frames, lay: () => lay, P: () => P, L: () => L, K: () => K, hall: () => ({ W, H, P, K, X, L, z0, zEnd, Dend: Dend / K, Dx, portrait, band: bandR, eye: E, limits }),
     band: () => ({ i: bandOn, op: bandOp, rect: bandR }),

@@ -18,7 +18,9 @@ final room's now; the current build also steps the hyperdrive frame by frame.
 dark end into it (backing up the keyway), out of the keyhole and the pull-back, the hold with the headline, the circling
 with the key's turn and the wave, and its end. 28 Nov --beat3: only beat 3, fly home, chaos, one lock: the seam from
 beat 2's end into it, the room squaring up as the camera pulls back, the fly home, the chaos, the lock building itself,
-and its end with the (temporary) fade into page 3.
+and its end with the (temporary) fade into page 3. 28 Nov --beat4: only beat 4, the three views: the seam from beat 3's end
+with the first wipe (beat 3's lock -> the X-ray, the lock easing to its new frame), the X-ray's hold with its labels, the
+wipe to matte, matte's hold, the wipe to brass with the lock easing back, and its end with the (temporary) fade.
 One headed Chrome window opens on the desktop while it runs (a fresh temporary profile; nothing of the user's)."""
 import argparse, asyncio, json, subprocess, sys, tempfile, time
 from pathlib import Path
@@ -124,13 +126,15 @@ async def run_build(pw, b, a, out):
     rep = {"env": env}
     # 27 Nov (--beat1): only the security page's beat 1, from the shut door to the dark end, in small steps (the walk into
     # the lock, the keyhole, the keyway under the pins), each frame from the compositor; then the hand-over's fade
-    if a.beat2 or a.beat3:
+    if a.beat2 or a.beat3 or a.beat4:
         # each stretch around a named stop (page 1 screens), each frame from the compositor; the largest single-frame change too
         stretches = [("b2_seam", stops["B1E"] - 0.15, stops["B1E"] + 0.35), ("b2_out", stops["B2K"] - 0.15, stops["B2K"] + 0.35),
                      ("b2_head", stops["B2H"] - 0.2, stops["B2H"] + 0.2), ("b2_wave", stops["B2W"] - 0.25, stops["B2W"] + 0.25),
                      ("b2_end", stops["B2E"] - 0.2, stops["B2E"] + 0.01)] if a.beat2 else                     [("b3_seam", stops["B2E"] - 0.15, stops["B2E"] + 0.2), ("b3_square", stops["B2E"] + 0.2, stops["B3S"] + 0.05),
                      ("b3_fly", stops["B3S"], stops["B3F"] + 0.4), ("b3_chaos", stops["B3C"] - 0.3, stops["B3C"] + 0.3),
-                     ("b3_build", stops["B3B"] - 0.35, stops["B3L"]), ("b3_end", stops["B3L"] - 0.05, stops["LOCK"])]
+                     ("b3_build", stops["B3B"] - 0.35, stops["B3L"]), ("b3_end", stops["B3L"] - 0.05, stops["B3L"] + 0.01)] if a.beat3 else                     [("b4_seam", stops["B3L"] - 0.1, stops["B4I"] + 0.25), ("b4_xray", stops["B4X"] - 0.35, stops["B4X"] + 0.1),
+                     ("b4_wipe2", stops["B4W"] - 0.2, stops["B4W"] + 0.2), ("b4_matte", stops["B4M"] - 0.4, stops["B4M"] + 0.1),
+                     ("b4_wipe3", stops["B4V"] - 0.2, stops["B4V"] + 0.35), ("b4_end", stops["B4E"] - 0.1, stops["LOCK"])]
         for name, s0, s1 in stretches:
             ya = await yAt(s0); yb = await yAt(s1)
             await page.evaluate(GOTO, ya, isolated_context=False); await page.wait_for_timeout(1500)
@@ -209,6 +213,6 @@ async def main(a):
     (out / "flicker.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
 
 ap = argparse.ArgumentParser(); ap.add_argument("--builds", default="r7old,current"); ap.add_argument("--out", default="tools/shots/r8/flicker"); ap.add_argument("--frames", type=int, default=36)
-ap.add_argument("--width", type=int, default=2160); ap.add_argument("--height", type=int, default=1147); ap.add_argument("--dpr", type=float, default=1.333); ap.add_argument("--no-hyper", action="store_true"); ap.add_argument("--beat1", action="store_true"); ap.add_argument("--beat2", action="store_true"); ap.add_argument("--beat3", action="store_true")
+ap.add_argument("--width", type=int, default=2160); ap.add_argument("--height", type=int, default=1147); ap.add_argument("--dpr", type=float, default=1.333); ap.add_argument("--no-hyper", action="store_true"); ap.add_argument("--beat1", action="store_true"); ap.add_argument("--beat2", action="store_true"); ap.add_argument("--beat3", action="store_true"); ap.add_argument("--beat4", action="store_true")
 with BrowserLock():
     asyncio.run(main(ap.parse_args()))

@@ -23,7 +23,7 @@ Take 1's history below.
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Page 1 | Beacon → Bell's ink on our grid → X-ray phone, six named pieces (each leader on its own piece) → kinetic line, real phone → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum → **"Now, how can we serve you?"** (signed off, round 8) | ~5.9 (with 2: 10.54) | **round 8 built (25 Nov): waiting for Wajih's review** |
 | 2 | The hallway | Hallway pass 1 (26 Nov): fixed proportions (about 2.6 x 3 x 19, frames at 4, 7, 10, 13, 16, left/right alternating); a white sketch drawn into depth dresses into the dark hall, the spotlights and the ceiling strip come on, the frames appear; scrolling is walking at one steady pace; each frame swings out fully (90 degrees) as you reach it and folds back as you pass; pass 2: black float frames lit in their spotlights, a light plaque under each (title, FIG line), the open frame's title and story line in a dark caption band, the camera slides (never turns) to each open frame (portrait: a narrower lens, the frame about two thirds of the width), dark chrome in the hall, five new blueprints; the walk ends in front of the centred, shut door with its brass Cutaway Lock; then page 3 as before; pass 3: the eye one height for the whole walk, the title on the plaque only (light paper, rounded), the band the story line only, no stock icons, frame 5's blueprint dresses into the real phones, which lift out of the frame and turn once each; pass 3b: at frame 5 the walk stops and the scroll drives its show (scribble, lift, a full turn each, about 1.5 screens per turn; back plays it in reverse) | 8.3 (5.4 walk + 2.9 held show; inside page 1's section) | **pass 3b built (frame 5's held, scrubbed show; every page 1 and hallway object animation scrubbed); pending: the real-phone run** |
-| 3 | The security page | 27 Nov (Part 5, as demoed): five beats on the real lock. **Beat 1 built** (the steady push into the door's lock, the keyway past the pins, out into the dark; 1.5 screens, at the end of the hallway's section in dive.js); **beat 2 built** (28 Nov: back up the keyway and out through the keyhole, lab B3's room of locks: 74 copies, the room turning, the camera circling, the centre key's turn and the unlock wave; the headline "One door is never the only door." (draft) at the hold; 3 screens, straight on in dive.js); **beat 3 built** (28 Nov: the room squares up as the camera pulls back to see all of it, the copies fly home nearest first and burst as they land, the real lock bursts into its 15 parts and comes home part by part as the camera pushes in to the A frame: one lock, centred, the key in it; 3 screens); then, TEMPORARILY, a plain fade from the one lock into round 9's page 3 as it was (starts on the lock in X-ray; into the keyhole past the pins; the lattice unlocks in a wave and folds back into one; two lines, drafts) until beats 4-5 replace it | beat 1 2.5-3.5 (per screen: the push at walking speed) + beat 2 3 + beat 3 3 + the fade 0.4 + 4.6 (overlapping page 1's last screen) | **beats 1-3 built (beat 1 27 Nov, second pass: the pins ride the key, the push at walking speed; beat 2 28 Nov, the room of locks; beat 3 28 Nov, fly home, chaos, one lock); beat 4 next** |
+| 3 | The security page | 27 Nov (Part 5, as demoed): five beats on the real lock. **Beat 1 built** (the steady push into the door's lock, the keyway past the pins, out into the dark; 1.5 screens, at the end of the hallway's section in dive.js); **beat 2 built** (28 Nov: back up the keyway and out through the keyhole, lab B3's room of locks: 74 copies, the room turning, the camera circling, the centre key's turn and the unlock wave; the headline "One door is never the only door." (draft) at the hold; 3 screens, straight on in dive.js); **beat 3 built** (28 Nov: the room squares up as the camera pulls back to see all of it, the copies fly home nearest first and burst as they land, the real lock bursts into its 15 parts and comes home part by part as the camera pushes in to the A frame: one lock, centred, the key in it; 3 screens); **beat 4 built** (28 Nov: three ways to see one lock: the lab's A3 X-ray (the thief's view), A1 matte (ours), A2 real metals (yours) on the hall's dark ground, each taking over with a hairline wipe; five numbered spots with leaders to their labels in the X-ray and matte, one caption per look (drafts); the lock turns a little; 4 screens); then, TEMPORARILY, a plain fade from the brass look into round 9's page 3 as it was (starts on the lock in X-ray; into the keyhole past the pins; the lattice unlocks in a wave and folds back into one; two lines, drafts) until beat 5 replaces it | beat 1 2.5-3.5 (per screen: the push at walking speed) + beat 2 3 + beat 3 3 + beat 4 4 + the fade 0.4 + 4.6 (overlapping page 1's last screen) | **beats 1-4 built (beat 1 27 Nov, second pass: the pins ride the key, the push at walking speed; beat 2 28 Nov, the room of locks; beat 3 28 Nov, fly home, chaos, one lock; beat 4 28 Nov, the three views); beat 5 next** |
 | 4 | How we work | The lock turns side-on into a 2D cutaway; "First, the obvious key." / "It fails. Most people stop here." / "We don't." (drafts); the wrong key fails; seven pins picked in the drum's order, each verb on a leader, the newest meaning under the lock on a leader; it turns on Delivered | 4 (inside page 3's section) | **round 10 built** |
 | 5 | Lighter trips | Three rooms, scrubbed: AI (the property app's enquiries: the AI drafts, a person approves, then it's sent), websites (the booking app's site, drawn on the grid then real), apps (the delivery tracker live on the real iPhone 18 and S26). Lines and content drafts | 7.2 | **round 11 built** |
 | 6 | Team | "The three of us." (draft); three cards, clearly placeholders (a crossed picture box, "Name to come", a bio placeholder) | ~1 | **round 11 built** |
@@ -743,7 +743,7 @@ Take 1's history below.
   (`tools/shots/beat3/demo/384x734_q1.00.png`; the demo got away with it because its beat 4 draws in fog-free scenes).
 - **The light:** beat 2's as it ended (the room light 0.55 unturned, rim 0.9, hemisphere 0.5, headlamp 0.1); the real lock
   keeps lab B1's inside materials (the darker brass: still a look-pass note, "For the look pass").
-- **The hand-over to page 3, TEMPORARY (until beat 4, the three views):** `XRAY` 12.6-12.8: from beat 3's end (held 0.1
+- **The hand-over to page 3 (REPLACED 28 Nov by beat 4; the fade now follows beat 4's end, see beat 4's notes):** `XRAY` 12.6-12.8: from beat 3's end (held 0.1
   screens: one lock, centred, the key in it) the same plain fade as before (the blue quad and the X-ray lock, through
   `xCam`) to page 3's first frame as it is today; page 3 (round 9's lockworld) takes over there. It replaces beat 2's
   temporary fade (9.6-9.8, gone).
@@ -756,6 +756,70 @@ Take 1's history below.
   every stop, `--scrub3` (beat 2's end through beat 3 to the hand-over: the camera and the chaos checksum forwards vs
   backwards; `--scrub2` now stops at B2E), `--reduced` also shoots the one lock's still; `flicker.py --beat3` (the seam, the
   squaring pull-back, the fly home, the chaos, the build, the end and the fade).
+
+### The security page, beat 4: structure notes (28 Nov, Part 5 "The name's size, and the security page as demoed")
+- **Where it lives:** in the hallway's own canvas and camera (`site/js/page01/dive.js`, `beat4()` / `render4()`), straight on
+  from beat 3's last frame (no cut): `DIVE` 16.9 (was 12.9), `BEAT4` 12.5-16.5 nominal screens (4, 1:1 with the scroll), `B4` =
+  { wipes [0, 0.08] [0.36, 0.44] [0.72, 0.8], spots x 0.1 / m 0.46, step 0.03, frame [0, 0.08], back [0.8, 0.9], yaw -0.62 ->
+  -0.42, still x 0.3 / m 0.66 / b 0.9 } (the reference demo's place4 / render4 shares). New stops B4I (the first wipe
+  halfway), B4X (the X-ray, all five labels), B4W (the wipe to matte halfway), B4M (matte, all five labels), B4V (the wipe to
+  brass halfway), B4B (brass), B4E (beat 4's end); LOCK the hand-over done. Page 1's scroll: 25.71 screens on the S23 (was
+  21.71); the CSS fallback 2574lvh.
+- **The three looks:** three scenes of their own (X-ray, matte, brass) that share the real lock's geometry: each of the 15
+  solids is mirrored into each scene (a group with no auto-update, its matrix copied each frame from the real part's world
+  matrix, so the plug's turn, the key and the pins on the shear line are exactly the real lock's). X-ray: opt-a.js
+  `xrayMat` verbatim (one shared ShaderMaterial, additive, no tone mapping) and white hairlines (#ECF1F6 at 0.7); matte:
+  opt-a.js clay (#EAE8E3, roughness 0.95, polygon offset), ink hairlines (#121212), its hemisphere (2.0) and key light
+  (1.4); brass: opt-a.js MATS (brass #C59A4E, steel, dark) on the room light (RoomEnvironment) with its warm key light
+  (1.2), ACES at 1.05, and the soft contact shadow under the lock (the demo's darker one). **The hairlines** are the site's
+  (Wajih, 28 Nov): `LineSegments2` from each part's edges in `lock-parts.bin` (one geometry per part, shared by the X-ray
+  and matte), `lmat` (1 CSS px, device-pixel true, as lock3d.js and page 1's X-ray), not the demo's 1 px LineBasicMaterial.
+  All on #0A0A0B.
+- **Only the looks on screen are drawn:** `render4` clears and draws one look full width and, during a wipe, the next one
+  in a scissor left of the hairline (two passes at most, each with its own tone mapping and exposure); the hall is not drawn
+  in beat 4, and the lock's own scene only as beat 3's look right of the first wipe (`beat4` calls `beat3(1)` there, then
+  sets the fog round the lock from where the camera now is). Then one overlay pass (an orthographic scene in CSS px): the
+  leaders, the dots, the wipe's hairline. The looks' shaders compile when the lock loads (each under its own tone mapping)
+  and `warm()` draws two mid-wipe frames, so the first wipe never waits on a shader or an upload.
+- **The wipe:** a 1 CSS px hairline (#EDEEF0, `LineSegments2`) sweeping left to right (eased), from under the strip to the
+  foot of the screen, or to the title block's top where it passes behind the block (nothing shows under its foot); the new
+  look revealed to its left. No words are on during a wipe (captions and labels only while a look holds).
+- **The camera (my call 1):** on the lab's A line throughout (lens 28, pitch 0.34, the yaw easing -0.62 -> -0.42 over the
+  whole beat, as the demo). The labels stand in columns beside the lock (on portrait screens one column, at the right; on
+  wide screens one each side, as the demo), so a leader never crosses a word; the lock is fitted (its 15 parts' box, at
+  every yaw of the beat) into the room the caption and the columns leave, a cell clear, and eases there from beat 3's frame
+  over `frame` (a dolly on the same line on a log scale and a sideways slide: lens, yaw and pitch unchanged; `frame4`). On
+  the laptop that is almost nothing (the same distance, a 20 px slide); on a phone the lock goes to about half the width
+  (2.07 x the distance on the S23), because the five labels need a 9-cell column (`colW`: the narrowest whole-cell width at
+  which no label leaves a word alone on a line; "Every request checked" sets it). Once brass holds (no labels), the camera
+  eases back over `back` to beat 3's centred frame at the brass's yaw (the whole lock fitted between the strip and the
+  title block, `dEnd`), if the brass caption stays a cell clear of it (it does at every size checked); beat 5 starts there.
+- **The spots (my call 2):** the demo's places on the parts (key: its bow; pins: key pin 3; plug; housing: its outer side,
+  a quarter down; springs: the cap, the model has none), a dot (white with a dark ring, so it reads on the clay and on the
+  lines) and a leader (#EDEEF0 at 0.85, 1 CSS px) to its label. Each look's labels are set once per screen on the grid at
+  its hold's middle (`layout4`), in their column, in their parts' order down the screen, each at its part's height where
+  it can be (top on a half line), a cell apart; the column a cell and a half clear of the lock's box over the whole hold;
+  the leaders follow the parts as the lock turns and stop half a cell (+2 px) short of the label's number line. Labels come
+  in one by one (0.03 apart) while their look holds, with the site's timed word fade; the leaders and dots by the scroll.
+- **The words (all drafts, flagged):** one caption per look (`.dive__look`: the Draft flag, the eyebrow "The thief's view ·
+  X-ray" / "Our view · matte" / "Your view · brass" in mono 500, the line in Newsreader 420 at 1.5 cells (phones) / 2
+  (desktop), placed as the room's headline, no backing: nothing is under it); the caption's flag carries
+  `data-draft-flag`, which flags the look's labels on screen. Labels (`.dive__spot`): "01 · Key" in mono 500 (#C3C7CD),
+  under it the weak spot or the fix in mono 500 (#EDEEF0), 0.625 cells on phones / 0.5 on desktop, balanced where they
+  wrap, plain type, no box (approved 28 Nov). Brass has no labels.
+- **The hand-over to page 3, TEMPORARY (until beat 5, "Locked."):** `XRAY` 16.6-16.8: from beat 4's end (held 0.1 screens:
+  the brass look and its caption) the same plain fade as before (the blue quad and the X-ray lock, through `xCam`) to page
+  3's first frame as it is today; the brass caption goes as the fade starts. It replaces beat 3's temporary fade
+  (12.6-12.8, gone).
+- **Reduced motion:** after the one lock's still, the three looks as stills in order (`dive.lookStill(k)`: each at its
+  hold, a JPEG with the leaders and dots drawn in, and its labels' places), each figure (`.p1-hall__look`) its caption
+  (flagged) over the picture in the flow and, for the X-ray and matte, its five labels set over the picture as real text;
+  the pictures fade to the dark as they scroll by, as the others.
+- **Checks' view:** `render()` returns `beat4` (p, step, from, to, w, wx, settled, labels, yaw, frameK, d, d4, dEnd, cols,
+  colW, segs, tris); `drawn()` reports the one lock as a shape (`lock:b4`, its parts' box, in every look) and the shown
+  leaders and the wipe's hairline as lines. `dive.beat4()`, `dive.b4frame()`, `dive.lookStill()`. **Tools:** `flicker.py
+  --beat4` (the seam with the first wipe, the X-ray's hold, the wipe to matte, matte's hold, the wipe to brass, the end and
+  the fade).
 
 ### For the look pass (logged 28 Nov, Wajih)
 - **The real centre lock is darker than its copies (beat 2, the room of locks).** The real lock wears lab B1's inside
@@ -781,6 +845,51 @@ Take 1's history below.
   the first job of every routecheck run.
 
 ### Take 2 log
+- **The security page, beat 4: the three views (28 Nov).** Built as in "The security page, beat 4: structure notes":
+  straight on from beat 3's last frame in the same canvas and camera; the lab's A3 X-ray (the thief's view), A1 matte (ours)
+  and A2 real metals (yours) of the same real lock, all on the hall's dark ground, each taking over with a hairline wipe left
+  to right; five numbered spots (dot, leader, label: plain type, no box) one by one while the X-ray and matte hold, one
+  caption per look (all drafts, flagged); the lock turns a little (yaw -0.62 -> -0.42); 4 screens, scrubbed both ways. The
+  hairlines are the site's LineSegments2 from lock-parts.bin (Wajih, 28 Nov), not the demo's LineBasicMaterial. Beat 3's
+  temporary fade is gone; the temporary fade into page 3 now follows beat 4's end (`XRAY` 16.6-16.8). Shots:
+  `tools/shots/beat4/final/` (384 x 734 and 2160 x 1147: the X-ray with all five labels, the wipe to matte halfway, matte
+  with all five labels, brass), `typecheck/`, `grid/`, `overlap/`, `flicker/`.
+  - **Type gate** (`typecheck.py`, one job; 384 x 734, 390 x 844, 360 x 800, 375 x 667, 393 x 852, 412 x 915, 430 x 932,
+    2160 x 1147, light and dark; B3L, B4I, B4X, B4W, B4M, B4V, B4B, B4E, LOCK): 144 frames, **0 machine failures**.
+  - **Gridcheck** (the same sizes, stops and themes): **0 off the grid** (worst 0.156 px; the labels counted: 10 more
+    baselines at B4X than at B4B on the S23, 14 in matte where phrases wrap). **Overlap** (same): **0 in 10,562 pairs**.
+  - **Flicker** (`flicker.py --beat4`, real Chrome, 2160 x 1147 @1.333 set through DevTools): energy (p95) / largest
+    single-frame change: the seam from beat 3 with the first wipe 0.81 (2.73) / 4.7; the X-ray's hold 0.08 (0.09) / 0.18;
+    the wipe to matte 0.72 (2.69) / 5.2; matte's hold 0.06 (0.08) / 0.22; the wipe to brass 0.45 (1.45) / 4.2; the end and
+    the fade 0.74 (3.80) / 23.6 (the chrome turning light at the temporary fade, as beat 3's 23.4).
+  - **Scrubbed** (400 steps from just before B3L to the hand-over, 384 x 734 and 2160 x 1147): forwards and backwards give
+    the same camera, leaders and chaos checksum (difference 0). Largest turn a step 0.1 degrees (the yaw); on the S23 the
+    largest move is the dolly out over the first wipe (the lock to half the width over 0.32 screens, eased, log scale).
+  - **Routecheck** (14 sizes, light and dark): 27 of 28 clean; 360 x 800 light failed on one `ERR_CONNECTION_REFUSED` (the
+    plain server under a burst, the known edge); re-run: clean (light and dark).
+  - **Reduced motion** (384 x 734, 2160 x 1147): after the one lock's still, the three looks as stills in order, the X-ray
+    and matte each with their five labels over the picture as real text, brass with none; each fades as it scrolls by. No
+    console errors anywhere.
+  - **My calls:** (1) the labels in columns beside the lock (one at the right on portrait screens, one each side on wide
+    ones, as the demo) so no leader crosses a word, and the lock fitted into the room they and the caption leave, easing
+    there from beat 3's frame on the same A line (lens, yaw, pitch unchanged): on the laptop that is the same distance and
+    a 20 px slide; on a phone the lock goes to about half the width (the demo's side labels can't fit beside a full-width
+    lock on a phone); (2) once brass holds (no labels) the camera eases back to beat 3's centred, full frame (`B4.back`
+    0.8-0.9), so "your view" fills the screen and beat 5 starts there; (3) each look's labels set once on the grid at its
+    hold's middle, the leaders following the parts as the lock turns; (4) the column's width: the narrowest whole-cell width
+    at which no label leaves a word alone on a line (9 cells on the phones); (5) a dark ring round each white dot, so it
+    reads on the clay; (6) the wipe's hairline stops at the title block's top where it passes behind it.
+  - **Heavy for the S23 (log):** the three looks share the real lock's geometry (15 solids, 24,152 triangles a look) and
+    its hairlines (4,116 LineSegments2 segments, one geometry per part shared by the X-ray and matte); at most two looks are
+    drawn (during a wipe, each in its own scissor, so each pixel is shaded once), plus a small overlay (5 leaders, 5 dots,
+    the hairline). The cost to watch is the hairlines: LineSegments2 draws each segment as an instanced quad (4,116
+    instances a look, two looks in a wipe = about 8,200 quads) where the demo's LineBasicMaterial drew 1 px GL lines; and the
+    X-ray's additive, double-sided, see-through shader (overdraw where parts overlap). The looks compile when the lock loads
+    and `warm()` draws two mid-wipe frames, so the first wipe has no shader or upload stall. If it drops frames: a coarser
+    edge set for the knurled pins and drivers (tools/lock_web.mjs keeps `lod` edges only for the housing and plug today).
+  - **Waiting:** the S23 run (60 fps through beat 4: the seam and the dolly out on the phone, the three wipes, real swipes
+    back and forth). **Temporary:** the plain fade from the brass look into page 3 as it is today (`XRAY` 16.6-16.8), until
+    beat 5 ("Locked.").
 - **The security page, beat 3: fly home, chaos, one lock (28 Nov).** Built as in "The security page, beat 3: structure
   notes": straight on from beat 2's last frame in the same scene and camera; the room squares up (from beat 2's real last
   fold, 0.348441) as the camera pulls back onto the A frame's line to see the whole room; the copies fly home on arcs,

@@ -24,7 +24,7 @@
 import { Phone } from './phone.js';
 import { BellMorph } from './morph.js';
 import { createLive } from './live.js';
-import { createDive, captionHTML, openingHTML, roomHeadHTML, DIVE, SHOW, BEAT1, B1, BEAT2, B2, BEAT3, B3 } from './dive.js';
+import { createDive, captionHTML, openingHTML, roomHeadHTML, lookHTML, spotHTML, DIVE, SHOW, BEAT1, B1, BEAT2, B2, BEAT3, B3, BEAT4, B4 } from './dive.js';
 import { FRAMES, OPENING } from './corridor-drawings.js';
 const OPENING_TXT = `${OPENING.lead} ${OPENING.rest}`;
 import { haptics } from '../engine/haptics.js';
@@ -46,7 +46,7 @@ const inR = (p, [a, b]) => p >= a - 1e-4 && p <= b + 1e-4;
 // the walk (DIVE, 5.4 screens) plus frame 5's held show (SHOW.len, 2.9 screens: the camera stops while the scroll drives it);
 // 27 Nov: DIVE 6.9 with the security page's beat 1 (1.5 nominal screens: the push into the lock and down its keyway);
 // 28 Nov: DIVE 9.9 with beat 2 (3 screens, 1:1 with the scroll: the room of locks); DIVE 12.9 with beat 3 (3 screens, 1:1:
-// fly home, chaos, one lock).
+// fly home, chaos, one lock); DIVE 16.9 with beat 4 (4 screens, 1:1: the three views).
 // Its push really takes dive.pushLen() screens (it starts at the walk's own speed: per screen), so the hall's length and
 // the page's are set at layout (layoutDive); these are the nominal values until then
 const B1W = BEAT1[0] * DIVE, B1N = B1.fill * (BEAT1[1] - BEAT1[0]) * DIVE;   // where the push starts (walk screens), its nominal length
@@ -68,8 +68,10 @@ const HAND = 0.9;          // the handover: Bell's outlines -> X-ray, pose held 
 // start). 28 Nov, beat 2: B2K backing out of the keyhole, B2H the headline over the room (the camera holding), B2W mid-wave
 // while circling, B2E beat 2's end (the room turned, every lock unlocked). 28 Nov, beat 3: B3S the room squared and the
 // camera pulled back, B3F the copies flying home, B3C the chaos, B3B the lock building itself, B3L one lock, centred (beat 3's
-// end); LOCK the (temporary) hand-over to page 3 done
-export const STOPS = { S0: 0.1, draw: 0.24, blue: 0.36, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, dress: 2.23, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.9, END: 4.8, TR: 5.11, OPEN: 5.5, LIT: 6.2, F1: 6.6, F2: 7.3, F3: 8.0, F4: 8.7, F5H: 9.2, F5S: 9.4, F5R: 9.75, F5L: 10.2, F5T: 11.0, F5E: 12.1, F5: 12.3, F5B: 12.45, DOOR: 12.84, B1H: 13.19, B1F: 13.53, B1K: 13.62, B1P: 13.95, B1E: 14.34, B2K: 15.04, B2H: 15.58, B2W: 16.66, B2E: 17.34, B3S: 17.94, B3F: 18.24, B3C: 18.84, B3B: 19.68, B3L: 20.34, LOCK: 20.74 };
+// end). 28 Nov, beat 4: B4I the first wipe halfway (beat 3's lock -> the X-ray), B4X the X-ray with all five labels, B4W
+// the wipe to matte halfway, B4M matte with all five labels, B4V the wipe to brass halfway, B4B brass, B4E beat 4's end;
+// LOCK the (temporary) hand-over to page 3 done
+export const STOPS = { S0: 0.1, draw: 0.24, blue: 0.36, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, dress: 2.23, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.9, END: 4.8, TR: 5.11, OPEN: 5.5, LIT: 6.2, F1: 6.6, F2: 7.3, F3: 8.0, F4: 8.7, F5H: 9.2, F5S: 9.4, F5R: 9.75, F5L: 10.2, F5T: 11.0, F5E: 12.1, F5: 12.3, F5B: 12.45, DOOR: 12.84, B1H: 13.19, B1F: 13.53, B1K: 13.62, B1P: 13.95, B1E: 14.34, B2K: 15.04, B2H: 15.58, B2W: 16.66, B2E: 17.34, B3S: 17.94, B3F: 18.24, B3C: 18.84, B3B: 19.68, B3L: 20.34, B4I: 20.5, B4X: 21.54, B4W: 21.94, B4M: 22.98, B4V: 23.38, B4B: 23.94, B4E: 24.34, LOCK: 24.74 };
 const NAMES = ['Back', 'Battery', 'Board', 'Frame', 'Screen', 'Glass'];   // back to front
 const BLUE = [23, 63, 115];
 
@@ -345,6 +347,9 @@ export function initPage01(engine) {
     // beat 3 (28 Nov): its share -> a stop (1:1 with the scroll); B3L beat 3's last frame (the key seated)
     const b3 = (b) => at(hallOf((BEAT3[0] + (BEAT3[1] - BEAT3[0]) * b) * DIVE));
     Object.assign(STOPS, { B3S: b3(B3.square), B3F: b3(B3.burst[0]), B3C: b3((B3.build + B3.burst[1]) / 2 + 0.01), B3B: b3(0.78), B3L: b3(1) });
+    // beat 4 (28 Nov): its share -> a stop (1:1); each wipe halfway, each look held with every label in, its end
+    const b4 = (b) => at(hallOf((BEAT4[0] + (BEAT4[1] - BEAT4[0]) * b) * DIVE)), mid = (w) => (w[0] + w[1]) / 2;
+    Object.assign(STOPS, { B4I: b4(mid(B4.wipes[0])), B4X: b4(B4.still.x), B4W: b4(mid(B4.wipes[1])), B4M: b4(B4.still.m), B4V: b4(mid(B4.wipes[2])), B4B: b4(B4.still.b), B4E: b4(1) });
   }
 
   // ---------- "you" -> "YOU" and "us" -> "WE": one word each, travelling between its places ----------
@@ -643,6 +648,32 @@ export function initPage01(engine) {
       });
       const fadeOne = () => { const r = oimg.getBoundingClientRect(); if (!r.height) return; oimg.style.opacity = (1 - span(innerHeight * 0.5 - r.top, r.height * 0.15, r.height * 0.85)).toFixed(3); };
       addEventListener('scroll', fadeOne, { passive: true }); addEventListener('resize', fadeOne); fadeOne();
+      // 28 Nov, beat 4 with reduced motion: no wipes; the three looks as stills in order (the X-ray and matte with their five
+      // labels set over the picture as real text, brass with none), each under its caption (a draft, flagged), then the same
+      // fade to the dark as the scroll passes (no motion)
+      const LOOK_ALT = { x: 'The lock in X-ray on the dark: every part seen through, five numbered weak spots marked.',
+        m: 'The same lock in matte grey with ink hairlines: the same five spots, each one fixed.', b: 'The same lock in its real metals, brass and steel, closed, the key in it.' };
+      const looks = ['x', 'm', 'b'].map((k) => {
+        const f = document.createElement('figure'); f.className = 'p1-hall__look'; f.insertAdjacentHTML('afterbegin', lookHTML(k));
+        const pic = document.createElement('div'); pic.className = 'p1-hall__pic'; const img = new Image(); img.alt = LOOK_ALT[k]; pic.append(img); f.append(pic); list.append(f);
+        const fade = () => { const r = img.getBoundingClientRect(); if (!r.height) return; img.style.opacity = (1 - span(innerHeight * 0.5 - r.top, r.height * 0.15, r.height * 0.85)).toFixed(3); };
+        addEventListener('scroll', fade, { passive: true }); addEventListener('resize', fade); fade();
+        return { k, f, pic, img };
+      });
+      requestAnimationFrame(() => {
+        const w = Math.round(list.getBoundingClientRect().width) || 320, h = Math.round(Math.min(innerHeight * 0.75, w * 1.25));
+        // (one at a time, after the face's still: each lays the same hallway out at the figure's size)
+        let chain = lockStill;
+        looks.forEach(({ k, f, pic, img }) => {
+          img.width = w; img.height = h;
+          chain = chain.then(() => dive.lookStill(k, w, h, { u: grid.u })).then((r) => {
+            if (!r) { f.remove(); return; }
+            img.src = r.url;
+            r.labels.forEach((l) => pic.insertAdjacentHTML('beforeend', spotHTML(k, l.i, `left:${l.x}px;top:${l.top}px;width:${l.w}px`)));
+            pic.querySelectorAll('.dive__spot').forEach((el, j) => el.classList.toggle('is-l', r.labels[j].left));
+          }).catch((e) => console.warn('[page 01] look still', k, e));
+        });
+      });
       T.end.after(list);
       // page 2 starts at the hallway's still figures
       mark2.style.top = `${list.getBoundingClientRect().top - sec.getBoundingClientRect().top}px`;

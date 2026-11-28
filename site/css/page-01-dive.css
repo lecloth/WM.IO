@@ -96,3 +96,33 @@ html[data-motion="reduce"] .dive__open, html[data-motion="reduce"] .dive__open::
 .p1-hall .dive__open { position: relative; transform: none; }
 .p1-hall .dive__open::before { display: none; }
 .p1-hall .dive__open > * { opacity: 1; }
+/* ---------- the security page, beat 4 (28 Nov): three ways to see one lock. One caption per look (placed by dive.js as
+   the room's headline: the same column and row under the strip, its Draft flag also flagging the look's labels) and five
+   numbered labels per look (X-ray, matte; brass has none), plain type, no box, in their column beside the lock; the
+   leaders and the dots are drawn in WebGL and stop half a cell short of the words. Words reveal with the site's short
+   timed fade (a paused frame never shows half a word); which words are on is driven by the scroll ---------- */
+.dive__b4 { position: absolute; inset: 0; pointer-events: none; color: #EDEEF0; }
+.dive__b4 p { margin: 0; }
+.dive__look, .dive__spot { position: absolute; left: 0; top: 0; margin: 0; line-height: 1rem; visibility: hidden; transition: visibility 0s linear .26s; }
+.dive__look > *, .dive__spot > * { opacity: 0; transition: opacity .18s linear; }
+.dive__look.on, .dive__spot.on { visibility: visible; transition: none; }
+.dive__look.on > *, .dive__spot.on > * { opacity: 1; transition: opacity .26s linear .08s; }
+.dive__look .ph { vertical-align: 0; line-height: 0; color: #8C8F94; }
+.dive__look .dive__look-f { display: block; margin: 0 0 .5rem !important; line-height: .5rem; }
+.dive__look-e { font-weight: 500; color: #C3C7CD; }
+.dive__look-l { margin-top: .5rem !important; font-family: var(--f-display, Newsreader, Georgia, serif); font-weight: 420; font-size: 1.5rem; line-height: 2rem; letter-spacing: -.01em; white-space: nowrap; }
+.dive__look.is-wrap .dive__look-l { white-space: normal; text-wrap: balance; }
+@media (min-width: 1024px) { .dive__look-l { font-size: 2rem; line-height: 2.5rem; letter-spacing: -.015em; } }
+.dive__spot-n { font-weight: 500; color: #C3C7CD; white-space: nowrap; }
+.dive__spot-t { margin-top: .5rem !important; font-weight: 500; color: #EDEEF0; text-wrap: balance; }
+.dive__spot.is-one .dive__spot-t { white-space: nowrap; }
+.dive__spot.is-l { text-align: right; }
+.is-warm .dive__look, .is-warm .dive__look > *, .is-warm .dive__spot, .is-warm .dive__spot > * { transition: none !important; }
+/* reduced motion: each look as a still, its caption over it in the flow, its labels set over the picture where dive.js
+   placed them (real text) */
+.p1-hall__look .dive__look { position: relative; visibility: visible; transition: none; padding: 1rem; }
+.p1-hall__look .dive__look-l { white-space: normal; text-wrap: balance; }
+.p1-hall__look .dive__look > * { opacity: 1; transition: none; }
+.p1-hall__pic { position: relative; }
+.p1-hall__pic .dive__spot { visibility: visible; transition: none; }
+.p1-hall__pic .dive__spot > * { opacity: 1; transition: none; }
