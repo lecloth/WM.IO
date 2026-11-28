@@ -59,9 +59,9 @@ html[data-motion="reduce"] .enter__hello, html[data-motion="reduce"] .enter__hin
 /* the arrival drives the words' opacity itself (no transitions); the beacon's dot comes with the I, its rings at the end */
 html[data-arrive] .enter__hello, html[data-arrive] .enter__hint, html[data-arrive] .enter__stop { transition: none; }
 html[data-arrive="run"] .sing__point, html[data-arrive="run"] .sing__ring, html[data-arrive="dot"] .sing__ring, html[data-arrive="home"] .sing__point, html[data-arrive="home"] .sing__ring { visibility: hidden; }
-html[data-arrive="wait"] .sing__point, html[data-arrive="wait"] .sing__ring { visibility: hidden; }
+html[data-arrive="wait"] .sing__point, html[data-arrive="wait"] .sing__ring, html[data-arrive="hold"] .sing__point, html[data-arrive="hold"] .sing__ring { visibility: hidden; }
 /* the button's focus ring is the beacon's ring: it shows once the line has coiled into it */
-html[data-arrive="wait"] .enter::after, html[data-arrive="run"] .enter::after, html[data-arrive="dot"] .enter::after, html[data-arrive="home"] .enter::after { display: none; }
+html[data-arrive="wait"] .enter::after, html[data-arrive="hold"] .enter::after, html[data-arrive="run"] .enter::after, html[data-arrive="dot"] .enter::after, html[data-arrive="home"] .enter::after { display: none; }
 html:not([data-arrive]) .enter__hello, html:not([data-arrive]) .enter__hint { opacity: 0 !important; }
 /* dark mode: the gate is black too (the brief's black first screen; the difference curtain came out light grey over the
    dark page, and the gate's words, light in both themes, vanished on it). The curtain is plain black there and sits under

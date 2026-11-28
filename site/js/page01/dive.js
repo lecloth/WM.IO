@@ -1126,7 +1126,8 @@ export function createDive(root, top, { base = '' } = {}) {
     if (b4.key === key) return; b4.key = key;
     const u = gu, desktop = W >= 1024, N = Math.round(W / u), side = desktop ? 5 : 1, rT = Math.ceil((lastStrip + u) / u - 1e-6);
     // the captions: as the room's headline (the same column and row under the strip), as wide as their words need
-    let capB = 0; const capBs = {};
+    // (capD: the lowest the captions' descenders reach: their boxes stop at the baseline, the "j" of "just" hangs under)
+    let capB = 0, capD = 0; const capBs = {}, capDs = {};
     if (!b4.noCap) ['x', 'm', 'b'].forEach((k) => {
       const el = lookEls[k], line = el.querySelector('.dive__look-l'), maxC = desktop ? N - 10 : N - 2, t0 = (rT + (desktop ? 3 : 1)) * u;
       el.style.left = `${side * u}px`; el.style.top = `${t0}px`;
@@ -1134,10 +1135,14 @@ export function createDive(root, top, { base = '' } = {}) {
       const need = Math.ceil((line.getBoundingClientRect().width + 1) / u), wrap = need > maxC;
       el.classList.toggle('is-wrap', wrap); el.style.width = `${Math.min(maxC, wrap ? maxC : need) * u}px`;
       capBs[k] = t0 + el.offsetHeight; capB = Math.max(capB, capBs[k]);
+      { const rg = document.createRange(); rg.selectNodeContents(line); const rs = [...rg.getClientRects()], er = el.getBoundingClientRect();
+        capDs[k] = rs.length ? t0 + Math.max(...rs.map((r) => r.bottom)) - er.top : capBs[k]; capD = Math.max(capD, capDs[k]); }
     });
     // the room for the lock and its labels: a cell under the captions (their descenders hang under the box) to a cell
     // over the title block
-    const aT = (Math.ceil(capB / u - 1e-6) + 1) * u, aB = Math.floor((lastTb - u) / u + 1e-6) * u, aL = side * u, aR = Math.floor((W - side * u) / u + 1e-6) * u;
+    // 28 Nov: and at least half a cell under their descenders (TYPE_RULES' clearance), still on a whole line: at 1280 x 720
+    // a baseline on a grid line left the "j" 10.3 px from the lock, where 10.75 is needed
+    const aT = Math.max(Math.ceil(capB / u - 1e-6) + 1, Math.ceil((capD + u / 2) / u - 1e-6)) * u, aB = Math.floor((lastTb - u) / u + 1e-6) * u, aL = side * u, aR = Math.floor((W - side * u) / u + 1e-6) * u;
     const two = W >= H, all = [...spotEls.x, ...spotEls.m];
     all.forEach((el) => { el.classList.toggle('is-one', two); el.classList.remove('is-l'); el.style.width = 'max-content'; el.style.left = '0px'; el.style.top = '0px'; });
     // the columns' width (whole cells): on wide screens each label on one line; on portrait screens the narrowest width
@@ -1176,7 +1181,7 @@ export function createDive(root, top, { base = '' } = {}) {
       let de = d0;
       for (const yaw of [yaw4(B4.back[0]), yaw4(B4.back[1]), B4.yaw[1]]) { if (fitsC(yaw, de)) continue; let lo = de, hi = de; while (!fitsC(yaw, hi) && hi < d0 * 50) hi *= 1.25; for (let i = 0; i < 32; i++) { const m = (lo + hi) / 2; if (fitsC(yaw, m)) hi = m; else lo = m; } de = hi; }
       aim4(cam, B4.yaw[1], de); const b = box4(cam);
-      if (b4.noCap || b.t >= (capBs.b || 0) + u - 0.5) dEnd = de; }
+      if (b4.noCap || (b.t >= (capBs.b || 0) + u - 0.5 && b.t >= (capDs.b || 0) + u / 2)) dEnd = de; }
     b4.frame = { rect, d0, d4, dEnd, colW, colX, two, area: { t: aT, b: aB, l: aL, r: aR } };
     // each look's labels, set once at its hold's middle: in the column on their parts' side, in their parts' order
     // down the screen, each at its part's height where it can be (its top on a half line), a cell apart

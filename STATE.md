@@ -881,6 +881,42 @@ Take 1's history below.
   `routecheck.py` now clicks the strip's links 03-08 at every size and theme and checks each lands on its page's first
   element with the title block and the strip saying that page (`--no-links` skips it); `pshot.py --api` defaults to `__p4`.
 
+### The arrival waits until the page is ready: structure notes (28 Nov, Wajih: "the WM.IO arrival stutters at the very start")
+- **What stuttered, from cold-load recordings** (`tools/arrivalrec.py`: real Chrome, a fresh profile, the cache off; also
+  4x CPU and DevTools' "Fast 4G"; frame times, long tasks and long animation frames, `--profile` a CPU profile, `--trace` a
+  DevTools trace): (1) the hero phone's studio HDRI (1.6 MB) finished downloading during the arrival on a slow load and its
+  parse (RGBE to half floats, 340 ms at 4x), PMREM and shader compile made one or two 316-358 ms frames in its first 0.75 s
+  (3 of 4 throttled runs); (2) the boxes' slide (0.4-0.95 s) restyled all 77 of the bar's elements every frame (inherited
+  custom properties --sk, --c0, --c1) and laid out the whole page: 25-75 ms frames at 4x; (3) page 1's first paint under
+  the curtain (phase `gate`) landed in the arrival's first frames (100-117 ms on the GPU).
+- **The hold** (`enter.js` `beginHold` / `endHold`, `HOLD`): on every page load (not the replay at the top, not reduced
+  motion) the arrival's first frame (the mark still in the 4-cell black bar) holds, `html[data-arrive="hold"]`, state
+  `hold`, until: at least `HOLD.min` 1.0 s, the fonts loaded, the mark drawn (3 frames in), the phone's warm-up done
+  (`window.__wm.warmed`), and no long task (a longtask entry, or a frame over 50 ms) for `HOLD.calm` 0.3 s; or `HOLD.max`
+  4.0 s whatever is still pending. Then the arrival runs exactly as before (same `STILL`, beats, words). The phase
+  turns `gate` when the hold starts, so page 1's first paint under the curtain lands in the hold. A tap, click, Enter or
+  Space in the hold skips straight to the end (as in the arrival); a scroll, swipe or Arrow Down enters at once.
+  `__arrival.held()` says why the hold ended (`{ s, fonts, drawn, warmed, calm, timedOut }` or `{ s, tap }`).
+- **The quiet gate** (`site/js/engine/quiet.js`, `quiet()` / `setMoving()`): open while the page loads and in the hold;
+  shut from the arrival's start (`startArrival`) to its end state (`gate`: at the end of the lit lines' fade, or a tap's
+  skip). Waiting on it: the HDRI's parse and PMREM (`phone.js`: the file is fetched at once, parsed with
+  `HDRLoader.parse` into a DataTexture set up as `HDRLoader.load` does), the phone's `warm()` compile and first render,
+  and page 1's layout once Bell's paths are in (`page.js`). If the hold runs out first, they run in the quiet stretch
+  after the second line, before the visitor taps in.
+- **The slide at its source** (`page-00-grid.css`, `engine/strip.js`): `--c0`, `--c1` and `--sk` are registered
+  (`@property`, not inherited) and `layoutStrip` sets `--sk` on each element that reads it (the bar, its base line, the
+  boxes, the shortcut, the mark's cell); the extra band (`.strip::after`) takes it with `--sk: inherit`. (Tried and
+  reverted: the band as the bar's offset box-shadow: it changed the bar's text anti-aliasing while the band showed.)
+- **DM Mono Light preloaded** (`src/index.template.html`): main.js's font task waits for it; it was asked for only once
+  main.js had run (3.6 s in at 4x).
+- **Unchanged:** the arrival's look (every held moment pixel-identical before/after at 2160 x 1147 and 384 x 734:
+  `tools/arrivalshots.py`, only the beacon's endless ring pulse differs by phase), its motion, timing and words; going
+  home; the replay (no hold); reduced motion (no hold, end state at once).
+- **Tools:** `tools/arrivalrec.py` (above; `--delay-hdr ms` holds the HDRI back to test the 4 s cap, `--tap-hold`, `--replay`,
+  `--skia` with `--trace`), `tools/arrivalshots.py` (the arrival held at fixed moments, `--held`, `--compare A B`),
+  `flicker.py --arrival` (cold load: the hold's stillness, the seam into the arrival, the arrival stepped at 30 fps).
+  `WM_NOMINIFY=1 python tools/build.py` builds with readable names for a CPU profile (rebuild without it after).
+
 ### For the look pass (logged 28 Nov, Wajih)
 - **The real centre lock is darker than its copies (beat 2, the room of locks).** The real lock wears lab B1's inside
   material (MeshStandard brass #B88F48, metal 1, roughness 0.42, steel #B8BBBF, dark drivers #5A5E62, on the room light
@@ -899,6 +935,18 @@ Take 1's history below.
   calls once a few frames after load; not confirmed. In the final full check: run routecheck at every size more than
   once and watch for it; if it comes back, check whether the refresh lands during the scroll back to the top
   (`watchTop` in enter.js needs scrollY 0 for 320 ms after being half a screen down).
+- **The arrival's leftover spikes (logged 28 Nov, the arrival's hold):** (1) about 2.35 s into the first arrival on a cold
+  profile, one 60-100 ms frame: Skia Graphite compiling a new pipeline (a per-edge anti-aliased quad drawn with the
+  Difference blend) on the GPU thread; in the baseline too; not on the replay; jumping the frozen arrival across it with
+  each of the stop, the sentence or the drawing layer hidden didn't reproduce it, so its trigger is still unknown. (2) DXGI
+  Present stalls (30-200 ms, the GPU thread waiting on the swap chain, no page work) in the first 0.4 s, on this laptop's
+  automated windows. Check both on Wajih's laptop and the S23 in the real-device run.
+- **Before the arrival, page 1's code runs as one task (logged 28 Nov):** evaluating main.js is one 2.9 s task here (5.3 s
+  at 4x CPU): `initPage01` with the hero phone's RoomEnvironment PMREM (about 1.0 s, mostly shader links), the hallway's
+  `paintHall` (0.85 s) and page 1's first layout and ScrollTrigger set-up. It ends before the hold starts (the bar's
+  loading draw-in stands still meanwhile), so it doesn't compete with the arrival; splitting it would shorten the wait.
+- **The replay's first 0.5 s (logged 28 Nov):** scrolling back to the top, the curtain closing over page 1 makes a 58-217 ms
+  frame in the first 0.45 s at 2160 x 1147 (four runs, `arrivalrec.py --replay`); not measured before this run.
 - **`ERR_CONNECTION_REFUSED` on one request under a burst** (the plain local server's connection queue; a different size
   each run, clean on re-run): an edge for hosting, not the site (see the parked fixes' entry in the log). 28 Nov: traced
   once to the first load in a fresh browser (`fonts/dm-mono-300.woff2` refused); it lands most often on 384 x 734 light,
@@ -910,6 +958,51 @@ Take 1's history below.
   test caught it). Whenever a beat changes `DIVE`, update the fallback, and run routecheck (its link test) before committing.
 
 ### Take 2 log
+- **The arrival waits until the page is ready (28 Nov).** Wajih saw the WM.IO arrival stutter at the very start on his
+  laptop. Recorded first (`tools/arrivalrec.py`, cold loads, real Chrome), then built as in "The arrival waits until the
+  page is ready: structure notes": the hero phone's HDRI parse, PMREM and shader compile moved out of the arrival into a
+  hold on its first frame (1 s at least, 4 s at most), the boxes' slide made cheap at its source, page 1's first paint
+  under the curtain moved into the hold, DM Mono Light preloaded. The arrival's look, motion, timing and words unchanged.
+  - **Frame times through the arrival, before -> after** (two cold loads per row; worst frame, frames over 34 ms, long tasks
+    in the arrival). Normal, 2160 x 1147: 83 / 42 ms, 2 / 1, 0 -> 67 / 75 ms, 3 / 2, 0. Normal, 384 x 734: 58 / 58, 1 / 1, 0
+    -> 67 / 67, 1 / 1, 0. **4x CPU + Fast 4G, 2160 x 1147: 317 / 158 ms, 4 / 5, 3 / 0 -> 33 / 67 ms, 0 / 2, 0 / 0.
+    4x CPU + Fast 4G, 384 x 734: 333 / 325 ms, 3 / 3, 1 / 1 -> 58 / 75 ms, 1 / 2, 0 / 0.** The hold lasted 1.006-1.036 s in
+    all eight (the warm-up was done inside the minimum). At 4x the boxes' slide still runs at about 40 fps (each frame about
+    27 ms at 4x, about 6.5 ms on a normal CPU), its style recalc down from 77 elements (9-17 ms) to about 30 (4-8 ms).
+  - **The cap** (`--delay-hdr 8000`): the hold ran out at 4.0 s (`timedOut`, the warm-up pending), the arrival ran, and the
+    warm-up ran after its end state (12.6 s, the arrival 8.0-12.4 s): no long task in the arrival. **A tap in the hold**
+    (0.32 s): straight to the end state (the bar at full width, the sentence at 1). **The replay** (scrolled back to the
+    top): no hold, straight away (`--replay`, four runs).
+  - **Look** (`arrivalshots.py`, 12 held moments, 2160 x 1147 and 384 x 734): every frame pixel-identical before and after
+    except the beacon's endless ring pulse (caught at a different phase). Shots: `tools/shots/arrival/look/after/`
+    (`*_held.png`, `*_t1.40.png` mid-arrival, the rest), `before/`.
+  - **Flicker** (`flicker.py --arrival`, cold load, 2160 x 1147 @1.333 through DevTools): the hold still (largest change
+    0.0001, energy 0); the seam from the held frame into the arrival's first 0.027 (mean; the same mark redrawn by the
+    arrival's layer, anti-aliasing only, as before this run); energy (p95) / largest single-frame change: straighten and
+    slide 0.28 (0.62) / 0.67, snake and writing 0.007 (0.011) / 0.06, the beacon 0.017 (0.061) / 0.16, the lit lines' fade
+    0.014 (0.025) / 0.06. Frames: `tools/shots/arrival/flicker/`.
+  - **Type gate** (`typecheck.py`, the full default set, one browser): 2,576 frames, 4 machine failures, all one pair at
+    1280 x 720 only: beat 4's caption "Polished, closed. It just works." 10.33 / 10.32 px from the lock (B4B, B4E; needs
+    10.75). Pre-existing (the same 4 at the same distances on `85eae18`; beat 5's run didn't check 1280 x 720). **Fixed
+    (Wajih's go):** the captions' boxes stop at their baseline and the room for the lock started a cell under the box; at
+    1280 x 720 the baseline fell on a grid line (y 230 = 10 cells) and the "j" of "just" hung to 242, so the lock's top
+    (252.3) was 10.3 px from it. `dive.js layout4`: the room's top is also at least half a cell under the captions'
+    descent (their text's own rects), still on a whole line, and brass eases back to beat 3's frame only if that keeps the
+    lock as clear (`dEnd`). At 1280 x 720 the room now starts a cell lower (276): the lock sits a cell lower and a little
+    smaller through beat 4 (its box top 274.6, 32 px under the descenders); other sizes move only where a baseline sits
+    that near a line. Re-run (`typecheck.py`, stops B3L, B4I-B4E, B5T-B5J, LOCK; 1280 x 720 and beat 4's sizes: 384 x 734,
+    390 x 844, 360 x 800, 375 x 667, 393 x 852, 412 x 915, 430 x 932, 2160 x 1147; light and dark): 252 frames, **0
+    machine failures**.
+  - **Routecheck** (`python -I tools/routecheck.py`, all 14 sizes, light and dark, in three foreground parts after the first
+    run was stopped by the system for low memory): **0 failures** (routes on the grid within 0.013 px, every replay
+    restarted within its 8 s, every link lands) after one re-run of 412 x 915, whose light job had one
+    `ERR_CONNECTION_REFUSED` (the known burst edge; everything else in it passed; clean on re-run). The 8 s limit is the
+    replay's only (the first load already waits up to 30 s for the arrival), and the replay has no hold, so the check is
+    unchanged. Output: `tools/shots/arrival/routecheck/`.
+  - **Not fixed (logged in the edges):** a first-use GPU pipeline compile (Skia Graphite, a per-edge-AA quad with the
+    Difference blend: 60-100 ms on the GPU thread) about 2.35 s into the arrival on a cold profile, in the baseline too, not
+    on the replay, not reproduced by jumping the arrival there (`__arrival.hold`); and Windows' DXGI Present stalls (30-200
+    ms, no page work in the frame) in the first 0.4 s on this laptop's test windows.
 - **The security page, beat 5: "Locked.", and the old page 3 retired (28 Nov).** Built as in "The security page, beat 5:
   structure notes": straight on from beat 4's last frame in the same canvas and camera; in brass, the caption goes, the key
   turns back (the plug 90 -> 0), then comes out the way it went in, each pin riding down its cut to beat 1's rest, until it

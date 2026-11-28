@@ -24,6 +24,10 @@ wipe to matte, matte's hold, the wipe to brass with the lock easing back, and it
 "Locked.", and the join into page 4: the seam from beat 4's end, the key turning back, the key coming out (the pins
 dropping), "Locked." and its hold, the join's camera move onto page 4's first frame, the dissolve into page 4's X-ray, and
 page 4's first move (the lock turning side-on).
+28 Nov --arrival (the arrival waits until the page is ready): a cold load (a fresh profile, the cache disabled, the size
+and density set through DevTools before the page loads): frames from the compositor through the hold (it must stay
+exactly still), the seam from the held frame into the arrival's first frame (no jump), then the arrival stepped at 30 fps
+(window.__arrival.hold): the straightening and the slide, the snake and the writing, the beacon, the lit lines' fade.
 One headed Chrome window opens on the desktop while it runs (a fresh temporary profile; nothing of the user's)."""
 import argparse, asyncio, json, subprocess, sys, tempfile, time
 from pathlib import Path
@@ -99,6 +103,51 @@ async def walk(page, ys, out, tag):
         r = await cdp.send("Page.captureScreenshot", {"format": "png", "fromSurface": True})
         f = out / f"{tag}_{k:03d}.png"; f.write_bytes(base64.b64decode(r["data"])); files.append(f)
     return files
+
+async def run_arrival(pw, a, out):
+    import base64
+    prof = tempfile.mkdtemp(prefix="flicker-prof-")
+    ctx = await pw.chromium.launch_persistent_context(prof, channel="chrome", headless=False, no_viewport=True,
+        args=["--start-maximized", "--no-first-run", "--no-default-browser-check", "--disable-session-crashed-bubble"])
+    try:
+        page = ctx.pages[0] if ctx.pages else await ctx.new_page()
+        cdp = await ctx.new_cdp_session(page)
+        await cdp.send("Emulation.setDeviceMetricsOverride", {"width": a.width, "height": a.height, "deviceScaleFactor": a.dpr, "mobile": a.width < 1024})
+        await cdp.send("Network.enable"); await cdp.send("Network.setCacheDisabled", {"cacheDisabled": True})
+        await page.goto("http://127.0.0.1:8109/?first", wait_until="commit")
+        await page.bring_to_front()
+        shot = lambda: cdp.send("Page.captureScreenshot", {"format": "png", "fromSurface": True})
+        rep = {"env": None}
+        # the hold: every frame we can grab while it lasts (at least about 1 s)
+        await page.wait_for_function("window.__arrival && window.__arrival.state() === 'hold'", timeout=60000, polling=10)
+        held = []
+        while len(held) < 40 and await page.evaluate("window.__arrival.state() === 'hold'", isolated_context=False):
+            r = await shot(); f = out / f"arrival_hold_{len(held):03d}.png"; f.write_bytes(base64.b64decode(r["data"])); held.append(f)
+        rep["env"] = await page.evaluate("({ dpr: devicePixelRatio, w: innerWidth, h: innerHeight })")
+        rep["hold_frames"] = len(held)
+        await page.wait_for_function("window.__arrival.state() === 'gate'", timeout=30000)
+        rep["held"] = await page.evaluate("window.__arrival.held()", isolated_context=False)
+        await page.wait_for_timeout(600)
+        # the arrival stepped: t from 0 to its end (+ the lit lines' fade), 30 steps a second
+        T = [k / 30 for k in range(0, int(4.45 * 30) + 1)]
+        files = []
+        for k, t in enumerate(T):
+            await page.evaluate(f"(async () => {{ window.__arrival.hold({t}); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); }})()", isolated_context=False)
+            r = await shot(); f = out / f"arrival_{k:03d}.png"; f.write_bytes(base64.b64decode(r["data"])); files.append(f)
+        await page.evaluate("window.__arrival.hold(null)", isolated_context=False)
+        G = [gray(f) for f in files]; H0 = [gray(f) for f in held]
+        if len(H0) >= 2:
+            rep["hold_still"] = round(max(float(np.abs(H0[i] - H0[i - 1]).mean()) for i in range(1, len(H0))), 4)
+            rep["hold_flicker"] = flicker(H0)
+        # the seam: the last held frame against the arrival's first (t 0: the mark still, as held)
+        if H0: rep["seam_held_to_t0"] = round(float(np.abs(H0[-1] - G[0]).mean()), 4); rep["seam_max_px"] = int(np.abs(H0[-1] - G[0]).max())
+        for name, t0, t1 in [("straighten_slide", 0, 1.1), ("snake_write", 1.05, 2.45), ("beacon", 2.45, 3.5), ("fade", 3.5, 4.45)]:
+            idx = [i for i, t in enumerate(T) if t0 <= t <= t1]; g = [G[i] for i in idx]
+            rep[f"{name}_flicker"] = flicker(g)
+            rep[f"{name}_largest_frame_change"] = round(max(float(np.abs(g[i] - g[i - 1]).mean()) for i in range(1, len(g))), 2)
+        return rep
+    finally:
+        await ctx.close()
 
 async def run_build(pw, b, a, out):
     prof = tempfile.mkdtemp(prefix="flicker-prof-")
@@ -207,12 +256,15 @@ async def main(a):
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     report = {}
     async with async_playwright() as pw:
+        if a.arrival:
+            report["arrival"] = await run_arrival(pw, a, out); print(json.dumps(report["arrival"], indent=1), flush=True)
+            (out / "flicker.json").write_text(json.dumps(report, indent=1), encoding="utf-8"); return
         for b in a.builds.split(","):
             report[b] = await run_build(pw, b, a, out)
             print(b, json.dumps(report[b], indent=1), flush=True)
     (out / "flicker.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
 
 ap = argparse.ArgumentParser(); ap.add_argument("--builds", default="r7old,current"); ap.add_argument("--out", default="tools/shots/r8/flicker"); ap.add_argument("--frames", type=int, default=36)
-ap.add_argument("--width", type=int, default=2160); ap.add_argument("--height", type=int, default=1147); ap.add_argument("--dpr", type=float, default=1.333); ap.add_argument("--no-hyper", action="store_true"); ap.add_argument("--beat1", action="store_true"); ap.add_argument("--beat2", action="store_true"); ap.add_argument("--beat3", action="store_true"); ap.add_argument("--beat4", action="store_true"); ap.add_argument("--beat5", action="store_true")
+ap.add_argument("--width", type=int, default=2160); ap.add_argument("--height", type=int, default=1147); ap.add_argument("--dpr", type=float, default=1.333); ap.add_argument("--no-hyper", action="store_true"); ap.add_argument("--beat1", action="store_true"); ap.add_argument("--beat2", action="store_true"); ap.add_argument("--beat3", action="store_true"); ap.add_argument("--beat4", action="store_true"); ap.add_argument("--beat5", action="store_true"); ap.add_argument("--arrival", action="store_true")
 with BrowserLock():
     asyncio.run(main(ap.parse_args()))

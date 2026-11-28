@@ -22,6 +22,7 @@ import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
 import { OPTIONS, PICK, dress } from './materials.js';
+import { quiet } from '../engine/quiet.js';
 
 export const PHONE = { w: 74, h: 156, r: 6 };
 
@@ -165,14 +166,22 @@ export class Phone {
     this.build();
     // the studio HDRI (1k, CC0) replaces the room light in every real material once it's in
     const url = `${mediaBase.replace(/materials\/$/, '')}hdri/studio_small_09_1k.hdr`;
+    // 28 Nov (the arrival waits until the page is ready): the file downloads at once, but its parse (RGBE to half
+    // floats, a 340 ms task at 4x CPU) and its PMREM wait for the quiet gate: the arrival's hold, or its end state if the
+    // hold ran out first. Arriving mid-arrival it made two 350 ms frames (Fast 4G, 4x CPU, the laptop's size).
     const hdri = new Promise((res) => {
-      const go = (n) => new HDRLoader().load(n ? `${url}?r=${n}` : url, (t) => {
-        const g = new THREE.PMREMGenerator(this.renderer);
-        t.mapping = THREE.EquirectangularReflectionMapping;
-        const env = g.fromEquirectangular(t).texture; g.dispose(); t.dispose();
-        this.L.real.forEach((m) => { if (m.envMap) { m.envMap = env; m.needsUpdate = true; } });
-        this.envTex = env; res(env);
-      }, undefined, () => (n < 4 ? setTimeout(() => go(n + 1), 200 * (n + 1)) : res(null)));   // a refused request is retried
+      const go = (n) => fetch(n ? `${url}?r=${n}` : url).then((r) => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+        .then((buf) => quiet().then(() => {
+          const d = new HDRLoader().parse(buf);
+          const t = new THREE.DataTexture(d.data, d.width, d.height, THREE.RGBAFormat, d.type);   // (as HDRLoader.load sets it up)
+          t.colorSpace = THREE.LinearSRGBColorSpace; t.minFilter = t.magFilter = THREE.LinearFilter; t.generateMipmaps = false; t.flipY = true; t.needsUpdate = true;
+          const g = new THREE.PMREMGenerator(this.renderer);
+          t.mapping = THREE.EquirectangularReflectionMapping;
+          const env = g.fromEquirectangular(t).texture; g.dispose(); t.dispose();
+          this.L.real.forEach((m) => { if (m.envMap) { m.envMap = env; m.needsUpdate = true; } });
+          this.envTex = env; res(env);
+        }))
+        .catch(() => (n < 4 ? setTimeout(() => go(n + 1), 200 * (n + 1)) : res(null)));   // a refused request is retried
       go(0);
     });
     this.ready = Promise.all([dress(THREE, this.renderer, OPTIONS[option], this.dressMats, mediaBase), hdri]).then(() => { this._looks = ''; this.dirty = true; });

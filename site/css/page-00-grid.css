@@ -67,14 +67,20 @@ html .strip { background: var(--paper); mix-blend-mode: normal; color: var(--ink
 /* Part 5 "The name, the top bar and the title block": each box placed on its columns (strip.js sets --c0 / --c1, whole
    columns at rest; fractional only while the boxes slide over the space the mark left on arrival) */
 .strip__list { display: block; position: relative; height: 2rem; }
-.strip__seg, .strip__cut, .strip__mark { position: absolute; top: 0; height: calc(2rem + var(--strip-x)); left: calc((var(--c0, 1) - 1) * 1rem); width: calc((var(--c1, 2) - var(--c0, 1)) * 1rem); }
+/* 28 Nov (the arrival waits until the page is ready): --c0, --c1 and --sk are registered as not inherited, and strip.js
+   sets --sk on each element that reads it, so a frame of the boxes' slide restyles those dozen elements only (as
+   inherited properties they restyled all 77 of the bar's elements every frame: 10-17 ms at 4x CPU) */
+@property --c0 { syntax: '<number>'; inherits: false; initial-value: 1; }
+@property --c1 { syntax: '<number>'; inherits: false; initial-value: 2; }
+@property --sk { syntax: '<number>'; inherits: false; initial-value: 0; }
+.strip__seg, .strip__cut, .strip__mark { position: absolute; top: 0; height: calc(2rem + 2rem * var(--sk)); left: calc((var(--c0) - 1) * 1rem); width: calc((var(--c1) - var(--c0)) * 1rem); }
 /* Part 5 "The name's size: option B": at the start of the arrival the bar is two cells taller (four in all), so the mark
    stands in it at its title-block size (the arrival starts on the same name it ends on); the extra height goes as the
    boxes slide over (strip.js sets --sk, the mark's share, 1 -> 0). The bar's own box stays two cells (the pages measure
    it); the extra band is drawn below it */
-.strip { --strip-x: calc(2rem * var(--sk, 0)); }
-.strip::after { content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: 100%; height: var(--strip-x); background: var(--paper); pointer-events: none; }
-.strip__base { bottom: calc(-1 * var(--strip-x)) !important; }
+/* (the extra band: --sk isn't inherited, so the band takes the bar's value explicitly) */
+.strip::after { --sk: inherit; content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: 100%; height: calc(2rem * var(--sk)); background: var(--paper); pointer-events: none; }
+.strip__base { bottom: calc(-2rem * var(--sk)) !important; }
 .strip__mark { --c0: 1; display: block; list-style: none; }
 .strip__mark[hidden] { display: none; }
 /* the mark at the option B size (--mk: one mark unit; the wave, 200 units, is 4.5 cells), its baseline on the third line,

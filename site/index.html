@@ -75,10 +75,13 @@
   </script>
   <link rel="preload" href="fonts/newsreader-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/dm-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- 28 Nov: the arrival waits for DM Mono Light too (main.js's font task); without a preload it was only asked for
+       once main.js had run (3.6 s in at 4x CPU) -->
+  <link rel="preload" href="fonts/dm-mono-300.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/site.css?v=c23da05b4e" onload="__wm.done('css')">
-  <link rel="stylesheet" href="css/page-00-grid.css?v=566854bb3c">
+  <link rel="stylesheet" href="css/page-00-grid.css?v=6739b5639a">
   <link rel="stylesheet" href="css/page-01-dive.css?v=11cf40dc34">
-  <link rel="stylesheet" href="css/page-01.css?v=3e79d92710">
+  <link rel="stylesheet" href="css/page-01.css?v=d5b891f3e2">
   <link rel="stylesheet" href="css/page-02.css?v=e418050ed9">
   <link rel="stylesheet" href="css/page-03-send.css?v=09357da7d8">
   <link rel="stylesheet" href="css/page-03.css?v=25c8941b4a">
@@ -103,7 +106,7 @@
         else { var c = el.cloneNode(); el.parentNode.insertBefore(c, el.nextSibling); el.remove(); } }, 150 * (n + 1));
     }, true);
   </script>
-  <script type="module" src="dist/main.js?v=d9fc8d6326" onerror="(function(s){var n=+(s.dataset.r||0);if(n<5){var c=document.createElement('script');c.type='module';c.src='dist/main.js?r='+(n+1);c.dataset.r=n+1;c.onerror=s.onerror;setTimeout(function(){document.head.appendChild(c)},200*(n+1));}})(this)"></script>
+  <script type="module" src="dist/main.js?v=985f608d06" onerror="(function(s){var n=+(s.dataset.r||0);if(n<5){var c=document.createElement('script');c.type='module';c.src='dist/main.js?r='+(n+1);c.dataset.r=n+1;c.onerror=s.onerror;setTimeout(function(){document.head.appendChild(c)},200*(n+1));}})(this)"></script>
 </head>
 <body>
 

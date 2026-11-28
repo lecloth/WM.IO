@@ -29,6 +29,7 @@ import { SECURITY_WORDS } from './security-words.js';
 import { FRAMES, OPENING } from './corridor-drawings.js';
 const OPENING_TXT = `${OPENING.lead} ${OPENING.rest}`;
 import { haptics } from '../engine/haptics.js';
+import { quiet } from '../engine/quiet.js';
 import { grid, baselineOf, seatText } from '../engine/grid.js';
 import { LIGHT } from '../engine/tokens.js';
 
@@ -758,9 +759,13 @@ export function initPage01(engine) {
         diveEl.style.opacity = ''; diveEl.classList.remove('on'); diveTop.style.opacity = ''; diveTop.classList.remove('on'); render(P); })); }); }); });
     });
   };
-  morph.load('media/plates/bell-us186787-paths.json').then(() => { again(); warm(); }).catch((e) => console.warn('[page 01] paths', e));
+  // 28 Nov (the arrival waits until the page is ready): page 1's layout once Bell's paths are in, and the phone's warm-up
+  // (its HDRI's PMREM inside phone.ready, then every look's shaders compiled), wait for the quiet gate: the arrival's
+  // hold covers them, or, if the hold ran out first, its end state. The hold waits for window.__wm.warm (enter.js).
+  morph.load('media/plates/bell-us186787-paths.json').then(() => quiet()).then(() => { again(); warm(); }).catch((e) => console.warn('[page 01] paths', e));
   engine.on('opening:done', () => requestAnimationFrame(warm));
-  phone.ready.then(() => { phone.warm(); if (phoneSeen) phone.render(); });   // the dressed materials compile now, not on their first frame
+  window.__wm.warm = phone.ready.then(() => quiet()).then(() => { phone.warm(); if (phoneSeen) phone.render(); })   // the dressed materials compile now, not on their first frame
+    .catch((e) => console.warn('[page 01] warm-up', e)).then(() => { window.__wm.warmed = performance.now(); });
   addEventListener('resize', again);
   engine.on('theme', again);
   document.fonts?.ready.then(() => { phone.refreshScreen(LIGHT.ink, LIGHT.paper, LIGHT.graphite); again(); });

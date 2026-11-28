@@ -11,6 +11,12 @@
 //      page 1.
 //   4. Scrolling back to the very top: the curtain closes, the mark leaves the title block, snakes up and writes the
 //      sentence again; on tap it goes home to the title block.
+// 28 Nov (the arrival waits until the page is ready): on the first load the arrival's first frame (the mark still in the
+// black top bar) holds until the page is ready: the fonts in, the mark drawn, the hero phone's warm-up done (its HDRI's
+// PMREM and shader compile run in the hold: engine/quiet.js), and the main thread settled (no long task for HOLD.calm).
+// At least HOLD.min, so it never flickers past, at most HOLD.max, so a slow connection never strands anyone; then the
+// arrival runs exactly as before. A tap in the hold skips to the end, as in the arrival. Scrolling back to the top
+// replays it at once (no hold); reduced motion has no hold.
 // Tap, click, Enter or Space skip the arrival (then enter); a scroll, a swipe or Arrow Down / Page Down / End enter at
 // once, so nobody gets stuck. Only a tap or click unlocks vibration. Reduced motion: everything in place at once, any of
 // the above enters at once, no replay at the top.
@@ -18,6 +24,7 @@ import { haptics } from './engine/haptics.js';
 import { layoutStrip } from './engine/strip.js';
 import { MARK, MARK_VIEW, wavePoints, WAVE_LEN } from './brand/mark.js';
 import { GLYPHS, CAP } from './brand/lettering.js';
+import { setMoving } from './engine/quiet.js';
 
 const NS = 'http://www.w3.org/2000/svg';
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -34,6 +41,9 @@ const B = { straighten: [0, 0.4], run: [0.35, 1.1], slide: [0.4, 0.95], pour: 0.
 // going home (seconds from the tap)
 const HB = { fade: [0, 0.2], run: [0, 0.95], curtain: 0.12, tb: [0.25, 0.65], form: [0.95, 1.3], END: 1.3 };
 const LIT = { on: 0.08, fade: 0.9, a: 0.55 };
+// the hold before the first arrival (seconds): at least min, at most max; calm: how long the main thread must go without
+// a long task (a task, or a frame, over 50 ms) before the arrival may start
+const HOLD = { min: 1.0, max: 4.0, calm: 0.3, long: 50 };
 // the real words are painted from the start at a trace of opacity (invisible), so their first paint is not mid-arrival
 // (a 68 ms frame as the sentence settled, real Chrome, S23 size); and the mark holds still for STILL seconds first, so
 // the gate's own first paint (page 1 under the curtain, about 100 ms) lands on a still frame
@@ -238,7 +248,7 @@ export function runEnter(engine, onDone) {
   function loop() {
     raf = 0;
     const t = hold ?? Math.max(0, now());
-    if (state === 'run') { paint(t); if (t >= B.END + LIT.fade && hold === null) { state = 'gate'; paintEnd(); return; } }
+    if (state === 'run') { paint(t); if (t >= B.END + LIT.fade && hold === null) { state = 'gate'; paintEnd(); setMoving(false); return; } }
     else if (state === 'home') { paintHome(t); if (t >= HB.END && hold === null) { state = 'done'; finishHome(); return; } }
     else return;
     raf = requestAnimationFrame(loop);
@@ -246,13 +256,13 @@ export function runEnter(engine, onDone) {
   const go = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(loop); };
 
   function startArrival(src) {
-    from = src; measure();
+    from = src; setMoving(true); measure();
     if (tbMark) tbMark.style.opacity = src === 'tb' ? '0' : tbMark.style.opacity;
     gLet.style.display = ''; state = 'run'; t0 = performance.now() + STILL * 1000 / speed; hold = null; html.dataset.arrive = 'run';
     if (stripMark) stripMark.style.visibility = 'hidden';
     paint(0); go();
   }
-  function skip() { if (state !== 'run') return; cancelAnimationFrame(raf); raf = 0; state = 'gate'; if (from === 'strip') { stripShare = 0; layoutStrip(0); } paintEnd(); }
+  function skip() { if (state !== 'run') return; cancelAnimationFrame(raf); raf = 0; state = 'gate'; if (from === 'strip') { stripShare = 0; layoutStrip(0); } paintEnd(); setMoving(false); }
 
   // ---------- entering: home to the title block while the curtain opens ----------
   let firstDone = false;
@@ -282,8 +292,8 @@ export function runEnter(engine, onDone) {
 
   // ---------- input: a tap skips the arrival, then enters; a scroll, a swipe or a key that scrolls enters at once ----------
   const tapKeys = new Set(['Enter', ' ', 'Spacebar']), goKeys = new Set(['ArrowDown', 'PageDown', 'End']);
-  const tap = (unlock) => { if (unlock) { haptics.unlock(); haptics.tap(14); } if (reduced) return enterReduced(); if (state === 'run') skip(); else if (state === 'gate') enter(); };
-  const now_ = (unlock) => { if (reduced) return enterReduced(); if (state === 'run' || state === 'gate') enter(); };
+  const tap = (unlock) => { if (unlock) { haptics.unlock(); haptics.tap(14); } if (reduced) return enterReduced(); if (state === 'hold') endHold(true); if (state === 'run') skip(); else if (state === 'gate') enter(); };
+  const now_ = (unlock) => { if (reduced) return enterReduced(); if (state === 'hold') endHold(true); if (state === 'run' || state === 'gate') enter(); };
   btn.addEventListener('click', (e) => tap(e.detail > 0));   // detail 0 = a click made by the keyboard
   const onKey = (e) => { if (tapKeys.has(e.key)) { e.preventDefault(); tap(false); } else if (goKeys.has(e.key)) { e.preventDefault(); now_(false); } };
   const onWheel = (e) => { if (Math.abs(e.deltaY) > 2) now_(false); };
@@ -335,8 +345,41 @@ export function runEnter(engine, onDone) {
     btn.classList.add('is-ready');
     try { btn.focus({ preventScroll: true }); } catch (e) {}
     if (reduced) { stripShare = 0; layoutStrip(0); measure(); from = 'strip'; G.R1 = toText('strip'); paintEnd(); hideMark(); state = 'gate'; return; }
-    startArrival('strip');
+    beginHold();
   };
+  // ---------- the hold (first load only): the arrival's first frame, still, until the page is ready ----------
+  // (the gate's phase is set already, so page 1's first paint under the curtain lands in the hold too, not in the
+  // arrival's first frames; the words are painted at a trace of opacity, as in the arrival)
+  let holdT0 = 0, holdRaf = 0, lastBusy = 0, lastFrame = 0, frames = 0, holdObs = null, holdWhy = null;
+  function beginHold() {
+    state = 'hold'; html.dataset.arrive = 'hold';
+    [hello, stopEl, hint].forEach((e) => { e.style.opacity = String(TRACE); });
+    holdT0 = lastBusy = lastFrame = performance.now(); frames = 0;
+    try { holdObs = new PerformanceObserver((l) => l.getEntries().forEach((x) => { lastBusy = Math.max(lastBusy, x.startTime + x.duration); }));
+      holdObs.observe({ type: 'longtask' }); } catch (e) { holdObs = null; }
+    const tick = (t) => {
+      holdRaf = 0; if (state !== 'hold') return;
+      const now = performance.now();
+      if (now - lastFrame > HOLD.long) lastBusy = Math.max(lastBusy, now);   // (a long frame counts as busy too: browsers without longtask)
+      lastFrame = now; frames++;
+      const el_ = (now - holdT0) / 1000;
+      const fonts = !document.fonts || document.fonts.status === 'loaded';
+      const drawn = frames >= 3 && !!stripMark?.getBoundingClientRect().width;
+      const warmed = !window.__wm.warm || !!window.__wm.warmed;
+      const calm = (now - lastBusy) / 1000 >= HOLD.calm;
+      if (el_ >= HOLD.max || (el_ >= HOLD.min && fonts && drawn && warmed && calm)) {
+        holdWhy = { s: +el_.toFixed(3), fonts, drawn, warmed, calm, timedOut: el_ >= HOLD.max }; endHold(false); return;
+      }
+      holdRaf = requestAnimationFrame(tick);
+    };
+    holdRaf = requestAnimationFrame(tick);
+  }
+  function endHold(byTap) {
+    if (state !== 'hold') return;
+    cancelAnimationFrame(holdRaf); holdRaf = 0; try { holdObs?.disconnect(); } catch (e) {}
+    if (byTap) holdWhy = { s: +((performance.now() - holdT0) / 1000).toFixed(3), tap: true };
+    startArrival('strip');
+  }
   on();
   if ((window.__wm.shown ?? 0) >= 1) document.fonts.ready.then(ready);
   else document.addEventListener('wm:loaded', () => document.fonts.ready.then(ready), { once: true });
@@ -344,7 +387,7 @@ export function runEnter(engine, onDone) {
 
   // for the tools
   window.__arrival = {
-    state: () => state, B, HB,
+    state: () => state, B, HB, HOLD, held: () => holdWhy,
     hold: (t) => { hold = t; if (t === null) { t0 = performance.now() - (B.END + LIT.fade) * 1000 / speed; } if (state === 'gate' || state === 'run') { if (t !== null) { state = 'run'; paint(t); } else go(); } },
     restart: () => { if (state === 'gate' || state === 'run') { stripShare = from === 'strip' ? 1 : 0; startArrival(from); } },
     skip, enter,

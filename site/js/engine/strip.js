@@ -17,7 +17,11 @@ export function layoutStrip(share = k) {
   });
   const c = document.querySelector('.strip__cut');
   if (c) { c.style.setProperty('--c0', m + 1); c.style.setProperty('--c1', n + 1); }
-  document.getElementById('strip')?.style.setProperty('--sk', k.toFixed(4));
   const mk = document.querySelector('.strip__mark');
   if (mk) { mk.style.setProperty('--c1', mc + 1); mk.hidden = k <= 0; }
+  // 28 Nov (the arrival waits until the page is ready): --sk, --c0 and --c1 are registered as not inherited
+  // (page-00-grid.css), and --sk is set on each element that reads it, so a frame of the slide restyles these dozen
+  // elements, not the bar's 77 (a 10-17 ms style recalc per frame at 4x CPU while the boxes slid)
+  const sk = k.toFixed(4);
+  [document.getElementById('strip'), document.querySelector('.strip__base'), c, mk, ...list].forEach((e) => e?.style.setProperty('--sk', sk));
 }
