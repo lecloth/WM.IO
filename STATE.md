@@ -680,10 +680,26 @@ Take 1's history below.
 - **Reduced motion:** after the lock's face still, a still of the room (`dive.roomStill`: the hold, B3's p 0.50, a JPEG)
   with the headline over it in the flow (`.p1-hall__room`, wrapped and balanced), the picture's opacity following the
   scroll to the dark as beat 1's (1 → 0.37 → 0).
+- **Page 3 starts at the door (28 Nov, Wajih):** beats 1 and 2 are the security page, so the strip and the title block
+  say "03 The lock" from beat 1's start (the walk's end, standing at the shut door), not "02 Hallway". A marker
+  `#page-03-door` (`data-sheet="03"`, the section's own title and roles) inside page 1's section, placed by page.js at
+  `STOPS.DOOR` (reduced motion: at the lock's face still). Two elements now carry 03 (the marker, then round 9's
+  `#page-03` section, which keeps its id, styles and tools), so main.js maps the strip's segments by page number
+  (`segOf`), fills each from its page's first element (`firstOf`), and a `#page-NN` link (the strip, a deep link)
+  lands on that first element (`landOf`): "03 The lock" lands at the door.
 - **Checks' view:** `render()` returns `beat2` (p, b3, step, head, turn, fov, copies, tris) and `head`; `dive.beat2()`,
   `dive.room()`. **Tools:** `beat1probe.py` prints beat 2 at every stop, `--scrub2` (beat 2 forwards vs backwards) and
   `--reduced` shoots the room's still; `flicker.py --beat2` (the seam, the pull-back, the headline, the wave, the end and
   the fade, each with its largest single-frame change).
+
+### For the look pass (logged 28 Nov, Wajih)
+- **The real centre lock is darker than its copies (beat 2, the room of locks).** The real lock wears lab B1's inside
+  material (MeshStandard brass #B88F48, metal 1, roughness 0.42, steel #B8BBBF, dark drivers #5A5E62, on the room light
+  at 0.55), carried over from beat 1; the 74 copies wear lab B3's lighter Lambert brass (#A88445) and steel (#9A9DA1),
+  lit by the hemisphere light, the rim and the room light. A fully metal brass with no bright reflection to show reads
+  as a dark brown block among bright gold copies (the lab's B3 has the same contrast: `tools/shots/beat2/lab/B3_0840.png`
+  next to `tools/shots/beat2/final/384x734_B2E.png`). To decide in the look pass: bring the real lock's brass towards
+  the copies' (or the copies' towards it), or keep the real one apart on purpose.
 
 ### Edges to watch in the final full check
 - **Routecheck, the arrival's replay (logged 27 Nov, after `ae75e24`):** once, in the full routecheck run after beat 1's
@@ -695,9 +711,27 @@ Take 1's history below.
   once and watch for it; if it comes back, check whether the refresh lands during the scroll back to the top
   (`watchTop` in enter.js needs scrollY 0 for 320 ms after being half a screen down).
 - **`ERR_CONNECTION_REFUSED` on one request under a burst** (the plain local server's connection queue; a different size
-  each run, clean on re-run): an edge for hosting, not the site (see the parked fixes' entry in the log).
+  each run, clean on re-run): an edge for hosting, not the site (see the parked fixes' entry in the log). 28 Nov: traced
+  once to the first load in a fresh browser (`fonts/dm-mono-300.woff2` refused); it lands most often on 384 x 734 light,
+  the first job of every routecheck run.
 
 ### Take 2 log
+- **The security page: page 3 starts at the door (28 Nov, Wajih).** Beats 1 and 2 are page 3, so the strip and the
+  title block now say "03 The lock" from beat 1's start (the walk's end, at the shut door) instead of "02 Hallway", and
+  the strip's "03 The lock" (and a `#page-03` deep link) lands there: the `#page-03-door` marker, main.js by page number
+  (beat 2's structure notes, "Page 3 starts at the door"). Checked in the page (384 x 734, 2160 x 1147, and reduced
+  motion): "02 Hallway" up to the door, "03 The lock" from just past it, through beats 1 and 2 and on page 3's own
+  section; the 03 segment fills from the door; a click on "03 The lock" from frame 1 lands exactly on the marker
+  (standing at the shut door, the walk done, beat 1 not started; reduced motion: at the lock's face still). No console
+  errors. Logged for the look pass: the real centre lock darker than its copies ("For the look pass").
+  - **Type gate** (384 x 734, 1440 x 900, 2160 x 1147, light and dark; F5B, DOOR, B1H, B1F, B1P, B1E, B2K, B2H, B2W,
+    B2E, LOCK): **0 machine failures**.
+  - **Routecheck** (14 sizes, light and dark): every route on the grid, the title block's cells unclipped at every size
+    with "THE LOCK"; 26 of 28 clean, 2 `ERR_CONNECTION_REFUSED` (384 x 734 light, 430 x 932 dark); re-run: 430 x 932
+    clean, 384 x 734 light again. Traced (three fresh loads at 384 x 734 logging failed requests): the first load in a
+    fresh browser had `fonts/dm-mono-300.woff2` refused by the plain local server under the opening burst; the next two
+    loads clean. The known hosting edge (not the site); 384 x 734 light is the first job of every run, so it meets the
+    cold burst most often.
 - **The security page, beat 2: the room of locks (28 Nov).** Built as in "The security page, beat 2: structure notes":
   straight on from beat 1's dark end in the same scene and camera, back up the keyway, out through the keyhole, then
   lab B3 (its p 0.30-0.84): 74 instanced copies, the room turning, the camera circling, the centre key's turn, the

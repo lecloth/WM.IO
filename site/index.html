@@ -103,7 +103,7 @@
         else { var c = el.cloneNode(); el.parentNode.insertBefore(c, el.nextSibling); el.remove(); } }, 150 * (n + 1));
     }, true);
   </script>
-  <script type="module" src="dist/main.js?v=b12aabcb75" onerror="(function(s){var n=+(s.dataset.r||0);if(n<5){var c=document.createElement('script');c.type='module';c.src='dist/main.js?r='+(n+1);c.dataset.r=n+1;c.onerror=s.onerror;setTimeout(function(){document.head.appendChild(c)},200*(n+1));}})(this)"></script>
+  <script type="module" src="dist/main.js?v=d5201c1720" onerror="(function(s){var n=+(s.dataset.r||0);if(n<5){var c=document.createElement('script');c.type='module';c.src='dist/main.js?r='+(n+1);c.dataset.r=n+1;c.onerror=s.onerror;setTimeout(function(){document.head.appendChild(c)},200*(n+1));}})(this)"></script>
 </head>
 <body>
 
@@ -215,6 +215,9 @@
       <div class="p1-dive-top" aria-hidden="true"></div>
       <!-- where page 2 starts (page.js places it at the hallway's first scroll position; the strip and title block read it) -->
       <span id="page-02" class="p1-mark" data-sheet="02" data-title="Hallway" data-drawn="Design" data-checked="Engineering" data-approved="Strategy" aria-hidden="true"></span>
+      <!-- 28 Nov: where page 3 (the security page) starts: its beat 1 starts at the hallway's end, standing at the shut door
+           (page.js places it there); the strip, the title block and every #page-03 link land here (main.js) -->
+      <span id="page-03-door" class="p1-mark" data-sheet="03" data-title="The lock" data-drawn="Security" data-checked="Engineering" data-approved="Strategy" aria-hidden="true"></span>
     </section>
     <!-- PAGE 03: INTO THE LOCK (stage 9, the security showpiece; site/js/page03/). Overlaps page 1's last screen and starts on
          the hallway's last frame: the lock in X-ray. Into the keyhole, past the pins, out to endless locks that unlock in a

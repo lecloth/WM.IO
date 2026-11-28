@@ -32,7 +32,11 @@ try { initTrips(engine); } catch (e) { console.error('[page 05]', e); }
 // ---------- timeline strip + title block: one segment per page (round 8: eight pages; the hallway is page 2) ----------
 const segs = [...document.querySelectorAll('.strip__seg')];
 const cutLi = document.querySelector('.strip__cut'), cutA = cutLi?.querySelector('a');
-const pages = [...document.querySelectorAll('#sheets [data-sheet]')];   // document order: page 1, the hallway's marker inside it, 3-8
+const pages = [...document.querySelectorAll('#sheets [data-sheet]')];   // document order: page 1, the hallway's and page 3's markers inside it, page 3's section, 4-8
+// 28 Nov: page 3 starts at the door (its beat 1 runs at the end of page 1's section): two elements carry 03 (the door's
+// marker, then page 3's own section), so the segments go by page number, and a page's link lands on its first element
+const segOf = (el) => +el.dataset.sheet - 1;
+const firstOf = (k) => pages.find((el) => segOf(el) === k);
 const tb = { sheet: document.querySelector('.tb__sheet'), title: document.querySelector('.tb__title'),
   drawn: document.querySelector('.tb__drawn'), checked: document.querySelector('.tb__checked'), approved: document.querySelector('.tb__approved') };
 let active = -1;
@@ -41,7 +45,7 @@ function setActive(i) {
   const el = pages[i];
   tb.sheet.textContent = el.dataset.sheet; tb.title.textContent = el.dataset.title;
   tb.drawn.textContent = el.dataset.drawn; tb.checked.textContent = el.dataset.checked; tb.approved.textContent = el.dataset.approved;
-  segs.forEach((s, k) => s.classList.toggle('is-active', k === i));
+  segs.forEach((s, k) => s.classList.toggle('is-active', k === segOf(el)));
 }
 setActive(0);
 // the strip's eight segments on whole columns of the grid (the head script's unit); "Take a shortcut →" takes the last
@@ -49,21 +53,23 @@ setActive(0);
 const stripCols = () => layoutStrip();
 stripCols(); document.addEventListener('wm:grid', stripCols); addEventListener('resize', stripCols);
 // the page under the screen's top is the active one (a page counts from the moment it lands). Each segment fills from
-// its page's landing to the next page's.
-let tops = [];
+// its page's landing to the next page's (a page lands at its first element).
+let tops = [], segTops = [];
 const docTop = (el) => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; };
-const measureTops = () => { tops = pages.map(docTop); };
+const measureTops = () => { tops = pages.map(docTop); segTops = segs.map((_, k) => { const el = firstOf(k); return el ? docTop(el) : Infinity; }); };
 function track() {
   if (!tops.length) measureTops();
   const y = scrollY + 1;
   let i = 0; for (let k = 0; k < tops.length; k++) if (tops[k] <= y) i = k;
   setActive(i);
-  segs.forEach((sg, k) => { const a = tops[k], b = k + 1 < tops.length ? tops[k + 1] : document.documentElement.scrollHeight - innerHeight;
+  segs.forEach((sg, k) => { const a = segTops[k], b = k + 1 < segTops.length ? segTops[k + 1] : document.documentElement.scrollHeight - innerHeight;
     sg.style.setProperty('--p', Math.max(0, Math.min(1, (y - a) / Math.max(1, b - a))).toFixed(4)); });
 }
 ScrollTrigger.create({ start: 0, end: 'max', onUpdate: track, onRefresh: () => { measureTops(); track(); } });
 addEventListener('scroll', track, { passive: true });
-const go = (hash) => { const el = document.querySelector(hash); if (el) engine.scrollTo(docTop(el), { duration: 1.4 }); };
+// a page's link (#page-NN: the strip, a deep link) lands on its first element: #page-03 at the door, where page 3 starts
+const landOf = (hash) => { const m = /^#page-(\d\d)$/.exec(hash); return (m && firstOf(+m[1] - 1)) || document.querySelector(hash); };
+const go = (hash) => { const el = landOf(hash); if (el) engine.scrollTo(docTop(el), { duration: 1.4 }); };
 
 // ---------- round 8: "Take a shortcut →" (was "Cut to the chase"): the hyperdrive into the final room (a plain jump with
 // reduced motion); during the jump our words, "Cutting to the chase." ----------
@@ -129,7 +135,7 @@ runEnter(engine, () => {
   engine.emit('opening:done');
   ScrollTrigger.refresh();
   const jump = window.__wm.jumpTo;
-  if (jump && document.querySelector(jump)) { window.__wm.jumpTo = ''; go(jump); }
+  if (jump && landOf(jump)) { window.__wm.jumpTo = ''; go(jump); }
 });
 
 window.__t2 = { engine, p1, p23 };

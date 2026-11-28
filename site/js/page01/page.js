@@ -108,7 +108,7 @@ export function initPage01(engine) {
 
   const flyYou = $('.p1-fly[data-w="you"]'), flyWe = $('.p1-fly[data-w="we"]');
   const slot = { a: $('.p1-slot--a'), c: $('.p1-slot--c'), u: $('.p1-slot--u'), w: $('.p1-slot--w') };
-  const diveEl = $('.p1-dive'), diveTop = $('.p1-dive-top'), mark2 = $('.p1-mark');
+  const diveEl = $('.p1-dive'), diveTop = $('.p1-dive-top'), mark2 = $('#page-02'), mark3 = $('#page-03-door');   // 28 Nov: + where page 3 starts (beat 1, at the door)
   const dive = createDive(diveEl, diveTop);
   const endH = T.end.querySelector('.p1-txt__h');
 
@@ -628,6 +628,8 @@ export function initPage01(engine) {
       T.end.after(list);
       // page 2 starts at the hallway's still figures
       mark2.style.top = `${list.getBoundingClientRect().top - sec.getBoundingClientRect().top}px`;
+      // and page 3 at the lock's face (beat 1's still)
+      if (mark3) mark3.style.top = `${lockF.getBoundingClientRect().top - sec.getBoundingClientRect().top}px`;
     });
     Object.values(T).forEach((t) => t.classList.add('on'));
     [canvas, morphSvg, leaders, labelsEl, blue].forEach((el) => { el.hidden = true; });
@@ -659,7 +661,8 @@ export function initPage01(engine) {
     if (p !== target) lagRaf = requestAnimationFrame(chase);
   }
   function setTarget(p) { target = p; if (!lagRaf && p !== P) { lastT = performance.now(); lagRaf = requestAnimationFrame(chase); } }
-  const placeMark = (s) => { mark2.style.top = `${((s.end - s.start) * R.dive[0] / SCROLL).toFixed(1)}px`; };
+  // the pages' marks: page 2 where the hallway starts; page 3 (28 Nov) where its beat 1 starts, the walk's end at the door
+  const placeMark = (s) => { mark2.style.top = `${((s.end - s.start) * R.dive[0] / SCROLL).toFixed(1)}px`; if (mark3) mark3.style.top = `${((s.end - s.start) * STOPS.DOOR / SCROLL).toFixed(1)}px`; };
   // the section's height follows beat 1's length (layoutDive): when it moves, every trigger measures again (once)
   function refreshIfMoved() { if (!heightMoved) return; heightMoved = false; requestAnimationFrame(() => ScrollTrigger.refresh()); }
   const st = ScrollTrigger.create({
