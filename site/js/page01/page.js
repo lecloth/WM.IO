@@ -24,7 +24,7 @@
 import { Phone } from './phone.js';
 import { BellMorph } from './morph.js';
 import { createLive } from './live.js';
-import { createDive, captionHTML, openingHTML, DIVE, SHOW, BEAT1, B1 } from './dive.js';
+import { createDive, captionHTML, openingHTML, roomHeadHTML, DIVE, SHOW, BEAT1, B1, BEAT2, B2 } from './dive.js';
 import { FRAMES, OPENING } from './corridor-drawings.js';
 const OPENING_TXT = `${OPENING.lead} ${OPENING.rest}`;
 import { haptics } from '../engine/haptics.js';
@@ -44,7 +44,8 @@ const inR = (p, [a, b]) => p >= a - 1e-4 && p <= b + 1e-4;
 
 // round 7: the drum turns slower (more room: 1.6 screens for seven verbs); round 8: the hallway is 4.6 screens; pass 3b:
 // the walk (DIVE, 5.4 screens) plus frame 5's held show (SHOW.len, 2.9 screens: the camera stops while the scroll drives it);
-// 27 Nov: DIVE 6.9 with the security page's beat 1 (1.5 nominal screens: the push into the lock and down its keyway).
+// 27 Nov: DIVE 6.9 with the security page's beat 1 (1.5 nominal screens: the push into the lock and down its keyway);
+// 28 Nov: DIVE 9.9 with beat 2 (3 screens, 1:1 with the scroll: the room of locks).
 // Its push really takes dive.pushLen() screens (it starts at the walk's own speed: per screen), so the hall's length and
 // the page's are set at layout (layoutDive); these are the nominal values until then
 const B1W = BEAT1[0] * DIVE, B1N = B1.fill * (BEAT1[1] - BEAT1[0]) * DIVE;   // where the push starts (walk screens), its nominal length
@@ -62,9 +63,10 @@ const HAND = 0.9;          // the handover: Bell's outlines -> X-ray, pose held 
 // folding back, DOOR the walk's end in front of the shut door, LOCK the hand-over to page 3. Pass 3b, frame 5's held show:
 // F5H fully open (the walk stops), F5S the scribble half drawn, F5R turning real and lifting, F5L lifted, F5T both phones
 // mid-turn, F5E the show's end (the walk resumes). 27 Nov, the security page's beat 1: B1H halfway to the lock, B1F its face
-// filling the room, B1K at the keyhole, B1P inside the keyway under the pins (the middle pin), B1E the dark end; LOCK the
-// (temporary) hand-over to page 3 done
-export const STOPS = { S0: 0.1, draw: 0.24, blue: 0.36, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, dress: 2.23, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.9, END: 4.8, TR: 5.11, OPEN: 5.5, LIT: 6.2, F1: 6.6, F2: 7.3, F3: 8.0, F4: 8.7, F5H: 9.2, F5S: 9.4, F5R: 9.75, F5L: 10.2, F5T: 11.0, F5E: 12.1, F5: 12.3, F5B: 12.45, DOOR: 12.84, B1H: 13.19, B1F: 13.53, B1K: 13.62, B1P: 13.95, B1E: 14.34, LOCK: 14.74 };
+// filling the room, B1K at the keyhole, B1P inside the keyway under the pins (the middle pin), B1E the dark end (= beat 2's
+// start). 28 Nov, beat 2: B2K backing out of the keyhole, B2H the headline over the room (the camera holding), B2W mid-wave
+// while circling, B2E beat 2's end (the room turned, every lock unlocked); LOCK the (temporary) hand-over to page 3 done
+export const STOPS = { S0: 0.1, draw: 0.24, blue: 0.36, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, dress: 2.23, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.9, END: 4.8, TR: 5.11, OPEN: 5.5, LIT: 6.2, F1: 6.6, F2: 7.3, F3: 8.0, F4: 8.7, F5H: 9.2, F5S: 9.4, F5R: 9.75, F5L: 10.2, F5T: 11.0, F5E: 12.1, F5: 12.3, F5B: 12.45, DOOR: 12.84, B1H: 13.19, B1F: 13.53, B1K: 13.62, B1P: 13.95, B1E: 14.34, B2K: 15.04, B2H: 15.58, B2W: 16.66, B2E: 17.34, LOCK: 17.74 };
 const NAMES = ['Back', 'Battery', 'Board', 'Frame', 'Screen', 'Glass'];   // back to front
 const BLUE = [23, 63, 115];
 
@@ -334,6 +336,9 @@ export function initPage01(engine) {
     if (!engine.reduced) { const hgt = `${((SCROLL + 1) * 100).toFixed(2)}lvh`; if (sec.style.height !== hgt) { sec.style.height = hgt; heightMoved = true; } }
     const b1 = (b) => at(hallOf((BEAT1[0] + (BEAT1[1] - BEAT1[0]) * b) * DIVE));   // beat 1's share b -> a stop
     Object.assign(STOPS, { B1H: b1(B1.fill / 2), B1F: b1(B1.fill), B1K: b1((B1.fill + B1.mouth) / 2), B1P: b1(B1.mouth + (B1.pins - B1.mouth) * 0.51), B1E: b1(1) });
+    // beat 2 (28 Nov): a moment of lab B3 (its p) -> a stop; B2E beat 2's last frame
+    const b2 = (pB) => at(hallOf((BEAT2[0] + (BEAT2[1] - BEAT2[0]) * (B2.back + (1 - B2.back) * (pB - B2.a) / (B2.b - B2.a))) * DIVE));
+    Object.assign(STOPS, { B2K: b2(0.37), B2H: b2((B2.head[0] + B2.head[1]) / 2), B2W: b2(0.7), B2E: b2(B2.b) });
   }
 
   // ---------- "you" -> "YOU" and "us" -> "WE": one word each, travelling between its places ----------
@@ -595,16 +600,31 @@ export function initPage01(engine) {
       });
       // 27 Nov, the security page's beat 1 with reduced motion: no flight; the lock's face, then a cross-fade to the dark
       // (its opacity follows the scroll: no motion)
+      let lockStillDone; const lockStill = new Promise((r) => { lockStillDone = r; });
       const lockF = document.createElement('figure'); lockF.className = 'p1-hall__lock';
       const limg = new Image(); limg.alt = "The door's brass lock, close up: its face fills the frame, the keyway at its foot.";
       lockF.append(limg); list.append(lockF);
       requestAnimationFrame(() => {
         const w = Math.round(list.getBoundingClientRect().width) || 320, h = Math.round(Math.min(innerHeight * 0.75, w * 1.25));
         limg.width = w; limg.height = h;
-        dive.faceStill(w, h, { u: grid.u }).then((url) => { if (url) limg.src = url; else lockF.remove(); }).catch((e) => console.warn('[page 01] lock still', e));
+        lockStillDone(dive.faceStill(w, h, { u: grid.u }).then((url) => { if (url) limg.src = url; else lockF.remove(); }).catch((e) => console.warn('[page 01] lock still', e)));
       });
       const fadeLock = () => { const r = lockF.getBoundingClientRect(); if (!r.height) return; limg.style.opacity = (1 - span(innerHeight * 0.5 - r.top, r.height * 0.15, r.height * 0.85)).toFixed(3); };
       addEventListener('scroll', fadeLock, { passive: true }); addEventListener('resize', fadeLock); fadeLock();
+      // 28 Nov, beat 2 with reduced motion: no flight; a still of the room of locks (the camera's hold after the pull-back)
+      // with its headline (a draft, flagged) over it, then the same fade to the dark as the scroll passes (no motion)
+      const roomF = document.createElement('figure'); roomF.className = 'p1-hall__room';
+      roomF.insertAdjacentHTML('afterbegin', roomHeadHTML());
+      const rimg = new Image(); rimg.alt = 'Out of the keyhole, a room of brass locks in every direction around the one in the middle.';
+      roomF.append(rimg); list.append(roomF);
+      requestAnimationFrame(() => {
+        const w = Math.round(list.getBoundingClientRect().width) || 320, h = Math.round(Math.min(innerHeight * 0.75, w * 1.25));
+        rimg.width = w; rimg.height = h;
+        // (after the face's still: both lay the same hallway out at the figure's size, one at a time)
+        lockStill.then(() => dive.roomStill(w, h, { u: grid.u })).then((url) => { if (url) rimg.src = url; else roomF.remove(); }).catch((e) => console.warn('[page 01] room still', e));
+      });
+      const fadeRoom = () => { const r = rimg.getBoundingClientRect(); if (!r.height) return; rimg.style.opacity = (1 - span(innerHeight * 0.5 - r.top, r.height * 0.15, r.height * 0.85)).toFixed(3); };
+      addEventListener('scroll', fadeRoom, { passive: true }); addEventListener('resize', fadeRoom); fadeRoom();
       T.end.after(list);
       // page 2 starts at the hallway's still figures
       mark2.style.top = `${list.getBoundingClientRect().top - sec.getBoundingClientRect().top}px`;

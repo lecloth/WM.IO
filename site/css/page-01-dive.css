@@ -61,6 +61,34 @@
   .dive__open-l { font-size: 4.5rem; line-height: 5rem; }
 }
 html[data-motion="reduce"] .dive__open, html[data-motion="reduce"] .dive__open::before, html[data-motion="reduce"] .dive__open > * { transition: none; }
+/* ---------- the security page, beat 2 (28 Nov): the room of locks' headline (the style lab's B3 placeholder, a draft,
+   flagged). Over the room while the camera holds after the pull-back, on a dark frosted backing a cell round its words
+   (the copies behind it blur away); placed and sized by dive.js as the opening line. A word reveal: a short timed fade
+   (Part 5 "The scroll drives the stage": a paused frame never shows half a word) ---------- */
+/* (its line's box ends on the baseline (.gt), so the descenders hang under it: a cell of padding keeps the backing's
+   foot half a cell and more clear of them at every size; the foot stays on a line) */
+.dive__head { position: absolute; left: 0; top: 0; margin: 0; padding-bottom: 1rem; color: #EDEEF0; isolation: isolate; pointer-events: none; line-height: 1rem;
+  visibility: hidden; transition: visibility 0s linear .26s; }
+.dive__head::before { content: ""; position: absolute; inset: -1rem; z-index: -1; opacity: 0; border-radius: .5rem;
+  background: rgba(10, 10, 11, .72); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); transition: opacity .2s linear; }
+.dive__head > * { opacity: 0; transition: opacity .18s linear; }
+.dive__head.on { visibility: visible; transition: none; }
+.dive__head.on::before { opacity: 1; transition: opacity .26s linear; }
+.dive__head.on > * { opacity: 1; transition: opacity .26s linear .08s; }
+.dive__head p { margin: 0; }
+.dive__head .ph { vertical-align: 0; line-height: 0; color: #8C8F94; }
+.dive__head .dive__head-f { display: block; margin: 0 0 .5rem !important; line-height: .5rem; }
+.dive__head-e { font-weight: 500; color: #C3C7CD; }   /* (small type: its baseline on a half line, so the line under it starts half a cell down) */
+.dive__head-l { margin-top: .5rem !important; font-family: var(--f-display, Newsreader, Georgia, serif); font-weight: 420; font-size: 2.5rem; line-height: 3rem; letter-spacing: -.02em; white-space: nowrap; }
+.dive__head.is-wrap .dive__head-l { white-space: normal; text-wrap: balance; }
+@media (min-width: 1024px) { .dive__head-l { font-size: 3.5rem; line-height: 4rem; } }
+@media (min-width: 1800px) and (min-height: 1000px) { .dive__head-l { font-size: 4.5rem; line-height: 5rem; } }
+.is-warm .dive__head, .is-warm .dive__head::before, .is-warm .dive__head > * { transition: none !important; }
+/* reduced motion: the headline in the flow over the room's still (no backing: it sits on the dark figure) */
+.p1-hall__room .dive__head { position: relative; visibility: visible; transition: none; padding: 1rem; }
+.p1-hall__room .dive__head-l { white-space: normal; text-wrap: balance; }
+.p1-hall__room .dive__head::before { display: none; }
+.p1-hall__room .dive__head > * { opacity: 1; transition: none; }
 /* reduced motion: the same label under each still figure, in the flow (no backing: it sits on the paper) */
 .p1-hall .dive__lab { position: relative; transform: none !important; margin-top: 1rem; visibility: visible; --op: 1; color: var(--ink); }
 .p1-hall .dive__lab-k { color: var(--graphite); }

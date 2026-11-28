@@ -14,6 +14,9 @@ Metrics (grey levels 0-255, on device pixels):
   python -I tools/flicker.py [--builds r7old,current] [--out tools/shots/r8/flicker] [--frames 36]
 Round 8: the older build is staged by hand at site/<name>old/ (deleted again before committing); page 2's rows are the
 final room's now; the current build also steps the hyperdrive frame by frame.
+27 Nov --beat1: only the security page's beat 1. 28 Nov --beat2: only beat 2, the room of locks: the seam from beat 1's
+dark end into it (backing up the keyway), out of the keyhole and the pull-back, the hold with the headline, the circling
+with the key's turn and the wave, and its end with the (temporary) fade into page 3.
 One headed Chrome window opens on the desktop while it runs (a fresh temporary profile; nothing of the user's)."""
 import argparse, asyncio, json, subprocess, sys, tempfile, time
 from pathlib import Path
@@ -119,6 +122,19 @@ async def run_build(pw, b, a, out):
     rep = {"env": env}
     # 27 Nov (--beat1): only the security page's beat 1, from the shut door to the dark end, in small steps (the walk into
     # the lock, the keyhole, the keyway under the pins), each frame from the compositor; then the hand-over's fade
+    if a.beat2:
+        # each stretch around a named stop (page 1 screens), each frame from the compositor; the largest single-frame change too
+        for name, s0, s1 in [("b2_seam", stops["B1E"] - 0.15, stops["B1E"] + 0.35), ("b2_out", stops["B2K"] - 0.15, stops["B2K"] + 0.35),
+                             ("b2_head", stops["B2H"] - 0.2, stops["B2H"] + 0.2), ("b2_wave", stops["B2W"] - 0.25, stops["B2W"] + 0.25),
+                             ("b2_end", stops["B2E"] - 0.2, stops["LOCK"])]:
+            ya = await yAt(s0); yb = await yAt(s1)
+            await page.evaluate(GOTO, ya, isolated_context=False); await page.wait_for_timeout(1500)
+            fr = await walk(page, [ya + (yb - ya) * k / n for k in range(n)], out, f"{b}_{name}")
+            G = [gray(f) for f in fr]; rep[f"{name}_flicker"] = flicker(G)
+            d = [float(np.abs(G[i] - G[i - 1]).mean()) for i in range(1, len(G))]
+            rep[f"{name}_largest_frame_change"] = round(max(d), 2)
+        await ctx.close()
+        return rep
     if a.beat1:
         for name, s0, s1 in [("hall_ref", stops["F1"] + (stops["F2"] - stops["F1"]) * 0.32, stops["F1"] + (stops["F2"] - stops["F1"]) * 0.5), ("b1_push", stops["DOOR"], stops["B1F"]), ("b1_keyhole", stops["B1F"], stops["B1K"] + 0.06), ("b1_pins", stops["B1P"] - 0.1, stops["B1P"] + 0.1), ("b1_dark", stops["B1E"] - 0.12, stops["LOCK"])]:
             ya = await yAt(s0); yb = await yAt(s1)
@@ -188,6 +204,6 @@ async def main(a):
     (out / "flicker.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
 
 ap = argparse.ArgumentParser(); ap.add_argument("--builds", default="r7old,current"); ap.add_argument("--out", default="tools/shots/r8/flicker"); ap.add_argument("--frames", type=int, default=36)
-ap.add_argument("--width", type=int, default=2160); ap.add_argument("--height", type=int, default=1147); ap.add_argument("--dpr", type=float, default=1.333); ap.add_argument("--no-hyper", action="store_true"); ap.add_argument("--beat1", action="store_true")
+ap.add_argument("--width", type=int, default=2160); ap.add_argument("--height", type=int, default=1147); ap.add_argument("--dpr", type=float, default=1.333); ap.add_argument("--no-hyper", action="store_true"); ap.add_argument("--beat1", action="store_true"); ap.add_argument("--beat2", action="store_true")
 with BrowserLock():
     asyncio.run(main(ap.parse_args()))
