@@ -31,8 +31,13 @@
 //   (the key fully in now) and out through the keyhole, facing the lock the whole time, and pulls back; from there it
 //   is the style lab's B3 exactly (opt-b.js "tesseract", its p 0.30 to 0.84): 74 instanced copies appear nearest first,
 //   the room turns on two axes, the camera circles, the centre key turns and the unlock wave runs out from the centre.
-//   Until beat 3 is built, beat 2's end fades plainly into page 3's first frame as it is today (XRAY, temporary:
-//   STATE.md).
+// - Beat 3, fly home, chaos, one lock (28 Nov; BEAT3, see beat3() below): straight on from beat 2's end, the room turns
+//   back square while the camera pulls back along the lab's A frame's line to see all of it; every copy flies home on an
+//   arc, nearest first, full size, one full turn, and lands square on the real lock; the real lock bursts into its 15
+//   parts as the first copies land, each copy into its big parts as it lands, the pieces drift off into the dark (the
+//   fog takes them); the real lock's parts come home one by one in the manifest's order while the camera pushes in to
+//   the A frame: one lock, centred, the key in it. Until beat 4 is built, beat 3's end fades plainly into page 3's first
+//   frame as it is today (XRAY, temporary: STATE.md).
 import * as THREE from 'three';
 import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
@@ -109,7 +114,7 @@ function frameDims(d) {
 const DIMS = FRAMES.map((F) => frameDims(F.draw));
 
 // ---------- the timeline, in screens of scroll (q = screens / DIVE) ----------
-export const DIVE = 9.9;   // 27 Nov: + the security page's beat 1 (1.5 screens; was 5.4); 28 Nov: + beat 2 (3 screens)
+export const DIVE = 12.9;   // 27 Nov: + the security page's beat 1 (1.5 screens; was 5.4); 28 Nov: + beat 2 (3 screens), + beat 3 (3 screens)
 const S_ = (screens) => screens / DIVE;
 export const WAY_IN = [S_(0.02), S_(0.32)];      // the sketch stretches out into depth
 export const OPEN_AT = [S_(0.3), S_(0.95)];      // the opening line
@@ -131,9 +136,16 @@ export const B1 = { fill: 0.46, mouth: 0.58, pins: 0.9 };
 // the key's turn and the wave), mapped evenly
 export const BEAT2 = [S_(6.5), S_(9.5)];
 export const B2 = { back: 0.12, a: 0.30, b: 0.84, head: [0.45, 0.51] };   // head: the headline's window in B3's p (timed fades)
-// the hand-over to page 3: TEMPORARY (until beat 3: fly home, chaos, one lock): a plain fade from beat 2's end (the room
-// turned, every lock unlocked) to page 3's first frame as it is today (the lock in X-ray, on blue)
-export const XRAY = [S_(9.6), S_(9.8)];
+// the security page's beat 3 (28 Nov): fly home, chaos, one lock, 3 screens, straight on from beat 2's end (the reference
+// demo's place3 and setChaos, its shares): the room squares up and the camera pulls back to see all of it (0 .. square);
+// each copy leaves at fly[0] + fly[1] x its distance's share (nearest first) and takes fly[2] to land; the real lock
+// bursts over burst; its parts come home from build, one manifest order every (1 - dur - build) / 6, each taking dur, so
+// the key seats exactly at the end (Wajih, 28 Nov); the camera pushes in from push to the end; the fog closes over fog
+export const BEAT3 = [S_(9.5), S_(12.5)];
+export const B3 = { square: 0.2, fly: [0.2, 0.18, 0.14], burst: [0.3, 0.42], build: 0.56, dur: 0.12, push: 0.52, fog: [0.5, 0.9] };
+// the hand-over to page 3: TEMPORARY (until beat 4: the three views): a plain fade from beat 3's end (one lock, centred, the
+// key in it; held 0.1 screens) to page 3's first frame as it is today (the lock in X-ray, on blue)
+export const XRAY = [S_(12.6), S_(12.8)];
 // frame 5's held show, in screens of scroll into the hold (page.js holds the walk this long once frame 5 is fully open)
 export const SHOW = { len: 2.9, draw: [0, 0.4], real: [0.4, 0.65], lift: [0.5, 1.0], turn: [[1.05, 2.55], [1.3, 2.8]] };
 export const STOPS = [];                         // per frame [fully open, closest] (q), set by layout (for the tests)
@@ -635,7 +647,11 @@ export function createDive(root, top, { base = '' } = {}) {
     room.inst = ['housing', 'plug', 'cap', 'key'].map((id) => {
       const src = doorLock.solids.find((m) => m.userData.part === id);
       const im = new THREE.InstancedMesh(src.geometry, cheap[MAT_OF(id)] || cheap.steel, room.cells.length);
-      im.frustumCulled = false; room.O.add(im); room.tris += (src.geometry.index ? src.geometry.index.count : src.geometry.attributes.position.count) / 3 * room.cells.length;
+      im.frustumCulled = false; room.O.add(im);
+      // (28 Nov, beat 3: each piece darkens into the dark as it drifts away from the lock; white, so no change, until then.
+      // Set here, before the first compile, so the shader never changes mid-scroll)
+      im.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(room.cells.length * 3).fill(1), 3);
+      room.tris += (src.geometry.index ? src.geometry.index.count : src.geometry.attributes.position.count) / 3 * room.cells.length;
       return { id, im };
     });
     // the real key's own steel (beat 2 fades it in as the camera leaves it; the clip keeps the shared steel)
@@ -651,6 +667,7 @@ export function createDive(root, top, { base = '' } = {}) {
     const { cells, step, m, q, qc, p, s, inst, c } = room;
     room.O.quaternion.setFromEuler(room.e.set(fold * 0.9, fold * 1.4, fold * 0.35));
     room.O.updateMatrixWorld(true);
+    if (room.dark) { room.dark = false; inst.forEach(({ im }) => { im.instanceColor.array.fill(1); im.instanceColor.needsUpdate = true; }); }   // (back from beat 3: every copy lit)
     const camLocal = room.O.worldToLocal(room.cam.copy(camera.position));
     cells.forEach(([i, j, k], n) => {
       const d = Math.hypot(i, j, k), k1 = clamp(show * 4 - d * 0.55);     // nearer copies appear first
@@ -671,12 +688,18 @@ export function createDive(root, top, { base = '' } = {}) {
   }
   /** out of beat 2: the room hidden, the key out of the lock again (unseen in beat 1: you are the key), no sky light */
   function leaveRoom() {
+    restoreParts();
     if (room.O && room.O.visible) room.O.visible = false;
     if (b1.keyH && b1.keyH.parent) b1.keyH.removeFromParent();
     hemi.intensity = 0; lockScene.environmentIntensity = 0;
     Object.values(mats).forEach((m) => { m.envMapRotation.y = 1.5 * Math.PI; });   // (the door's turned light, as beat 1 has it)
   }
   const b2v = { AX: V3(0, 0, 1), F: V3(), L: V3() };
+  /** lab B3's fold (the room's two-axis turn) at its p: beat 2 turns the room by it; beat 3 unwinds it from beat 2's
+   *  last frame (foldAt(B2.b), this same expression) back to square */
+  const foldAt = (pB) => ease(span(pB, 0.32, 0.9)) * 0.35;
+  /** beat 2's last camera pose (B3's p 0.84), in the lock's model mm: the end of its 1.1 rad circle round the room */
+  const B2_END = (() => { const o = 1.1, f = [-150, 300, 150]; return { pos: [f[0] * Math.cos(o) - f[1] * Math.sin(o), f[0] * Math.sin(o) + f[1] * Math.cos(o), f[2]], look: [0, -36, 50] }; })();
   /** the lab's keys (lab3d.js keys): eased between [p, value] pairs */
   const keysAt = (p, k) => {
     if (p <= k[0][0]) return k[0][1];
@@ -686,6 +709,7 @@ export function createDive(root, top, { base = '' } = {}) {
   /** beat 2 at p (0..1): the camera, the key and the plug, the room, the light, the fog and the lens. The reference:
    *  tools/reference/security-demo-27nov.html place2() (lab B3's numbers in the lock's model mm and the lab's units) */
   function beat2(p) {
+    restoreParts();   // (scrolling back out of beat 3: every real part in its own place)
     lock.updateMatrixWorld(true);
     const mmW = HALL.door.lock.face * K / FACE.h, U = b1.U * mmW;   // world units per mm, per unit of the lab's world
     const F = MM(0, 0, 20, b2v.F);
@@ -742,9 +766,216 @@ export function createDive(root, top, { base = '' } = {}) {
     rim.intensity = 0.9 * lit; hemi.intensity = 0.5 * lit; lockScene.environmentIntensity = 0.55 * lit;   // (lab B3: scene.environmentIntensity 0.55)
     lamp.intensity = 0.1 * U * lit; lamp.distance = 2.0 * U; lamp.position.copy(camera.position);
     lockScene.fog.near = fogNear * U; lockScene.fog.far = fogFar * U;
-    if (p >= B2.back) setRoom(span(pB, 0.3, 0.46), span(pB, 0.56, 0.82), ease(span(pB, 0.32, 0.9)) * 0.35);
+    if (p >= B2.back) setRoom(span(pB, 0.3, 0.46), span(pB, 0.56, 0.82), foldAt(pB));
     const head = pB >= B2.head[0] && pB < B2.head[1];
-    return { beat: 2, p: +p.toFixed(4), b3: +pB.toFixed(4), step, hall: false, head, turn: +turn.toFixed(3), fov: +camera.fov.toFixed(2), copies: room.O && room.O.visible ? room.cells.length : 0, tris: room.tris };
+    return { beat: 2, p: +p.toFixed(4), b3: +pB.toFixed(4), step, hall: false, head, turn: +turn.toFixed(3), fov: +camera.fov.toFixed(2), copies: room.O && room.O.visible ? room.cells.length : 0, tris: room.tris, fold: p >= B2.back ? +foldAt(pB).toFixed(6) : 0 };
+  }
+
+  // ---------- the security page, beat 3 (28 Nov, Part 5 "The security page, as demoed"): fly home, chaos, one lock ----------
+  // The reference: tools/reference/security-demo-27nov.html place3() and setChaos() (Wajih approved them), in the door
+  // lock's own body (mm; the lab's world is the same axes, centred on room.c) and the lab's units (b1.U). Everything is a
+  // function of the scroll alone (seeded randomness, no time, no state carried between frames): scrolling back plays it in
+  // reverse exactly. The copies stay instanced (room.inst: housing, plug, cap, key); the real lock is its 15 solids.
+  // Two changes from the demo, both approved (28 Nov): the room unwinds from beat 2's real last fold (foldAt(B2.b)), and
+  // the key seats exactly at the end. Two calls of mine (STATE.md): the pull-back goes as far as shows the whole room
+  // (the demo's 3.4 x the A distance cut the room off at every edge), and the fog is set round the lock (the demo's,
+  // 14 lab units, left the finished lock nearly black at the A distance on a phone).
+  const A_FRAME = { fov: 28, yaw: -0.62, pitch: 0.34 };   // the lab's A views (opt-a.js): their lens and their last angle
+  const MAN_ORDER = (n) => (n === 'housing' ? 0 : n === 'plug' ? 1 : n === 'clip' ? 2 : n.startsWith('pin') ? 3 : n.startsWith('drv') ? 4 : n === 'cap' ? 5 : 6);
+  const DEMO_IDX = (n) => (n === 'housing' ? 0 : n === 'cap' ? 1 : n === 'clip' ? 2 : n === 'plug' ? 3 : n === 'key' ? 4 : n.startsWith('pin') ? 4 + +n.slice(3) : 9 + +n.slice(3));   // the demo's realParts order (its seeds)
+  /** the demo's seeded generator (mulberry32) and a direction from it, unchanged */
+  function rng(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  const randDir = (r) => { const z = r() * 2 - 1, a = r() * Math.PI * 2, s = Math.sqrt(1 - z * z); return V3(s * Math.cos(a), z, s * Math.sin(a)); };
+  const b3 = { ready: false, key: '' };
+  const M4 = () => new THREE.Matrix4();
+  const b3m = { m: M4(), m2: M4(), m3: M4(), G: M4(), Gi: M4(), F: M4(), Fi: M4(), B: M4(), negC: M4(), q: new THREE.Quaternion(), qT: new THREE.Quaternion(), rq: new THREE.Quaternion(), one: V3(1, 1, 1), s: V3(), p: V3(), v: V3(), w: V3(), Y: V3(0, 1, 0), Z: V3(0, 0, 1), cam: V3(), cW: V3(), wide: V3(), aPos: V3(), bPos: V3(), bLook: V3(), look: V3(), e: new THREE.Euler() };
+  /** once the lock is in: the copies' order and debris, the real parts' scramble, the lock's and the room's boxes */
+  function prepB3() {
+    const step = room.step, c = room.c;
+    b3.dists = room.cells.map(([i, j, k]) => Math.hypot(i, j, k)); b3.dMin = Math.min(...b3.dists); b3.dMax = Math.max(...b3.dists);
+    // each big part of each copy: a direction, a spin axis, a spin and a speed (the demo's seeds: 1000 + n x 7 + part)
+    b3.debris = room.cells.map((_, n) => room.inst.map((__, k) => { const r = rng(1000 + n * 7 + k); return { dir: randDir(r), axis: randDir(r), spin: 1.5 + r() * 2.5, speed: 0.8 + r() * 0.6 }; }));
+    b3.instC = room.inst.map(({ im }) => { im.geometry.computeBoundingBox(); return im.geometry.boundingBox.getCenter(V3()); });
+    b3.negC = M4().makeTranslation(-c.x, -c.y, -c.z);
+    b3m.qT.setFromAxisAngle(b3m.Z, -Math.PI / 2);   // the plug and the key, turned (beat 2 unlocked every copy)
+    // the real lock's 15 parts: where each waits in the chaos (the demo's seeds: 77 + n x 13 in its order), its turn there
+    b3.parts = doorLock.solids.map((m) => {
+      const name = m.userData.part, r = rng(77 + DEMO_IDX(name) * 13);
+      const off = randDir(r).multiplyScalar(1.3 + r() * 1.6), axis = randDir(r), ang = 2 + r() * 2.5;
+      m.geometry.computeBoundingBox();
+      const turned = name === 'plug' || name === 'key' || name.startsWith('pin');   // in the demo these ride the plug's turned frame
+      return { m, name, order: MAN_ORDER(name), off, axis, ang, gc: m.geometry.boundingBox.getCenter(V3()), turned, out: false };
+    });
+    b3.lockBox = new THREE.Box3(); doorLock.solids.forEach((m) => b3.lockBox.union(m.geometry.boundingBox));
+    const k = V3(2 * step, 0.92 * step, 2 * step);
+    b3.roomBox = new THREE.Box3(b3.lockBox.min.clone().sub(k), b3.lockBox.max.clone().add(k));
+    b3.roomR = b3.roomBox.getBoundingSphere(new THREE.Sphere()).radius;
+    b3.lockR = b3.lockBox.getBoundingSphere(new THREE.Sphere()).radius;
+    b3.cam = new THREE.PerspectiveCamera(A_FRAME.fov, 1, 1, 1e6);
+    b3.ready = true;
+  }
+  /** the A frame (body mm): its line out of the lock's box centre, the distance at which the whole lock fits the room
+   *  between the strip and the title block (a cell clear of each, centred on the screen's middle), and the distance on
+   *  the same line at which the whole room of locks fits (squared up); cached per screen */
+  function aFrame() {
+    const key = `${W}x${H}:${lastStrip}:${lastTb}:${gu}`;
+    if (b3.key === key) return b3.A;
+    const c = room.c, { yaw, pitch } = A_FRAME;
+    const dir = V3(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch));
+    const vy = Math.max(0.2, Math.min(H / 2 - lastStrip - gu, lastTb - gu - H / 2) / (H / 2)), vx = (W / 2 - gu) / (W / 2);
+    const cam = b3.cam; cam.aspect = W / H; cam.fov = A_FRAME.fov; cam.updateProjectionMatrix(); cam.up.set(0, 1, 0);
+    const corners = (bx) => [0, 1, 2, 3, 4, 5, 6, 7].map((i) => V3(i & 1 ? bx.max.x : bx.min.x, i & 2 ? bx.max.y : bx.min.y, i & 4 ? bx.max.z : bx.min.z));
+    const fits = (pts, d) => {
+      cam.position.copy(c).addScaledVector(dir, d); cam.lookAt(c); cam.updateMatrixWorld();
+      return pts.every((p) => { const v = p.clone().applyMatrix4(cam.matrixWorldInverse); if (-v.z < 1) return false; v.applyMatrix4(cam.projectionMatrix); return Math.abs(v.x) <= vx && Math.abs(v.y) <= vy; });
+    };
+    const fit = (pts, lo) => { let hi = lo; while (!fits(pts, hi) && hi < lo * 1e3) hi *= 1.5; lo = hi / 1.5; for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (fits(pts, m)) hi = m; else lo = m; } return hi; };
+    const dA = fit(corners(b3.lockBox), b3.lockR);
+    const dRoom = fit(corners(b3.roomBox), dA);
+    b3.key = key; b3.A = { dir, dA, dWide: Math.max(3.4 * dA, dRoom), dRoom };
+    return b3.A;
+  }
+  /** every real part back in its own place (its holder's transform alone) */
+  function restoreParts() {
+    if (!b3.ready) return;
+    b3.parts.forEach((pt) => { if (!pt.out) return; pt.out = false; pt.m.matrixAutoUpdate = true; pt.m.matrix.identity(); pt.m.matrixWorldNeedsUpdate = true; });
+  }
+  /** beat 3 at p (0..1): the camera and its lens, the room squaring up, the copies flying home and bursting, the real
+   *  lock bursting and coming home, the light (beat 2's, as it ended) and the fog */
+  function beat3(p) {
+    if (!b3.ready) prepB3();
+    lock.updateMatrixWorld(true);
+    const mmW = HALL.door.lock.face * K / FACE.h, U = b1.U * mmW, body = doorLock.body, c = room.c, step = room.step;
+    if (b1.keyH && !b1.keyH.parent) body.add(b1.keyH);
+    const t1 = ease(span(p, 0, B3.square)), t3 = ease(span(p, B3.push, 1));
+    // the camera: from beat 2's last pose, back along the A frame's line to see the whole room (the lens easing to 28
+    // degrees, the eye onto the lock's middle), held while the copies fly home, then straight in to the A frame
+    const A = aFrame();
+    MM(...B2_END.pos, b3m.bPos); MM(...B2_END.look, b3m.bLook);
+    b3m.cW.copy(c).applyMatrix4(body.matrixWorld);
+    // (the demo lerps in straight lines; on a portrait screen the whole room needs about 10 x the A distance, and a straight
+    // lerp over 0.2 of the beat whips past at 0.5 hall units and 13 degrees a scroll step. Here the same ends and times,
+    // the distance from the lock's middle on a log scale (the room shrinks on screen at an even rate, as beat 1's push
+    // grows the lock) and the line of sight swinging round onto the A frame's line; the push in is the same log scale,
+    // straight down the A line)
+    const d0 = b3m.bPos.distanceTo(b3m.cW), dW = A.dWide * mmW, dAw = A.dA * mmW;
+    b3m.wide.copy(b3m.bPos).sub(b3m.cW).divideScalar(d0);   // the line of sight swings round at an even rate (a slerp: the two lines are about 110 degrees apart)
+    b3m.rq.setFromUnitVectors(b3m.wide, A.dir); b3m.q.identity().slerp(b3m.rq, t1); b3m.wide.applyQuaternion(b3m.q);
+    const dist = t3 > 0 ? dW * Math.pow(dAw / dW, t3) : d0 * Math.pow(dW / d0, t1);
+    camera.position.copy(b3m.cW).addScaledVector(b3m.wide, dist);
+    b3m.look.copy(b3m.bLook).lerp(b3m.cW, t1);
+    camera.up.set(0, 1, 0); camera.lookAt(b3m.look);
+    const b3F = 62 * (W < H ? 1.12 : 0.85);
+    camera.fov = lerp(b3F, A_FRAME.fov, t1);
+    // the fog (beat 2 ends at near 0.6, far 14 lab units): it opens round the room as the camera pulls back (the room's
+    // near side clear, its far side falling into the dark), then closes in round the lock (clear to just past the lock,
+    // dark 6 lab units beyond it), so the drifting pieces go into the dark and the finished lock stands clear
+    const dCam = camera.position.distanceTo(b3m.cW), Rr = b3.roomR * mmW, Rl = b3.lockR * mmW;
+    const nOpen = Math.max(0.6 * U, dCam - Rr), fOpen = Math.max(14 * U, dCam + 1.2 * Rr), nEnd = dCam + Rl, fEnd = nEnd + 6 * U;
+    let fogNear, fogFar;
+    if (p < B3.fog[0]) { fogNear = lerp(0.6 * U, nOpen, t1); fogFar = lerp(14 * U, fOpen, t1); }
+    else { const k = ease(span(p, ...B3.fog)); fogNear = lerp(nOpen, nEnd, k); fogFar = lerp(fOpen, fEnd, k); }
+    lockScene.fog.near = fogNear; lockScene.fog.far = fogFar;
+    const F = MM(0, 0, 20, b2v.F), nearMin = 0.0015 * U;
+    camera.near = Math.max(nearMin, 0.03 * camera.position.distanceTo(F));
+    camera.far = Math.max(camera.near * 20, 2 * fogFar);
+    camera.updateProjectionMatrix(); camera.updateMatrixWorld();
+    // the light: beat 2's, as it ended
+    setLock(0, 1);
+    lockLook(1);
+    const km = room.keyMat; b1.keyH.visible = true;
+    km.color.copy(mats.steel.color); km.metalness = mats.steel.metalness; km.roughness = mats.steel.roughness; km.envMap = mats.steel.envMap; km.opacity = 1;
+    for (const m of [mats.brass, mats.steel, mats.dark, km]) { m.envMapIntensity = 0.55; m.envMapRotation.y = 2 * Math.PI; }
+    rim.intensity = 0.9; hemi.intensity = 0.5; lockScene.environmentIntensity = 0.55;
+    lamp.intensity = 0.1 * U; lamp.distance = 2.0 * U; lamp.position.copy(camera.position);
+    // the room squares up: beat 2's last fold unwinds
+    const fold = foldAt(B2.b) * (1 - t1);
+    room.O.visible = true;
+    room.O.quaternion.setFromEuler(b3m.e.set(fold * 0.9, fold * 1.4, fold * 0.35));
+    room.O.updateMatrixWorld(true);
+    const camLocal = room.O.worldToLocal(b3m.cam.copy(camera.position));
+    // the copies (setChaos): each flies home on an arc, nearest first, full size, one full turn (alternate ways), and
+    // lands square on the real lock; then its big parts burst off along their own directions, tumbling, into the dark.
+    // A copy (or a piece) never closes in on the camera: B3's rule, it is scaled to nothing within reach of the lens
+    const { m, m2, m3, q, qT, rq, s, p: pp, v, Y } = b3m;
+    // the dark round the lock (28 Nov, my call): the camera's fog alone left the debris between the camera and the lock
+    // bright as the camera pushed in through it (flicker.py: 48 grey levels a frame). So from the chaos's height (B3.fog)
+    // a piece darkens into the dark as it drifts past a radius round the lock that closes from the whole room to just past
+    // the lock (a 4 lab unit band); fully dark, it is no longer drawn. A function of the scroll alone, like the rest
+    const kD = ease(span(p, ...B3.fog)), Rfar = lerp(1.2 * b3.roomR, b3.lockR + 4 * b1.U, kD), Rband = 4 * b1.U;
+    let landed = 0, darkAny = false, shown = 0;
+    const shade = (im, n, g) => { const a = im.instanceColor.array; a[3 * n] = a[3 * n + 1] = a[3 * n + 2] = g; if (g < 1) darkAny = true; };
+    room.cells.forEach(([i, j, k], n) => {
+      const arrive = B3.fly[0] + (b3.dists[n] - b3.dMin) / (b3.dMax - b3.dMin) * B3.fly[1] + B3.fly[2];
+      const e = ease(span(p, arrive - B3.fly[2], arrive));
+      if (e < 1) {
+        pp.set(i * step, j * step * 0.92, k * step).multiplyScalar(1 - e).addScaledVector(Y, Math.sin(Math.PI * e) * step * 0.55 * (j >= 0 ? 1 : -1));
+        q.setFromAxisAngle(Y, 2 * Math.PI * e * (n % 2 ? 1 : -1));
+        const sc = clamp((camLocal.distanceTo(pp) - step * 0.45) / (step * 0.35));
+        room.inst.forEach(({ id, im }) => {
+          if (id === 'plug' || id === 'key') {   // p + q (s qT x + (1 - s) qT c - c): beat 2's composition, carried
+            v.copy(c).applyQuaternion(qT).multiplyScalar(1 - sc).sub(c);
+            m.compose(pp, q, b3m.one).multiply(m2.makeTranslation(v.x, v.y, v.z)).multiply(m3.compose(b3m.w.set(0, 0, 0), qT, s.set(sc, sc, sc)));
+          } else m.compose(pp, q, s.set(sc, sc, sc)).multiply(b3.negC);   // p + q s (x - c)
+          im.setMatrixAt(n, m); shade(im, n, 1); if (sc > 0) shown++;
+        });
+      } else {
+        landed++;
+        const t = p - arrive, b = 1 - Math.pow(1 - clamp(t / 0.25), 3);
+        room.inst.forEach(({ id, im }, k2) => {
+          const d = b3.debris[n][k2], r = (2.2 * b + 26 * t) * d.speed * step / 3.23, pc = b3.instC[k2];
+          v.copy(d.dir).multiplyScalar(r);
+          const g = 1 - easeSine(span(r, Rfar - Rband, Rfar));   // into the dark round the lock
+          const sc = g < 0.01 ? 0 : clamp((camLocal.distanceTo(v) - step * 0.3) / (step * 0.3));
+          shade(im, n, g); if (sc > 0) shown++;
+          rq.setFromAxisAngle(d.axis, d.spin * t * 6);
+          // dir r + (pc - c) + R s (x - pc), the plug and the key turned first (the demo's PLUG_L)
+          m.compose(v.add(pc).sub(c), rq, s.set(sc, sc, sc)).multiply(m2.makeTranslation(-pc.x, -pc.y, -pc.z));
+          if (id === 'plug' || id === 'key') m.multiply(m3.makeRotationFromQuaternion(qT));
+          im.setMatrixAt(n, m);
+        });
+      }
+    });
+    room.inst.forEach(({ im }) => { im.instanceMatrix.needsUpdate = true; im.instanceColor.needsUpdate = true; });
+    room.dark = darkAny;
+    room.O.visible = shown > 0;   // (every piece gone into the dark: the room's million triangles stop drawing, S23)
+    // the one real lock: out into the chaos as the first copies land, then home part by part in the manifest's order
+    // (housing, plug, clip, key pins, drivers, cap, key), each to exactly its place (the key pins keep their lift on the
+    // shear line, the plug its turn)
+    const out = ease(span(p, ...B3.burst)), bStep = (1 - B3.dur - B3.build) / 6;
+    let home = 0;
+    b3.parts.forEach((pt) => {
+      const t0 = B3.build + pt.order * bStep, back = ease(span(p, t0, t0 + B3.dur)), kk = out * (1 - back);
+      if (kk <= 1e-4) { home++; if (pt.out) { pt.out = false; pt.m.matrixAutoUpdate = true; pt.m.matrix.identity(); pt.m.matrixWorldNeedsUpdate = true; } return; }
+      const { G, Gi, F: Fr, Fi, B } = b3m, grp = pt.m.parent;
+      grp.updateMatrix(); G.copy(grp.matrix); Gi.copy(G).invert();
+      if (pt.turned) { Fr.makeRotationFromQuaternion(qT); Fi.copy(Fr).invert(); } else { Fr.identity(); Fi.identity(); }
+      rq.setFromAxisAngle(pt.axis, pt.ang * kk + (p - B3.burst[0]) * 1.2 * kk);
+      // B: out along its own direction (lab units -> mm), turning about its own middle, in the frame it rides in
+      B.compose(v.copy(pt.off).multiplyScalar(kk * b1.U).add(pt.gc), rq, b3m.one).multiply(m2.makeTranslation(-pt.gc.x, -pt.gc.y, -pt.gc.z));
+      pt.m.matrixAutoUpdate = false; pt.out = true;
+      pt.m.matrix.copy(Gi).multiply(Fr).multiply(B).multiply(Fi).multiply(G); pt.m.matrixWorldNeedsUpdate = true;
+    });
+    const step3 = p < B3.square ? 'square' : p < B3.burst[0] ? 'fly' : p < B3.build ? 'chaos' : home < b3.parts.length ? 'build' : 'one';
+    return { beat: 3, p: +p.toFixed(4), step: step3, hall: false, head: false, fold: +fold.toFixed(6), fov: +camera.fov.toFixed(2), landed, home, object: home === b3.parts.length && p >= 0.999, roomDrawn: shown > 0,
+      dA: +(A.dA / FACE.h).toFixed(3), dWide: +(A.dWide / A.dA).toFixed(2), fog: [+(fogNear / U).toFixed(2), +(fogFar / U).toFixed(2)] };
+  }
+  /** the one real lock's box on the screen (its 15 parts, not the room) */
+  function oneBox() {
+    const bx = new THREE.Box3(); doorLock.solids.forEach((m) => { if (m.parent && m.parent.visible !== false) bx.expandByObject(m); });
+    if (bx.isEmpty()) return null;
+    const cs = []; for (const x of [bx.min.x, bx.max.x]) for (const y of [bx.min.y, bx.max.y]) for (const z of [bx.min.z, bx.max.z]) cs.push(proj(x, y, z));
+    if (cs.some((cc) => cc[2] < camera.near)) return null;
+    const xs = cs.map((cc) => cc[0]), ys = cs.map((cc) => cc[1]);
+    return { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) };
+  }
+  /** for the scrub test: one number from every copy's instance matrices and every real part's place (the same scroll
+   *  position must give the same number whichever way it was reached) */
+  function chaosSum() {
+    let sum = 0, w = 1;
+    room.inst.forEach(({ im }) => { const a = im.instanceMatrix.array; for (let i = 0; i < a.length; i++) { sum += a[i] * w; w = w * 1.000003 + 1e-6; } });
+    doorLock.solids.forEach((mm) => { mm.updateMatrixWorld(); mm.matrixWorld.elements.forEach((x) => { sum += x * w; w = w * 1.000003 + 1e-6; }); });
+    return sum;
   }
 
   // ---------- the frames: a blueprint sheet each, in a black float frame, on a hinge, a plaque under it ----------
@@ -1317,7 +1548,9 @@ export function createDive(root, top, { base = '' } = {}) {
     const bp = !st && doorLock ? span(q, ...BEAT1) : 0;
     // and beat 2 (28 Nov): straight on from beat 1's dark end, in the same scene and through the same camera
     const b2p = !st && doorLock ? span(q, ...BEAT2) : 0;
-    const bt = b2p > 0 ? beat2(b2p) : bp > 0 ? beat1(bp) : restLock();
+    // and beat 3 (28 Nov): fly home, chaos, one lock, straight on from beat 2's last frame
+    const b3p = !st && doorLock ? span(q, ...BEAT3) : 0;
+    const bt = b3p > 0 ? beat3(b3p) : b2p > 0 ? beat2(b2p) : bp > 0 ? beat1(bp) : restLock();
     const headOn = !!(bt && bt.head);
     headEl.classList.toggle('on', headOn);
     const info = [], rects = [];
@@ -1408,7 +1641,7 @@ export function createDive(root, top, { base = '' } = {}) {
     // the lock, over the hall's depth; once the camera is on the lock's axis (0.85 of the push: the face hides the housing's
     // sides) over the hall whatever its depth, so the keyway shows the lock's own inside and never the door's leaf, whose
     // plane cuts through the lock's body (on a wide screen the face never covers the whole width, so the hall still draws)
-    if (lock.visible) { renderer.autoClear = false; if (bt && (bt.beat === 2 || bt.p >= 0.85 * B1.fill)) renderer.clearDepth(); renderer.render(lockScene, camera); renderer.autoClear = true; }
+    if (lock.visible) { renderer.autoClear = false; if (bt && (bt.beat >= 2 || bt.p >= 0.85 * B1.fill)) renderer.clearDepth(); renderer.render(lockScene, camera); renderer.autoClear = true; }
     const warmDraw = phones.warmNow && !phones.root.visible && f5;
     if (warmDraw) { phones.root.visible = true; phones.mats.forEach((m) => { m.opacity = 0.002; }); }
     if (phones.root.visible) {
@@ -1425,7 +1658,7 @@ export function createDive(root, top, { base = '' } = {}) {
     }
     const lockBox = lock.visible ? screenBox(lock) : null;
     const o = { info, q, show: showE, t, cam: [camera.position.x / K, camera.position.y / K], eye: E, phones: { state: phones.state, mix: phones.mix, real: f5 ? f5.real : 0, yaw: phones.yaw, yaws: phones.yaws, lift: phones.lift, visible: phones.root.visible }, open: T >= 1, tr: T, dress, lights, frames: fin, walked: span(q, ...WALK),
-      door: { lock: door.lockState, box: lockBox, distance: (camera.position.z + L) / K }, beat1: bt && bt.beat !== 2 ? bt : null, beat2: bt && bt.beat === 2 ? bt : null, head: headOn, xray: xt, labels: labQuads, band: bandShown ? { i: bandI, op: bandA, rect: bandR } : null };
+      door: { lock: door.lockState, box: lockBox, distance: (camera.position.z + L) / K }, beat1: bt && !bt.beat ? bt : null, beat2: bt && bt.beat === 2 ? bt : null, beat3: bt && bt.beat === 3 ? bt : null, head: headOn, xray: xt, labels: labQuads, band: bandShown ? { i: bandI, op: bandA, rect: bandR } : null };
     if (!again) out = o; else if (out) Object.assign(out, o);
     if (again) onAgain?.(out);
     return out;
@@ -1477,6 +1710,9 @@ export function createDive(root, top, { base = '' } = {}) {
     // beat 2: the room of locks is the space the camera stands in (as the hall's walls are); its headline stands on its
     // own dark backing (DOM, checked as text in its box)
     if (out.beat2) return D;
+    // beat 3: the room, the flight and the chaos are the space the camera stands in (as beat 2's room); the one lock is a
+    // shape on the screen once every part is home (the end, and its hold)
+    if (out.beat3) { if (out.beat3.object) { const b = oneBox(); if (b) D.shapes.push({ ...b, tag: 'lock:one' }); } return D; }
     const lockShape = !out.beat1 || out.beat1.object;
     const segIn = (A, B) => A[2] > camera.near && B[2] > camera.near;
     const outer = (f) => [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([sx, sy]) => P3(f, sx * f.OX, sy * f.OY, f.FD));
@@ -1660,8 +1896,16 @@ export function createDive(root, top, { base = '' } = {}) {
     render(lerp(BEAT2[0], BEAT2[1], B2.back + (1 - B2.back) * (0.5 - B2.a) / (B2.b - B2.a))); const url = canvas.toDataURL('image/jpeg', 0.9);
     return url;
   }
+  /** reduced motion (beat 3): the one lock, centred, the key in it (beat 3's last frame), a JPEG; null without the lock */
+  async function oneStill(w, h, opts = {}) {
+    await load(); await loadLock(); await envP;
+    if (!doorLock) return null;
+    layout(w, h, { strip: 0, noTitleblock: true, ...opts });
+    render(BEAT3[1]); const url = canvas.toDataURL('image/jpeg', 0.9);
+    return url;
+  }
   function reset() {}
-  return { layout, render, load, warm, still, faceStill, roomStill, reset, theme, loadPhones, loadLock, drawn, readability, look: LOOK.id, stops: STOPS,
+  return { layout, render, load, warm, still, faceStill, roomStill, oneStill, reset, beat3: () => (out ? out.beat3 : null), chaosSum: () => (b3.ready ? chaosSum() : null), foldNow: () => (room.O ? new THREE.Euler().setFromQuaternion(room.O.quaternion).x / 0.9 : null), theme, loadPhones, loadLock, drawn, readability, look: LOOK.id, stops: STOPS,
     closeAt: () => (lay ? lay.map((l) => qAtD(l, l.Dc) * DIVE) : null), openAt: () => (lay ? lay.map((l) => qAtD(l, l.Dread) * DIVE) : null),
     phones: () => phones.state, frames: () => frames, lay: () => lay, P: () => P, L: () => L, K: () => K, hall: () => ({ W, H, P, K, X, L, z0, zEnd, Dend: Dend / K, Dx, portrait, band: bandR, eye: E, limits }),
     band: () => ({ i: bandOn, op: bandOp, rect: bandR }),

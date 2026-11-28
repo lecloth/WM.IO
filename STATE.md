@@ -23,7 +23,7 @@ Take 1's history below.
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Page 1 | Beacon → Bell's ink on our grid → X-ray phone, six named pieces (each leader on its own piece) → kinetic line, real phone → "…to serve you." → YOU → "YOU gave us the task." → WE + verb drum → **"Now, how can we serve you?"** (signed off, round 8) | ~5.9 (with 2: 10.54) | **round 8 built (25 Nov): waiting for Wajih's review** |
 | 2 | The hallway | Hallway pass 1 (26 Nov): fixed proportions (about 2.6 x 3 x 19, frames at 4, 7, 10, 13, 16, left/right alternating); a white sketch drawn into depth dresses into the dark hall, the spotlights and the ceiling strip come on, the frames appear; scrolling is walking at one steady pace; each frame swings out fully (90 degrees) as you reach it and folds back as you pass; pass 2: black float frames lit in their spotlights, a light plaque under each (title, FIG line), the open frame's title and story line in a dark caption band, the camera slides (never turns) to each open frame (portrait: a narrower lens, the frame about two thirds of the width), dark chrome in the hall, five new blueprints; the walk ends in front of the centred, shut door with its brass Cutaway Lock; then page 3 as before; pass 3: the eye one height for the whole walk, the title on the plaque only (light paper, rounded), the band the story line only, no stock icons, frame 5's blueprint dresses into the real phones, which lift out of the frame and turn once each; pass 3b: at frame 5 the walk stops and the scroll drives its show (scribble, lift, a full turn each, about 1.5 screens per turn; back plays it in reverse) | 8.3 (5.4 walk + 2.9 held show; inside page 1's section) | **pass 3b built (frame 5's held, scrubbed show; every page 1 and hallway object animation scrubbed); pending: the real-phone run** |
-| 3 | The security page | 27 Nov (Part 5, as demoed): five beats on the real lock. **Beat 1 built** (the steady push into the door's lock, the keyway past the pins, out into the dark; 1.5 screens, at the end of the hallway's section in dive.js); **beat 2 built** (28 Nov: back up the keyway and out through the keyhole, lab B3's room of locks: 74 copies, the room turning, the camera circling, the centre key's turn and the unlock wave; the headline "One door is never the only door." (draft) at the hold; 3 screens, straight on in dive.js); then, TEMPORARILY, a plain fade from the room into round 9's page 3 as it was (starts on the lock in X-ray; into the keyhole past the pins; the lattice unlocks in a wave and folds back into one; two lines, drafts) until beats 3-5 replace it | beat 1 2.5-3.5 (per screen: the push at walking speed) + beat 2 3 + the fade 0.4 + 4.6 (overlapping page 1's last screen) | **beats 1-2 built (beat 1 27 Nov, second pass: the pins ride the key, the push at walking speed; beat 2 28 Nov, the room of locks); beat 3 next** |
+| 3 | The security page | 27 Nov (Part 5, as demoed): five beats on the real lock. **Beat 1 built** (the steady push into the door's lock, the keyway past the pins, out into the dark; 1.5 screens, at the end of the hallway's section in dive.js); **beat 2 built** (28 Nov: back up the keyway and out through the keyhole, lab B3's room of locks: 74 copies, the room turning, the camera circling, the centre key's turn and the unlock wave; the headline "One door is never the only door." (draft) at the hold; 3 screens, straight on in dive.js); **beat 3 built** (28 Nov: the room squares up as the camera pulls back to see all of it, the copies fly home nearest first and burst as they land, the real lock bursts into its 15 parts and comes home part by part as the camera pushes in to the A frame: one lock, centred, the key in it; 3 screens); then, TEMPORARILY, a plain fade from the one lock into round 9's page 3 as it was (starts on the lock in X-ray; into the keyhole past the pins; the lattice unlocks in a wave and folds back into one; two lines, drafts) until beats 4-5 replace it | beat 1 2.5-3.5 (per screen: the push at walking speed) + beat 2 3 + beat 3 3 + the fade 0.4 + 4.6 (overlapping page 1's last screen) | **beats 1-3 built (beat 1 27 Nov, second pass: the pins ride the key, the push at walking speed; beat 2 28 Nov, the room of locks; beat 3 28 Nov, fly home, chaos, one lock); beat 4 next** |
 | 4 | How we work | The lock turns side-on into a 2D cutaway; "First, the obvious key." / "It fails. Most people stop here." / "We don't." (drafts); the wrong key fails; seven pins picked in the drum's order, each verb on a leader, the newest meaning under the lock on a leader; it turns on Delivered | 4 (inside page 3's section) | **round 10 built** |
 | 5 | Lighter trips | Three rooms, scrubbed: AI (the property app's enquiries: the AI drafts, a person approves, then it's sent), websites (the booking app's site, drawn on the grid then real), apps (the delivery tracker live on the real iPhone 18 and S26). Lines and content drafts | 7.2 | **round 11 built** |
 | 6 | Team | "The three of us." (draft); three cards, clearly placeholders (a crossed picture box, "Name to come", a bio placeholder) | ~1 | **round 11 built** |
@@ -673,7 +673,7 @@ Take 1's history below.
   0.45-0.51 (the hold), with the site's timed word fade (0.26 s: a paused frame never shows half a word), so it is
   gone before the circling starts at 0.54 (approved: out over 0.51-0.54). The checks see no shapes in beat 2
   (`drawn()`: the room is the space, as the hall's walls; the headline stands on its own backing).
-- **The hand-over to page 3, TEMPORARY (until beat 3, fly home, chaos, one lock):** `XRAY` 9.6-9.8: from beat 2's end
+- **The hand-over to page 3 (REPLACED 28 Nov by beat 3; the fade now follows beat 3's end, see beat 3's notes):** `XRAY` 9.6-9.8: from beat 2's end
   (held 0.1 screens: the room turned, every lock unlocked) the same plain fade as before (the blue quad and the X-ray
   lock, through `xCam`) to page 3's first frame as it is today; page 3 (round 9's lockworld) takes over there. It
   replaces beat 1's temporary fade (6.6-6.8, gone).
@@ -691,6 +691,71 @@ Take 1's history below.
   `dive.room()`. **Tools:** `beat1probe.py` prints beat 2 at every stop, `--scrub2` (beat 2 forwards vs backwards) and
   `--reduced` shoots the room's still; `flicker.py --beat2` (the seam, the pull-back, the headline, the wave, the end and
   the fade, each with its largest single-frame change).
+
+### The security page, beat 3: structure notes (28 Nov, Part 5 "The name's size, and the security page as demoed")
+- **Where it lives:** in the hallway's own scene and camera (`site/js/page01/dive.js`, `beat3()`), straight on from beat 2's
+  last frame (no cut): `DIVE` 12.9 (was 9.9), `BEAT3` 9.5-12.5 nominal screens (3, 1:1 with the scroll), `B3` = { square
+  0.2, fly [0.2, 0.18, 0.14], burst [0.3, 0.42], build 0.56, dur 0.12, push 0.52, fog [0.5, 0.9] } (the reference demo's
+  place3 / setChaos shares). New stops B3S (the room squared, the camera pulled back: 0.2), B3F (flying home: 0.3), B3C (the
+  chaos: 0.5), B3B (the lock building itself: 0.78), B3L (one lock, centred: beat 3's end); LOCK the hand-over done. Page 1's
+  scroll: 21.71 screens on the S23 (was 18.71), 22.78 at 2160 x 1147; the CSS fallback 2174lvh.
+- **The seam:** beat 2 ends with the room turned by lab B3's fold at its p 0.84, `foldAt(B2.b)` = ease(0.897) x 0.35 =
+  **0.348441** (the same value read off the room's live quaternion at B2E, 384 x 734 and 2160 x 1147). Beat 3 unwinds from
+  that same expression (`foldAt`, shared by both beats), so the seam has no jump; the demo's 0.34 was close but not exact.
+  The camera, lens (B3's 62 degrees x 0.85 / x 1.12), light, fog (near 0.6, far 14 lab units) and key all start exactly
+  where beat 2 left them.
+- **The room squares up, the camera pulls back (0 .. 0.2):** the fold unwinds to 0 while the camera backs away onto the
+  lab's A frame's line (opt-a.js: yaw -0.62, pitch 0.34, out of the lock's box centre), the eye onto the lock's middle, the
+  lens easing to 28 degrees, the fog opening round the room (its near side clear, its far side falling into the dark).
+  **Two of my calls here:** (1) the wide view is as far back as shows the *whole* room in the room between the strip and
+  the title block (a cell clear; the room's box fitted on screen by bisection, `aFrame()`), at least the demo's 3.4 x the A
+  distance: the demo's 3.4 x cut the room off at every edge on both sizes (`tools/shots/beat3/demo/`); it is 10.6 x the A
+  distance on the S23, 7.3 x on the laptop. (2) The distance changes on a log scale (the room shrinks on screen at an even
+  rate, as beat 1's push grows the lock) and the line of sight swings round onto the A line (a slerp; the two lines are
+  about 110 degrees apart), the same ends and times: the demo's straight lerps, stretched to 10 x, whipped past at 0.50
+  hall units and 12.7 degrees a scroll step on the S23; now 8.2 degrees at most (the demo's own swing in its 0.2 of the beat).
+- **Fly home (setChaos):** each copy leaves at 0.2 + 0.18 x (its distance's share: nearest first) and takes 0.14 (eased) to
+  land; it flies on the straight line home plus an arc (sin(pi e) x 0.55 of a step, up for the middle and top rows, down
+  for the bottom), turning one full turn about the vertical (alternate copies opposite ways), full size (never shrinking:
+  only B3's own rule scales a copy to nothing within 0.45 of a step of the camera), and lands square on the real lock (its
+  plug and key at 90 degrees, as beat 2 left them). Instance matrices: housing and cap p + q s (x - c); plug and key
+  p + q (s qT x + (1 - s) qT c - c), which is beat 2's own composition at q = 1, so nothing moves at the seam.
+- **Chaos:** the real lock bursts over 0.30-0.42 into its 15 solids, each out to its own seeded place (the demo's seeds:
+  77 + n x 13 in its part order; 1.3-2.9 lab units in a seeded direction), turning about a seeded axis (2-4.5 rad, plus a
+  slow drift); the plug, the key and the key pins ride the plug's turned frame (as in the demo). Each copy bursts the moment
+  it lands into its big parts (housing, plug, cap, key; seeds 1000 + n x 7 + part): a quick eased burst (2.2 lab units over
+  0.25) and a steady drift (26 lab units per beat), tumbling about its own axis. **My call (flicker):** the camera's fog
+  alone left the debris between the camera and the lock bright as the camera pushed in through it (48 grey levels a frame,
+  energy 13.4). So from the chaos's height (0.5) each piece darkens into the dark as it drifts past a radius round the lock
+  that closes from the whole room (1.2 x its radius) to just past the lock (+ 4 lab units) by 0.9, over a 4 lab unit band
+  (per-instance colour, `instanceColor`, set to white when the room is built, so no shader changes mid-scroll; beat 2 resets
+  it to white); a piece fully dark is no longer drawn, and once every piece is gone the room stops drawing (by B3B). Build
+  stretch after: 12.6 / energy 2.9. Everything is a function of the scroll alone: scrubbed forwards and backwards, the
+  camera and a checksum of every instance matrix and every real part's place match exactly (`beat1probe.py --scrub3`).
+- **One lock:** from 0.56 the real lock's parts come home in the manifest's order (housing 0, plug 1, clip 2, the five key
+  pins together 3, the five drivers 4, cap 5, key 6), one order every (1 - 0.12 - 0.56) / 6 = 0.0533 (the demo's 0.055,
+  fitted so the **key seats exactly at the end**, Wajih's yes), each taking 0.12 (eased), each to exactly its place (the
+  burst is applied in its holder's frame: `L = G^-1 F B F^-1 G`; the key pins keep their lift on the shear line, the plug
+  its turn). The camera pushes straight in down the A line from 0.52 to the end (log scale) to the A frame: lens 28, yaw
+  -0.62, pitch 0.34, the whole lock (its parts' box) fitted between the strip and the title block a cell clear, centred on
+  the screen's middle. **My call:** the fog closes round the lock (its near edge just past the lock, dark 6 lab units beyond
+  it), not the demo's 14 lab units from the camera, which left the finished lock nearly black at the A distance on a phone
+  (`tools/shots/beat3/demo/384x734_q1.00.png`; the demo got away with it because its beat 4 draws in fog-free scenes).
+- **The light:** beat 2's as it ended (the room light 0.55 unturned, rim 0.9, hemisphere 0.5, headlamp 0.1); the real lock
+  keeps lab B1's inside materials (the darker brass: still a look-pass note, "For the look pass").
+- **The hand-over to page 3, TEMPORARY (until beat 4, the three views):** `XRAY` 12.6-12.8: from beat 3's end (held 0.1
+  screens: one lock, centred, the key in it) the same plain fade as before (the blue quad and the X-ray lock, through
+  `xCam`) to page 3's first frame as it is today; page 3 (round 9's lockworld) takes over there. It replaces beat 2's
+  temporary fade (9.6-9.8, gone).
+- **Reduced motion:** after the room's still, a still of the one lock, centred, the key in it (`dive.oneStill`: beat 3's
+  last frame, a JPEG; `.p1-hall__one`), its picture's opacity following the scroll to the dark as the others (1 -> 0.37 -> 0).
+- **Checks' view:** `render()` returns `beat3` (p, step, fold, fov, landed, home, object, roomDrawn, dA, dWide, fog);
+  `drawn()` reports nothing while the room, the flight and the chaos are the space (as beat 2's room), and the one lock as a
+  shape (`lock:one`, its 15 parts' box) once every part is home. `dive.beat3()`, `dive.chaosSum()`, `dive.foldNow()` (the
+  room's fold read off its quaternion), `dive.oneStill()`. **Tools:** `beat1probe.py` prints beat 3 and the live fold at
+  every stop, `--scrub3` (beat 2's end through beat 3 to the hand-over: the camera and the chaos checksum forwards vs
+  backwards; `--scrub2` now stops at B2E), `--reduced` also shoots the one lock's still; `flicker.py --beat3` (the seam, the
+  squaring pull-back, the fly home, the chaos, the build, the end and the fade).
 
 ### For the look pass (logged 28 Nov, Wajih)
 - **The real centre lock is darker than its copies (beat 2, the room of locks).** The real lock wears lab B1's inside
@@ -716,6 +781,48 @@ Take 1's history below.
   the first job of every routecheck run.
 
 ### Take 2 log
+- **The security page, beat 3: fly home, chaos, one lock (28 Nov).** Built as in "The security page, beat 3: structure
+  notes": straight on from beat 2's last frame in the same scene and camera; the room squares up (from beat 2's real last
+  fold, 0.348441) as the camera pulls back onto the A frame's line to see the whole room; the copies fly home on arcs,
+  nearest first, full size, one full turn each, and burst as they land; the real lock bursts into its 15 parts and comes
+  home part by part in the manifest's order, the key seating exactly at the end, as the camera pushes in to the A frame; 3
+  screens, scrubbed both ways. Beat 2's temporary fade is gone; the temporary fade into page 3 now follows beat 3's end.
+  Shots: `tools/shots/beat3/final/` (384 x 734 and 2160 x 1147 at B3S, B3F, B3C, B3L), `reduced/`
+  (`384x734_reduced_one0-3.png`), `demo/` (the reference demo's beat 3 at 0, 0.2, 0.36, 0.5, 0.7, 0.85, 1, staged locally
+  in the git-ignored site/dist and not committed), `probe*/`, `flicker/` (before the dark round the lock), `flicker2/`
+  (final), `grid/`, `overlap/`, `typecheck*/`.
+  - **Type gate** (`typecheck.py`, one browser; 384 x 734, 1440 x 900, 2160 x 1147, 360 x 800, 375 x 667, 430 x 932, light
+    and dark; B2E, B3S, B3F, B3C, B3B, B3L, LOCK): 84 frames, **0 machine failures** (re-run on the final build: 0).
+  - **Gridcheck** (the same stops; the 7 phone sizes and 2160 x 1147, light and dark): **0 off the grid** (worst 0.072 px).
+    **Overlap** (same): **0 in 5,241 pairs**.
+  - **Flicker** (`flicker.py --beat3`, real Chrome, 2160 x 1147 @1.333 set through DevTools): energy (p95) / largest
+    single-frame change: the seam from beat 2 2.39 (10.5) / 16.3 (no jump: about 0.3 a frame across B2E, rising smoothly
+    as the pull-back starts); the squaring pull-back 8.25 (21.7) / 29.2 (a smooth bell, the beat's fastest motion: the
+    demo's 0.2 of the beat for a 110-degree swing and a 7-10 x pull-back); the fly home 1.40 (3.0) / 3.9; the chaos 2.76
+    (4.4) / 5.4; the build 2.93 (9.1) / 12.6 (was 13.4 (43.1) / 48.1 before the dark round the lock); the end and the fade
+    0.75 (4.0) / 23.4 (the chrome turning light at the temporary fade, as beat 2's).
+  - **Scrubbed** (`beat1probe.py --scrub3`, 384 x 734, 300 steps from just before B2E to the hand-over): forwards and
+    backwards give the same camera (difference 0) and the same chaos checksum (every instance matrix and every real part's
+    place; difference 0 over 301 steps). Largest camera turn 8.2 degrees a step (the swing onto the A line).
+  - **Routecheck** (14 sizes, light and dark): 27 of 28 clean, every route on the grid; 393 x 852 dark failed on one
+    `ERR_CONNECTION_REFUSED` (the plain server under a burst, the known edge); re-run: clean (light and dark).
+  - **Reduced motion** (384 x 734): after the room's still, the one lock's still, its picture 1 -> 0.37 -> 0 as it scrolls
+    by. No console errors anywhere.
+  - **My calls:** (1) the pull-back as far as shows the whole room (the demo's 3.4 x the A distance cut it off); (2) the
+    pull-back and the push on a log scale, the line of sight slerped onto the A line (the straight lerps whipped at 12.7
+    degrees a step); (3) the fog round the lock at the end (the demo's left the finished lock nearly black); (4) the debris
+    darkens into the dark round the lock from the chaos's height, and the room stops drawing once it is all gone; (5) the
+    whole lock fitted between the strip and the title block a cell clear, by its box (not a sphere), centred on the
+    screen's middle; (6) the build's step 0.0533 (the demo's 0.055) so the key seats at the end, then the 0.1-screen hold.
+  - **Heavy for the S23 (log):** through the squaring, the fly home and the chaos the room is the same 1,042,660 triangles
+    in 4 instanced draw calls as beat 2 (the bursting copies stay instanced: the same four meshes, per-instance matrices and
+    colours, 74 x 4 matrices a frame on the CPU) plus the real lock's 15 parts; it stops drawing once every piece is in the
+    dark (by B3B), so the build, the hold and the fade draw the real lock alone. Watch: the chaos's overdraw (many pieces
+    overlapping in the middle of the screen) and the squaring pull-back (the fastest camera motion on the page: 29 grey
+    levels a frame at its peak on the laptop). If it drops frames: the lighter copies already noted for beat 2.
+  - **Waiting:** the S23 run (60 fps through beat 3, real swipes back and forth across the seam from beat 2, the pull-back,
+    the chaos and the build). **Temporary:** the plain fade from the one lock into page 3 as it is today (`XRAY` 12.6-12.8),
+    until beat 4 (the three views).
 - **The security page: page 3 starts at the door (28 Nov, Wajih).** Beats 1 and 2 are page 3, so the strip and the
   title block now say "03 The lock" from beat 1's start (the walk's end, at the shut door) instead of "02 Hallway", and
   the strip's "03 The lock" (and a `#page-03` deep link) lands there: the `#page-03-door` marker, main.js by page number

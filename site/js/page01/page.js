@@ -24,7 +24,7 @@
 import { Phone } from './phone.js';
 import { BellMorph } from './morph.js';
 import { createLive } from './live.js';
-import { createDive, captionHTML, openingHTML, roomHeadHTML, DIVE, SHOW, BEAT1, B1, BEAT2, B2 } from './dive.js';
+import { createDive, captionHTML, openingHTML, roomHeadHTML, DIVE, SHOW, BEAT1, B1, BEAT2, B2, BEAT3, B3 } from './dive.js';
 import { FRAMES, OPENING } from './corridor-drawings.js';
 const OPENING_TXT = `${OPENING.lead} ${OPENING.rest}`;
 import { haptics } from '../engine/haptics.js';
@@ -45,7 +45,8 @@ const inR = (p, [a, b]) => p >= a - 1e-4 && p <= b + 1e-4;
 // round 7: the drum turns slower (more room: 1.6 screens for seven verbs); round 8: the hallway is 4.6 screens; pass 3b:
 // the walk (DIVE, 5.4 screens) plus frame 5's held show (SHOW.len, 2.9 screens: the camera stops while the scroll drives it);
 // 27 Nov: DIVE 6.9 with the security page's beat 1 (1.5 nominal screens: the push into the lock and down its keyway);
-// 28 Nov: DIVE 9.9 with beat 2 (3 screens, 1:1 with the scroll: the room of locks).
+// 28 Nov: DIVE 9.9 with beat 2 (3 screens, 1:1 with the scroll: the room of locks); DIVE 12.9 with beat 3 (3 screens, 1:1:
+// fly home, chaos, one lock).
 // Its push really takes dive.pushLen() screens (it starts at the walk's own speed: per screen), so the hall's length and
 // the page's are set at layout (layoutDive); these are the nominal values until then
 const B1W = BEAT1[0] * DIVE, B1N = B1.fill * (BEAT1[1] - BEAT1[0]) * DIVE;   // where the push starts (walk screens), its nominal length
@@ -65,8 +66,10 @@ const HAND = 0.9;          // the handover: Bell's outlines -> X-ray, pose held 
 // mid-turn, F5E the show's end (the walk resumes). 27 Nov, the security page's beat 1: B1H halfway to the lock, B1F its face
 // filling the room, B1K at the keyhole, B1P inside the keyway under the pins (the middle pin), B1E the dark end (= beat 2's
 // start). 28 Nov, beat 2: B2K backing out of the keyhole, B2H the headline over the room (the camera holding), B2W mid-wave
-// while circling, B2E beat 2's end (the room turned, every lock unlocked); LOCK the (temporary) hand-over to page 3 done
-export const STOPS = { S0: 0.1, draw: 0.24, blue: 0.36, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, dress: 2.23, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.9, END: 4.8, TR: 5.11, OPEN: 5.5, LIT: 6.2, F1: 6.6, F2: 7.3, F3: 8.0, F4: 8.7, F5H: 9.2, F5S: 9.4, F5R: 9.75, F5L: 10.2, F5T: 11.0, F5E: 12.1, F5: 12.3, F5B: 12.45, DOOR: 12.84, B1H: 13.19, B1F: 13.53, B1K: 13.62, B1P: 13.95, B1E: 14.34, B2K: 15.04, B2H: 15.58, B2W: 16.66, B2E: 17.34, LOCK: 17.74 };
+// while circling, B2E beat 2's end (the room turned, every lock unlocked). 28 Nov, beat 3: B3S the room squared and the
+// camera pulled back, B3F the copies flying home, B3C the chaos, B3B the lock building itself, B3L one lock, centred (beat 3's
+// end); LOCK the (temporary) hand-over to page 3 done
+export const STOPS = { S0: 0.1, draw: 0.24, blue: 0.36, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, dress: 2.23, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.9, END: 4.8, TR: 5.11, OPEN: 5.5, LIT: 6.2, F1: 6.6, F2: 7.3, F3: 8.0, F4: 8.7, F5H: 9.2, F5S: 9.4, F5R: 9.75, F5L: 10.2, F5T: 11.0, F5E: 12.1, F5: 12.3, F5B: 12.45, DOOR: 12.84, B1H: 13.19, B1F: 13.53, B1K: 13.62, B1P: 13.95, B1E: 14.34, B2K: 15.04, B2H: 15.58, B2W: 16.66, B2E: 17.34, B3S: 17.94, B3F: 18.24, B3C: 18.84, B3B: 19.68, B3L: 20.34, LOCK: 20.74 };
 const NAMES = ['Back', 'Battery', 'Board', 'Frame', 'Screen', 'Glass'];   // back to front
 const BLUE = [23, 63, 115];
 
@@ -339,6 +342,9 @@ export function initPage01(engine) {
     // beat 2 (28 Nov): a moment of lab B3 (its p) -> a stop; B2E beat 2's last frame
     const b2 = (pB) => at(hallOf((BEAT2[0] + (BEAT2[1] - BEAT2[0]) * (B2.back + (1 - B2.back) * (pB - B2.a) / (B2.b - B2.a))) * DIVE));
     Object.assign(STOPS, { B2K: b2(0.37), B2H: b2((B2.head[0] + B2.head[1]) / 2), B2W: b2(0.7), B2E: b2(B2.b) });
+    // beat 3 (28 Nov): its share -> a stop (1:1 with the scroll); B3L beat 3's last frame (the key seated)
+    const b3 = (b) => at(hallOf((BEAT3[0] + (BEAT3[1] - BEAT3[0]) * b) * DIVE));
+    Object.assign(STOPS, { B3S: b3(B3.square), B3F: b3(B3.burst[0]), B3C: b3((B3.build + B3.burst[1]) / 2 + 0.01), B3B: b3(0.78), B3L: b3(1) });
   }
 
   // ---------- "you" -> "YOU" and "us" -> "WE": one word each, travelling between its places ----------
@@ -625,6 +631,18 @@ export function initPage01(engine) {
       });
       const fadeRoom = () => { const r = rimg.getBoundingClientRect(); if (!r.height) return; rimg.style.opacity = (1 - span(innerHeight * 0.5 - r.top, r.height * 0.15, r.height * 0.85)).toFixed(3); };
       addEventListener('scroll', fadeRoom, { passive: true }); addEventListener('resize', fadeRoom); fadeRoom();
+      // 28 Nov, beat 3 with reduced motion: no flight, no chaos; a still of the one lock, centred, the key in it (beat 3's
+      // last frame), then the same fade to the dark as the scroll passes (no motion)
+      const oneF = document.createElement('figure'); oneF.className = 'p1-hall__one';
+      const oimg = new Image(); oimg.alt = 'One brass lock, centred on the dark, the key in it.';
+      oneF.append(oimg); list.append(oneF);
+      requestAnimationFrame(() => {
+        const w = Math.round(list.getBoundingClientRect().width) || 320, h = Math.round(Math.min(innerHeight * 0.75, w * 1.25));
+        oimg.width = w; oimg.height = h;
+        lockStill.then(() => dive.oneStill(w, h, { u: grid.u })).then((url) => { if (url) oimg.src = url; else oneF.remove(); }).catch((e) => console.warn('[page 01] one-lock still', e));
+      });
+      const fadeOne = () => { const r = oimg.getBoundingClientRect(); if (!r.height) return; oimg.style.opacity = (1 - span(innerHeight * 0.5 - r.top, r.height * 0.15, r.height * 0.85)).toFixed(3); };
+      addEventListener('scroll', fadeOne, { passive: true }); addEventListener('resize', fadeOne); fadeOne();
       T.end.after(list);
       // page 2 starts at the hallway's still figures
       mark2.style.top = `${list.getBoundingClientRect().top - sec.getBoundingClientRect().top}px`;

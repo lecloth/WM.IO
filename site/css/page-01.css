@@ -85,7 +85,7 @@ html.is-replay[data-phase="gate"] .titleblock { opacity: 1; }
 @media (min-width: 1024px) { .ph { font-size: .4375rem; } }
 
 /* ---------- page 1 (the design ethos: hairlines, ink, blue only for the drawing stage) ---------- */
-.p1 { position: relative; height: 1874vh; height: 1874lvh; }   /* 28 Nov: 17.74 screens of scroll (page.js SCROLL: the walk 5.4 + the security page's beat 1, 1.5, + beat 2, 3 = DIVE 9.9, + frame 5's show 2.9) + one; page.js sets the real height per screen (beat 1's push at walking speed: dive.pushLen) */
+.p1 { position: relative; height: 2174vh; height: 2174lvh; }   /* 28 Nov: 20.74 screens of scroll (page.js SCROLL: the walk 5.4 + the security page's beat 1, 1.5, + beat 2, 3, + beat 3, 3 = DIVE 12.9, + frame 5's show 2.9) + one; page.js sets the real height per screen (beat 1's push at walking speed: dive.pushLen) */
 /* the paper ground and its grid (the grid's origin is the stage's top left = the screen's, while page 1 plays) */
 .p1__stage { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; isolation: isolate;
   background-color: var(--paper); background-image: var(--grid-img); background-size: var(--grid-size); }
@@ -259,6 +259,8 @@ html.is-replay[data-phase="gate"] .titleblock { opacity: 1; }
 /* 28 Nov, beat 2 with reduced motion: the room of locks, still, its headline over it (dark figure, light words) */
 .p1-hall__room { margin: 0; background: #0A0A0B; color: #EDEEF0; }
 .p1-hall__room img { display: block; width: 100%; height: auto; }
+.p1-hall__one { margin: 0; background: #0A0A0B; }   /* 28 Nov: beat 3's still (the one lock), reduced motion */
+.p1-hall__one img { display: block; width: 100%; height: auto; }
 .p1-frame { margin: 0; }
 .p1-frame img { display: block; width: 100%; max-width: 34rem; height: auto; }
 .p1-frame--blue { background: var(--prus); color: var(--blueprint-ink); padding: 1rem; margin-top: 2rem; max-width: 34rem; }
