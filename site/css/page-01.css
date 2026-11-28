@@ -85,7 +85,7 @@ html.is-replay[data-phase="gate"] .titleblock { opacity: 1; }
 @media (min-width: 1024px) { .ph { font-size: .4375rem; } }
 
 /* ---------- page 1 (the design ethos: hairlines, ink, blue only for the drawing stage) ---------- */
-.p1 { position: relative; height: 2574vh; height: 2574lvh; }   /* 28 Nov: 24.74 screens of scroll (page.js SCROLL: the walk 5.4 + the security page's beat 1, 1.5, + beat 2, 3, + beat 3, 3, + beat 4, 4 = DIVE 16.9, + frame 5's show 2.9) + one; page.js sets the real height per screen (beat 1's push at walking speed: dive.pushLen) */
+.p1 { position: relative; height: 2864vh; height: 2864lvh; }   /* 28 Nov: 27.64 screens of scroll (page.js SCROLL: the walk 5.4 + the security page's beat 1, 1.5, + beat 2, 3, + beat 3, 3, + beat 4, 4, + beat 5, 2.5, + the join into page 4, 0.8 = DIVE 19.8, + frame 5's show 2.9, + 4.94 before the hallway) + one; page.js sets the real height per screen (beat 1's push at walking speed: dive.pushLen) */
 /* the paper ground and its grid (the grid's origin is the stage's top left = the screen's, while page 1 plays) */
 .p1__stage { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; isolation: isolate;
   background-color: var(--paper); background-image: var(--grid-img); background-size: var(--grid-size); }
@@ -263,6 +263,8 @@ html.is-replay[data-phase="gate"] .titleblock { opacity: 1; }
 .p1-hall__one img { display: block; width: 100%; height: auto; }
 .p1-hall__look { margin: 0; background: #0A0A0B; color: #EDEEF0; }   /* 28 Nov: beat 4's three looks as stills, reduced motion */
 .p1-hall__look img { display: block; width: 100%; height: auto; }
+.p1-hall__locked { margin: 0; background: #0A0A0B; color: #EDEEF0; }   /* 28 Nov: beat 5's still (the shut lock, "Locked."), reduced motion */
+.p1-hall__locked img { display: block; width: 100%; height: auto; }
 .p1-frame { margin: 0; }
 .p1-frame img { display: block; width: 100%; max-width: 34rem; height: auto; }
 .p1-frame--blue { background: var(--prus); color: var(--blueprint-ink); padding: 1rem; margin-top: 2rem; max-width: 34rem; }

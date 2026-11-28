@@ -39,8 +39,13 @@
 //   the A frame: one lock, centred, the key in it.
 // - Beat 4, three ways to see one lock (28 Nov; BEAT4, see beat4() below): straight on from beat 3's last frame, the lab's
 //   A3 X-ray (the thief's view), A1 matte (ours) and A2 real metals (yours), all on the hall's dark ground, each taking
-//   over with a hairline wipe; five numbered spots with leaders to their labels while the X-ray and matte hold. Until
-//   beat 5 is built, beat 4's end fades plainly into page 3's first frame as it is today (XRAY, temporary: STATE.md).
+//   over with a hairline wipe; five numbered spots with leaders to their labels while the X-ray and matte hold.
+// - Beat 5, "Locked." (28 Nov; BEAT5, see beat5() below): straight on from beat 4's end, in brass: the caption goes, the
+//   key turns back (the plug 90 -> 0 degrees) and comes out the way it went in, each pin riding down its cut to its rest;
+//   the key leaves the frame, then "Locked."; the lock turns a little more on the A frame. Then the join into page 4
+//   (JOIN): the camera eases onto page 4's exact first frame (the lock face on, page 4's lens) and the picture dissolves
+//   into page 4's X-ray on the blue ground; page 4 (site/js/page04/) takes over on that very frame.
+// Every word on the security page comes from security-words.js (all placeholders, one list).
 import * as THREE from 'three';
 import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
@@ -51,7 +56,8 @@ import { FRAMES, OPENING, dimParts, MOUNT, PHONE_PAIR } from './corridor-drawing
 import { LOOKS, HALL as LOOK_ID } from './hall-looks.js';
 import { grid } from '../engine/grid.js';
 import { studio } from '../phones/studio.js';
-import { loadLockParts, endFaceHeight, FACE } from '../page03/lock3d.js';
+import { loadLockParts, endFaceHeight, FACE, page4Distance } from '../page03/lock3d.js';
+import { SECURITY_WORDS } from './security-words.js';
 
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const span = (p, a, b) => clamp((p - a) / (b - a));
@@ -117,7 +123,7 @@ function frameDims(d) {
 const DIMS = FRAMES.map((F) => frameDims(F.draw));
 
 // ---------- the timeline, in screens of scroll (q = screens / DIVE) ----------
-export const DIVE = 16.9;   // 27 Nov: + the security page's beat 1 (1.5 screens; was 5.4); 28 Nov: + beat 2 (3 screens), + beat 3 (3 screens), + beat 4 (4 screens)
+export const DIVE = 19.8;   // 27 Nov: + the security page's beat 1 (1.5 screens; was 5.4); 28 Nov: + beat 2 (3 screens), + beat 3 (3 screens), + beat 4 (4 screens), + beat 5 (2.5 screens) and the join into page 4 (0.8)
 const S_ = (screens) => screens / DIVE;
 export const WAY_IN = [S_(0.02), S_(0.32)];      // the sketch stretches out into depth
 export const OPEN_AT = [S_(0.3), S_(0.95)];      // the opening line
@@ -154,9 +160,15 @@ export const B3 = { square: 0.2, fly: [0.2, 0.18, 0.14], burst: [0.3, 0.42], bui
 // beat; still: the moment of each look's reduced-motion still
 export const BEAT4 = [S_(12.5), S_(16.5)];
 export const B4 = { wipes: [[0, 0.08], [0.36, 0.44], [0.72, 0.8]], spots: { x: 0.1, m: 0.46, step: 0.03 }, frame: [0, 0.08], back: [0.8, 0.9], yaw: [-0.62, -0.42], still: { x: 0.3, m: 0.66, b: 0.9 } };
-// the hand-over to page 3: TEMPORARY (until beat 5: "Locked."): a plain fade from beat 4's end (one lock in brass, your
-// view; held 0.1 screens) to page 3's first frame as it is today (the lock in X-ray, on blue)
-export const XRAY = [S_(16.6), S_(16.8)];
+// the security page's beat 5 (28 Nov): "Locked.", 2.5 screens, straight on from beat 4's end (the reference demo's place5
+// shares): the brass caption goes at cap; the key turns back over turn (the plug 90 -> 0 degrees), then comes out over
+// out (the real key's profile under the pins) until it is clear of the frame; "Locked." from locked (held to the end);
+// the lock turns on (the A frame's yaw) through the whole beat
+export const BEAT5 = [S_(16.5), S_(19.0)];
+export const B5 = { cap: 0.02, turn: [0.06, 0.3], out: [0.36, 0.72], locked: 0.76, yaw: [-0.42, -0.3] };
+// the join into page 4: the camera eases from the A frame onto page 4's exact first frame (move), then the picture
+// dissolves into page 4's X-ray on the blue ground (fade); held 0.1 screens; page 4 takes over on that frame
+export const JOIN = { move: [S_(19.0), S_(19.5)], fade: [S_(19.5), S_(19.7)] };
 // frame 5's held show, in screens of scroll into the hold (page.js holds the walk this long once frame 5 is fully open)
 export const SHOW = { len: 2.9, draw: [0, 0.4], real: [0.4, 0.65], lift: [0.5, 1.0], turn: [[1.05, 2.55], [1.3, 2.8]] };
 export const STOPS = [];                         // per frame [fully open, closest] (q), set by layout (for the tests)
@@ -238,28 +250,22 @@ export const bandHTML = (f) => `<div class="dive__band"><p class="dive__band-s g
 /** reduced motion: the plaque's words and the story line under the still drawing */
 export const captionHTML = (f) => `<div class="dive__lab"><p class="dive__lab-t display gt">${f.caption}</p><p class="dive__lab-k mono gt gt-h">${f.fig}</p>` +
   `<p class="dive__lab-s gt gt-h"><span class="ph" data-draft>Draft</span>${f.story}</p></div>`;
+// the security page's words (28 Nov): every one is a placeholder (flagged Draft), all in one list (security-words.js)
+const SW = SECURITY_WORDS;
 /** beat 2's headline (28 Nov): the style lab's B3 placeholder, flagged Draft, on a dark frosted backing over the room */
-export const ROOM_HEAD = { eyebrow: 'Outside · every lock you own', line: 'One door is never the only door.' };
-export const roomHeadHTML = () => `<div class="dive__head"><p class="dive__head-f ph mono gt gt-h">Draft</p><p class="dive__head-e mono gt gt-h" data-draft>${ROOM_HEAD.eyebrow}</p><p class="dive__head-l display gt" data-draft>${ROOM_HEAD.line}</p></div>`;
-// beat 4 (28 Nov): the five spots, each on its part (the model has no springs: "springs" points at the cap that holds
-// them), the thief's weak spot and our fix; one caption per look. All the brief's placeholders: drafts, flagged
-export const SPOTS4 = [
-  { part: 'key', name: 'Key', weak: 'Weak passwords', fix: 'Only the right people get in' },
-  { part: 'pin3', name: 'Pins', weak: 'An open back door', fix: 'Every request checked' },
-  { part: 'plug', name: 'Plug', weak: 'Data lying in the open', fix: 'Your data locked away' },
-  { part: 'housing', name: 'Housing', weak: 'Old software', fix: 'Built strong from the start' },
-  { part: 'cap', name: 'Springs', weak: 'No alerts', fix: 'Alerts when something’s wrong' },
-];
-export const LOOKS4 = {
-  x: { e: 'The thief’s view · X-ray', l: 'He sees straight through it.' },
-  m: { e: 'Our view · matte', l: 'The same five spots, each one fixed.' },
-  b: { e: 'Your view · brass', l: 'Polished, closed. It just works.' },
-};
+export const roomHeadHTML = () => `<div class="dive__head"><p class="dive__head-f ph mono gt gt-h">Draft</p><p class="dive__head-e mono gt gt-h" data-draft>${SW.room.eyebrow}</p><p class="dive__head-l display gt" data-draft>${SW.room.line}</p></div>`;
+// beat 4 (28 Nov): the five spots, each on its part (the model has no springs: the fifth, "springs", points at the cap
+// that holds them), the thief's weak spot and our fix (the words); one caption per look
+const SPOT_PARTS = ['key', 'pin3', 'plug', 'housing', 'cap'];
+export const SPOTS4 = SW.spots.map((s, i) => ({ ...s, part: SPOT_PARTS[i] }));
+export const LOOKS4 = SW.looks;
 /** a look's caption: the Draft flag (it also flags the look's labels on screen), the eyebrow, the line */
 export const lookHTML = (k) => `<div class="dive__look" data-look="${k}"><p class="dive__look-f ph mono gt gt-h" data-draft-flag>Draft</p><p class="dive__look-e mono gt gt-h" data-draft>${LOOKS4[k].e}</p><p class="dive__look-l display gt" data-draft>${LOOKS4[k].l}</p></div>`;
 /** a spot's label: its number and part, then the weak spot (X-ray) or the fix (matte); plain type, no box */
 export const spotHTML = (k, i, style = '') => { const s = SPOTS4[i]; return `<div class="dive__spot" data-look="${k}" data-i="${i}"${style ? ` style="${style}"` : ''}><p class="dive__spot-n mono gt gt-h" data-draft>${String(i + 1).padStart(2, '0')} · ${s.name}</p><p class="dive__spot-t mono gt gt-h" data-draft>${k === 'x' ? s.weak : s.fix}</p></div>`; };
-const b4HTML = () => `<div class="dive__b4">${['x', 'm', 'b'].map(lookHTML).join('')}${['x', 'm'].map((k) => SPOTS4.map((_, i) => spotHTML(k, i)).join('')).join('')}</div>`;
+/** beat 5's last word (28 Nov): "Locked." in the site's serif, centred, its Draft flag over it */
+export const lockedHTML = () => `<div class="dive__locked"><p class="dive__locked-f ph mono gt gt-h">Draft</p><p class="dive__locked-l display gt" data-draft>${SW.locked}</p></div>`;
+const b4HTML = () => `<div class="dive__b4">${['x', 'm', 'b'].map(lookHTML).join('')}${['x', 'm'].map((k) => SPOTS4.map((_, i) => spotHTML(k, i)).join('')).join('')}${lockedHTML()}</div>`;
 export const openingHTML = () => `<div class="dive__open"><p class="dive__open-f ph mono gt gt-h">Draft</p><p class="dive__open-l display gt" data-draft>${OPENING.lead}</p><p class="dive__open-r gt gt-h" data-draft>${OPENING.rest}</p></div>`;
 
 // ---------- the surfaces' shader: the sketch (the page's paper and grid, exact) dressing into the dark hall (its base
@@ -306,7 +312,7 @@ export function createDive(root, top, { base = '' } = {}) {
   renderer.setClearColor(0x000000, 0);
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(50, 1, 1, 1e5);
   camera.rotation.order = 'YXZ';
-  const xCam = new THREE.PerspectiveCamera(50, 1, 1, 1e5);   // the hand-over's camera: page 3's lens
+  const xCam = new THREE.PerspectiveCamera(50, 1, 0.3, 1e4);   // the join's camera: page 4's lens and first frame (page04/turn.js), in lock mm
   const phoneScene = new THREE.Scene();   // frame 5's real phones (their own pass: physical materials, the studio light)
   // lit by the frame's own spotlight, from above and a little in front: a bright top edge, darker towards the foot; the
   // studio's soft boxes only as a fill (pass 3)
@@ -319,7 +325,7 @@ export function createDive(root, top, { base = '' } = {}) {
 
   // world units are CSS px at the screen plane (the hall's mouth, z = 0); K px to one hall unit (layout)
   let W = 1, H = 1, P = 1, K = 1, X = 1, FY = -1, CY = 1, L = 1, ink = '#121212', paper = '#F6F7F9', dark = false, gu = 20;
-  let z0 = 1, zEnd = 0, Dend = 1, hX = 1, Dx = 1, portrait = false, bandR = null, E = HALL.eye, limits = null, faceH = 1, lens0 = { near: 1, far: 1e5 }, pushLen = 1;
+  let z0 = 1, zEnd = 0, Dend = 1, P4l = 1, D4 = 1, portrait = false, bandR = null, E = HALL.eye, limits = null, faceH = 1, lens0 = { near: 1, far: 1e5 }, pushLen = 1;
 
   // ---------- the painted light: each surface's light (R) and shade (B), in the hall's own units, painted once ----------
   function paintHall() {
@@ -490,8 +496,8 @@ export function createDive(root, top, { base = '' } = {}) {
   let staticBase = [];
   let knockKey = '';
 
-  // the X-ray hand-over: a blue screen, then page 3's first frame (the lock's hairlines, a second copy, no depth test),
-  // seen through page 3's own lens so the seam is exact
+  // the join into page 4 (beat 5's end): the blue ground, then page 4's first frame (the lock's hairlines, a second copy,
+  // no depth test, built exactly as page04/turn.js builds its lock), seen through page 4's own lens so the seam is exact
   const xScene = new THREE.Scene(), xHolder = new THREE.Group(); xHolder.matrixAutoUpdate = false; xScene.add(xHolder);
   const xQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({ uniforms: { uC: { value: new THREE.Vector3(23 / 255, 63 / 255, 115 / 255) }, uA: { value: 0 } },   // #173F73 as it is (sRGB, straight to the canvas)
     transparent: true, depthTest: false, depthWrite: false,
@@ -499,7 +505,7 @@ export function createDive(root, top, { base = '' } = {}) {
   xQuad.frustumCulled = false; const xQuadScene = new THREE.Scene(); xQuadScene.add(xQuad);
   let xLock = null, lockParts = null;
   const door = { lockState: 'idle' };
-  /** the real "Cutaway Lock" (lock3d.js): in brass on the door, and in X-ray for the hand-over */
+  /** the real "Cutaway Lock" (lock3d.js): in brass on the door, and in X-ray for the join into page 4 */
   let lockP = null;
   function loadLock(b = base) { return lockP || (lockP = loadLock_(b)); }
   async function loadLock_(b) {
@@ -510,7 +516,7 @@ export function createDive(root, top, { base = '' } = {}) {
       xLock = lockParts.build({ inside: true });
       xLock.solids.forEach((m) => { m.visible = false; });
       xLock.lineMats.forEach((m) => { m.resolution.set(Math.round(W * dpr), Math.round(H * dpr)); m.linewidth = Math.max(1, Math.round(dpr)); m.depthTest = false; lineMats.push(m); });
-      xLock.xray(1); xLock.setKey(0); xLock.setFaceHeight(hX); xHolder.add(xLock.root);
+      xLock.xray(1); xLock.setKey(0); xLock.setFaceHeight(FACE.h); xHolder.add(xLock.root);   // (lock mm, as page 4's)
       // 27 Nov (beat 1): the whole real lock, its key pins and drivers solid (the camera rides under them); the key is
       // unseen (you are the key): only its profile is used, to lift the pins
       doorLock = lockParts.build({ inside: true, solidInside: true });
@@ -534,7 +540,11 @@ export function createDive(root, top, { base = '' } = {}) {
       // so the first wipe never waits on a shader
       try { if (!b4.ready) buildB4(); const tm = renderer.toneMapping; renderer.toneMapping = THREE.NoToneMapping; renderer.compile(b4.scenes.x, camera); renderer.compile(b4.scenes.m, camera); renderer.compile(b4.ov.scene, b4.ov.cam);
         renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.compile(b4.scenes.b, camera); renderer.toneMapping = tm; } catch (e) { console.warn('[dive] beat 4', e); }
-      door.lockState = 'ready'; render(lastQ, true);
+      door.lockState = 'ready';
+      // beat 5 laid out now (how far the key must come out, where "Locked." stands), so the tests' stops are right from
+      // the start: one frame of it drawn, then back to where the visitor is, in the same task (only the second is shown)
+      { const q0 = lastQ; try { render(lerp(BEAT5[0], BEAT5[1], 0.5)); } catch (e) { console.warn('[dive] beat 5', e); } lastQ = q0; }
+      render(lastQ, true);
     } catch (e) { console.warn('[dive] lock', e); door.lockState = 'missing'; }
   }
 
@@ -995,8 +1005,8 @@ export function createDive(root, top, { base = '' } = {}) {
       dA: +(A.dA / FACE.h).toFixed(3), dWide: +(A.dWide / A.dA).toFixed(2), fog: [+(fogNear / U).toFixed(2), +(fogFar / U).toFixed(2)] };
   }
   /** the one real lock's box on the screen (its 15 parts, not the room) */
-  function oneBox() {
-    const bx = new THREE.Box3(); doorLock.solids.forEach((m) => { if (m.parent && m.parent.visible !== false) bx.expandByObject(m); });
+  function oneBox(noKey = false) {
+    const bx = new THREE.Box3(); doorLock.solids.forEach((m) => { if (m.parent && m.parent.visible !== false && !(noKey && m.parent === b1.keyH)) bx.expandByObject(m); });
     if (bx.isEmpty()) return null;
     const cs = []; for (const x of [bx.min.x, bx.max.x]) for (const y of [bx.min.y, bx.max.y]) for (const z of [bx.min.z, bx.max.z]) cs.push(proj(x, y, z));
     if (cs.some((cc) => cc[2] < camera.near)) return null;
@@ -1201,8 +1211,9 @@ export function createDive(root, top, { base = '' } = {}) {
     const oc = b4.ov.cam; oc.left = 0; oc.right = W; oc.top = 0; oc.bottom = -H; oc.updateProjectionMatrix();
   }
   /** beat 4 at p (0..1): the one lock (every part home, the key in and turned), the camera (beat 3's frame easing to beat
-   *  4's, the lock turning), the looks and the wipe, the captions, the spots and their leaders */
-  function beat4(p) {
+   *  4's, the lock turning), the looks and the wipe, the captions, the spots and their leaders. cap false: the look's
+   *  caption is left to beat 5 (which shows its last frame and fades the brass caption itself) */
+  function beat4(p, cap = true) {
     if (!b4.ready) buildB4();
     b4.on = true;
     const W1 = B4.wipes[0][1];
@@ -1218,14 +1229,13 @@ export function createDive(root, top, { base = '' } = {}) {
     camera.fov = A_FRAME.fov; camera.near = 0.03 * d; camera.far = 2 * d + 4 * b3.lockR * mmW; camera.updateProjectionMatrix();
     frame4(camera, yaw, d, k);
     if (p < W1) { const dC = camera.position.distanceTo(b4v.cW) + b3.lockR * mmW; lockScene.fog.near = dC; lockScene.fog.far = dC + 6 * U; }   // (beat 3's fog round the lock, from where the camera now is)
-    b4.mirrors.forEach(({ m, g }) => { for (const gg of g) { gg.matrix.copy(m.matrixWorld); gg.matrixWorldNeedsUpdate = true; } });
-    b4.shadow.matrix.copy(doorLock.body.matrixWorld); b4.shadow.matrixWorldNeedsUpdate = true;
+    mirror4();
     // the wipes: [from, to, share swept]
     const seq = [['dark', 'x'], ['x', 'm'], ['m', 'b']];
     let from = 'x', to = null, w = 0;
     for (let i = 0; i < 3; i++) { const [s0, s1] = B4.wipes[i]; if (p < s0) { from = seq[i][0]; break; } if (p < s1) { [from, to] = seq[i]; w = ease(span(p, s0, s1)); break; } from = seq[i][1]; }
-    const settled = to ? null : from, past = lastQ >= XRAY[0];
-    ['x', 'm', 'b'].forEach((lk) => lookEls[lk].classList.toggle('on', settled === lk && !past));
+    const settled = to ? null : from;
+    if (cap) ['x', 'm', 'b'].forEach((lk) => lookEls[lk].classList.toggle('on', settled === lk));
     // the spots: one by one while their look holds; the leaders and dots follow the parts as the lock turns
     const ov = b4.ov, buf = ov.buf; let n = 0; const lines = [];
     ov.dots.forEach((g) => { g.visible = false; });
@@ -1255,6 +1265,12 @@ export function createDive(root, top, { base = '' } = {}) {
     return { beat: 4, p: +p.toFixed(4), step, from, to, w: +w.toFixed(3), wx, settled, labels: n, hall: false, head: false, yaw: +yaw.toFixed(4), frameK: +k.toFixed(3),
       d: +(d / F.d0).toFixed(3), d4: +(F.d4 / F.d0).toFixed(3), dEnd: F.dEnd ? +(F.dEnd / F.d0).toFixed(3) : null, cols: F.two ? 2 : 1, colW: F.colW, segs: b4.segs, tris: b4.tris };
   }
+  /** the three looks' copies of the real lock follow its parts (the plug's turn, the key, the pins), and hide what it
+   *  hides (beat 5's key once it is out of the frame); the brass look's contact shadow follows its body */
+  function mirror4() {
+    b4.mirrors.forEach(({ m, g }) => { const vis = m.parent ? m.parent.visible !== false : false; for (const gg of g) { gg.matrix.copy(m.matrixWorld); gg.matrixWorldNeedsUpdate = true; gg.visible = vis; } });
+    b4.shadow.matrix.copy(doorLock.body.matrixWorld); b4.shadow.matrixWorldNeedsUpdate = true;
+  }
   /** beat 4's picture: the look the wipe leaves, then the one it uncovers to the left of the hairline, each in its own
    *  scissor on the dark ground (only the looks on screen are drawn), then the leaders, the dots and the hairline */
   function render4(bt) {
@@ -1277,6 +1293,112 @@ export function createDive(root, top, { base = '' } = {}) {
   function leave4() {
     if (!b4.on) return; b4.on = false;
     Object.values(lookEls).forEach((el) => el.classList.remove('on')); [...spotEls.x, ...spotEls.m].forEach((el) => el.classList.remove('on'));
+  }
+
+  // ---------- the security page, beat 5 (28 Nov): "Locked." ----------
+  // Straight on from beat 4's last frame (the brass look, the key in, the plug turned, the camera on the A line at beat 4's
+  // end frame), no cut, drawn by render4 as the brass look alone: the brass caption goes; the key turns back (the plug, the
+  // key and the key pins from 90 degrees to 0, as setLock turns them); the key comes out the way it went in, along the
+  // keyway, the real key's profile under the pins, so each pin rides down its cut and drops to its rest (PIN_REST, beat 1's)
+  // as the key's tip passes; the key goes on until its whole box is off the screen and only then is it hidden (no pop);
+  // then "Locked." (the site's serif, centred, a flagged draft). The lock turns on a little (the A frame's yaw -0.42 ->
+  // -0.3, the demo's). Then the join (JOIN.move): the camera eases from the A frame onto page 4's exact first frame (the
+  // lock face on, centred, page 4's lens and distance: lock3d.js page4Distance), and render() dissolves the picture into
+  // page 4's X-ray on the blue ground (JOIN.fade). The reference: tools/reference/security-demo-27nov.html place5().
+  const lockedEl = b4El.querySelector('.dive__locked');
+  const b5 = { key: '', d0: 1, d5: 1, k: 0, offOut: 170, small: false, hidKey: false };
+  const b5v = { tA: V3(), tB: V3(), dA: V3(), dB: V3(), uB: V3(), t: V3(), dir: V3(), q: new THREE.Quaternion(), q0: new THREE.Quaternion(), box: new THREE.Box3() };
+  const yaw5 = (p) => lerp(B5.yaw[0], B5.yaw[1], ease(p));
+  /** the camera's distance at p: beat 4's end distance, eased back (log scale) to d5 by the time "Locked." comes in, if
+   *  the word needs the room (else d5 = d0 and nothing moves but the turn) */
+  const dist5 = (p) => b5.d0 * Math.pow(b5.d5 / b5.d0, ease(span(p, 0, B5.locked)));
+  /** beat 5's layout, per screen (after beat 4's): where "Locked." stands and its size, the camera's distance, how far
+   *  the key must come out to be clear of the screen */
+  function layout5() {
+    const key = `${b4.key}`; if (b5.key === key) return; b5.key = key;
+    const F = b4.frame, u = gu, desktop = W >= 1024, N = Math.round(W / u), rT = Math.ceil((lastStrip + u) / u - 1e-6), cam = b4.cam;
+    b5.d0 = F.dEnd || F.d4; b5.k = F.dEnd ? 0 : 1;   // where beat 4 ended: the centred frame, or (if its caption wouldn't clear it) the labelled one
+    // "Locked.": on the captions' row, centred across the whole width (its box N cells wide from the screen's left edge,
+    // so its middle is on a half line); the headline's size where the lock stays a cell under it, else the captions'
+    const t0 = (rT + (desktop ? 3 : 1)) * u;
+    const vy = Math.min(H / 2 - lastStrip - u, lastTb - u - H / 2), vx = W / 2 - u;
+    const fits = (d, wordB) => [0, 0.25, 0.5, 0.75, 1].every((t) => {
+      frame4(cam, yaw5(t), d, b5.k); const b = box4(cam);
+      const inRoom = b5.k ? b.l >= F.rect.l && b.r <= F.rect.r && b.t >= F.rect.t && b.b <= F.rect.b : b.l >= W / 2 - vx && b.r <= W / 2 + vx && b.t >= H / 2 - vy && b.b <= H / 2 + vy;
+      return inRoom && b.t >= wordB + u - 0.5;
+    });
+    let wordB = 0; b5.small = false; b5.d5 = b5.d0;
+    if (!b4.noCap) {
+      lockedEl.style.left = '0px'; lockedEl.style.top = `${t0}px`; lockedEl.style.width = `${N * u}px`;
+      lockedEl.classList.remove('is-small'); wordB = t0 + lockedEl.offsetHeight;
+      if (!fits(b5.d0, wordB)) {
+        b5.small = true; lockedEl.classList.add('is-small'); wordB = t0 + lockedEl.offsetHeight;
+        if (!fits(b5.d0, wordB)) { let lo = b5.d0, hi = b5.d0; while (!fits(hi, wordB) && hi < b5.d0 * 50) hi *= 1.25; for (let i = 0; i < 32; i++) { const m = (lo + hi) / 2; if (fits(m, wordB)) hi = m; else lo = m; } b5.d5 = hi; }
+      }
+    } else if (!fits(b5.d0, 0)) { let lo = b5.d0, hi = b5.d0; while (!fits(hi, 0) && hi < b5.d0 * 50) hi *= 1.25; for (let i = 0; i < 32; i++) { const m = (lo + hi) / 2; if (fits(m, 0)) hi = m; else lo = m; } b5.d5 = hi; }
+    // the key's way out: as far along the keyway as puts its whole box off the screen at the moment it stops (the end of
+    // B5.out), and never nearer the camera than its near plane allows
+    { const pe = B5.out[1]; frame4(cam, yaw5(pe), dist5(pe), b5.k); cam.near = 0.03 * dist5(pe); cam.updateProjectionMatrix();
+      const kh = b1.keyH, z0 = kh.position.z, r0 = kh.rotation.z, bx = b5v.box, v = b4v.v; let off = 40; kh.rotation.z = 0;   // (the plug turned back: the key square)
+      const clear = () => { kh.position.z = off; kh.updateMatrixWorld(true); bx.setFromObject(kh); const xs = [], ys = [];
+        for (let i = 0; i < 8; i++) { v.set(i & 1 ? bx.max.x : bx.min.x, i & 2 ? bx.max.y : bx.min.y, i & 4 ? bx.max.z : bx.min.z).applyMatrix4(cam.matrixWorldInverse);
+          if (-v.z < 2 * cam.near) return 'near'; v.applyMatrix4(cam.projectionMatrix); xs.push((v.x + 1) / 2 * W); ys.push((1 - v.y) / 2 * H); }
+        return Math.max(...xs) < -2 || Math.min(...xs) > W + 2 || Math.max(...ys) < -2 || Math.min(...ys) > H + 2 ? 'out' : 'in'; };
+      let r = clear(); while (r === 'in' && off < 3000) { off += 2; r = clear(); }
+      b5.offOut = off; b5.exit = r; kh.position.z = z0; kh.rotation.z = r0; kh.updateMatrixWorld(true); }
+    cam.near = 0.01 * F.d0; cam.updateProjectionMatrix();
+    b5.onLayout?.();
+  }
+  /** the share of B5.out at which the key's tip is off mm out (for the tests' stops); null before beat 5 is laid out */
+  function b5Share(off) {
+    if (!b5.key) return null;
+    const k = clamp(off / b5.offOut); let lo = 0, hi = 1; for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (ease(m) < k) lo = m; else hi = m; }
+    return hi;
+  }
+  /** the join's camera at j (0..1): from where beat 5 left it (the A frame) onto page 4's first frame: the line of sight
+   *  swings round (a slerp) from the A line onto the face's axis, the point looked at moves from the lock's middle to the
+   *  face's middle, the lens eases from 28 degrees to page 4's, and the lock's size on screen eases evenly (log scale) */
+  function join5(j, dA) {
+    const e = ease(j), v = b5v;
+    camera.getWorldDirection(v.dA); v.tA.copy(camera.position).addScaledVector(v.dA, dA); v.dA.negate();   // (the A frame: towards the camera)
+    const R = doorLock.root; R.updateMatrixWorld(true);
+    v.tB.set(0, 0, 0).applyMatrix4(R.matrixWorld); v.dB.set(0, 0, D4).applyMatrix4(R.matrixWorld).sub(v.tB);
+    const dB = v.dB.length(); v.dB.divideScalar(dB); v.uB.setFromMatrixColumn(R.matrixWorld, 1).normalize();
+    const tanA = Math.tan(A_FRAME.fov * Math.PI / 360), tanB = Math.tan(xCam.fov * Math.PI / 360);
+    const tan = tanA * Math.pow(tanB / tanA, e), s = (1 / (dA * tanA)) * Math.pow((dA * tanA) / (dB * tanB), e), d = 1 / (s * tan);
+    v.q.setFromUnitVectors(v.dA, v.dB); v.q0.identity().slerp(v.q, e); v.dir.copy(v.dA).applyQuaternion(v.q0);
+    v.t.lerpVectors(v.tA, v.tB, e);
+    camera.fov = 2 * Math.atan(tan) * 180 / Math.PI; camera.near = 0.03 * d; camera.far = 2 * d + 4 * b3.lockR * (HALL.door.lock.face * K / FACE.h); camera.updateProjectionMatrix();
+    camera.position.copy(v.t).addScaledVector(v.dir, d); camera.up.set(0, 1, 0).lerp(v.uB, e).normalize(); camera.lookAt(v.t); camera.updateMatrixWorld();
+    return d;
+  }
+  /** beat 5 at p (0..1), then the join's move at j (0..1) */
+  function beat5(p, j = 0) {
+    beat4(1, false);   // beat 4's last frame: the brass look, every part home, the key in and turned; its caption is beat 5's
+    layout5();
+    const turn = 1 - ease(span(p, ...B5.turn)), kOut = ease(span(p, ...B5.out)), off = b5.offOut * kOut;
+    setLock(off, turn);
+    const gone = p >= B5.out[1];   // the key is clear of the screen: only now is it hidden
+    b1.keyH.visible = !gone; b5.hidKey = gone;
+    lock.updateMatrixWorld(true);
+    const yaw = yaw5(p), d = dist5(p), mmW = HALL.door.lock.face * K / FACE.h;
+    camera.fov = A_FRAME.fov; camera.near = 0.03 * d; camera.far = 2 * d + 4 * b3.lockR * mmW; camera.updateProjectionMatrix();
+    frame4(camera, yaw, d, b5.k);
+    if (j > 0) join5(j, d);
+    mirror4();
+    // the words: the brass caption goes (the site's timed fade), "Locked." comes once the key is out and stays until the
+    // camera starts to move into page 4
+    lookEls.b.classList.toggle('on', p < B5.cap && j <= 0);
+    lockedEl.classList.toggle('on', p >= B5.locked && j <= 0);
+    const step = j > 0 ? 'join' : p < B5.cap ? 'brass' : p < B5.turn[1] ? 'turning back' : p < B5.out[0] ? 'shut' : !gone ? 'coming out' : p < B5.locked ? 'out' : 'locked';
+    return { beat: 5, p: +p.toFixed(4), step, from: 'b', to: null, w: 0, wx: 0, settled: 'b', hall: false, head: false, turn: +turn.toFixed(4), off: +off.toFixed(2), offOut: b5.offOut, exit: b5.exit,
+      key: !gone, keyOut: +kOut.toFixed(3), locked: p >= B5.locked && j <= 0, small: b5.small, yaw: +yaw.toFixed(4), d: +(d / b4.frame.d0).toFixed(3), d5: +(b5.d5 / b4.frame.d0).toFixed(3), k: b5.k, join: +j.toFixed(4),
+      lifts: b1.pins.map((h) => +h.position.length().toFixed(2)) };
+  }
+  /** out of beat 5 (scrolling back into beat 4, or before): its word off, the key shown again */
+  function leave5() {
+    lockedEl.classList.remove('on');
+    if (b5.hidKey) { b5.hidKey = false; if (b1.keyH) b1.keyH.visible = true; }
   }
 
   // ---------- the frames: a blueprint sheet each, in a black float frame, on a hinge, a plaque under it ----------
@@ -1577,7 +1699,7 @@ export function createDive(root, top, { base = '' } = {}) {
     // the canvas exactly as large as its drawing buffer in device pixels (a resampled buffer shimmers)
     canvas.style.width = `${(Math.round(W * dpr) / dpr).toFixed(4)}px`; canvas.style.height = `${(Math.round(H * dpr) / dpr).toFixed(4)}px`;
     lineMats.forEach((m) => { m.resolution.set(Math.round(W * dpr), Math.round(H * dpr)); m.linewidth = Math.max(1, Math.round(dpr)); });
-    const P3l = lensP(W, H);
+    P4l = lensP(W, H);   // page 4's lens (the site's)
     const desktop = W >= 1024, N = Math.round(W / u);
     const strip_ = opts.strip ?? (document.getElementById('strip')?.offsetHeight || 2 * u);
     const tb = document.querySelector('.titleblock'), tbr = !opts.noTitleblock && tb?.getClientRects().length ? tb.getBoundingClientRect() : null;
@@ -1660,7 +1782,8 @@ export function createDive(root, top, { base = '' } = {}) {
     K = Math.max(W / HALL.w, H / (2 * Math.min(E, HALL.h - E))); X = HALL.w / 2 * K; FY = -E * K; CY = (HALL.h - E) * K; L = HALL.len * K;
     camera.fov = 2 * Math.atan(H / 2 / P) * 180 / Math.PI; camera.aspect = W / H; camera.near = 0.05 * K; camera.far = L + P + 2 * K; camera.updateProjectionMatrix();
     lens0 = { near: camera.near, far: camera.far, fov: camera.fov };
-    xCam.fov = 2 * Math.atan(H / 2 / P3l) * 180 / Math.PI; xCam.aspect = W / H; xCam.near = camera.near; xCam.far = camera.far; xCam.updateProjectionMatrix();
+    xCam.fov = 2 * Math.atan(H / 2 / P4l) * 180 / Math.PI; xCam.aspect = W / H; xCam.updateProjectionMatrix();
+    D4 = page4Distance(H, P4l); xCam.position.set(0, 0, D4); xCam.updateMatrixWorld();   // page 4's first frame: the face on, centred (lock mm)
     limits = { top: topLim, bottom: botLim, mid };
     makeGrid(); placeSurfaces();
     const yc = (HALL.hang - E) * K;
@@ -1714,15 +1837,14 @@ export function createDive(root, top, { base = '' } = {}) {
     const want = Math.max(Dtop, Dwide, DfootTb), fall = Math.max(Dtop, Dwide, DfootScr);
     Dend = Math.min(Dcap, want <= Dcap ? want : fall);
     z0 = P; zEnd = -(L - Dend);
-    // the hand-over: page 3's first frame (lock3d.js endFaceHeight) through page 3's lens, straight ahead of where the walk ended
-    faceH = Math.max(1, endFaceHeight(H, { strip: strip_, tbTop, u }));   // beat 1's face fill, and page 3's first frame
+    // beat 1's face fill (lock3d.js endFaceHeight)
+    faceH = Math.max(1, endFaceHeight(H, { strip: strip_, tbTop, u }));
     // beat 1's push at walking speed (27 Nov, Wajih): the push's distance falls as d0 (dFill / d0)^t, so its speed at
     // the start is d0 ln(d0 / dFill) per push length; the walk covers (z0 - zEnd) in its screens. The push takes the
     // screens of scroll that make the two speeds equal (page.js maps them onto the beat's nominal push)
     { const F = V3(HALL.door.lock.x * K, FY + HALL.door.lock.y * K, -L + 1.5), d0 = F.distanceTo(V3(0, 0, zEnd));
       const dFill = HALL.door.lock.face * K * P / (0.92 * H), vWalk = (z0 - zEnd) / ((WALK[1] - WALK[0]) * DIVE);
       pushLen = d0 * Math.log(d0 / dFill) / vWalk; }
-    hX = 0.3 * K; Dx = hX * P3l / faceH; xLock?.setFaceHeight(hX);
     // the tests' stops: each frame fully open, then at its closest
     STOPS.length = 0; lay.forEach((l) => STOPS.push([qAtD(l, l.Dread), qAtD(l, l.Dc)]));
     lock.scale.setScalar(K);
@@ -1854,8 +1976,11 @@ export function createDive(root, top, { base = '' } = {}) {
     const b3p = !st && doorLock ? span(q, ...BEAT3) : 0;
     // and beat 4 (28 Nov): three ways to see one lock, straight on from beat 3's last frame
     const b4p = !st && doorLock ? span(q, ...BEAT4) : 0;
+    // and beat 5 (28 Nov): "Locked.", straight on from beat 4's last frame; then the join's move onto page 4's first frame
+    const b5p = !st && doorLock ? span(q, ...BEAT5) : 0, jp = !st && doorLock ? span(q, ...JOIN.move) : 0;
     if (b4p <= 0) leave4();
-    const bt = b4p > 0 ? beat4(b4p) : b3p > 0 ? beat3(b3p) : b2p > 0 ? beat2(b2p) : bp > 0 ? beat1(bp) : restLock();
+    if (b5p <= 0) leave5();
+    const bt = b5p > 0 ? beat5(b5p, jp) : b4p > 0 ? beat4(b4p) : b3p > 0 ? beat3(b3p) : b2p > 0 ? beat2(b2p) : bp > 0 ? beat1(bp) : restLock();
     const headOn = !!(bt && bt.head);
     headEl.classList.toggle('on', headOn);
     const info = [], rects = [];
@@ -1941,7 +2066,7 @@ export function createDive(root, top, { base = '' } = {}) {
     if (openOn) { const c = gu / 2 + 2, r = openEl.getBoundingClientRect(); rects.push({ l: r.left - gu - c, r: r.right + gu + c, t: r.top - gu - c - gu / 2, b: r.bottom + gu + c + gu / 2 }); }   // its backing, half a cell clear (it settles from below)
     knockout(rects); cutStrip(rects);
     renderer.autoClear = true;
-    if (bt && bt.beat === 4) render4(bt);   // beat 4: the looks on screen, each in its own scissor, then the leaders and the wipe
+    if (bt && bt.beat >= 4) render4(bt);   // beats 4 and 5: the looks on screen, each in its own scissor, then the leaders and the wipe
     else {
       if (!bt || bt.hall) renderer.render(scene, camera);
       else { renderer.setClearColor(0x0A0A0B, 1); renderer.clear(); renderer.setClearColor(0x000000, 0); }   // inside the lock: the hall stops drawing; the dark ground
@@ -1957,16 +2082,16 @@ export function createDive(root, top, { base = '' } = {}) {
       renderer.autoClear = false; renderer.render(phoneScene, camera); renderer.autoClear = true;
     }
     if (warmDraw) phones.root.visible = false;
-    const xt = xLock && !st ? ease2(span(q, ...XRAY)) : 0;
+    // the join's dissolve: page 4's first frame (the blue ground, the lock in X-ray) over the brass lock, which the camera
+    // has just brought onto that same frame
+    const xt = xLock && !st ? ease2(span(q, ...JOIN.fade)) : 0;
     if (xt > 0.001) {
       xQuad.material.uniforms.uA.value = xt; xLock.setOpacity(xt);
-      xCam.position.copy(camera.position); xCam.updateMatrixWorld();
-      xHolder.matrix.makeTranslation(camera.position.x, camera.position.y, camera.position.z - Dx); xHolder.matrixWorldNeedsUpdate = true;
       renderer.autoClear = false; renderer.render(xQuadScene, xCam); renderer.render(xScene, xCam); renderer.autoClear = true;
     }
     const lockBox = lock.visible ? screenBox(lock) : null;
     const o = { info, q, show: showE, t, cam: [camera.position.x / K, camera.position.y / K], eye: E, phones: { state: phones.state, mix: phones.mix, real: f5 ? f5.real : 0, yaw: phones.yaw, yaws: phones.yaws, lift: phones.lift, visible: phones.root.visible }, open: T >= 1, tr: T, dress, lights, frames: fin, walked: span(q, ...WALK),
-      door: { lock: door.lockState, box: lockBox, distance: (camera.position.z + L) / K }, beat1: bt && !bt.beat ? bt : null, beat2: bt && bt.beat === 2 ? bt : null, beat3: bt && bt.beat === 3 ? bt : null, beat4: bt && bt.beat === 4 ? bt : null, head: headOn, xray: xt, labels: labQuads, band: bandShown ? { i: bandI, op: bandA, rect: bandR } : null };
+      door: { lock: door.lockState, box: lockBox, distance: (camera.position.z + L) / K }, beat1: bt && !bt.beat ? bt : null, beat2: bt && bt.beat === 2 ? bt : null, beat3: bt && bt.beat === 3 ? bt : null, beat4: bt && bt.beat === 4 ? bt : null, beat5: bt && bt.beat === 5 ? bt : null, head: headOn, xray: xt, labels: labQuads, band: bandShown ? { i: bandI, op: bandA, rect: bandR } : null };
     if (!again) out = o; else if (out) Object.assign(out, o);
     if (again) onAgain?.(out);
     return out;
@@ -1995,6 +2120,13 @@ export function createDive(root, top, { base = '' } = {}) {
     if (out.length < 3) return null;
     return out.map((p) => proj(p.x, p.y, p.z).slice(0, 2));
   }
+  /** page 4's lock (the join's X-ray copy) on the screen, through page 4's camera */
+  function xBox() {
+    const bx = new THREE.Box3().setFromObject(xLock.root), xs = [], ys = [];
+    if (bx.isEmpty()) return null;
+    for (let i = 0; i < 8; i++) { v4.set(i & 1 ? bx.max.x : bx.min.x, i & 2 ? bx.max.y : bx.min.y, i & 4 ? bx.max.z : bx.min.z).project(xCam); xs.push((v4.x + 1) / 2 * W); ys.push((1 - v4.y) / 2 * H); }
+    return { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) };
+  }
   function screenBox(obj) {
     const bx = new THREE.Box3().setFromObject(obj), cs = [];
     if (bx.isEmpty()) return null;
@@ -2011,7 +2143,8 @@ export function createDive(root, top, { base = '' } = {}) {
   function drawn() {
     const D = { lines: [], shapes: [], texts: [], fails: [] };
     if (!lay || !out) return D;
-    if (out.xray > 0.5) { if (xLock) { const b = screenBox(xLock.root); if (b) D.shapes.push({ ...b, tag: 'lock:xray' }); } return D; }
+    // the join's dissolve, past half way: page 4's first frame (the lock in X-ray, seen through page 4's camera)
+    if (out.xray > 0.5) { if (xLock) { const b = xBox(); if (b) D.shapes.push({ ...b, tag: 'lock:xray' }); } return D; }
     // beat 1: inside the lock the hall isn't drawn; from the moment its face fills the room the camera goes in and the
     // lock is the space (as the hall's walls are), no longer a shape on the screen
     if (out.beat1 && !out.beat1.hall) return D;
@@ -2024,6 +2157,13 @@ export function createDive(root, top, { base = '' } = {}) {
     // beat 4: the one lock is a shape in every look (the X-ray's see-through one too); the leaders and the wipe's hairline
     // are drawn lines (the hairline under the strip and over the title block, which covers it)
     if (out.beat4) { const b = oneBox(); if (b) D.shapes.push({ ...b, tag: 'lock:b4' }); b4.lines.forEach((l) => D.lines.push({ ...l })); return D; }
+    // beat 5: the lock is a shape (the key out of it once it starts to leave); the key on its way out is a shape of its
+    // own while it is wholly between the strip and the title block, and past that it is passing by (as beat 1's face)
+    if (out.beat5) {
+      const keyIn = out.beat5.keyOut <= 0, b = oneBox(!keyIn); if (b) D.shapes.push({ ...b, tag: 'lock:b5' });
+      if (!keyIn && out.beat5.key) { const k = screenBox(b1.keyH); if (k && k.y >= lastStrip && k.y + k.h <= lastTb && k.x >= 0 && k.x + k.w <= W) D.shapes.push({ ...k, tag: 'lock:b5key' }); }
+      return D;
+    }
     const lockShape = !out.beat1 || out.beat1.object;
     const segIn = (A, B) => A[2] > camera.near && B[2] > camera.near;
     const outer = (f) => [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([sx, sy]) => P3(f, sx * f.OX, sy * f.OY, f.FD));
@@ -2182,6 +2322,7 @@ export function createDive(root, top, { base = '' } = {}) {
     if (doorLock) render(lerp(BEAT1[0], BEAT1[1], 0.75));   // beat 1 inside the keyway, once (its lights, fog and room light reach the GPU now)
     if (doorLock) render(lerp(BEAT2[0], BEAT2[1], 0.8));    // beat 2 mid-wave, once (the room's copies and the key reach the GPU now)
     if (doorLock) { render(lerp(BEAT4[0], BEAT4[1], 0.4)); render(lerp(BEAT4[0], BEAT4[1], 0.76)); }   // beat 4 mid-wipe, X-ray to matte and matte to brass (its looks' buffers reach the GPU now)
+    if (doorLock) render(lerp(JOIN.fade[0], JOIN.fade[1], 0.5));   // the join's dissolve, once (page 4's X-ray lock and the blue reach the GPU now)
     render(q);
   }
   /** reduced motion: one still picture of the dressed hall, lit, every frame open, seen from its mouth (a JPEG) */
@@ -2233,11 +2374,26 @@ export function createDive(root, top, { base = '' } = {}) {
       b4.noCap = false; b4.key = ''; leave4(); top.hidden = hid; top.style.visibility = vis; top.style.display = disp;
     }
   }
+  /** reduced motion (beat 5): the shut lock in brass, the key out of it (beat 5's last frame), a JPEG; null without the
+   *  lock. "Locked." is set over it in the flow by the page (real text) */
+  async function lockedStill(w, h, opts = {}) {
+    await load(); await loadLock(); await envP;
+    if (!doorLock) return null;
+    const hid = top.hidden, vis = top.style.visibility, disp = top.style.display;
+    top.hidden = false; top.style.display = 'block'; top.style.visibility = 'hidden';   // (laid out to be measured, never painted, as lookStill)
+    try {
+      b4.noCap = true;
+      layout(w, h, { strip: 0, noTitleblock: true, ...opts });
+      render(BEAT5[1]); return canvas.toDataURL('image/jpeg', 0.9);
+    } finally {
+      b4.noCap = false; b4.key = ''; leave5(); leave4(); top.hidden = hid; top.style.visibility = vis; top.style.display = disp;
+    }
+  }
   function reset() {}
-  return { layout, render, load, warm, still, faceStill, roomStill, oneStill, lookStill, reset, beat4: () => (out ? out.beat4 : null), b4frame: () => (b4.frame ? { ...b4.frame } : null), beat3: () => (out ? out.beat3 : null), chaosSum: () => (b3.ready ? chaosSum() : null), foldNow: () => (room.O ? new THREE.Euler().setFromQuaternion(room.O.quaternion).x / 0.9 : null), theme, loadPhones, loadLock, drawn, readability, look: LOOK.id, stops: STOPS,
+  return { layout, render, load, warm, still, faceStill, roomStill, oneStill, lookStill, lockedStill, reset, beat4: () => (out ? out.beat4 : null), beat5: () => (out ? out.beat5 : null), b5: () => ({ ...b5, onLayout: undefined }), b5Share, onB5: (fn) => { b5.onLayout = fn; }, b4frame: () => (b4.frame ? { ...b4.frame } : null), beat3: () => (out ? out.beat3 : null), chaosSum: () => (b3.ready ? chaosSum() : null), foldNow: () => (room.O ? new THREE.Euler().setFromQuaternion(room.O.quaternion).x / 0.9 : null), theme, loadPhones, loadLock, drawn, readability, look: LOOK.id, stops: STOPS,
     closeAt: () => (lay ? lay.map((l) => qAtD(l, l.Dc) * DIVE) : null), openAt: () => (lay ? lay.map((l) => qAtD(l, l.Dread) * DIVE) : null),
-    phones: () => phones.state, frames: () => frames, lay: () => lay, P: () => P, L: () => L, K: () => K, hall: () => ({ W, H, P, K, X, L, z0, zEnd, Dend: Dend / K, Dx, portrait, band: bandR, eye: E, limits }),
+    phones: () => phones.state, frames: () => frames, lay: () => lay, P: () => P, L: () => L, K: () => K, hall: () => ({ W, H, P, K, X, L, z0, zEnd, Dend: Dend / K, portrait, band: bandR, eye: E, limits }),
     band: () => ({ i: bandOn, op: bandOp, rect: bandR }),
     brass: () => brass, doorLock: () => doorLock, yaw: () => phones.yaw, yaws: () => phones.yaws.slice(), seqAt: (e) => { seqHold = e; render(lastQ, true); }, seq: () => ({ e: seqHold !== null ? seqHold : showE, lift: phones.lift, liftF: phones.liftF, real: f5 ? f5.real : 0 }), show: SHOW, frameStill,
-    door: () => ({ lockState: door.lockState, Dend, zEnd }), pushLen: () => pushLen, beat1: () => (out ? out.beat1 : null), beat2: () => (out ? out.beat2 : null), room: () => ({ copies: room.cells.length, tris: room.tris, visible: !!(room.O && room.O.visible) }), lockScene: () => lockScene, endFrame: () => ({ P: lensP(W, H), hL: hX, Dend: Dx }), camera: () => camera, renderer: () => renderer, lockParts: () => lockParts, onBeat: (fn) => { onAgain = fn; } };
+    door: () => ({ lockState: door.lockState, Dend, zEnd }), pushLen: () => pushLen, beat1: () => (out ? out.beat1 : null), beat2: () => (out ? out.beat2 : null), room: () => ({ copies: room.cells.length, tris: room.tris, visible: !!(room.O && room.O.visible) }), lockScene: () => lockScene, p4Frame: () => ({ P: P4l, D: D4 }), camera: () => camera, renderer: () => renderer, lockParts: () => lockParts, onBeat: (fn) => { onAgain = fn; } };
 }

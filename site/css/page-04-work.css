@@ -1,0 +1,42 @@
+/* Take 2 · page 4, how we work (stage 10; site/js/page04/). The section overlaps page 1's last screen; its stage is
+   see-through until its top reaches the screen's top (.is-on), then shows the frame the security page's join ends on
+   (the lock face on, in X-ray on the blue ground) and carries on: 4 screens of scroll (cutaway.js LEN4) + its own.
+   28 Nov: round 9's page 3 (the lattice before page 4, 4.6 screens) is retired; dive.js's beats 1-5 replace it. */
+.p4s { position: relative; z-index: 3; height: 500vh; height: 500lvh; margin-top: -100vh; margin-top: -100lvh; pointer-events: none; }
+.p4s__stage { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; visibility: hidden; background: var(--prus); color: var(--blueprint-ink); }
+.p4s__stage.is-on { visibility: visible; }
+.p4s__gl { position: absolute; inset: 0; display: block; }
+/* the three lines: on an opaque blue backing (the cutaway's lines stop behind it), a cell round the words */
+.p4s__line { position: absolute; left: 0; top: 0; margin: 0; isolation: isolate; opacity: 0; transform: translateY(.5rem); transition: opacity .2s linear, transform .3s var(--ease-out, ease-out); }
+.p4s__line::before { content: ""; position: absolute; inset: -1rem -1rem -1.5rem; z-index: -1;   /* the trimmed text box ends at the baseline: half a cell more under the descenders */ border-radius: .5rem; background: var(--prus); }
+.p4s__line.on { opacity: 1; transform: none; transition: opacity .3s linear .05s, transform .5s var(--ease-out, ease-out); }
+.p4s__line p { margin: 0; }
+.p4s__f { display: block; margin: 0 0 .5rem !important; color: rgba(236, 241, 246, .72); line-height: .5rem; }
+.p4s__t { font-family: var(--f-display, Newsreader, Georgia, serif); font-weight: 420; font-size: 1.5rem; line-height: 2rem; letter-spacing: -.012em; text-wrap: balance; }
+@media (min-width: 1024px) { .p4s__t { font-size: 2rem; line-height: 3rem; } }
+@media (min-width: 1800px) and (min-height: 1000px) { .p4s__t { font-size: 2.5rem; line-height: 3rem; } }
+/* reduced motion: no turn (no canvas); the finished cutaway, then the three lines in the flow (clear of the title block) */
+.p4s.is-static { height: auto; margin-top: 0; pointer-events: auto; }
+.p4s.is-static .p4s__stage { position: relative; visibility: visible; height: auto; overflow: visible; padding: 3rem var(--gut) 9rem; }   /* (its top clear of the strip: the verbs stand above the cutaway's box, and nothing of page 3 sits above it in the flow now) */
+.p4s.is-static .p4s__gl { display: none; }
+.p4s.is-static .p4s__line { position: relative; left: auto !important; top: auto !important; width: auto !important; max-width: 40rem; margin-top: 3rem; opacity: 1; transform: none; transition: none; }
+html[data-motion="reduce"] .p4s__line { transition: none; }
+
+/* ---------- page 4: the cutaway (hairlines on the blue ground), its verbs on leaders, the newest meaning on a leader ---------- */
+.p4w { position: absolute; inset: 0; pointer-events: none; }
+.p4c { position: absolute; left: 0; top: 0; overflow: visible; }
+.p4c__l { fill: none; stroke: #FFFFFF; stroke-width: 1px; vector-effect: non-scaling-stroke; stroke-linejoin: miter; }
+.p4c__f { stroke-opacity: .55; }
+.p4c__d { stroke-dasharray: 4 3; stroke-opacity: .7; }
+.p4c__ld { stroke-opacity: .8; }
+/* a verb beside its pin: mono, set vertically along its leader (the drawing's way), from the moment the pin sets */
+.p4v { position: absolute; margin: 0; writing-mode: vertical-rl; transform: translateX(-50%) rotate(180deg); color: var(--blueprint-ink); font-size: .5rem; line-height: 1rem; white-space: nowrap; opacity: 0; transition: opacity .25s linear; }
+.p4v.on { opacity: 1; }
+.p4m { position: absolute; margin: 0; color: var(--blueprint-ink); opacity: 0; transform: translateY(.5rem); transition: opacity .2s linear, transform .3s var(--ease-out, ease-out); }
+.p4m.on { opacity: 1; transform: none; }
+.p4m p { margin: 0; }
+.p4m__v { font-family: var(--f-display, Newsreader, Georgia, serif); font-weight: 420; font-size: 1.5rem; line-height: 2rem; letter-spacing: -.012em; }
+.p4m__t { margin-top: .5rem !important; font-family: var(--f-display, Newsreader, Georgia, serif); font-size: 1rem; line-height: 1.5rem; text-wrap: pretty; }
+@media (min-width: 1024px) { .p4m__v { font-size: 2rem; line-height: 3rem; } .p4m__t { font-size: 1.25rem; line-height: 2rem; } }
+html[data-motion="reduce"] .p4v, html[data-motion="reduce"] .p4m { transition: none; }
+.p4s.is-static .p4w { position: relative; margin-top: 3rem; }   /* its height: page.js (the cutaway's own box) */

@@ -1,5 +1,6 @@
 // Take 2 entry point: the round 8 running order (STUDIO_BRIEF.md Part 5 "Round 8"): 1 page 1 and 2 the hallway (one
-// section), 3 into the lock, 4 how we work, 5 lighter trips, 6 team (stubs), 7 the final room, 8 the spec sheet (stub).
+// section; 28 Nov: 3 the lock, its beats 1-5, runs at the end of that section too), 4 how we work, 5 lighter trips,
+// 6 team (stubs), 7 the final room, 8 the spec sheet (stub).
 // Take 1's sheets (site/js/sheets/*, sheet01..08/*, opening.js's loop, products, settings) stay on disk for reuse.
 import { engine, initScroll } from './engine/core.js';
 import { initCursor } from './engine/cursor.js';
@@ -8,7 +9,7 @@ import { runEnter } from './enter.js';
 import { layoutStrip } from './engine/strip.js';
 import { initPage01 } from './page01/page.js';
 import { initPages23 } from './page02/page.js';
-import { initPage03 } from './page03/page.js';
+import { initPage04 } from './page04/page.js';
 import { initTrips } from './page05/trips.js';
 import { initSpec } from './page08/spec.js';
 
@@ -25,16 +26,15 @@ initTheme(engine);
 let p1 = null, p23 = null;
 try { p1 = initPage01(engine); } catch (e) { console.error('[page 01]', e); }
 try { p23 = initPages23(engine); } catch (e) { console.error('[pages 02-03]', e); }
-let p3 = null;
-try { p3 = initPage03(engine); } catch (e) { console.error('[page 03]', e); }
+try { initPage04(engine); } catch (e) { console.error('[page 04]', e); }
 try { initTrips(engine); } catch (e) { console.error('[page 05]', e); }
 
 // ---------- timeline strip + title block: one segment per page (round 8: eight pages; the hallway is page 2) ----------
 const segs = [...document.querySelectorAll('.strip__seg')];
 const cutLi = document.querySelector('.strip__cut'), cutA = cutLi?.querySelector('a');
-const pages = [...document.querySelectorAll('#sheets [data-sheet]')];   // document order: page 1, the hallway's and page 3's markers inside it, page 3's section, 4-8
-// 28 Nov: page 3 starts at the door (its beat 1 runs at the end of page 1's section): two elements carry 03 (the door's
-// marker, then page 3's own section), so the segments go by page number, and a page's link lands on its first element
+const pages = [...document.querySelectorAll('#sheets [data-sheet]')];   // document order: page 1, the hallway's and page 3's markers inside it, 4-8
+// 28 Nov: page 3 starts at the door (its beats 1-5 run at the end of page 1's section), so it is a marker there; the
+// segments go by page number, and a page's link lands on its first element
 const segOf = (el) => +el.dataset.sheet - 1;
 const firstOf = (k) => pages.find((el) => segOf(el) === k);
 const tb = { sheet: document.querySelector('.tb__sheet'), title: document.querySelector('.tb__title'),
@@ -68,6 +68,7 @@ function track() {
 ScrollTrigger.create({ start: 0, end: 'max', onUpdate: track, onRefresh: () => { measureTops(); track(); } });
 addEventListener('scroll', track, { passive: true });
 // a page's link (#page-NN: the strip, a deep link) lands on its first element: #page-03 at the door, where page 3 starts
+// (no element has that id: it is the door's marker, #page-03-door)
 const landOf = (hash) => { const m = /^#page-(\d\d)$/.exec(hash); return (m && firstOf(+m[1] - 1)) || document.querySelector(hash); };
 const go = (hash) => { const el = landOf(hash); if (el) engine.scrollTo(docTop(el), { duration: 1.4 }); };
 
@@ -115,10 +116,9 @@ window.__t2stops = () => {
   if (p1 && !engine.reduced) Object.entries(p1.stops).forEach(([name, p]) => out.push({ name, y: Math.round(p1.yAt(p)) }));
   else if (document.getElementById('page-01')) out.push({ name: 'P1', y: 0 });
   if (engine.reduced) { const h = document.querySelector('.p1-hall'); if (h) out.push({ name: 'HALL', y: docTop(h) }); }
-  if (window.__p3 && !engine.reduced) [0, 0.1, 0.7, 1.2, 1.5, 2.2, 2.6, 3.1, 3.5, 4.0, 4.6].forEach((s, i) => out.push({ name: `L${String(i).padStart(2, '0')}`, y: Math.round(window.__p3.yAt(s)) }));
   if (window.__p5 && !engine.reduced) [0.2, 0.9, 1.4, 1.9, 2.6, 3.4, 3.9, 4.4, 5.0, 5.8, 6.6].forEach((t, i) => out.push({ name: `T${String(i).padStart(2, '0')}`, y: Math.round(window.__p5.yAt(t)) }));
   if (window.__p4 && !engine.reduced) [0, 0.4, 0.75, 1.1, 1.5, 1.85, 2.2, 2.5, 2.7, 2.9, 3.1, 3.3, 3.5, 3.75, 3.98].forEach((t, i) => out.push({ name: `W${String(i).padStart(2, '0')}`, y: Math.round(window.__p4.yAt(t)) }));
-  ['page-03', 'page-04', 'page-05', 'page-06'].forEach((id) => { const el = document.getElementById(id); if (el) out.push({ name: id.replace('page-', 'P'), y: docTop(el) }); });
+  ['page-04', 'page-05', 'page-06'].forEach((id) => { const el = document.getElementById(id); if (el) out.push({ name: id.replace('page-', 'P'), y: docTop(el) }); });
   const room = document.getElementById('page-07'), slipEl = document.getElementById('slip-when'), spec = document.getElementById('page-08');
   if (room) { const y = docTop(room); out.push({ name: 'ROOM', y }); const rows = room.querySelector('.p2-rows'); if (rows) out.push({ name: 'ROWS', y: docTop(rows) - Math.round(innerHeight * 0.3) }); }
   if (slipEl) { out.push({ name: 'SLIP', y: docTop(slipEl) - Math.round(innerHeight * 0.2) }); const s = document.querySelector('#slip .slip__send'); if (s) out.push({ name: 'SEND', y: docTop(s) - Math.round(innerHeight * 0.5) }); }

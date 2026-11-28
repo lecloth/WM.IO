@@ -230,7 +230,7 @@ Take 1's history below.
   backings as lines, a drawing's own pairs left to readcheck. **`tools/readcheck.py` (new, part of the gate)**,
   `tools/phone_stage.py` (new: one stage on the S23: fps per segment, real swipes, reduced motion, shots; `--fps-only`).
 
-### Round 9 structure notes (25 Nov, stage 9)
+### Round 9 structure notes (25 Nov, stage 9) — RETIRED 28 Nov (beat 5's run): the lattice, its lines, `lockworld.js` and `page03/page.js` are gone; the security page is dive.js's beats 1-5
 - **The seam:** the hallway's last 0.2 screens (`dive.js` `XRAY`) draw a blue screen (#173F73 straight to the canvas) and a
   second copy of the lock, lines only, no depth test, over the hallway: the lock in X-ray. `#page-03` (`src/parts/page-03-lock.html`,
   `site/css/page-03-lock.css`) overlaps page 1's last screen (`margin-top: -100lvh`, 560lvh tall); its sticky stage is
@@ -247,7 +247,7 @@ Take 1's history below.
   motion: one still frame (the lattice mid-wave) and both lines in the flow. `main.js` `__t2stops` adds L00..L10.
 - **Tools:** `tools/pshot.py` (shots at positions in a later page: `--api __p3 --ss ...` or `--sel #id`; `--reduced`).
 
-### Round 10 structure notes (25 Nov, stage 10)
+### Round 10 structure notes (25 Nov, stage 10) — 28 Nov: page 4 now has its own section and code (see beat 5's notes); `cutaway.js` unchanged
 - **Page 4 lives in page 3's section** (one scene, no seam): `#page-03` is 960lvh (4.6 + 4 screens of scroll + its own),
   page 4's marker `span#page-04.p3l__mark` at 460lvh. `lockworld.js` `renderTurn(t)`: the X-ray lock turns side-on (face
   to the right) while the camera moves so it lands on the cutaway's housing (`setTurnTarget`), and fades as the
@@ -807,7 +807,7 @@ Take 1's history below.
   `data-draft-flag`, which flags the look's labels on screen. Labels (`.dive__spot`): "01 · Key" in mono 500 (#C3C7CD),
   under it the weak spot or the fix in mono 500 (#EDEEF0), 0.625 cells on phones / 0.5 on desktop, balanced where they
   wrap, plain type, no box (approved 28 Nov). Brass has no labels.
-- **The hand-over to page 3, TEMPORARY (until beat 5, "Locked."):** `XRAY` 16.6-16.8: from beat 4's end (held 0.1 screens:
+- **The hand-over to page 3 (REPLACED 28 Nov by beat 5 and the join into page 4, see beat 5's notes):** `XRAY` 16.6-16.8: from beat 4's end (held 0.1 screens:
   the brass look and its caption) the same plain fade as before (the blue quad and the X-ray lock, through `xCam`) to page
   3's first frame as it is today; the brass caption goes as the fade starts. It replaces beat 3's temporary fade
   (12.6-12.8, gone).
@@ -820,6 +820,66 @@ Take 1's history below.
   leaders and the wipe's hairline as lines. `dive.beat4()`, `dive.b4frame()`, `dive.lookStill()`. **Tools:** `flicker.py
   --beat4` (the seam with the first wipe, the X-ray's hold, the wipe to matte, matte's hold, the wipe to brass, the end and
   the fade).
+
+### The security page, beat 5: structure notes (28 Nov, Part 5 "The name's size, and the security page as demoed")
+- **Where it lives:** in the hallway's own canvas and camera (`site/js/page01/dive.js`, `beat5()` / `layout5()` / `join5()`),
+  straight on from beat 4's last frame (no cut): `DIVE` 19.8 (was 16.9), `BEAT5` 16.5-19.0 nominal screens (2.5, 1:1 with the
+  scroll), `B5` = { cap 0.02, turn [0.06, 0.3], out [0.36, 0.72], locked 0.76, yaw [-0.42, -0.3] } (the reference demo's
+  place5 shares), then `JOIN` = { move 19.0-19.5, fade 19.5-19.7 } and 0.1 held. New stops B5T (the key turning back,
+  halfway), B5O (the key half out of the keyway: its tip 40 mm out of its 80 mm blade; `dive.b5Share` / `onB5`, beat 5 is
+  laid out the moment the lock loads), B5L ("Locked." held), B5E (beat 5's end), B5J (the join's camera halfway); LOCK = the
+  hand-over to page 4 done = page 4's first frame (W00). Page 1's scroll: 28.61 screens on the S23 (was 25.71).
+- **The beat:** `beat4(1, false)` gives beat 4's last frame (the brass look, every part home, the key in, the plug at 90
+  degrees, beat 4's end camera) and leaves its caption to beat 5; then `setLock(off, turn)` (beat 1's, unchanged): the plug,
+  key and key pins turn back 90 -> 0, then the key slides out along the keyway, `keyProfile` under the pins, so each pin rides
+  down its cut and drops to `PIN_REST` (beat 1's) as the tip passes (the back pin first). Drawn by `render4` as the brass
+  look alone; `mirror4()` copies the real parts' places and visibility into the looks.
+- **The key leaves the frame cleanly (approved):** `layout5()` measures, per screen, how far the key must come out for its
+  whole box to be off the screen at the moment it stops (the camera at that moment, the key square), never nearer the camera
+  than twice its near plane: 220 mm on the S23, 236 at 2160 x 1147 (the demo's fixed 170 hid it while on screen). It is hidden
+  only once it is there (`b1.keyH.visible`, so `oneBox()` and the mirrors drop it). It leaves towards the bottom right,
+  passing behind the title block. Checks' view: the lock is `lock:b5` (without the key once it starts to leave); the key is
+  a shape of its own only while wholly between the strip and the title block.
+- **"Locked." (approved: centred on the grid):** `.dive__locked` (its Draft flag over the word), on the captions' row, its box
+  the whole width in cells from the left edge (its middle on a half line), `text-align: center`. My call: the headline's size
+  (2.5 / 3.5 / 4.5 cells) where the lock stays a cell under it through beat 5's yaws, else the captions' (1.5 / 2 cells,
+  `.is-small`); if neither cleared, the camera would ease back (`d5`). Measured: the headline's size on the phones (no ease
+  back), the captions' size on the laptop (`d5` 1.014: a 1.4% ease back while the key comes out). On from B5.locked with the
+  site's timed word fade; off as the join's camera starts to move.
+- **The camera:** on the A line (lens 28, pitch 0.34) at beat 4's end distance, the yaw easing -0.42 -> -0.3 (the demo's).
+- **The join into page 4 (the approved plan; it came out clean, so no fallback fade):** `join5(j)`: from the A frame onto page
+  4's exact first frame (the lock face on, centred, page 4's lens `lensP`, distance `lock3d.js page4Distance`: the face 0.42 of
+  the screen's height). The line of sight slerps onto the face's axis, the point looked at moves from the lock's middle to the
+  face's middle, the lens eases (its tan, log scale) from 28 degrees to page 4's (83 down on the S23), the lock's size on screen
+  eases evenly (log). Then the dissolve (`JOIN.fade`): the blue quad and the X-ray copy of the lock (`xLock`, built exactly as
+  `page04/turn.js` builds its lock, through `xCam` = page 4's camera) over it. The brass at the move's end sits exactly under
+  page 4's X-ray outline (`tools/shots/beat5/join/overlay.png`). Page 4's stage takes over on that frame (its section's top at
+  the screen's top), so the strip and the title block switch 03 -> 04 there. The chrome turns light at the dissolve's middle
+  (as every hand-over before it).
+- **Page 4 (its content unchanged):** its own section now, `#page-04` (`src/parts/page-04-work.html`,
+  `site/css/page-04-work.css`, `.p4s*`), 500lvh with `margin-top: -100lvh` (4 screens of scroll; round 9's 4.6 screens of
+  page 3 are gone). `site/js/page04/page.js` (`initPage04`, was page03/page.js) and `turn.js` (`createTurn`: lockworld.js's
+  `renderTurn`, the same numbers); `cutaway.js` and the three lines untouched. `window.__p4` (`yAt`, `turn`, `cut`, `S`,
+  `settled`); W00..W14 unchanged. `#page-03` no longer exists: the strip's 03 and every `#page-03` link land on
+  `#page-03-door` (main.js `landOf`).
+- **The words, one list (Wajih, 28 Nov):** `site/js/page01/security-words.js` `SECURITY_WORDS`: beat 2's headline and
+  eyebrow, beat 4's three captions and the five spots' names, weak spots and fixes, "Locked.", and `sr` (the security page
+  read aloud in one paragraph: page 3's old section carried the only spoken description of the lock; my call to keep one; it
+  repeats the words, so the rewrite edits it too). dive.js and page01/page.js read only from it (which part each spot points
+  at stays in dive.js: `SPOT_PARTS`). Not in it: the reduced-motion pictures' alt texts (they describe the pictures).
+- **Retired:** `site/js/page03/lockworld.js` and `page03/page.js` (the X-ray lock's first frame, the flight through the
+  keyway, the line-drawn lattice, the wave, the fold), its two draft lines and their styles, `lock3d.js latticeSegments`, the
+  temporary fade (`XRAY`), the L00..L10 and P03 stops, the asset sheet's "2b · Into the lock" card, flicker.py's lattice
+  stretches. `lock3d.js` stays in page03/ (dive.js and page 4 use it). The spec sheet's "Locks on page 3" now reads beat 2's
+  room: "75: 74 copies and the real lock" (approved).
+- **Reduced motion:** after the three looks' stills, a still of the shut lock (`dive.lockedStill`: beat 5's last frame, the
+  key out, a JPEG; `.p1-hall__locked`) with "Locked." (flagged) over it in the flow, fading to the dark as the scroll passes,
+  as the others; then page 4's finished cutaway and its three lines (no canvas drawn there now).
+- **Tools:** `beat1probe.py` prints beat 5, page 4's stage and the title block's sheet at every stop, `--scrub5` (beat 4's end
+  through beat 5 and the join to the hand-over, forwards vs backwards), `--reduced` also shoots the shut lock's still;
+  `flicker.py --beat5` (the seam, the turn back, the key out, "Locked.", the join's move, the dissolve, page 4's start);
+  `routecheck.py` now clicks the strip's links 03-08 at every size and theme and checks each lands on its page's first
+  element with the title block and the strip saying that page (`--no-links` skips it); `pshot.py --api` defaults to `__p4`.
 
 ### For the look pass (logged 28 Nov, Wajih)
 - **The real centre lock is darker than its copies (beat 2, the room of locks).** The real lock wears lab B1's inside
@@ -844,7 +904,62 @@ Take 1's history below.
   once to the first load in a fresh browser (`fonts/dm-mono-300.woff2` refused); it lands most often on 384 x 734 light,
   the first job of every routecheck run.
 
+- **Page 1's CSS fallback height must track `DIVE` (logged 28 Nov, beat 5):** `.p1` in `site/css/page-01.css` is the
+  nominal `(SCROLL + 1) x 100lvh`; page.js sets the real one per screen, but when the fallback was a beat behind (2.9
+  screens short) the scroll's limit stayed short and the strip's 06-08 links landed short at some sizes (routecheck's link
+  test caught it). Whenever a beat changes `DIVE`, update the fallback, and run routecheck (its link test) before committing.
+
 ### Take 2 log
+- **The security page, beat 5: "Locked.", and the old page 3 retired (28 Nov).** Built as in "The security page, beat 5:
+  structure notes": straight on from beat 4's last frame in the same canvas and camera; in brass, the caption goes, the key
+  turns back (the plug 90 -> 0), then comes out the way it went in, each pin riding down its cut to beat 1's rest, until it
+  is clear of the frame (220 mm on the S23, 236 on the laptop) and only then hidden; "Locked." (flagged, centred on the
+  grid); the lock turns on (yaw -0.42 -> -0.3); 2.5 screens, then the join (0.8): the camera onto page 4's exact first frame,
+  the dissolve into page 4's X-ray on blue. **The join is clean (the approved plan), so no fallback fade.** Round 9's page 3
+  (its X-ray lock, flight, lattice, wave, fold, two lines) and the temporary fade are retired; page 4 has its own section
+  and code, its content unchanged. Every word on the security page is in one list (`security-words.js`). The page is 1.7
+  screens shorter (- 4.6 of round 9's page 3, + 2.9 of beat 5 and the join). Shots: `tools/shots/beat5/final/` (384 x 734 and
+  2160 x 1147: B5T, B5O, B5L, LOCK = page 4's first frame), `join/` (the move and `overlay.png`: the brass at the move's end
+  under page 4's X-ray), `reduced/`, `typecheck/`, `grid/`, `overlap/`, `flicker/`.
+  - **Type gate** (`typecheck.py`, one job; 384 x 734, 390 x 844, 360 x 800, 375 x 667, 393 x 852, 412 x 915, 430 x 932,
+    2160 x 1147, light and dark; B4E, B5T, B5O, B5L, B5E, B5J, LOCK, W00, W01): 144 frames, **0 machine failures**.
+  - **Gridcheck** (the same sizes, light and dark; B4E .. LOCK, LOCK = page 4's start): **0 off the grid** (worst 0.072 px;
+    "Locked." and its flag add 2 baselines and 2 text edges at B5L, the centred word checked on its middle). **Overlap**
+    (the same sizes and stops): **0 in 5,222 pairs**.
+  - **Flicker** (`flicker.py --beat5`, real Chrome, 2160 x 1147 @1.333 set through DevTools): energy (p95) / largest
+    single-frame change: the seam from beat 4 0.04 (0.14) / 0.31; the key turning back 0.07 (0.12) / 0.31; the key coming
+    out 0.29 (0.75) / 0.96; "Locked." held 0.003 (0.007) / 0.01; the join's camera move 0.17 (0.47) / 1.02; the dissolve 0.71
+    (3.66) / 20.98 (the chrome turning light at the hand-over, as every beat's before: beat 4's was 23.6); page 4's first move
+    1.37 (3.92) / 5.19.
+  - **Scrubbed** (`beat1probe.py --scrub5`, 300 steps from beat 4's end through beat 5 and the join to the hand-over, 384 x
+    734): forwards and backwards give the same frame (difference 0); the pins end at their rest (5.8, 4.4, 3.0, 1.6, 0.2 mm
+    under their modelled places, beat 1's); the largest turn a step 1.7 degrees (mid-join).
+  - **Routecheck** (14 sizes, light and dark, now with the strip's links 03-08 clicked at each): 28 of 28 with every link landing to the pixel (03 on the door's marker, 04 on page 4's first frame, 05, 06, 07, and 08
+    on the final room by design: the strip's last square takes the hyperdrive there); 26 of 28 clean on the first pass, the
+    other two (1280 x 720 light, 360 x 800 light) failed only on one `ERR_CONNECTION_REFUSED` each (the known edge); re-run:
+    clean (light and dark). The type gate re-run on the final build (384 x 734, 2160 x 1147, light and dark, the same stops):
+    36 frames, 0 failures.
+    **Found by the new link test and fixed:** the first full run had 06, 07 and 08 landing short (119 and 641-979 px) at
+    1280 x 720 light and 360 x 800 dark; the same test on the last commit (a scratch worktree, served on 8109 for the run)
+    landed every link. Cause: page 1's CSS fallback height (`.p1`, 2574lvh) was beat 4's; page.js sets the real height per
+    screen, but the page started 2.9 screens shorter than it ends and the scroll's limit stayed short. Now 2864lvh (beat 5's
+    nominal); re-run at both sizes: every link lands to the pixel. (Logged under "Edges to watch".)
+  - **Reduced motion** (384 x 734, 2160 x 1147): after the three looks' stills, the shut lock's still with "Locked." over it,
+    fading as it scrolls by; then page 4's finished cutaway and three lines (its top now 3 cells clear of the strip: with
+    round 9's page 3 gone nothing sits above it, and the first verb started under the strip). No console errors anywhere
+    except the known `ERR_CONNECTION_REFUSED` under a burst (the plain server).
+  - **My calls:** (1) "Locked." in the headline's size where the lock stays a cell under it, else the captions' (the laptop:
+    the captions' size, with a 1.4% ease back); (2) the key's way out measured per screen so it leaves the frame wholly before
+    it is hidden; (3) the stop B5O at the key half out of its keyway (40 mm), not half way along its path; (4) beat 5 laid out
+    the moment the lock loads (one off-screen frame), so the tests' stops are right from the start; (5) the join's lens eased
+    on its tan (log) and the lock's size on screen on a log scale, the line of sight slerped, so the 28 -> 83 degree lens
+    change on a phone moves at an even rate (not tried against a plain lerp); (6) a read-aloud paragraph for the security page in the words list (page 3's old section
+    had the only one); (7) page 4 moved into its own files (`page04/page.js`, `turn.js`, `page-04-work.*`) rather than kept
+    under page 3's names.
+  - **Waiting:** the S23 run (60 fps through beat 5: the key coming out large past the camera, the join's lens change, the
+    dissolve; real swipes back and forth; reduced motion on the phone). The look pass's note on the real lock's darker brass
+    still stands (beat 5 draws beat 4's brass look, A2's materials, so it doesn't show here). On the S23 size the face-on brass
+    goes bright near the join's end (the warm key light square on the face), just before the dissolve: one for the look pass.
 - **The security page, beat 4: the three views (28 Nov).** Built as in "The security page, beat 4: structure notes":
   straight on from beat 3's last frame in the same canvas and camera; the lab's A3 X-ray (the thief's view), A1 matte (ours)
   and A2 real metals (yours) of the same real lock, all on the hall's dark ground, each taking over with a hairline wipe left

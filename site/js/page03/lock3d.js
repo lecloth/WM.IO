@@ -98,16 +98,14 @@ function buildLock(parts, { inside = true, solidInside = false } = {}) {
   return api;
 }
 
-/** a light lock for the lattice: the housing, cap, clip (static) and the plug (part = 1, it turns) as one segment list
- *  [ax, ay, az, bx, by, bz, part] in lock space, the face's middle at the origin */
-export function latticeSegments(lp) {
-  const out = [];
-  lp.parts.forEach((p) => { if (p.group > 1) return; const e = p.lod; for (let i = 0; i < e.length; i += 6) out.push(e[i], e[i + 1] - FACE.cy, e[i + 2], e[i + 3], e[i + 4] - FACE.cy, e[i + 5], p.group); });
-  return out;
-}
+/** page 4's first frame (28 Nov: the security page's beat 5 joins onto it, dive.js JOIN; page04/turn.js starts there):
+ *  the lock face on, centred, its face this share of the screen's height, through the site's lens (camera distance P of
+ *  the screen plane). Returns the camera's distance from the face's middle in lock mm. */
+export const PAGE4_FACE = 0.42;
+export function page4Distance(H, P) { return FACE.h * P / (PAGE4_FACE * H); }
 
-/** the end of the hallway and the start of page 3 share one frame: the lock's face, centred on the screen, as tall as
- *  92% of the room between the strip and the title block (a cell clear of each), on the screen's middle line */
+/** beat 1's push ends on this frame (dive.js): the lock's face, centred on the screen, as tall as 92% of the room between
+ *  the strip and the title block (a cell clear of each), on the screen's middle line */
 export function endFaceHeight(H, { strip = 0, tbTop = H, u = 20 } = {}) {
   return 0.92 * 2 * Math.min(H / 2 - (strip + u), (tbTop - u) - H / 2);
 }

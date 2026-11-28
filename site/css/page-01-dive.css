@@ -118,6 +118,24 @@ html[data-motion="reduce"] .dive__open, html[data-motion="reduce"] .dive__open::
 .dive__spot.is-one .dive__spot-t { white-space: nowrap; }
 .dive__spot.is-l { text-align: right; }
 .is-warm .dive__look, .is-warm .dive__look > *, .is-warm .dive__spot, .is-warm .dive__spot > * { transition: none !important; }
+/* ---------- the security page, beat 5 (28 Nov): "Locked." Centred across the screen (dive.js gives its box the whole
+   width in cells, so its middle is on a half line), on the captions' row; the headline's size, or the captions' where
+   the lock needs the room (.is-small); its Draft flag over it. The same short timed fade as every word here ---------- */
+.dive__locked { position: absolute; left: 0; top: 0; margin: 0; line-height: 1rem; text-align: center; visibility: hidden; transition: visibility 0s linear .26s; }
+.dive__locked > * { opacity: 0; transition: opacity .18s linear; }
+.dive__locked.on { visibility: visible; transition: none; }
+.dive__locked.on > * { opacity: 1; transition: opacity .26s linear .08s; }
+.dive__locked .ph { vertical-align: 0; line-height: 0; color: #8C8F94; }
+.dive__locked .dive__locked-f { display: block; margin: 0 0 .5rem !important; line-height: .5rem; }
+.dive__locked-l { margin-top: .5rem !important; font-family: var(--f-display, Newsreader, Georgia, serif); font-weight: 420; font-size: 2.5rem; line-height: 3rem; letter-spacing: -.02em; white-space: nowrap; }
+@media (min-width: 1024px) { .dive__locked-l { font-size: 3.5rem; line-height: 4rem; } }
+@media (min-width: 1800px) and (min-height: 1000px) { .dive__locked-l { font-size: 4.5rem; line-height: 5rem; } }
+.dive__locked.is-small .dive__locked-l { font-size: 1.5rem; line-height: 2rem; letter-spacing: -.01em; }
+@media (min-width: 1024px) { .dive__locked.is-small .dive__locked-l { font-size: 2rem; line-height: 2.5rem; letter-spacing: -.015em; } }
+.is-warm .dive__locked, .is-warm .dive__locked > * { transition: none !important; }
+/* reduced motion: the shut lock's still, "Locked." over it in the flow */
+.p1-hall__locked .dive__locked { position: relative; visibility: visible; transition: none; padding: 1rem; }
+.p1-hall__locked .dive__locked > * { opacity: 1; transition: none; }
 /* reduced motion: each look as a still, its caption over it in the flow, its labels set over the picture where dive.js
    placed them (real text) */
 .p1-hall__look .dive__look { position: relative; visibility: visible; transition: none; padding: 1rem; }

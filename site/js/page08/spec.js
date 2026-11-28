@@ -29,7 +29,8 @@ export function initSpec(engine, { onBack } = {}) {
     $('.js-screen').textContent = `${fmt(innerWidth)} × ${fmt(innerHeight)} px · ${fmt(devicePixelRatio || 1, 2)}×`;
     const fams = new Set(), files = [...document.fonts].filter((f) => f.status === 'loaded'); files.forEach((f) => fams.add(f.family.replace(/["']/g, '')));
     $('.js-fonts').textContent = `${[...fams].join(', ')} · ${files.length} files`;
-    const L = window.__p3?.world?.stats?.(); $('.js-locks').textContent = L?.instances ? `${(L.instances + 1).toLocaleString('en-US')}, one geometry, one draw` : '—';
+    // the security page's beat 2, the room of locks (dive.js): its copies, read off the built room, and the real lock
+    const R = window.__p1?.diveApi?.room?.(); $('.js-locks').textContent = R?.copies ? `${(R.copies + 1).toLocaleString('en-US')}: ${R.copies} copies and the real lock` : '—';
     const lic = [...new Set(ASSETS.map((a) => a[1]))];
     $('.js-assets').textContent = `${ASSETS.length} · ${lic.join(', ')}`;
   }

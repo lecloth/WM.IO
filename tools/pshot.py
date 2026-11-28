@@ -1,6 +1,6 @@
 """Screenshots at positions inside a later page (round 9 on): enter, scroll to window[api].yAt(s) for each s, wait until
 the page's scene has settled, shoot. Also a contact sheet.
-  python -I tools/pshot.py --size 384x734@2.8125 --api __p3 --ss 0,0.7,1.2 --out tools/shots/r9/p3 [--dark] [--reduced]"""
+  python -I tools/pshot.py --size 384x734@2.8125 --api __p4 --ss 0,0.4,1.1 --out tools/shots/p4 [--dark] [--reduced]"""
 import argparse, asyncio, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -37,7 +37,7 @@ async def main(a):
     sh = Image.new("RGB", (tw * cols, th * rows), "white")
     for i, im in enumerate(ims): sh.paste(im.resize((tw, th)), ((i % cols) * tw, (i // cols) * th))
     sh.save(out / f"sheet_{size}{'_dark' if a.dark else ''}.png"); print("sheet", out / f"sheet_{size}.png")
-ap = argparse.ArgumentParser(); ap.add_argument("--size", default="384x734@2.8125"); ap.add_argument("--api", default="__p3"); ap.add_argument("--sel", default=""); ap.add_argument("--ss", required=True)
+ap = argparse.ArgumentParser(); ap.add_argument("--size", default="384x734@2.8125"); ap.add_argument("--api", default="__p4"); ap.add_argument("--sel", default=""); ap.add_argument("--ss", required=True)
 ap.add_argument("--out", required=True); ap.add_argument("--dark", action="store_true"); ap.add_argument("--reduced", action="store_true"); ap.add_argument("--wait", type=int, default=900); ap.add_argument("--pre", type=int, default=3500)
 a = ap.parse_args()
 with BrowserLock():

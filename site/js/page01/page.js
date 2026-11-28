@@ -24,7 +24,8 @@
 import { Phone } from './phone.js';
 import { BellMorph } from './morph.js';
 import { createLive } from './live.js';
-import { createDive, captionHTML, openingHTML, roomHeadHTML, lookHTML, spotHTML, DIVE, SHOW, BEAT1, B1, BEAT2, B2, BEAT3, B3, BEAT4, B4 } from './dive.js';
+import { createDive, captionHTML, openingHTML, roomHeadHTML, lookHTML, spotHTML, lockedHTML, DIVE, SHOW, BEAT1, B1, BEAT2, B2, BEAT3, B3, BEAT4, B4, BEAT5, B5, JOIN } from './dive.js';
+import { SECURITY_WORDS } from './security-words.js';
 import { FRAMES, OPENING } from './corridor-drawings.js';
 const OPENING_TXT = `${OPENING.lead} ${OPENING.rest}`;
 import { haptics } from '../engine/haptics.js';
@@ -46,7 +47,8 @@ const inR = (p, [a, b]) => p >= a - 1e-4 && p <= b + 1e-4;
 // the walk (DIVE, 5.4 screens) plus frame 5's held show (SHOW.len, 2.9 screens: the camera stops while the scroll drives it);
 // 27 Nov: DIVE 6.9 with the security page's beat 1 (1.5 nominal screens: the push into the lock and down its keyway);
 // 28 Nov: DIVE 9.9 with beat 2 (3 screens, 1:1 with the scroll: the room of locks); DIVE 12.9 with beat 3 (3 screens, 1:1:
-// fly home, chaos, one lock); DIVE 16.9 with beat 4 (4 screens, 1:1: the three views).
+// fly home, chaos, one lock); DIVE 16.9 with beat 4 (4 screens, 1:1: the three views); DIVE 19.8 with beat 5 (2.5
+// screens, 1:1: "Locked.") and the join into page 4 (0.8 screens: the camera onto page 4's first frame, the dissolve).
 // Its push really takes dive.pushLen() screens (it starts at the walk's own speed: per screen), so the hall's length and
 // the page's are set at layout (layoutDive); these are the nominal values until then
 const B1W = BEAT1[0] * DIVE, B1N = B1.fill * (BEAT1[1] - BEAT1[0]) * DIVE;   // where the push starts (walk screens), its nominal length
@@ -69,9 +71,10 @@ const HAND = 0.9;          // the handover: Bell's outlines -> X-ray, pose held 
 // while circling, B2E beat 2's end (the room turned, every lock unlocked). 28 Nov, beat 3: B3S the room squared and the
 // camera pulled back, B3F the copies flying home, B3C the chaos, B3B the lock building itself, B3L one lock, centred (beat 3's
 // end). 28 Nov, beat 4: B4I the first wipe halfway (beat 3's lock -> the X-ray), B4X the X-ray with all five labels, B4W
-// the wipe to matte halfway, B4M matte with all five labels, B4V the wipe to brass halfway, B4B brass, B4E beat 4's end;
-// LOCK the (temporary) hand-over to page 3 done
-export const STOPS = { S0: 0.1, draw: 0.24, blue: 0.36, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, dress: 2.23, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.9, END: 4.8, TR: 5.11, OPEN: 5.5, LIT: 6.2, F1: 6.6, F2: 7.3, F3: 8.0, F4: 8.7, F5H: 9.2, F5S: 9.4, F5R: 9.75, F5L: 10.2, F5T: 11.0, F5E: 12.1, F5: 12.3, F5B: 12.45, DOOR: 12.84, B1H: 13.19, B1F: 13.53, B1K: 13.62, B1P: 13.95, B1E: 14.34, B2K: 15.04, B2H: 15.58, B2W: 16.66, B2E: 17.34, B3S: 17.94, B3F: 18.24, B3C: 18.84, B3B: 19.68, B3L: 20.34, B4I: 20.5, B4X: 21.54, B4W: 21.94, B4M: 22.98, B4V: 23.38, B4B: 23.94, B4E: 24.34, LOCK: 24.74 };
+// the wipe to matte halfway, B4M matte with all five labels, B4V the wipe to brass halfway, B4B brass, B4E beat 4's end.
+// 28 Nov, beat 5: B5T the key turning back (halfway), B5O the key halfway out of the lock, B5L "Locked." (held), B5E beat
+// 5's end; B5J the join's camera halfway onto page 4's first frame; LOCK the hand-over to page 4 done
+export const STOPS = { S0: 0.1, draw: 0.24, blue: 0.36, morph: 0.6, S1: 1.3, kin: 1.72, paper: 2.2, dress: 2.23, REAL: 2.45, S2: 2.5, YOU: 2.72, TASK: 2.92, WE: 3.12, DRUM: 3.9, END: 4.8, TR: 5.11, OPEN: 5.5, LIT: 6.2, F1: 6.6, F2: 7.3, F3: 8.0, F4: 8.7, F5H: 9.2, F5S: 9.4, F5R: 9.75, F5L: 10.2, F5T: 11.0, F5E: 12.1, F5: 12.3, F5B: 12.45, DOOR: 12.84, B1H: 13.19, B1F: 13.53, B1K: 13.62, B1P: 13.95, B1E: 14.34, B2K: 15.04, B2H: 15.58, B2W: 16.66, B2E: 17.34, B3S: 17.94, B3F: 18.24, B3C: 18.84, B3B: 19.68, B3L: 20.34, B4I: 20.5, B4X: 21.54, B4W: 21.94, B4M: 22.98, B4V: 23.38, B4B: 23.94, B4E: 24.34, B5T: 24.79, B5O: 25.69, B5L: 26.59, B5E: 26.84, B5J: 27.09, LOCK: 27.64 };
 const NAMES = ['Back', 'Battery', 'Board', 'Frame', 'Screen', 'Glass'];   // back to front
 const BLUE = [23, 63, 115];
 
@@ -350,6 +353,14 @@ export function initPage01(engine) {
     // beat 4 (28 Nov): its share -> a stop (1:1); each wipe halfway, each look held with every label in, its end
     const b4 = (b) => at(hallOf((BEAT4[0] + (BEAT4[1] - BEAT4[0]) * b) * DIVE)), mid = (w) => (w[0] + w[1]) / 2;
     Object.assign(STOPS, { B4I: b4(mid(B4.wipes[0])), B4X: b4(B4.still.x), B4W: b4(mid(B4.wipes[1])), B4M: b4(B4.still.m), B4V: b4(mid(B4.wipes[2])), B4B: b4(B4.still.b), B4E: b4(1) });
+    // beat 5 (28 Nov): its share -> a stop (1:1); the key turning back, the key halfway out of the lock, "Locked." held,
+    // its end; the join's camera halfway (then LOCK, the hand-over to page 4 done)
+    const b5 = (b) => at(hallOf((BEAT5[0] + (BEAT5[1] - BEAT5[0]) * b) * DIVE));
+    // B5O: the key half out of the keyway (its tip 40 mm out, half its 80 mm blade), once beat 5 is laid out (dive.onB5)
+    const b5O = () => { const sh = dive.b5Share(40); STOPS.B5O = b5(B5.out[0] + (B5.out[1] - B5.out[0]) * (sh ?? 0.5)); };
+    dive.onB5(b5O);
+    Object.assign(STOPS, { B5T: b5(mid(B5.turn)), B5L: b5((B5.locked + 1) / 2 + 0.06), B5E: b5(1), B5J: at(hallOf(mid(JOIN.move) * DIVE)) });
+    b5O();
   }
 
   // ---------- "you" -> "YOU" and "us" -> "WE": one word each, travelling between its places ----------
@@ -660,6 +671,14 @@ export function initPage01(engine) {
         addEventListener('scroll', fade, { passive: true }); addEventListener('resize', fade); fade();
         return { k, f, pic, img };
       });
+      // 28 Nov, beat 5 with reduced motion: no key moving; a still of the shut lock in brass, the key out of it (beat 5's last
+      // frame), "Locked." (a draft, flagged) over it in the flow, then the same fade to the dark as the scroll passes; page 4
+      // follows
+      const lockedF = document.createElement('figure'); lockedF.className = 'p1-hall__locked'; lockedF.insertAdjacentHTML('afterbegin', lockedHTML());
+      const lkimg = new Image(); lkimg.alt = 'The same brass lock, shut, its keyhole empty.';
+      lockedF.append(lkimg); list.append(lockedF);
+      const fadeLocked = () => { const r = lkimg.getBoundingClientRect(); if (!r.height) return; lkimg.style.opacity = (1 - span(innerHeight * 0.5 - r.top, r.height * 0.15, r.height * 0.85)).toFixed(3); };
+      addEventListener('scroll', fadeLocked, { passive: true }); addEventListener('resize', fadeLocked); fadeLocked();
       requestAnimationFrame(() => {
         const w = Math.round(list.getBoundingClientRect().width) || 320, h = Math.round(Math.min(innerHeight * 0.75, w * 1.25));
         // (one at a time, after the face's still: each lays the same hallway out at the figure's size)
@@ -673,6 +692,8 @@ export function initPage01(engine) {
             pic.querySelectorAll('.dive__spot').forEach((el, j) => el.classList.toggle('is-l', r.labels[j].left));
           }).catch((e) => console.warn('[page 01] look still', k, e));
         });
+        lkimg.width = w; lkimg.height = h;
+        chain.then(() => dive.lockedStill(w, h, { u: grid.u })).then((url) => { if (url) lkimg.src = url; else lockedF.remove(); }).catch((e) => console.warn('[page 01] locked still', e));
       });
       T.end.after(list);
       // page 2 starts at the hallway's still figures
@@ -687,7 +708,7 @@ export function initPage01(engine) {
   }
 
   // the corridor is drawn (aria-hidden); readers get its four frames as a list, in reading order after the last line
-  { const l = document.createElement('div'); l.className = 'sr-only'; l.innerHTML = `<p>${OPENING_TXT} Down the hallway, five drawings, then a door with a lock:</p><ol>${FRAMES.map((f) => `<li>${f.caption} ${f.fig}. ${f.story} ${f.alt}</li>`).join('')}</ol>`; stage.append(l); }
+  { const l = document.createElement('div'); l.className = 'sr-only'; l.innerHTML = `<p>${OPENING_TXT} Down the hallway, five drawings, then a door with a lock:</p><ol>${FRAMES.map((f) => `<li>${f.caption} ${f.fig}. ${f.story} ${f.alt}</li>`).join('')}</ol><h2>The lock</h2><p>${SECURITY_WORDS.sr}</p>`; stage.append(l); }
 
   // ---------- live: the finished phone follows the pointer (desktop) or the visitor's phone's tilt (Android) ----------
   const live = createLive();

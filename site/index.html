@@ -77,12 +77,12 @@
   <link rel="preload" href="fonts/dm-mono-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/site.css?v=c23da05b4e" onload="__wm.done('css')">
   <link rel="stylesheet" href="css/page-00-grid.css?v=566854bb3c">
-  <link rel="stylesheet" href="css/page-01-dive.css?v=2dcdb2988f">
-  <link rel="stylesheet" href="css/page-01.css?v=3081f81bcd">
+  <link rel="stylesheet" href="css/page-01-dive.css?v=11cf40dc34">
+  <link rel="stylesheet" href="css/page-01.css?v=3e79d92710">
   <link rel="stylesheet" href="css/page-02.css?v=e418050ed9">
-  <link rel="stylesheet" href="css/page-03-lock.css?v=771865b875">
   <link rel="stylesheet" href="css/page-03-send.css?v=09357da7d8">
   <link rel="stylesheet" href="css/page-03.css?v=25c8941b4a">
+  <link rel="stylesheet" href="css/page-04-work.css?v=2f5003254c">
   <link rel="stylesheet" href="css/page-05.css?v=c3f0f86e49">
   <script defer src="vendor/gsap.min.js" onload="__wm.done('gsap')"></script>
   <script defer src="vendor/ScrollTrigger.min.js" onload="__wm.done('st')"></script>
@@ -103,7 +103,7 @@
         else { var c = el.cloneNode(); el.parentNode.insertBefore(c, el.nextSibling); el.remove(); } }, 150 * (n + 1));
     }, true);
   </script>
-  <script type="module" src="dist/main.js?v=193990a148" onerror="(function(s){var n=+(s.dataset.r||0);if(n<5){var c=document.createElement('script');c.type='module';c.src='dist/main.js?r='+(n+1);c.dataset.r=n+1;c.onerror=s.onerror;setTimeout(function(){document.head.appendChild(c)},200*(n+1));}})(this)"></script>
+  <script type="module" src="dist/main.js?v=d9fc8d6326" onerror="(function(s){var n=+(s.dataset.r||0);if(n<5){var c=document.createElement('script');c.type='module';c.src='dist/main.js?r='+(n+1);c.dataset.r=n+1;c.onerror=s.onerror;setTimeout(function(){document.head.appendChild(c)},200*(n+1));}})(this)"></script>
 </head>
 <body>
 
@@ -219,25 +219,21 @@
            (page.js places it there); the strip, the title block and every #page-03 link land here (main.js) -->
       <span id="page-03-door" class="p1-mark" data-sheet="03" data-title="The lock" data-drawn="Security" data-checked="Engineering" data-approved="Strategy" aria-hidden="true"></span>
     </section>
-    <!-- PAGE 03: INTO THE LOCK (stage 9, the security showpiece; site/js/page03/). Overlaps page 1's last screen and starts on
-         the hallway's last frame: the lock in X-ray. Into the keyhole, past the pins, out to endless locks that unlock in a
-         wave and fold back into one. The two lines are DRAFTS (data-draft), flagged. -->
-    <section id="page-03" class="p3l" data-sheet="03" data-title="The lock" data-drawn="Security" data-checked="Engineering" data-approved="Strategy" aria-labelledby="p3l-h">
-      <h2 id="p3l-h" class="sr-only">Into the lock</h2>
-      <p class="sr-only">The hallway’s lock goes see-through: we go in through the keyhole, past its pins, and come out to the same lock repeated on every point of a grid, rows running in every direction. They unlock in a wave, then fold back into one lock.</p>
-      <div class="p3l__stage">
-        <canvas class="p3l__gl" aria-hidden="true"></canvas>
-        <div class="p3l__line"><p class="p3l__f ph mono gt gt-h">Draft</p><p class="p3l__t display gt" data-draft>Your business runs on thousands of locks.</p></div>
-        <div class="p3l__line"><p class="p3l__f ph mono gt gt-h">Draft</p><p class="p3l__t display gt" data-draft>We make sure only the right keys turn them.</p></div>
-        <!-- page 4, how we work (stage 10): the cutaway (site/js/page04/cutaway.js) and its three lines (drafts) -->
+    <!-- PAGE 04: HOW WE WORK (stage 10; site/js/page04/). Overlaps page 1's last screen and starts on the frame the security
+         page's join ends on (dive.js JOIN: the lock face on, in X-ray on the blue ground): the lock turns side-on into the
+         2D cutaway (turn.js, cutaway.js); the obvious key fails; the lock is picked pin by pin. The three lines are DRAFTS
+         (data-draft), flagged. (28 Nov: round 9's page 3, the lattice before it, is retired: dive.js's beats 1-5.) -->
+    <section id="page-04" class="p4s" data-sheet="04" data-title="How we work" data-drawn="Engineering" data-checked="Design" data-approved="Strategy" aria-labelledby="p4s-h">
+      <h2 id="p4s-h" class="sr-only">How we work</h2>
+      <div class="p4s__stage">
+        <canvas class="p4s__gl" aria-hidden="true"></canvas>
+        <!-- the cutaway (site/js/page04/cutaway.js) and its three lines (drafts) -->
         <div class="p4w" aria-hidden="true"></div>
-        <div class="p3l__line p4l"><p class="p3l__f ph mono gt gt-h">Draft</p><p class="p3l__t display gt" data-draft>First, the obvious key.</p></div>
-        <div class="p3l__line p4l"><p class="p3l__f ph mono gt gt-h">Draft</p><p class="p3l__t display gt" data-draft>It fails. Most people stop here.</p></div>
-        <div class="p3l__line p4l"><p class="p3l__f ph mono gt gt-h">Draft</p><p class="p3l__t display gt" data-draft>We don’t.</p></div>
+        <div class="p4s__line"><p class="p4s__f ph mono gt gt-h">Draft</p><p class="p4s__t display gt" data-draft>First, the obvious key.</p></div>
+        <div class="p4s__line"><p class="p4s__f ph mono gt gt-h">Draft</p><p class="p4s__t display gt" data-draft>It fails. Most people stop here.</p></div>
+        <div class="p4s__line"><p class="p4s__f ph mono gt gt-h">Draft</p><p class="p4s__t display gt" data-draft>We don’t.</p></div>
       </div>
-      <!-- PAGE 04: how we work starts here (a marker; the strip and the title block read it) -->
-      <span id="page-04" class="p3l__mark" data-sheet="04" data-title="How we work" data-drawn="Engineering" data-checked="Design" data-approved="Strategy" aria-hidden="true"></span>
-      <div class="sr-only"><h2>How we work</h2><p>The same lock, drawn as a cutaway: the obvious key goes in and fails. Then the lock is picked, one pin at a time, seven pins for the seven steps: understood, imagined, drew, tested, felt, refined, delivered. On the last pin it turns. (The real lock has five pins; the drawing gives it seven, one per step.)</p></div>
+      <div class="sr-only"><p>The same lock, drawn as a cutaway: the obvious key goes in and fails. Then the lock is picked, one pin at a time, seven pins for the seven steps: understood, imagined, drew, tested, felt, refined, delivered. On the last pin it turns. (The real lock has five pins; the drawing gives it seven, one per step.)</p></div>
     </section>
     <!-- PAGE 05: LIGHTER TRIPS (stage 11; site/js/page05/trips.js). Three short rooms in one pinned scene, scrubbed by scroll:
          AI (the property app's enquiries: the AI drafts the reply, nothing goes out until a person approves it), websites
